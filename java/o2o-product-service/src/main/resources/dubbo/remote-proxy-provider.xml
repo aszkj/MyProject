@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<dubbo:service interface="com.yilidi.o2o.product.proxy.IProductProxyService"
+		ref="productProxyService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service
+		interface="com.yilidi.o2o.product.proxy.ISecKillProductProxyService"
+		ref="secKillProductProxyService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.product.proxy.ISecKillSceneProxyService"
+		ref="secKillSceneProxyService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.product.proxy.IRedEnvelopeProxyService"
+		ref="redEnvelopeProxyService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.product.proxy.IProductClassProxyService"
+		ref="productClassProxyService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.product.proxy.IThemeProxyService"
+		ref="themeProxyService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service
+		interface="com.yilidi.o2o.product.proxy.IBuyRewardActivityProxyService"
+		ref="buyRewardActivityProxyService" protocol="${dubbo.protocol.id}" />
+</beans>

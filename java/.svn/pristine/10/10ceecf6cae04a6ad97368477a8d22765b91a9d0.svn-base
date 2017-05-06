@@ -1,0 +1,813 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/lang/zh_CN.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.box-mask {
+	position: fixed;
+	width: 600px;
+	height: auto;
+	ovflow: hidden;
+	z-index: 9999999;
+	left: 50%;
+	top: 0;
+	margin-left: -300px;
+}
+
+.mask_close {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size: 16px;
+	color: red;
+	background: #fff;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+}
+
+.advertisement_img li{float:left;margin:0 6px 0 0}
+.advertisement_img .img{display:block;width:400px;height:100px;border:1px dashed #e3e4e4;text-align:center; line-height:100px;}
+.advertisement_img a.img{background:#fcfcfc url(/static-resource/images/base/image_bg.gif) no-repeat center center;overflow:hidden;text-align:left;text-indent:-1000px;cursor:pointer}
+.advertisement_img .img img{max-width:400px;max-height:100px;_height: expression(this.height > 100 ? "100" : true); _width: expression(this.width > 400 ? "400" : true); line-height:100px;}
+.advertisement_img p{text-align:center;line-height:24px}
+.advertisement_img p label{padding:0 8px 0 2px;}
+.advertisement_img p input {vertical-align: -2px;}
+
+.advertisement_imgnote{line-height:22px;overflow:hidden;padding:10px 0 0;}
+.advertisement_imgnote em{color:#E94B01;float:left;text-align:right;}
+.advertisement_imgnote p{color:#DF9067; margin:0 0 0 400px;}
+</style>
+<script type="text/javascript">
+	var urlParam = window.location.search;
+	var method = getUrlParam("method");
+	//加载所有字典下拉框所用的数据
+	var loadDictData = [{"dictType":"SYSTEMMESSAGETYPE","eleId":"messageType"},
+	                    {"dictType":"MESSAGESKIPTYPE","eleId":"skipType"}]; 
+	
+	var editorContent = "";
+	KindEditor.ready(function(K) {
+		editorContent = K.create('#messageContent', {
+			uploadJson : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/uploadContentFileTemp',
+			items : [
+			'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
+			'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+			'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+			'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+			'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+			'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 
+			'flash', 'media', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
+			'anchor', 'link', 'unlink', '|', 'about'
+			],
+			afterCreate : function() { 
+				this.sync(); 
+			}, 
+			afterBlur:function(){ 
+				this.sync();
+			}           
+		});
+	});
+	
+	function loadData() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id + '/systemMessage/getSystemMessageById',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					if (data.msgCode != 1) {
+						showBox("提示信息",data.msgm,"alert");
+						setTimeout(function(){
+							locationHref('/message/system_message_manager_index.html' + urlParam);
+						}, 3000);
+					}
+					endowValue(data.entity);					
+				}//非必须
+			});
+
+		}
+	}
+	
+	//回显
+	function endowValue(obj){
+		$("#id").val(obj.id);
+		$("#messageType").val(obj.messageType);
+		$("#publishObject").val(obj.publishObject);
+		$("#publishObjectValue").val(obj.publishObjectValue);
+		$("#publishObjectValueNames").text(obj.publishObjectValueNames==null||obj.publishObjectValueNames==""?"":obj.publishObjectValueNames)
+		//处理定向发布
+		endowPublish(obj);
+		$("#messageTitle").val(obj.messageTitle);
+		$("#skipType").val(obj.skipType);
+		$("#skipObject").val(obj.skipObject);
+		$("#skipObjectName").val(obj.skipObjectName);
+		$("#messageIntro").val(obj.messageIntro);
+		$("#messageContent").val(obj.messageContent);
+		endowCheckStatus(obj);
+	};
+	function endowCheckStatus(obj){
+		if(obj.checkStatus == "MESSAGECHECKSTATUS_AWAIT"){
+			$("#checkOk").attr("checked","checked");
+		}else{
+			if(obj.checkStatus == "MESSAGECHECKSTATUS_OK"){
+				$("#checkOk").attr("checked","checked");
+			}else{
+				$("#checkOk").removeAttr("checked");
+			}
+			
+			if(obj.checkStatus == "MESSAGECHECKSTATUS_NO"){
+				$("#checkReason").val(obj.checkReason);
+				$("#checkReasonDl").show();
+				$("#checkNo").attr("checked","checked");
+			}else{
+				$("#checkNo").removeAttr("checked");
+			}
+		}
+	}
+	function endowPublish(obj){
+		if(obj.publishObject == "MESSAGEPUBLISHOBJECT_ALL"){
+			$("#radioAll").attr("checked","checked");
+		}else{
+			$("#radioAll").removeAttr("checked");
+		}
+		if(obj.publishObject == "MESSAGEPUBLISHOBJECT_BUYER_ALL" || obj.publishObject == "MESSAGEPUBLISHOBJECT_BUYER_SPECIAL"){
+			$("#radioUser").attr("checked","checked");
+			$("#userSelect").show();
+			$("#userSelect").val(obj.publishObject);
+		}else{
+			$("#radioUser").removeAttr("checked");
+		}
+		
+		if(obj.publishObject == "MESSAGEPUBLISHOBJECT_SELLER_ALL" || obj.publishObject == "MESSAGEPUBLISHOBJECT_SELLER_SPECIAL"){
+			$("#radioStore").attr("checked","checked");
+			$("#storeSelect").show();
+			$("#storeSelect").val(obj.publishObject);
+		}else{
+			$("#radioStore").removeAttr("checked");
+		}
+	}
+	
+	
+	function dataEditSubmit() {
+		if (method != 'add' && method != 'edit' && method != 'check') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		var formJsonStr = null;
+		if (method == 'add') {
+			if (!validateData()) {
+				return;
+			}
+			url = OPERATION_SYSTEM_IDENTITY + '/systemMessage/addSystemMessage';
+			formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		} else if (method == 'edit') {
+			if (!validateData()) {
+				return;
+			}
+			var id = $("#id").val();
+			url = OPERATION_SYSTEM_IDENTITY + '/' + id + '/systemMessage/updateSystemMessage';
+			formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		} else if(method == 'check'){
+			if(!validate.validateCheckReason()){
+				return;
+			}
+			var id = $("#id").val();
+			url = OPERATION_SYSTEM_IDENTITY + '/' + id + '/systemMessage/updateCheckStatus';
+			var checkStatus = $('input[name="checkRadio"]:checked').val();
+			var checkReason = $('#checkReason').val();
+			formJsonStr = JSON.stringify({"checkStatus":checkStatus,"checkReason":checkReason});
+			console.log(formJsonStr)
+		}
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+ 		$.ajax({
+			type : 'post',
+			contentType : 'application/json',
+			dataType : 'json',
+			data : formJsonStr,
+			error : function() {
+				$('#promptMessage').text('保存数据失败，请稍后再试');
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+			},
+			url : TERMINAL_URL + url,
+			beforeSubmit : function() {
+			},
+			success : function(data) {
+				//响应返回的业务处理  
+				if (data.msgCode == 1) {
+					$('#promptMessage').text('保存成功');
+					window.setTimeout(function() {
+						locationHref("/message/system_message_manager_index.html"
+								+ urlParam);
+					}, 1000);
+				} else {
+					$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					$('#promptMessage').text(data.msg);
+				}
+			}
+		}); 
+	}
+
+	var validate = (function() {
+		return {
+			validateMessageType : function() {
+				var messageType = $.trim($('#messageType').val());
+				if (messageType == "") {
+					$('#messageTypeError').html('请选择消息类型').attr('class', 'error');
+					return false;
+				}
+				$('#messageTypeError').html('').attr('class', 'right');
+				return true;
+			},
+			validatePublishObject : function() {
+				var publishObject = $.trim($('#publishObject').val());
+				var publishObjectValue = $.trim($("#publishObjectValue").val());
+				if (publishObject == "MESSAGEPUBLISHOBJECT_SELLER_SPECIAL") {
+					if(publishObjectValue == ""){
+						$('#publishObjectError').html('请选择门店').attr('class', 'error');
+						return false;
+					}
+				}else if(publishObject == "MESSAGEPUBLISHOBJECT_BUYER_SPECIAL"){
+					if(publishObjectValue == ""){
+						$('#publishObjectError').html('请选择用户').attr('class', 'error');
+						return false;
+					}
+				}
+				$('#publishObjectError').html('').attr('class', 'right');
+				return true;
+			},
+			validateMessageTitle : function() {
+				var messageTitle = $.trim($('#messageTitle').val());
+				if (messageTitle == "") {
+					$('#messageTitleError').html("请输入标题").attr('class', 'error');
+					return false;
+				}
+				$('#messageTitleError').html('').attr('class', 'right');
+				return true;
+			},
+			validateMessageImage : function() {
+				var messageImage = $.trim($('#messageImage').val());
+				if (messageImage == "") {
+					$('#messageImageError').html("请上传图片").attr('class', 'error');
+					return false;
+				}
+				$('#messageImageError').html('').attr('class', 'right');
+				return true;
+			},
+			/* validateSkipType : function() {
+				var skipType = $.trim($('#skipType').val());
+				if (skipType == "") {
+					$('#skipTypeError').html("请选择跳转类型").attr('class', 'error');
+					return false;
+				}
+				$('#skipTypeError').html('').attr('class', 'right');
+				return true;
+			}, */
+			validateSkipObject : function() {
+				var skipType = $.trim($('#skipType').val());
+				var skipObject = $.trim($('#skipObject').val());
+				var skipObjectName = $.trim($('#skipObjectName').val());
+				if(skipType == 'MESSAGESKIPTYPE_THEME'){
+					if(skipObjectName == ""){
+						$('#skipObjectError').html("请选择专题").attr('class', 'error');
+						return false;
+					}
+				}else if(skipType == 'MESSAGESKIPTYPE_REFUND' || skipType == 'MESSAGESKIPTYPE_COUPON'){
+					if(skipObjectName == ""){
+						$('#skipObjectError').html("请输入跳转链接").attr('class', 'error');
+						return false;
+					}
+					$('#skipObject').val(skipObjectName);
+				}
+				$('#skipObjectError').html('').attr('class', 'right');
+				return true;
+			},
+			validateMessageIntro : function() {
+				var messageIntro = $.trim($('#messageIntro').val());
+				if (messageIntro == "") {
+					$('#messageIntroError').html("请输入消息简介").attr('class', 'error');
+					return false;
+				}
+				$('#messageIntroError').html('').attr('class', 'right');
+				return true;
+			},
+ 			validateMessageContent : function() {
+				var messageContent = $.trim($('#messageContent').val());
+				if (messageContent == "") {
+					$('#messageContentError').html("请输入消息内容").attr('class', 'error');
+					return false;
+				}
+				$('#messageIntroError').html('').attr('class', 'right');
+				return true;
+			},
+			validateCheckReason : function(){
+				var checkStatus = $('input[name="checkRadio"]:checked').val();
+				var checkReason = $.trim($('#checkReason').val());
+				if(checkStatus == "MESSAGECHECKSTATUS_NO"){
+					if(checkReason == ""){
+						$('#checkReasonError').html("请输入消息内容").attr('class', 'error');
+						return false;
+					}
+					$('#checkReasonError').html('').attr('class', 'right');
+				}
+				return true;
+			}
+		}
+	})();
+
+	function validateData() {
+		if(!validate.validateMessageType()){return false;}
+		if(!validate.validatePublishObject()){return false;}
+	    if(!validate.validateMessageTitle()){return false;}
+	    if(!validate.validateMessageImage()){return false;}
+	    /* if(!validate.validateSkipType()){return false;} */
+	    if(!validate.validateSkipObject()){return false;}
+	    if(!validate.validateMessageIntro()){return false;}
+	    if(!validate.validateMessageContent()){return false;} 
+		return true;
+	}
+	
+	function showUploadBox() {
+		$('#uploadImgType').val();
+		if ($('#uploadBtn').attr('disabled') == 'disabled') {
+			$('#uploadBtn').attr('disabled', false);
+		}
+		$('#uploadnote').html('');
+		showBox('上传图片','uploadBox');
+	}
+	//图片上传
+	function uploadSubmit() {
+		var file = $.trim($('#uploadFile').val());
+		if (file == '') {
+			showBox('提示!', "上传的图片不能为空!", 'alert');
+			return;
+		}
+		var	url = '/uploadMessageImageTemp';
+		$('#uploadBtn').attr('disabled', 'disabled');
+		ajax({
+			uploadForm : 'uploadForm',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + url,
+			type:'post',
+			contentType:'application/json',
+			dataType : 'json',//非必须.默认text
+			async : false,
+			error : function() {
+				return;
+			}, //非必须
+			success : function(data) {
+				checkJsonRight(data);
+				if (data.msgCode != 1) {
+					$('#uploadnote').html(data.msg);
+					return;
+				}
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = [];
+				var messageImage = data.entity;
+				html.push('<span class="img"><a href="javascript:void(0)" onclick="showAdvertisementImg(\''
+						+ UPLOAD_FILE_TEMP_URL
+						+ messageImage
+						+ '\')"><img src="');
+				html.push((UPLOAD_FILE_TEMP_URL + messageImage));
+				html.push('" width="400" height="100" alt="" /></a></span><p>');
+				if('view' != method){
+					html.push('<a href="javascript:;" class="ablue" onclick="delUploadImg()">删除</a></p>');
+				}
+				$('#messageImage').val(messageImage);
+				//IMAGEFLAG_YES表示是上传的图片
+				$('#imageFlag').val('IMAGEFLAG_YES');
+				$('#uploadLi').html(html.join(''));
+				$('#uploadnote').html(data.msg);
+				$('#uploadBtn').attr('disabled', 'disabled');
+				setTimeout(function() {
+					closeBox();
+				}, 1000);
+			}//非必须
+		});
+	}
+
+	/*删除图片*/
+	function delUploadImg() {
+		if (confirm("您确定删除该图片吗？")) {
+			$('#uploadLi').html(
+					'<a class="img" onclick="showUploadBox()">点击上传</a>');
+			var tempPicPath = $('#messageImage').val();
+			//如果是刚刚上传的，则需要删除临时服务器上的图片
+			if ($("#imageFlag").val() == 'IMAGEFLAG_YES') {
+				ajax({
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+							+ '/deleteMessageImageTemp?tempPicPath=' + tempPicPath,
+					type : 'post',//非必须.默认get
+					dataType : 'json',//非必须.默认text
+					error : function(data) {
+					}, //非必须
+					success : function(data) {
+						$('#messageImage').val('');
+					}//非必须
+				});
+			} else if ($("#imageFlag").val() == 'IMAGEFLAG_NO') { //如果原本就是正式环境的图片，先记下其url
+				delPicString = $('#messageImage').val();
+				$("#delImageUrl").val(delPicString);
+				$("#messageImage").val('');
+			}
+		}
+	}
+	
+	function closeme() {
+		$(".box-mask").remove();
+	}
+	
+	function showAdvertisementImg(path) {
+		showBox("查看广告图片","<img src='"+path+"' alt='' width='600' height='300' />");
+	}
+
+	function comebackList() {
+		var urlParam = window.location.search;
+		locationHref('/message/system_message_manager_index.html' + urlParam);
+	}
+
+	//加载字典
+	function loadDictSelect(jsonArray){
+		$.each(jsonArray,function(i,item){
+			ajax({
+				url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + item.dictType + '/getSystemDictInfoList',
+				type:'post',
+				async:false,
+				dataType:'json',
+				error:function(){return;}, 
+				success:function(data){
+					if(data.msgCode!=1){return;}
+					//特殊处理 尖括号
+					var temp = JSON.stringify(data);
+					temp = encodeString(temp);
+					data = JSON.parse(temp);
+					var mapList = data.entity;
+					var html = '';
+					if(mapList != null && mapList.length >0){
+						html='<option value="">--请选择--</option>';
+						for(var i=0,length=mapList.length;i<length;i++){
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+					$("#"+item.eleId).html(html);
+				}
+			});
+		});
+	}
+	
+	function loadProperty(){
+		if (method == 'add') {
+			$("#breadName").html('新增消息');
+			$("#pageTitle").html('新增消息');
+		} else if (method == 'edit') {
+			$("#breadName").html('编辑消息');
+			$("#pageTitle").html('编辑消息');
+			loadData();
+			$("#checkReasonDl").hide();
+		} else if(method == 'query'){
+			$("#breadName").html('查看消息');
+			$("#pageTitle").html('查看消息');
+			$("#submit").hide();
+			$("#goBack").val("返回");
+			loadData();
+			$(".disEle").attr("disabled","disabled");
+			$("#checkReason").attr("disabled","disabled");
+			$("#checkStatusDl").show();
+			$('input[name="checkRadio"]').attr("disabled","disabled");
+		}else{
+			$("#breadName").html('审核消息');
+			$("#pageTitle").html('审核消息');
+			loadData();
+			$(".disEle").attr("disabled","disabled");
+			$("#checkStatusDl").show();
+			
+		}
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		$("#userSelect").hide();
+		$("#storeSelect").hide();
+		$("#checkStatusDl").hide();
+		$("#checkReasonDl").hide();
+		loadDictSelect(loadDictData);
+		loadProperty();
+		
+		//处理定向发布
+		$(".publishRadio").on("click",function(){
+			var publishObject = "";
+			if($(this).val()=="all"){
+				publishObject = "MESSAGEPUBLISHOBJECT_ALL";
+			}
+			if($(this).val()=="store"){
+				$("#storeSelect").show();
+				publishObject = $("#storeSelect").val();
+			}else{
+				$("#storeSelect").hide();
+			}
+			if($(this).val()=="user"){
+				$("#userSelect").show();
+				publishObject = $("#userSelect").val();
+			}else{
+				$("#userSelect").hide();
+			}
+			//给发布对象input赋值
+			$("#publishObject").val(publishObject);
+			//将发布对象input值给清空
+			$("#publishObjectValue").val("");
+			$("#publishObjectValueNames").text("");
+		});
+		
+		//门店下拉框
+		$("#storeSelect").on("change",function(){
+			$("#publishObject").val($(this).val());
+			$("#publishObjectValue").val("");
+			$("#publishObjectValueNames").text("");
+			if($(this).val() == "MESSAGEPUBLISHOBJECT_SELLER_SPECIAL"){
+				//弹框选择店铺
+				showBox("店铺列表","/message/system_message_manager_selectStore.html?width=800&height=600");
+			}
+		});
+		//用户下拉框、
+		$("#userSelect").on("change",function(){
+			$("#publishObject").val($(this).val());
+			$("#publishObjectValue").val("");
+			$("#publishObjectValueNames").text("");
+			if($(this).val() == "MESSAGEPUBLISHOBJECT_BUYER_SPECIAL"){
+				//弹框选择用户
+				showBox("用户列表","/message/system_message_manager_selectUser.html?width=800&height=600");
+			}
+		});
+		//跳转下拉框
+		$("#skipType").on("change",function(){
+			$("#skipObjectName").val("");
+			$("#skipObject").val("");
+			if($(this).val()=="MESSAGESKIPTYPE_THEME"){
+				$("#skipObjectName").attr("disabled","disabled");
+				showBox("专题列表","/message/system_message_manager_selectTheme.html?width=800&height=600");
+			}else{
+				$("#skipObjectName").removeAttr("disabled");
+			}
+		});
+		//切换审核状态
+		$('input[name="checkRadio"]').on("click",function(){
+			if($(this).val() == "MESSAGECHECKSTATUS_OK"){
+				$("#checkReasonDl").hide();
+			}else{
+				$("#checkReasonDl").show();
+			}
+		});
+		//跳转类型
+		$('#skipType').on('change',function(){
+			if($(this).val() != ""){
+				$('#skipObjectName').removeAttr("disabled");
+			}else{
+				$('#skipObjectName').attr("disabled","disabled");
+			}
+		})
+		
+	});
+	
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 消息管理  &gt; 系统消息管理  &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+					<input type="hidden" id="id">
+						<form method="post" class="user_form" id="dataForm">
+							<input type="hidden" id="imageFlag" name="imageFlag" /> 
+							<input type="hidden" id="delImageUrl" name="delImageUrl" />
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>消息类型：
+									</dt>
+									<dd>
+										<select id="messageType" class="select disEle" name="messageType"></select>&nbsp;&nbsp;
+										<span id="messageTypeError" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>定向发布：
+									</dt>
+									<dd>
+										<table>
+											<tr>
+												<td><input type="radio" name="publishRadio" id="radioAll" class="publishRadio disEle" value="all" checked="checked">&nbsp;全部</td>
+											</tr>
+											<tr>
+												<td><input type="radio" name="publishRadio" id="radioStore" class="publishRadio disEle" value="store">&nbsp;门店</td>
+												<td>
+													<select id="storeSelect" class="select disEle">
+														<option value="MESSAGEPUBLISHOBJECT_SELLER_ALL" selected="selected">所有门店</option>
+														<option value="MESSAGEPUBLISHOBJECT_SELLER_SPECIAL">特殊门店</option>
+													</select>
+												</td>
+											</tr>
+											<tr>
+												<td><input type="radio" name="publishRadio" id="radioUser" class="publishRadio disEle" value="user">&nbsp;用户</td>
+												<td>
+													<select id="userSelect" class="select disEle">
+														<option value="MESSAGEPUBLISHOBJECT_BUYER_ALL" selected="selected">所有用户</option>
+														<option value="MESSAGEPUBLISHOBJECT_BUYER_SPECIAL">特殊用户</option>
+													</select>
+												</td>
+											</tr>
+										</table>
+										<span id="publishObjectValueNames"></span>
+										<input type="hidden" id="publishObject" name="publishObject" value="MESSAGEPUBLISHOBJECT_ALL">
+										<input type="hidden" id="publishObjectValue" name="publishObjectValue">
+										<span id="publishObjectError" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>标题：
+									</dt>
+			                      	<dd>
+			                      		<input type="text" id="messageTitle" class="txt grid-12 messageTitle disEle" name="messageTitle" placeholder="请输入..." maxlength="20">
+			                      		<span id="messageTitleError" class="cred" ></span>
+			                      	</dd>
+		                   		</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>图片：
+									</dt>
+									<dd>
+										<input type="hidden" id="messageImage" name="messageImage"/>
+										<ul class="advertisement_img img">
+											<li id="uploadLi" class="pr"><a onclick="showUploadBox()"
+												class="img">点击上传</a></li>
+										</ul>
+										<div class="advertisement_imgnote agray">
+											<em>温馨提示：</em>
+											<p style="color: #DF9067; margin: 0 0 0 0; padding: 0px">
+												请上传图片大小≤3M的图片！ <span id="imageUrlMsg">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>
+											</p>
+										</div>
+										<span id="messageImageError"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>跳转类型：
+									</dt>
+									<dd>
+										<select class="select disEle" id="skipType" name="skipType" ></select>&nbsp;&nbsp; 
+										<span id="skipTypeError" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>跳转链接：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-39 disEle" id="skipObjectName" disabled="disabled">&nbsp;&nbsp; 
+										<input type="hidden" id="skipObject" name="skipObject" >
+										<span id="skipObjectError" class="cred"></span>
+									</dd>
+								</dl>
+								<span id="contentSpan"></span>
+		                   		<dl>
+									<dt>
+										<span class="cred">*</span>简短介绍：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-39 disEle" id="messageIntro" name="messageIntro" maxlength="40"/>&nbsp;&nbsp;
+										<span id="messageIntroError" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>详细内容：
+									</dt>
+									<dd>
+										<textarea class="disEle" id="messageContent" name="messageContent" style="width:790px;height:600px;"></textarea>&nbsp;&nbsp; 
+										<span id="messageContentError" class="cred" ></span>
+									</dd>
+								</dl>
+								<dl id="checkStatusDl">
+									<dt>
+										<span class="cred">*</span>审核：
+									</dt>
+									<dd>
+										<input type="radio" name="checkRadio" id="checkOk" value="MESSAGECHECKSTATUS_OK" checked="checked">审核通过&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="radio" name="checkRadio" id="checkNo" value="MESSAGECHECKSTATUS_NO">审核不通过&nbsp;&nbsp; 
+									</dd>
+								</dl>
+								<dl id="checkReasonDl">
+									<dt>
+										<span class="cred"></span>
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-39" id="checkReason" maxlength="40" placeholder="请填写不通过原因"/>&nbsp;&nbsp;
+										<span id="checkReasonError" class="cred"></span>
+									</dd>
+								</dl>
+							</div>
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="确认" id="submit" onClick="dataEditSubmit(method)">&nbsp;&nbsp;&nbsp;
+										<input type="button" id="goBack" class="btn_gray" value="取消" onclick="comebackList()"> 
+										<span id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden" id="id" name="id" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+	<div id="uploadBox" class="hide">
+		<form id="uploadForm" onsubmit="uploadSubmit();return false;">
+			<div class="uploadbox">
+				<p>
+					<input id="uploadImgIndex" type="hidden" /> <input
+						id="uploadImgRow" type="hidden" /> <input id="uploadImgType"
+						type="hidden" /> <input id="uploadFile" name="file"
+						type="file" /> <span id="uploadnote" class="cred"></span>
+				</p>
+				<div class="uploadbox_btn">
+					<input type="submit" value="确定" class="btn_sure" id="uploadBtn" />
+					<input type="reset" onclick="closeBox()" value="取消"
+						class="btn_gray" />
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

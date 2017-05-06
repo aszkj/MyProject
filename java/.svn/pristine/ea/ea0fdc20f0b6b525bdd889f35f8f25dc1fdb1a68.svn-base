@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>正在登录中</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body id="inLogining">
+	<p>正在自动登录中...</p>
+</body>
+<script type="text/javascript">
+	var wxCode = getUrlParam("code");
+	$(function() {
+		loginByThird(wxCode);
+	});
+	function loginByThird(code) {
+		var params = new Object();
+		params.code = code;
+		params.tradeType = "JSAPI";
+		ajax("/user/weixinlogin", params, function(data) {
+			saveUserInfo(data);
+			if (isLogin())
+				sychronizedcart();
+			else
+				window.location.replace("/user/bindTeleNumber.html?flag=1");
+		}, function(msg) {
+			alert(msg);
+		});
+	}
+	function sychronizedcart() {
+		var params = new Object();
+		if(getSessionStorage(sessionStorageStoreKey))
+		params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		var cartInfoParam = [];
+			var cartInfo = getSessionStorage(localStorageCartInfoKey);
+			for ( var saleProductId in cartInfo) {
+				var cartParam = new Object();
+				cartParam.saleProductId = saleProductId;
+				cartParam.cartNum = cartInfo[saleProductId].cartNum;
+				cartInfoParam.push(cartParam);
+			}		
+		params.cartInfo = cartInfoParam;
+		ajax("/cart/synchronouscart", params, function(data) {
+			setCartInfo(data);
+			history.go(-3);
+		}, function(data) {
+			history.go(-3);
+		});
+	}
+</script>
+</html>

@@ -1,0 +1,49 @@
+<div class="header">
+	<p class="meta">
+	<span class="welcome">您好 <strong id="userPos"></strong></span>
+		<a href="/system/passwd-modify.html">修改密码</a>
+		<a href="javascript:logout()" class="logout" id="logout">[退出]</a>
+	</p>
+	<a href="/"><!-- <img src="/static-resource/images/base/yilidilogo.png" width="60" height="60">  --> </a>
+
+</div>
+<script type="text/javascript">
+//	var logout = document.getElementById('logout');
+//	logout.addEventListener('click', function(e){
+function logout(){
+     showBox('提示','确定退出?','confirm',function(){
+		$.ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/logout',
+			type:'post',//非必须.默认get
+			dataType:'json',//非必须.默认text
+			async:false,//非必须.默认true
+			success:function(data){
+				if(data.msgCode==1){
+					locationHref('/login.html');
+				}
+				else{
+					showBox('提示', data.msg, 'alert');
+				}
+			}
+		});
+		});
+//	}, false)
+}
+
+$(document).ready(function(e) {
+	$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/loginUserInfo',
+		type:'post',//非必须.默认get
+		dataType:'json',//非必须.默认text
+		async:false,//非必须.默认true
+		success:function(data){
+			if(data.msgCode==1){
+				$('#userPos').html(data.entity.userName);
+			}
+			else{
+				locationHref('/login.html');
+			}
+		}
+	});
+});
+</script>

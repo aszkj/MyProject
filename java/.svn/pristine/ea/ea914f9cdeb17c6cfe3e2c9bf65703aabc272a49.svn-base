@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:permission>
+<head>
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<link type="text/css" href="/static-resource/plugin/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/plugin/operamasks-ui-2.1/themes/default/om-all.css" rel="stylesheet" /> 
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="/static-resource/js/jquery-1.5.2.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/plugin/ligerUI/js/ligerui.all.js"></script>
+<script type="text/javascript" src="/static-resource/plugin/operamasks-ui-2.1/js/om-core.js"></script>
+<script type="text/javascript" src="/static-resource/plugin/operamasks-ui-2.1/js/om-tree.js"></script>
+<script type="text/javascript">
+var data = 
+[{
+	"text": "全国",
+	"id":"100000",
+	"hasChildren":true,
+	"areaType":"AREATYPE_NATION"
+}];
+$(document).ready(function(){
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	disposeFunctionPermissions();
+	$("#mytree").omTree({
+		dataSource : data,
+		simpleDataModel: true,
+		onBeforeExpand : function(node){
+			var nodeDom = $("#"+node.nid);
+			if(nodeDom.hasClass("hasChildren")){
+				nodeDom.removeClass("hasChildren");
+				ajax({
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'  + node.id + '/getAreaDictsByParentCode',
+                    method: 'post',
+                    dataType: 'json',
+                    success: function(data){
+                    	if(data.msgCode==3){
+                    		loginError(data.msg);
+                    	}else if(data.msgCode==2){
+                    		showBox('提示','查询区域失败','alert')
+                    	}else if(data.msgCode==1){
+                    		$("#mytree").omTree("insert", data.entity, node);
+                    	}
+                       
+                    }
+                });
+             }
+              return true;
+        },
+         onSelect: function(node){
+         	$("#selectedNode").html("你选择了：<big>"+node.text+"</big>");
+         	if(node.areaType=="AREATYPE_NATION"){
+         		$("#addchild").show();
+         		$("#addchild").val("新增省份");
+         		$("#modify").show();
+         		//$("#del").hide();
+         	}
+         	if(node.areaType=="AREATYPE_PROVINCE"){
+         		$("#addchild").show();
+         		$("#addchild").val("新增地市");
+         		$("#modify").show();
+         		//$("#del").hide();
+         	}
+         	if(node.areaType=="AREATYPE_CITY"){
+         		$("#addchild").show();
+         		$("#addchild").val("新增区县");
+         		$("#modify").show();
+         		//$("#del").hide();
+         	}
+         	if(node.areaType=="AREATYPE_COUNTY"){
+         		$("#addchild").hide();
+         		$("#modify").show();
+         	}
+         },
+        onExpand: function(node){
+               node.expanded = true;
+         },
+         onCollapse: function(node){
+             node.expanded = false;
+       }
+	});   
+});
+function insertNode(){
+	$.ligerDialog.prompt('请输入名称','', function (yes,value) {
+		 if(yes) {
+		 	if(value=="") return ;
+		 	addArea(value);
+		 }
+	});
+}
+
+
+function addArea(areaName){
+	var parentNode = $("#mytree").omTree("getSelected");
+	var postData={"parentCode":parentNode.id,"parentAreaType":parentNode.areaType,"areaName":areaName};
+	$.ajax({
+		type : 'post',
+		url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/addAreaDict',
+		contentType : 'application/json',
+		data: JSON.stringify(postData),
+		dataType:"json",
+		success:function(jsonData){
+			if(jsonData.msgCode==3){
+				loginError(jsonData.msg);
+			}
+			if(jsonData.msgCode==1){
+				showBox('提示','操作成功','alert',function () {
+					$("#mytree").omTree("insert", jsonData.entity, parentNode);
+				});
+				
+			}else if(jsonData.msgCode==2){
+				showBox('提示','新增时发生错误', 'alert');
+			}
+		},
+		error:function(){
+			showBox('提示','新增时发生错误', 'alert');
+		}
+	});
+}
+
+function modifyNode(){
+	var node = $("#mytree").omTree("getSelected");
+	$.ligerDialog.prompt('请输入名称',node.text, function (yes,value) {
+		 if(yes) {
+		 	if(value=="") return ;
+		 	modifyArea(value);
+		 }
+	});
+}
+
+function modifyArea(areaName){
+	var node = $("#mytree").omTree("getSelected");
+	var postData={"areaCode":node.id,"areaName":areaName,"areaTreeNid":node.nid,"areaTreeExpanded":node.expanded};
+	$.ajax({
+		type : 'post',
+		url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/modifyAreaDict',
+		contentType : 'application/json',
+		data: JSON.stringify(postData),
+		dataType:"json",
+		success:function(jsonData){
+			if(jsonData.msgCode==3){
+				loginError(jsonData.msg);
+			}
+			if(jsonData.msgCode==1){
+				showBox('提示','操作成功', 'alert', function () { 
+					var parentNode = $('#mytree').omTree('getParent',node);
+					$("#mytree").omTree("modify", node, jsonData.entity, parentNode);
+				});
+			}else if(jsonData.msgCode==2){
+				showBox('提示','修改时发生错误', 'alert');
+			}
+		},
+		error:function(){
+			showBox('提示','修改时发生错误', 'alert');
+		}
+	});
+	
+}
+
+</script>
+</head>
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; <a href="/">系统管理</a> &gt; <span>地区字典管理</span></div>
+<div class="main">
+<div class="clearfix">
+<div class="content_box">
+<div class="content">
+	<div class="page_title">地区字典管理</div>
+	<div style="padding:10px;width:90%;height:100%; position:relative;">
+		<ul id="mytree" ></ul>
+		<div style="position:fixed; width:360px; height:90px; top:167px; left:460px; border:1px solid #ccc; background-color:#fff;margin:5px 5px;">
+			<div style="margin:5px;" id="selectedNode">请选择节点</div>
+			<div style="margin:10px;">
+			<permission code="FUNCTION_ADD_AREA_DICT_MANAGEMENT">
+				<input type="button" value="新增" id="addchild"  style="display:none;" class="btn_sure" onclick="insertNode();"/>
+			</permission>
+			<permission code="FUNCTION_MODIFY_AREA_DICT_MANAGEMENT">
+				<input type="button" value="修改名称" id="modify"  style="display:none;" class="btn_sure" onclick="modifyNode();"/>
+			</permission>
+			</div>
+		</div>
+	</div>
+	</div></div>
+	<div class="menu">
+		<div class="aside">
+			<h2 class="aside_title">一里递运营平台</h2>
+			<div id="left_menu_content"></div>
+		</div>
+	</div>
+</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+
+	<!-- **************************** 以下是配置ActiveMQ的连接工厂 **************************** -->
+	<!-- 配置ConnectionFactory -->
+	<bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${jms.broker_url}" />
+		<property name="useAsyncSend" value="true" />
+	</bean>
+	<!-- 为了提升性能，声明一个连接池 -->
+	<bean id="connectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+		<property name="connectionFactory" ref="targetConnectionFactory" />
+		<property name="maxConnections" value="100" />
+	</bean>
+	
+	<!-- 消息转换器 -->
+	<bean id="o2oMessageConverter"
+		class="com.yilidi.o2o.system.jms.converter.O2oMessageConverter" />
+	
+	<!-- 消息处理器 -->	
+	<bean id="yilidiMessageHandler"
+		class="com.yilidi.o2o.system.jms.handler.YiLiDiMessageHandler">
+		<property name="exceptionMessageOperationService" ref="exceptionMessageOperationService" />	
+	</bean>	
+	
+	<!-- 抽象消息发送者 -->	
+	<bean id="abstractSender"
+		class="com.yilidi.o2o.system.jms.sender.AbstractSender" abstract="true"> 
+		<property name="systemParamsService" ref="systemParamsService" />
+		<property name="yilidiMessageHandler" ref="yilidiMessageHandler" />	
+	</bean>	
+	
+	<!-- 抽象消息接收者 -->	
+	<bean id="abstractReceiver"
+		class="com.yilidi.o2o.system.jms.receiver.AbstractReceiver" abstract="true"> 
+		<property name="o2oMessageConverter" ref="o2oMessageConverter" />		
+		<property name="yilidiMessageHandler" ref="yilidiMessageHandler" />	
+		<property name="messageBusinessHandleAdapterService" ref="messageBusinessHandleAdapterService" />
+	</bean>	
+	
+</beans>

@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link rel="stylesheet" href="/static-resource/css/timepicker.css" type="text/css" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<style>
+.workorder_save_button_new{padding:8px 100px}
+.workorder_leave_new{padding:10px 15px}
+</style>
+<script type="text/javascript">
+var GLOBAL_PARAM = {
+    countWordsFlag : true,
+	g_boxId : $.trim(getUrlParam("boxId")),
+	menuId : $.trim(getUrlParam("menuId"))
+};
+function getMenu(){
+     ajax({
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + GLOBAL_PARAM.menuId + '/searchPermissionMenu',
+		type:'post',
+		dataType: 'json',
+		error: function(){},
+		success: function(data){
+		  if(data.msgCode != 1){ return; }
+		   var object=data.entity;
+		   $('#customerType').val(object.customerType);
+		   $('#permissionName').val(object.permissionName);
+		   $('#permissionCode').val(object.permissionCode);
+		   $('#sort').val(object.sort);
+		   $('#permissionLevel').val(object.permissionLevel);
+		   $('#permissionDesc').val(object.permissionDesc);
+		}
+	});
+}
+function checkPermissionCode(value) {
+	if("" != $.trim(value)){
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'  + GLOBAL_PARAM.menuId + '-' + value
+					+ '/checkPermissionCodeIsExist',
+			type : 'post',
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode == 1) {
+					if(!data.entity){
+						$('#permissionCodeErr').text('权限编码已经存在');
+					}
+				}else{
+					$('#permissionCodeErr').text('验证权限编码出现系统异常');
+				}
+			}
+		});
+	}
+}
+function checkSort(value){
+	var index = $.trim(value);
+	if("" != index){
+		var indexReg = /^\d+$/;
+		if(!indexReg.test(index)){
+			$('#sortErr').text('显示顺序只能输入数字');
+			return false;
+		}
+		else{
+			   $('#sortErr').text('');
+		}
+		return true;
+	}
+}
+/*保存菜单*/
+function saveMenu(){
+   var url;
+   if(GLOBAL_PARAM.menuId!=null&&GLOBAL_PARAM.menuId!=''){
+	  url=TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/updateFirstMenu';
+      $('#menuId').val(GLOBAL_PARAM.menuId);
+   }else{
+	  url=TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/createFirstMenu';
+   }
+  var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+  var flag=true;
+  var customerType=$('#customerType').val();
+  var permissionName=$('#permissionName').val();
+  var permissionCode=$('#permissionCode').val();
+  var sort=$('#sort').val();
+  if(customerType==null||customerType==''){
+     $('#customerTypeErr').text('用户类型为空');
+     flag=false;
+  }
+  if(permissionName==null||permissionName==''){
+     $('#permissionNameErr').text('菜单名称为空');
+     flag=false;
+  }
+  if(permissionCode==null||permissionCode==''){
+     $('#permissionCodeErr').text('权限编码为空');
+     flag=false;
+  }
+  var index = $.trim(sort);
+  if("" != index){
+	  var indexReg = /^\d+$/;
+	  if(!indexReg.test(index)){
+		$('#sortErr').text('显示顺序只能输入数字');
+		return false;
+	  }
+  }
+  if(!flag){
+    $('#prompt').text('请将信息填写完整再提交.');
+    return false;
+  }else{
+   $('#prompt').text('');
+  }
+  var customerTypeErrText = $('#customerTypeErr').text();
+  var permissionNameErrText = $('#permissionNameErr').text();
+  var permissionCodeErrText = $('#permissionCodeErr').text();
+  var sortErrText = $('#sortErr').text();
+  if(customerTypeErrText != '' || permissionNameErrText != '' || permissionCodeErrText != '' || sortErrText != ''){
+	  return false;
+   }
+   $.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		url:url,
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		success:function(data){
+			if (data.msgCode != 1) {
+				if('权限编码已经存在' == data.msg){
+					$('#permissionCodeErr').text(data.msg);
+				}else{
+					$('#prompt').text(data.msg);
+				}
+				return;
+			}
+			$('#prompt').html('操作成功.');
+			setTimeout(function(){
+			    if(parent){ 
+			    	 if(GLOBAL_PARAM.menuId!=null&&GLOBAL_PARAM.menuId!=''){
+			    		 parent. $('#pId').val(GLOBAL_PARAM.menuId);
+			    	 }
+			    	parent.dataSubmit();
+			    }
+				close_box();
+			},1000);
+		}
+	});
+}
+
+/*关闭弹框*/
+function close_box(){
+	if(GLOBAL_PARAM.g_boxId!=''&&parent&&parent.closeBox)parent.closeBox(GLOBAL_PARAM.g_boxId);
+}
+function showErr(errorType){
+     if(errorType=='customerType'){
+	 $('#customerTypeErr').text('');
+	 $('#prompt').text('');
+	 return;
+	 }
+	 if(errorType=='permissionName'){
+	 $('#permissionNameErr').text('');
+	 $('#prompt').text('');
+	 return;
+	 }
+	 if(errorType=='permissionCode'){
+		 $('#permissionCodeErr').text('');
+		 $('#prompt').text('');
+		 return;
+	 }
+	 if(errorType=='sort'){
+		 $('#sortErr').text('');
+		 $('#prompt').text('');
+		 return;
+	 }
+}
+function countwords(id){
+	var inputLength = $("#"+id).val().length;
+	var maxCount = 50;
+	if(inputLength == 0){
+		GLOBAL_PARAM.countWordsFlag = true;
+		$("#"+id+"Err").html("还可以输入"+ maxCount + "个字");
+	}else if(inputLength > 0 && inputLength <= maxCount){
+		GLOBAL_PARAM.countWordsFlag = true;
+		$("#"+id+"Err").html("还可以输入"+(maxCount - inputLength) + "个字");
+	}else if(inputLength > maxCount){
+		GLOBAL_PARAM.countWordsFlag = false;
+		$("#"+id+"Err").html("<strong class='cred'>已经超过"+(inputLength - maxCount) + "个字</strong>");
+	}
+}
+
+$(document).ready(function(e) {
+    if(GLOBAL_PARAM.menuId!=''&&GLOBAL_PARAM.menuId!=null){
+       getMenu();
+       $('#customerType').attr("disabled","disabled");
+    }
+});
+</script>
+</head>
+
+<body>
+<div class="workorder_mng">
+   <div class="workorder_leave_new">
+   <form method="post" id="dataForm">
+    <dl>
+       <dt><span class="cred">*</span>用户类型：</dt>
+	   <dd>
+		   <select class="select grid-36" id="customerType" name="customerType" onmousedown="showErr('customerType')">
+			<option value="" selected>--全部--</option>
+			<option value="CUSTOMERTYPE_OPERATOR">运营平台</option>
+			<option value="CUSTOMERTYPE_BUYER">终端用户</option>
+			<option value="CUSTOMERTYPE_SELLER">门店</option>
+		   </select>
+		   <span id="customerTypeErr" class="cred"></span>
+	   </dd>
+    </dl>
+   	<dl>
+   		<dt><span class="cred">*</span>一级菜单：</dt>
+    	<dd>
+    	    <input type="text" class="txt grid-35" id="permissionName" name="permissionName" onmousedown="showErr('permissionName')"/><span id="permissionNameErr" class="cred"></span>
+    	    <input type="hidden" class="txt grid-35" id="menuId" name="id"/>
+    	</dd>
+	</dl>
+	<dl>
+   		<dt><span class="cred">*</span>权限编码：</dt>
+    	<dd>
+    	    <input type="text" class="txt grid-35" id="permissionCode" name="permissionCode" onmousedown="showErr('permissionCode')" onblur="checkPermissionCode(this.value)" /><span id="permissionCodeErr" class="cred"></span>
+    	</dd>
+	</dl>
+	<dl>
+	   	<dt><span class="cred"></span>显示顺序：</dt>
+	   	<dd>
+	   		<input type="text" class="txt grid-35" id="sort" name="sort" onmousedown="showErr('sort')" onblur="checkSort(this.value)" /><span id="sortErr" class="cred"></span>
+	   	</dd>
+   </dl>
+   <dl>
+      <dt>备注：</dt>
+      <dd>
+      	<textarea type="text" id="permissionDesc" name="permissionDesc" class="txt grid-35" rows="3" onkeyup="countwords('permissionDesc')"></textarea>
+      </dd>
+       <span id="permissionDescErr" class="gray" style="padding:1px 100px">可以输入50个字</span>
+   </dl>
+   </form>
+   <p class="workorder_save_button_new" >
+   	<input id="saveButton" type="button" onclick="saveMenu()" class="btn_sure" value="提交" />
+   	<input id="resetButton" type="button" onclick="close_box()" class="btn_gray" value="取消" />
+   	<span id="prompt" class="cred"></span>
+   </p>
+   </div>
+</body>
+</html>

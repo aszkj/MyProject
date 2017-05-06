@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一里递运营中心</title>
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet"  />
+<style>
+.btn_sure,.btn_gray{padding:6px 15px;border-radius:3px;display:inline-block;font-size:12px;color:#fff;cursor:pointer}
+.btn_sure{border:1px solid #63ADEE;background-color:#63ADEE}
+.btn_gray{border:1px solid #666;background-color:#666}
+</style>
+<script type="text/javascript">
+  var g_roleId=$.trim(getUrlParam('roleIds'));
+  var g_boxId = $.trim(getUrlParam("boxId"));
+  var userId = $.trim(getUrlParam("userId"));
+  var customerType = $.trim(getUrlParam("customerType"));
+$(function(){
+	getRoleList();
+	initSelectRole();
+});
+function initSelectRole(){
+	var st=g_roleId.split('_');
+	for(var i=0,length=st.length;i<length;i++){
+		var roleId=parseInt(st[i]);
+		if(isNaN(roleId)||roleId<=0)return;
+		$('#selectRole'+roleId).attr('checked',true);
+	}
+	showSelectRoleList();
+}
+/*关闭弹框*/
+function close_box(){
+	if(g_boxId!=''&&parent&&parent.closeBox)parent.closeBox(g_boxId);
+}
+function getRoleList(){
+	var st=[];
+	var html=[];
+	var type;
+	if (customerType == null || customerType == '') {
+		type = 'CUSTOMERTYPE_OPERATOR';
+	} else {
+		type = customerType;
+	}
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + type  + '/getRoleListForSpecificCustomerType',
+		type:'post',
+		dataType:'json',
+		cache:false,
+		async:false,
+		success:function(data){
+			st=data.entity;			
+		}
+	});			
+	for(var i=0,length=st.length;i<length;i++){
+		html.push('<div align="left" style="width:180px;height:20px"><input onclick="showSelectRoleList()" id="selectRole');
+		html.push(st[i].id);
+		html.push('" value="');
+		html.push(st[i].id);
+		html.push('" type="checkbox" /><label style="margin-left:2px;" for="selectRole');
+		html.push(st[i].id);
+		html.push('">');
+		html.push(st[i].roleName);
+		html.push('</label></div>');
+	}
+	$('#roleListBox').html(html.join(''));
+}
+function showSelectRoleList(){
+	var st=$('#roleListBox input');
+	var st1=$('#roleListBox label');
+	var html=[];
+	for(var i=0,length=st.length;i<length;i++){
+		if(st[i].checked){
+			html.push('<div align="left" style="width:180px;height:20px"><input value="');
+			html.push(st[i].value);
+			html.push('" type="hidden"/><label>');
+			html.push(st1[i].innerHTML);
+			html.push('</label></div>');	
+		}	
+	}	
+	$('#selectRoleListBox').html(html.join(''));
+}
+function selectRoleSubmit(){
+	var st=$('#selectRoleListBox input');
+	var result=[];
+	for(var i=0,length=st.length;i<length;i++){
+		result.push(st[i].value);
+	}
+	if(parent){
+		if(parent.ligerDialogSelectWindow){
+			$('#strRoleIds',parent.ligerDialogSelectWindow.document).val(result.join('_'));
+			$('#userId',parent.ligerDialogSelectWindow.document).val(userId);
+		}
+		parent.roleBindingSubmit();
+		close_box();
+	}
+}
+function closeBox(){
+		close_box();
+}
+</script>
+</head>
+<body style="padding:10px;">
+<form name="form1" method="post" id="form1" onsubmit="selectRoleSubmit();return false">
+<table border="1" bordercolor="#CCCCCC" style="border-collapse:collapse;width:560px;">
+	<tr>
+		<td style="height:20px" align="center" valign="middle">可选择角色</td>
+		<td style="height:20px" align="center" valign="middle">已选择角色</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+			<div id="roleListBox" style="height:300px;width:265px;overflow:auto;"></div>
+		</td>
+		<td align="center" valign="top">
+			<div id="selectRoleListBox" style="height:300px;width:265px;overflow:auto"></div>
+		</td>
+	</tr>
+</table>
+<div align="center" style="padding:2px">
+	<input type="submit" value="提交" style="width:auto;display:inline;align:center" class="btn_sure"/>　　　　
+	<input type="reset" value="取消" onclick="closeBox()" style="width:auto;display:inline;align:center" class="btn_gray"/> 
+</div>
+    </form>
+</body>
+</html>

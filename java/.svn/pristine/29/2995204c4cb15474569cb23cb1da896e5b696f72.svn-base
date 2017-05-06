@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.SaleOrderPriceHistoryMapper">
+	<resultMap id="BaseResultMap" type="SaleOrderPriceHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="CHANGETYPE" property="changeType" jdbcType="VARCHAR" />
+		<result column="SALEORDERITEMID" property="saleOrderItemId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="DISCOUNT" property="discount" jdbcType="INTEGER" />
+		<result column="PREFEE" property="preFee" jdbcType="BIGINT" />
+		<result column="CHANGEDFEE" property="changedFee" jdbcType="BIGINT" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MIDIFYUSERID" property="midifyUserId" jdbcType="INTEGER" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, CHANGETYPE, SALEORDERITEMID, STOREID, SALEPRODUCTID,
+		DISCOUNT, PREFEE, CHANGEDFEE, MODIFYTIME, MIDIFYUSERID, STATUSCODE, NOTE
+	</sql>
+
+	<insert id="save" parameterType="SaleOrderPriceHistory">
+		insert into T_SALE_ORDER_PRICE_HISTORY (
+		SALEORDERNO, CHANGETYPE, SALEORDERITEMID, STOREID, SALEPRODUCTID,
+		DISCOUNT, PREFEE, CHANGEDFEE, MODIFYTIME, MIDIFYUSERID, STATUSCODE, NOTE
+		)
+		values (#{saleOrderNo,jdbcType=VARCHAR}, #{changeType,jdbcType=VARCHAR}, #{saleOrderItemId,jdbcType=INTEGER},
+		#{storeId,jdbcType=INTEGER}, #{saleProductId,jdbcType=INTEGER}, #{discount,jdbcType=INTEGER},
+		#{preFee,jdbcType=BIGINT}, #{changedFee,jdbcType=BIGINT}, #{modifyTime,jdbcType=TIMESTAMP}, #{midifyUserId,jdbcType=INTEGER},
+		#{statusCode,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="listBySaleOrderNo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_ORDER_PRICE_HISTORY
+		<where>
+			<if test="saleOrderNo != null">
+			SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+			and STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

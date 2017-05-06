@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.StoreDeliveryMapper">
+	<resultMap id="BaseResultMap" type="StoreDelivery">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="CONTACT" property="contact" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="STATE" property="state" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,STOREID,USERNAME,CONTACT,MOBILE,STATE,REMARK
+	</sql>
+	
+	<select id="loadById"  resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select 
+		<include refid="Base_Column_List" />
+		from U_STORE_DELIVERY WHERE ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<insert id="save" parameterType="StoreDelivery" useGeneratedKeys="true" keyProperty="id">
+		insert into U_STORE_DELIVERY (STOREID,USERNAME,CONTACT,MOBILE,STATE,REMARK)
+		values
+		(#{storeId,jdbcType=INTEGER}, 
+		#{userName,jdbcType=VARCHAR}, 
+		#{contact,jdbcType=VARCHAR},
+		#{mobile,jdbcType=VARCHAR},
+		#{state,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR})
+	</insert>
+	
+	<update id="update" parameterType="StoreDelivery">
+		UPDATE U_STORE_DELIVERY 
+		SET CONTACT= #{contact,jdbcType=VARCHAR},
+		MOBILE= #{mobile,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		WHERE ID =#{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateStateById" >
+		UPDATE U_STORE_DELIVERY
+		SET STATE =#{state,jdbcType=VARCHAR}
+		WHERE ID =#{id,jdbcType=INTEGER}
+	</update>
+	
+	<resultMap id="StoreDeliveryInfoMap" type="StoreDeliveryInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="CONTACT" property="contact" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="STATE" property="state" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="findStoreDelivery" resultMap="StoreDeliveryInfoMap" parameterType="StoreDeliveryQuery">
+		SELECT D.ID,P.ID AS STOREID,D.USERNAME,D.CONTACT,D.MOBILE,D.STATE,D.REMARK,P.STORECODE,P.STORENAME
+		FROM U_STORE_DELIVERY D,U_STORE_PROFILE P WHERE D.STOREID = P.ID
+			<if test="storeId != null">
+				and P.ID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeCode != null">
+				and P.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and P.STORENAME = #{storeName, jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and D.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+	</select>
+</mapper>

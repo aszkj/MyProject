@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+<script src="http://api.map.baidu.com/api?v=2.0&ak=SI4AOIBz771trCVjGV0XRzlr" type="text/javascript"></script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部栏-->
+		<div class="top-big-tit" style="background-color: #ffc600;">
+			<div class="top-big-tit-btn whiteBackBtn" onclick="history.go(-1)"></div>
+			<p style="color:#fff;">您当前地址列表</p>
+		</div>
+	</header>
+	<section style="padding-top: .9rem;">
+		<div class="contentWrap">
+				<!--附近的店铺列表-->
+				<div class="storeList"></div>
+			<div id="pullUp" class="hide">
+                <span class="loading">
+                    <span class="pullUpIcon"></span>
+                </span>
+				<span class="pullUpLabel">上拉加载更多...</span>
+			</div>
+		</div>
+	</section>
+	<div class="noMoreContent hide">
+		<p>没有更多内容了，别拉啦!</p>
+	</div>
+	<!--loading-->
+	<section id="pageloading">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var pageNum = 0;
+	var pageSize = 12;
+	var totalPages = 0;
+	var origin = getUrlParam("origin");
+	$(function() {
+		storeListTmpl(1);
+	});
+	function storeListTmpl(pageNumTemp) {
+		var geolocation = new BMap.Geolocation();
+		geolocation.getCurrentPosition(function(r) {
+			if (this.getStatus() == BMAP_STATUS_SUCCESS)
+				findStore(r.point.lng, r.point.lat, pageNumTemp);
+			else
+				alert("无法获取到您当前的定位信息，请在网络良好的情况下重试");
+		}, {
+			enableHighAccuracy : true
+		});
+	}
+	function findStore(longitude, latitude, pageNumTemp) {
+		var params = new Object();
+		params.pageNum = pageNumTemp;
+		params.pageSize = pageSize;
+		params.longitude = longitude;
+		params.latitude = latitude;
+		ajax("/user/locationlist", params, function(data) {
+			totalPages = data.totalPages;
+			pageNum = data.pageNum;
+			if (pageNum == 1) {
+				$(".storeList").html("");
+			}
+			loadable = pageNum <= totalPages;
+			if(loadable||totalPages==0)
+			$("#storeListTmpl").tmpl(data.list).appendTo(".storeList");
+			$("#pullUp").addClass("hide");
+			//拉到最后一页时候提示
+			if(pageNum!=1&&!loadable){
+				$(".noMoreContent").removeClass("hide");
+				setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+			}
+		}, function(data) {
+			alert(data);
+		}, true);
+	}
+	/*分页加载*/
+	$(window).scroll(function(){
+		if($(".contentWrap").height()-$(window).scrollTop()<=document.documentElement.clientHeight){
+			$("#pullUp").removeClass("hide");
+			pageNum++;
+			storeListTmpl(pageNum);
+		}
+	});
+	function changeStoreSuccess() {
+		returnIndex();
+	}
+	function passCommunityName(community) {
+		history.go(-1);
+		setSessionStorage(sessionEditCommunityInfoKey, community);
+	}
+	function nearCommunityClick(community) {
+		if (!origin)
+			changeStoreByCommunity(community, changeStoreSuccess);
+		else
+			passCommunityName(community);
+	}
+</script>
+<script id="storeListTmpl" type="text/x-jquery-tmpl">
+            <div class="storeItem" onclick="nearCommunityClick(${JSON.stringify($data)})">
+                <p class="storeName">${communityName}</p>
+                <p class="storeAddress">${addressDetail}</p>
+            </div>
+</script>
+</html>

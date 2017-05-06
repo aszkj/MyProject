@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="format-detection" content="telephone=no" />
+<title>一里递</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/beforemain.css" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript" src="../static-resource/js/local-data-storage.js"></script>
+</head>
+<body>
+	<div class="shareInvite" id="bigBox">
+		<div class="shareInviteTopText" id="fromText">
+			<h3>来自好友的一里递礼包</h3>
+			<p class="shareInviteText">新用户专享</p>
+		</div>
+		<div class="shareInviteTopText hide" id="receivedPaperText">
+			<h3>太棒了</h3>
+			<p class="shareInviteText">收到了您的好友的礼包</p>
+		</div>
+		<div class="userImg">
+			<img src="../static-resource/images/noImageDetails.png">
+			<div class="vipMember"></div>
+		</div>
+		<div class="toInviteText">
+			<p class="shareInviteText">接受您的好友邀请加入一里递</p>
+			<h4>领取100元大礼包</h4>
+		</div>
+		<div id="paperFold">
+			<img src="../static-resource/images/share/paper_03.png">
+		</div>
+		<div id="paperUnfold" class="hide">
+			<img src="../static-resource/images/share/ppbg_03.png">
+		</div>
+		<div id="toInputTele" class="shareInputBox">
+			<label><input id="userTele" placeholder="请输入您的手机号拆开礼包"></label>
+			<p>*每个微信号只能成功领取1次新人礼包</p>
+			<label><input type="button" value="马上拆开" readonly="readonly" class="paperBtn" onclick="invite()"> </label>
+		</div>
+		<div id="toUsePaper" class="shareInputBox hide">
+			<p>
+				100元礼包已放入账号<span id="telePaper"></span>
+			</p>
+			<label><input type="button" value="立即使用" readonly="readonly" class="paperBtn" onclick="openApp()"> </label>
+		</div>
+		<!--在微信端打开-->
+		<div id="openInWx" class="hide">
+			<P>请在微信端打开链接领取红包</P>
+		</div>
+	</div>
+	<!--活动已结束-->
+	<div class="noAct hide" id="noActBox"></div>
+
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var shareCode = getUrlParam("shareCode");
+	var code = getUrlParam("code");
+	$(function() {
+		requestActInfo();
+	});
+	//活动已结束
+	function noAct() {
+		$(".noAct").show();
+		$(".shareInvite").hide();
+	}
+	function requestActInfo() {
+		var param = new Object();
+		param.shareCode = shareCode;
+		ajax("/share/infobysharecode", param, function(data) {
+			if (!data || !data.shareInfo)//显示活动过期或者活动已结束等页面情况
+			{
+				noAct();
+				return;
+			}
+			showActInfo(true, data.inviteUserInfo);
+		}, function(msg) {
+			alert(msg);
+		});
+	}
+	function showActInfo(shown, inviteUserInfo) {
+		if (shown) {
+			if(inviteUserInfo.userImageUrl){
+				$(".userImg").html("");
+				$(".userImg").append("<img src='"+inviteUserInfo.userImageUrl+"'>");
+			}
+			if (inviteUserInfo.memberType == 1) {
+				$(".userImg").append("<div class='vipMember'></div>");
+			} else {
+				$(".userImg").append("<div class='norMember'></div>");
+			}
+		}
+	}
+	function invite() {
+		var param = new Object();
+		param.code = code;
+		param.shareCode = shareCode;
+		param.mobile = $("#userTele").val();
+		$("#telePaper").html(param.mobile);
+		ajax("/share/acceptinvite", param, function(data) {
+			openPaper();
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	function openPaper() {
+		$("#paperFold").hide();
+		$("#paperUnfold").removeClass("hide");
+		$("#fromText").hide();
+		$("#receivedPaperText").removeClass("hide");
+		$("#toInputTele").hide();
+		$("#toUsePaper").removeClass("hide");
+		$(".toInviteText").hide();
+	}
+	function openApp() {
+		location.href = "http://a.app.qq.com/o/simple.jsp?pkgname=com.yldbkd.www.buyer.android";
+	}
+</script>
+<script type="text/javascript">
+	$(document)
+			.ready(
+					function() {
+						var width = window.outerWidth;
+						var height = window.outerHeight;
+						var scale = width / height;
+						if (scale < 0.58) {
+							document.getElementById("bigBox").style.height = window.outerHeight
+									+ 'px';
+						}
+						if (scale < 0.62) {
+							document.getElementById("noActBox").style.height = window.outerHeight
+									+ 'px';
+						}
+					});
+</script>
+</html>

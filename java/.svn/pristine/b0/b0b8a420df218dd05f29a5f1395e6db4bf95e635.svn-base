@@ -1,0 +1,734 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.box-mask {
+	position: fixed;
+	width: 600px;
+	height: auto;
+	ovflow: hidden;
+	z-index: 9999999;
+	left: 50%;
+	top: 0;
+	margin-left: -300px;
+}
+
+.mask_close {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size: 16px;
+	color: red;
+	background: #fff;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+}
+
+.floor_img li{float:left;margin:0 6px 0 0}
+.floor_img .img{display:block;width:100px;height:100px;border:1px dashed #e3e4e4;text-align:center; line-height:100px;}
+.floor_img a.img{background:#fcfcfc url(/static-resource/images/base/image_bg.gif) no-repeat center center;overflow:hidden;text-align:left;text-indent:-1000px;cursor:pointer}
+.floor_img .img img{max-width:100px;max-height:100px;_height: expression(this.height > 100 ? "100" : true); _width: expression(this.width > 100 ? "100" : true); line-height:100px;}
+.floor_img p{text-align:center;line-height:24px}
+.floor_img p label{padding:0 8px 0 2px;}
+.floor_img p input {vertical-align: -2px;}
+
+.floor_imgnote{line-height:22px;overflow:hidden;padding:10px 0 0;}
+.floor_imgnote em{color:#E94B01;float:left;text-align:right;}
+.floor_imgnote p{color:#DF9067; margin:0 0 0 100px;}
+</style>
+<script type="text/javascript">
+	var method = getUrlParam("method");
+	function loadFloorInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id + '/loadFloorById',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+					listStatusCodeList(data.entity.statusCode);
+					listFloorLinkTypeList(data.entity.linkType);
+					$('#floorName').val(data.entity.floorName);
+					$('#sort').val(data.entity.sort);
+					showContent(data.entity.linkType,data.entity.linkData);
+					var html = [];
+					var floorImageUrl = data.entity.floorImageUrl;
+					var floorImageFullUrl = data.entity.floorImageFullUrl;
+					if (floorImageUrl != null && floorImageUrl != '') {
+						html.push('<span class="img"><a href="javascript:void(0)" onclick="showFloorImg(\''
+								 + floorImageFullUrl
+								 + '\')" title="点击查看大图"><img src="');
+						html.push(floorImageFullUrl);
+						html.push('" alt="" width="100" height="100" border="0"/></a></span><p>');
+						html.push('<a href="javascript:;" class="ablue" onclick="delUploadImg()">删除</a></p>');
+						$('#floorImageUrl').val(floorImageUrl);
+						//IMAGEFLAG_NO表示是数据库正式环境的图片
+						$('#imageFlag').val('IMAGEFLAG_NO');
+						$('#uploadLi').html(html.join(''));
+					}	
+					$("#id").val(id);
+				}//非必须
+			});
+
+		}
+	}
+
+	function dataEditSubmit() {
+		if (method != 'add' && method != 'edit') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url = OPERATION_SYSTEM_IDENTITY + '/createFloor';
+			if (!validateData()) {
+				return;
+			}
+		} else if (method == 'edit') {
+			url = OPERATION_SYSTEM_IDENTITY + '/updateFloor';
+			if (!validateData()) {
+				return;
+			}
+		} else {
+			return;
+		}
+		var linkType = $('#linkType').val();
+		if('FLOORLINKTYPE_PRODUCT_CLASS' == linkType){
+			$('#linkData').val("classCode="+$.trim($('#productClassCode').val()));
+		}
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					contentType : 'application/json',
+					dataType : 'json',
+					data : formJsonStr,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					},
+					url : TERMINAL_URL + url,
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window.setTimeout(function() {
+								var urlParam = window.location.search;
+								locationHref("/floor/floor-index.html"
+										+ urlParam);
+							}, 1000);
+						} else {
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							$('#promptMessage').text(data.msg);
+						}
+					}
+				});
+	}
+
+	var validate = (function() {
+		return {
+			validateFloorName : function() {
+				var floorName = $.trim($('#floorName').val()), $floorNameMsg = $('#floorNameMsg');
+				if (!floorName) {
+					$floorNameMsg.html('请填写楼层名称！').attr('class', 'error');
+					return false;
+				}
+				$floorNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateFloorImageUrl : function() {
+				var floorImageUrl = $.trim($('#floorImageUrl').val()), $floorImageUrlMsg = $('#floorImageUrlMsg');
+				if (!floorImageUrl) {
+					$floorImageUrlMsg.html('请上传图片！').attr('class', 'error');
+					return false;
+				}
+				$floorImageUrlMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateSort : function() {
+				var sort = $.trim($('#sort').val()), $sortMsg = $('#sortMsg');
+				if (!sort) {
+					$sortMsg.html('请填写楼层排序！').attr('class', 'error');
+					return false;
+				}
+				var re = /^[0-9]*[1-9][0-9]*$/ ;
+				if(!re.test(sort)){
+					$sortMsg.html('楼层排序必须为大于0的整数！').attr('class', 'error');
+					return false;
+				}
+				$sortMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateStatusCode : function() {
+				var statusCode = $.trim($('#statusCode').val()), $statusCodeMsg = $('#statusCodeMsg');
+				if (!statusCode) {
+					$statusCodeMsg.html('请选择是否启用！').attr('class', 'error');
+					return false;
+				}
+				$statusCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateLinkType : function() {
+				var linkType = $.trim($('#linkType').val()), $linkTypeMsg = $('#linkTypeMsg');
+				if (!linkType) {
+					$linkTypeMsg.html('请选择楼层跳转设置！').attr('class', 'error');
+					return false;
+				}
+				$linkTypeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateProductClassCode : function() {
+				var productClassCode = $.trim($('#productClassCode').val()), $productClassCodeMsg = $('#productClassCodeMsg');
+				if (!productClassCode) {
+					$productClassCodeMsg.html('请选择商品分类！').attr('class', 'error');
+					return false;
+				}
+				$productClassCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+		}
+	})();
+
+	function validateData() {
+		if (!validate.validateFloorName()) {
+			return false;
+		}
+		if (!validate.validateFloorImageUrl()) {
+			return false;
+		}
+		if (!validate.validateSort()) {
+			return false;
+		}
+		if (!validate.validateStatusCode()) {
+			return false;
+		}
+		if (!validate.validateLinkType()) {
+			return false;
+		}
+		var linkType = $('#linkType').val();
+		if('FLOORLINKTYPE_PRODUCT_CLASS' == linkType){
+			if (!validate.validateProductClassCode()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	function showUploadBox() {
+		$('#uploadImgType').val();
+		if ($('#uploadBtn').attr('disabled') == 'disabled') {
+			$('#uploadBtn').attr('disabled', false);
+		}
+		$('#uploadnote').html('');
+		showBox('上传图片','uploadBox');
+	}
+	
+	function uploadSubmit() {
+		var file = $.trim($('#uploadFile').val());
+		if (file == '') {
+			showBox('提示!', "上传的图片不能为空!", 'alert');
+			return;
+		}
+		var url = '/uploadFloorImageTemp';
+		$('#uploadBtn').attr('disabled', 'disabled');
+		ajax({
+			uploadForm : 'uploadForm',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + url,
+			type:'post',
+			contentType:'application/json',
+			dataType : 'json',//非必须.默认text
+			async : false,
+			error : function() {
+				return;
+			}, //非必须
+			success : function(data) {
+				checkJsonRight(data);
+				if (data.msgCode != 1) {
+					$('#uploadnote').html(data.msg);
+					return;
+				}
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = [];
+				var floorImageUrl = data.entity;
+				html.push('<span class="img"><a href="javascript:void(0)" onclick="showFloorImg(\''
+						+ UPLOAD_FILE_TEMP_URL
+						+ floorImageUrl
+						+ '\')"><img src="');
+				html.push((UPLOAD_FILE_TEMP_URL + floorImageUrl));
+				html.push('" width="100" height="100" alt="" /></a></span><p>');
+				html.push('<a href="javascript:;" class="ablue" onclick="delUploadImg()">删除</a></p>');
+				$('#floorImageUrl').val(floorImageUrl);
+				//IMAGEFLAG_YES表示是上传的图片
+				$('#imageFlag').val('IMAGEFLAG_YES');
+				$('#uploadLi').html(html.join(''));
+				$('#uploadnote').html(data.msg);
+				$('#uploadBtn').attr('disabled', 'disabled');
+				setTimeout(function() {
+					closeBox();
+				}, 1000);
+			}//非必须
+		});
+	}
+
+	/*删除楼层icon图片*/
+	function delUploadImg() {
+		if (confirm("您确定删除该楼层icon图片吗？")) {
+			$('#uploadLi').html(
+					'<a class="img" onclick="showUploadBox()">点击上传</a>');
+			var tempPicPath = $('#floorImageUrl').val();
+			//如果是刚刚上传的，则需要删除临时服务器上的图片
+			if ($("#imageFlag").val() == 'IMAGEFLAG_YES') {
+				ajax({
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+							+ '/deleteFloorTemp?tempPicPath=' + tempPicPath,
+					type : 'post',//非必须.默认get
+					dataType : 'json',//非必须.默认text
+					error : function(data) {
+					}, //非必须
+					success : function(data) {
+						$('#floorImageUrl').val('');
+					}//非必须
+				});
+			} else if ($("#imageFlag").val() == 'IMAGEFLAG_NO') { //如果原本就是正式环境的图片，先记下其url
+				delPicString = $('#floorImageUrl').val();
+				$("#delImageUrl").val(delPicString);
+				$("#floorImageUrl").val('');
+			}
+		}
+	}
+	
+	function closeme() {
+		$(".box-mask").remove();
+	}
+	
+	function showFloorImg(path) {
+		showBox("查看楼层icon图片","<img src='"+path+"' alt='' width='300' height='300' />");
+	}
+
+	function showErr(errorType) {
+		if (errorType == 'floorName') {
+			$('#floorNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'floorImageUrl') {
+			$('#floorImageUrlMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'sort') {
+			$('#sortMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'statusCode') {
+			$('#statusCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'linkType') {
+			$('#linkTypeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'productClassCode') {
+			$('#productClassCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+	}
+
+	function comebackList() {
+		var urlParam = window.location.search;
+		locationHref('/floor/floor-index.html' + urlParam);
+	}
+
+	//加载楼层状态
+	function listStatusCodeList(val){
+		var systemDictType = 'FLOORSTATUS';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#statusCode').html(html);
+			}
+		});
+	}
+	
+	//加载楼层跳转链接类型
+	function listFloorLinkTypeList(val){
+		var systemDictType = 'FLOORLINKTYPE';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#linkType').html(html);
+			}
+		});
+	}
+	
+	function showContent(linkType,val){
+		if('' == linkType || 'FLOORLINKTYPE_PRODUCT' == linkType){
+			$('#contentSpan').html('');
+		}
+		if('FLOORLINKTYPE_PRODUCT_CLASS' == linkType){
+			$('#contentSpan').html('');
+			html = '';
+			html += '<dl>';
+			html += '<dt>';
+			html += '<span class="cred">*</span>商品分类：';
+			html += '</dt>';
+			html += '<dd>';
+			html += '<input type="hidden" id="productClassCode" name="productClassCode">';
+			html += '<div id="productClassDiv"></div>';
+			html += '<span class="cred" id="productClassCodeMsg"></span>';
+			html += '</dd>';
+			html += '</dl>';
+			$('#contentSpan').html(html);
+			if(val){
+				createProductClassSelect(val)
+			}else{
+				loadSubClass("TOP_LEVEL_CLASS");
+			}
+		}
+	}
+	
+	/* 回显分类 */
+	function createProductClassSelect(classCode){
+		if(classCode == null || classCode == "" || classCode == "TOP_LEVEL_CLASS"){
+			loadSubClass("TOP_LEVEL_CLASS");
+		}else{
+			$.ajax({
+				url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+classCode+'/getUpClassAndNextProductClassByClassCode',
+				type:"post",
+				dataType:"json",
+				success:function(data){
+					var html = '';
+					if(data.msgCode == 1){
+						var productClassListMap = data.entity;
+						var classCode = "";
+						$.each(productClassListMap,function(i,item){
+							classCode = item.classCode;
+							html+='<select class="select grid-15" id="productClass" name="productClassCode" onchange=changeClassSelect(this)>';
+							html+='<option value="">--请选择--</option>';
+							var subClassList = item.subClassList;
+							$.each(subClassList,function(j,subItem){
+								html+='<option value="'+subItem.classCode+'"';
+								if(subItem.classCode == classCode){
+									html+='selected="selected"';
+								}
+								html+='>'+subItem.className+'</option>';
+							});
+							html+='</select>';
+						});
+					}
+					if(html == ""){
+						showBox('提示!','产品分类数据加载失败,默认初始化一级分类!','alert');
+						loadSubClass("TOP_LEVEL_CLASS");
+					}else{
+						$("#productClassDiv").html(html);
+					}
+					if(method == 'view'){
+						$("#productClassDiv").children().each(function(){
+							$(this).attr("disabled","disabled");
+						});
+					}
+				},
+				error:function(error){
+					showBox('提示!','请求有误请重试!','alert');
+				}
+			});
+		}
+	}
+	
+	/* 加载商品分类 */
+	function loadSubClass(productClassCode){
+		$.ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+productClassCode+'/getAllNextProductClassByUpCode', 
+			type:'post',
+			dataType:'json',
+			success:function(data){
+				if(data.msgCode != 1) return;
+				//特殊处理 尖括号
+				data = JSON.parse(encodeString(JSON.stringify(data)));
+				if(null != data.entity && data.entity.length > 0){
+					initProductClassSelect(data.entity);
+				}
+			}
+		});
+	}
+	function initProductClassSelect(listProductClass){
+		var	html = '<select class="select grid-15" onchange=changeClassSelect(this)>';
+		  	html += '<option value="">--请选择--</option>';
+			for(var i=0;i<listProductClass.length;i++){
+				html += '<option value="'+listProductClass[i].classCode+'">';
+				html += listProductClass[i].className;
+				html +='</option>'
+			}
+		html += '<select/>';
+		$("#productClassDiv").append(html);
+	}
+
+	function changeClassSelect(ele){
+		var productClass = $(ele);
+		productClass.nextAll().each(function(){
+			$(this).remove();
+		});
+		if(productClass.val()!= ""){
+			$("#productClassCode").val(productClass.val());
+			loadSubClass($.trim($("#productClassCode").val()));
+		}else{
+			var parentClassCode = productClass.prev();
+			if(parentClassCode != null){
+				//如果选择了请选择就默认选择此节点上一个节点的值
+				$("#productClassCode").val(productClass.prev().val());
+			}else{
+				$("#productClassCode").val("TOP_LEVEL_CLASS");
+			}
+		}
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		listStatusCodeList();
+		listFloorLinkTypeList();
+		if (method == 'edit') {
+			$("#breadName").html('修改楼层');
+			$("#pageTitle").html('修改楼层');
+			loadFloorInfo();
+		} else if (method == 'add') {
+			$("#breadName").html('新增楼层');
+			$("#pageTitle").html('新增楼层');
+		} 
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 楼层管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<input type="hidden" id="imageFlag" name="imageFlag" /> 
+							<input type="hidden" id="delImageUrl" name="delImageUrl" />
+							<input type="hidden" id="linkData" name="linkData" />
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>楼层名称：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-19" id="floorName"
+											name="floorName" onmousedown="showErr('floorName')" />&nbsp;&nbsp;
+										<span class="cred" id="floorNameMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>楼层icon图片：
+									</dt>
+									<input type="hidden" id="floorImageUrl" name="floorImageUrl" />
+									<dd>
+										<ul class="floor_img img">
+											<li id="uploadLi" class="pr"><a onclick="showUploadBox('FLOOR')"
+												class="img">点击上传</a></li>
+						
+										</ul>
+										<div class="floor_imgnote agray">
+											<em>温馨提示：</em>
+											<p style="color: #DF9067; margin: 0 0 0 0; padding: 0px">
+												请上传图片大小≤3M的图片！ <span id="floorImageUrlMsg">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>
+											</p>
+										</div>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>楼层排序：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-19" id="sort"
+											name="sort" onmousedown="showErr('sort')" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" onpaste="return false;"/>&nbsp;&nbsp;
+										<span class="cred" id="sortMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>是否启用：
+									</dt>
+									<dd>
+										<select class="select grid-20" id="statusCode" name="statusCode"
+											onmousedown="showErr('statusCode')"></select>&nbsp;&nbsp; <span
+											class="cred" id="statusCodeMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>楼层跳转设置：
+									</dt>
+									<dd>
+										<select class="select grid-20" id="linkType" name="linkType"
+											onmousedown="showErr('linkType')" onchange="javascript:showContent(this.value)"></select>&nbsp;&nbsp; <span
+											class="cred" id="linkTypeMsg"></span>
+									</dd>
+								</dl>
+								<span id="contentSpan"></span>
+							</div>
+
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit(method)">&nbsp;&nbsp;&nbsp;<input type="button"
+											id="goBack" class="btn_gray" value="返回"
+											onclick="javascript:comebackList();"> <span
+											id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden" id="id" name="id" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+	<div id="uploadBox" class="hide">
+		<form id="uploadForm" onsubmit="uploadSubmit();return false;">
+			<div class="uploadbox">
+				<p>
+					<input id="uploadImgIndex" type="hidden" /> <input
+						id="uploadImgRow" type="hidden" /> <input id="uploadImgType"
+						type="hidden" /> <input id="uploadFile" name="file"
+						type="file" /> <span id="uploadnote" class="cred"></span>
+				</p>
+				<div class="uploadbox_btn">
+					<input type="submit" value="确定" class="btn_sure" id="uploadBtn" />
+					<input type="reset" onclick="closeBox()" value="取消"
+						class="btn_gray" />
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

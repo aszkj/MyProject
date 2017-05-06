@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.CommissionSettingHistoryMapper">
+	<resultMap id="BaseResultMap" type="CommissionSettingHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SETTINGID" property="settingId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="CLEARTYPE" property="clearType" jdbcType="VARCHAR" />
+		<result column="RATE" property="rate" jdbcType="INTEGER" />
+		<result column="EFFECTIVEDATE" property="effectiveDate"
+			jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYDATE" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="SYNFLAG" property="synFlag" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SETTINGID, STOREID, CLEARTYPE, RATE, EFFECTIVEDATE, MODIFYUSERID, MODIFYDATE, SYNFLAG
+	</sql>
+
+	<insert id="save" parameterType="CommissionSettingHistory">
+		insert into U_COMMISSION_SETTING_HISTORY (SETTINGID, STOREID,
+		CLEARTYPE, RATE, EFFECTIVEDATE,
+		MODIFYUSERID, MODIFYDATE, SYNFLAG
+		)
+		values (#{settingId,jdbcType=INTEGER},
+		#{storeId,jdbcType=INTEGER},
+		#{clearType,jdbcType=VARCHAR}, #{rate,jdbcType=INTEGER}, #{effectiveDate,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=INTEGER}, #{modifyDate,jdbcType=TIMESTAMP},
+		#{synFlag,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="listBySettingId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_COMMISSION_SETTING_HISTORY
+		where SETTINGID = #{settingId,jdbcType=INTEGER}
+	</select>
+
+	<select id="listBySynFlag" resultMap="BaseResultMap"
+		parameterType="string">
+		select
+		<include refid="Base_Column_List" />
+		from U_COMMISSION_SETTING_HISTORY
+		where SYNFLAG = #{synFlag,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

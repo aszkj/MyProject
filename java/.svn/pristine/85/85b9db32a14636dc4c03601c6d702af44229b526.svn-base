@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript" src="../static-resource/js/mobiscroll/mobiscroll.core-2.5.2.js"></script>
+    <script type="text/javascript" src="../static-resource/js/mobiscroll/mobiscroll.core-2.5.2-zh.js"></script>
+    <script type="text/javascript" src="../static-resource/js/mobiscroll/mobiscroll.datetime-2.5.1.js"></script>
+    <script type="text/javascript" src="../static-resource/js/mobiscroll/mobiscroll.datetime-2.5.1-zh.js"></script>
+    <script type="text/javascript" src="../static-resource/js/mobiscroll/mobiscroll.android-ics-2.5.2.js"></script>
+    <script type="text/javascript" src="../static-resource/js/mobiscroll/mobiscroll.ios-2.5.1.js"></script>
+    <link rel="stylesheet" href="../static-resource/css/mobiscroll/mobiscroll.core-2.5.2.css" />
+    <link rel="stylesheet" href="../static-resource/css/mobiscroll/mobiscroll.animation-2.5.2.css" />
+    <link rel="stylesheet" href="../static-resource/css/mobiscroll/mobiscroll.android-ics-2.5.2.css" />
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+    <script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.0.0.js'></script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit" style="z-index: 100">
+        <div class="top-big-tit-btn" onclick="window.location.href='set.html'"></div>
+        <p>个人资料</p>
+    </div>
+</header>
+<div class="bord"></div>
+<section class="bg setItemWrap">
+    <div class="setItem" id="userImgItem">
+        <p>头像</p>
+        <div class="userImgWrap">
+            <img src="" id="userImg" onerror="setErrorDefaultImg(this)">
+        </div>
+        <input class="changeUserImgBtn" type="file" accept="image/*" name="upload" onchange="addComImg(this)">
+    </div>
+    <div class="setItem" onclick="toChangeNickName()">
+        <p>昵称<a href="javascript:void(0)" id="userNickName"></a></p>
+    </div>
+    <div class="setItem" onclick="changeUserSex()">
+        <p>性别<a href="javascript:void(0)" id="userSex"></a></p>
+    </div>
+    <div class="setItem">
+        <p id="noBorder">出生日期<label for="userBirthday"></label><input type="text" hidefocus="true" id="userBirthday" name="userBirthday" value="" readonly="readonly"  ></p>
+    </div>
+    <div class="bord"></div>
+    <div class="setItem" id="userLevelWrap">
+        <p>会员等级<a href="javascript:void(0)" id="userLevel"></a></p>
+    </div>
+</section>
+<div class="chooseSexWrap hide">
+    <div class="chooseSex bg">
+        <p class="chooseSexTit">请选择性别</p>
+        <p id="male">男</p>
+        <p id="female">女</p>
+        <p id="cancel">取消</p>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var userInfo = getSessionStorage(localStorageUserInfoKey);
+    $(function(){
+        getUserInfo();
+        /*点击取消修改性别*/
+        $("#cancel").click(function(){
+            $(".chooseSexWrap").addClass("hide");
+            return;
+        });
+        /*修改性别为男*/
+        $("#male").click(function(){
+            $("#userSex").html("男");
+            var params = new Object();
+            params.userSex = 1;
+            ajax("/user/modifyuserinfo", params, function(data) {
+                userInfo.userSex= $("#userSex").html();
+                saveUserInfo(userInfo);
+                $(".chooseSexWrap").addClass("hide");
+            }, function(msg) {
+                alert(msg);
+            }, true);
+        });
+        /*修改性别为女*/
+        $("#female").click(function(){
+            $("#userSex").html("女");
+            var params = new Object();
+            params.userSex = 2;
+            ajax("/user/modifyuserinfo", params, function(data) {
+                $(".chooseSexWrap").addClass("hide");
+                userInfo.userSex= $("#userSex").html();
+                saveUserInfo(userInfo);
+            }, function(msg) {
+                alert(msg);
+            }, true);
+        });
+        /*显示时间控件*/
+        var currYear = (new Date()).getFullYear();
+        var opt={};
+        opt.date = {preset : 'date'};
+        //opt.datetime = { preset : 'datetime', minDate: new Date(2012,3,10,9,22), maxDate: new Date(2014,7,30,15,44), stepMinute: 5  };
+        opt.datetime = {preset : 'datetime'};
+        opt.time = {preset : 'time'};
+        opt.default = {
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式
+            mode: 'scroller', //日期选择模式
+            lang:'zh',
+            startYear:currYear - 100, //开始年份
+            endYear:currYear + 0 //结束年份
+        };
+        $("#userBirthday").val('').scroller('destroy').scroller($.extend(opt['date'], opt['default']));
+        /*修改出生日期*/
+        $("#userBirthday").change(function(){
+            var param = new Object();
+            param.birthday=$("#userBirthday").val();
+            ajax("/user/modifyuserinfo", param, function(data) {
+                userInfo.birthday=param.birthday;
+                saveUserInfo(userInfo);
+            }, function(msg) {
+                alert(msg);
+            }, true);
+        })
+    });
+    /*出生日期截取*/
+    function birthday(birthday){
+        if(birthday)
+       return birthday.substring(0,birthday.indexOf(" "));
+    }
+    /*修改性别*/
+    function changeUserSex(){
+        $(".chooseSexWrap").removeClass("hide");
+    }
+    /*去修改昵称*/
+    function toChangeNickName(){
+        var userNickName=$("#userNickName").html();
+        window.location.href="changeNickName.html?userNickName="+userNickName;
+    }
+    /*点击添加图片*/
+    function addComImg(node){
+        var path = $(node).val();
+        if(!path){}else{
+            var fd = new FormData();
+            fd.append("file", $(node)[0].files[0]);
+            $.ajax({
+                url : TERMINAL_URL + '/upload/userimage',
+                type : 'POST',
+                data : fd,
+                dataType : 'json',
+                cache : false,
+                contentType : false,
+                processData : false, // 不可缺
+                beforeSend : function() {
+                },
+                success : function(data) {
+                    var resultStr = new Base64().decode(data.result);
+                    var result = eval('(' + resultStr + ')');
+                    if (result.msgCode == 1) {
+                        var path = result.entity;
+                        $("#userImg").attr("src",path);
+                        var param = new Object();
+                        param.userImageUrl=path;
+                        ajax("/user/modifyuserinfo", param, function(data) {
+                            userInfo.userImageUrl=data.userImageUrl;
+                            saveUserInfo(userInfo);
+                        }, function(msg) {
+                            alert(msg);
+                        }, true);
+                    } else {
+                    }
+                },
+                error : function() {
+                    alert("图片上传失败，请重新上传");
+                }
+            });
+        }
+    }
+    function putUserInfo(){
+        if(userInfo.memberType==1){
+            $("#userLevel").html("VIP用户")
+        }else{
+            $("#userLevel").html("普通用户")
+        }
+        if(userInfo.userSex==1){
+            $("#userSex").html("男");
+        }else{
+            $("#userSex").html("女");
+        }
+        $("#userImg").attr("src",userInfo.userImageUrl);
+        $("#userNickName").html(userInfo.nickName);
+        if(userInfo.birthday){
+            $("#userBirthday").val(birthday(userInfo.birthday));
+        }else{
+            $("#userBirthday").html("请选择");
+        }
+    }
+    /*获取用户信息*/
+    function getUserInfo(){
+            var param= new Object();
+            ajax("/user/userinfo", param, function(data) {
+                userInfo=data;
+                putUserInfo();
+            }, function(msg) {
+                alert(msg);
+            }, true);
+    }
+</script>
+</html>

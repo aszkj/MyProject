@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.SmallTableUserInfoMapper">
+	<resultMap id="BaseResultMap" type="SmallTableUserInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="CUSTOMERNAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="USERMOBILE" property="userMobile" jdbcType="VARCHAR" />
+		<result column="CUSTOMERMOBILE" property="customerMobile" jdbcType="VARCHAR" />
+		<result column="REALNAME" property="realName" jdbcType="VARCHAR" />
+		<result column="REGISTERTIME" property="registerTime" jdbcType="TIMESTAMP" />
+		<result column="INVITATIONCODE" property="invitationCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, USERID, CUSTOMERID, USERNAME, CUSTOMERNAME, USERMOBILE, CUSTOMERMOBILE, REALNAME, REGISTERTIME, INVITATIONCODE
+	</sql>
+
+	<insert id="save" parameterType="SmallTableUserInfo" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_SMALLTABLE_USERINFO (
+		USERID, CUSTOMERID, USERNAME, CUSTOMERNAME, USERMOBILE, CUSTOMERMOBILE, REALNAME, REGISTERTIME, INVITATIONCODE
+		)
+		values(
+		#{userId, jdbcType=INTEGER},
+		#{customerId, jdbcType=INTEGER},
+		#{userName, jdbcType=VARCHAR},
+		#{customerName, jdbcType=VARCHAR},
+		#{userMobile, jdbcType=VARCHAR},
+		#{customerMobile, jdbcType=VARCHAR},
+		#{realName, jdbcType=VARCHAR},
+		#{registerTime, jdbcType=TIMESTAMP},
+		#{invitationCode, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="updateByUserId" parameterType="SmallTableUserInfo">
+		update T_SMALLTABLE_USERINFO
+		set USERNAME = #{userName, jdbcType=VARCHAR},
+		USERMOBILE = #{userMobile, jdbcType=VARCHAR},
+		REALNAME = #{realName, jdbcType=VARCHAR},
+		CUSTOMERNAME = #{customerName, jdbcType=VARCHAR},
+		CUSTOMERMOBILE = #{customerMobile, jdbcType=VARCHAR},
+		INVITATIONCODE = #{invitationCode, jdbcType=VARCHAR}
+		where USERID = #{userId, jdbcType=INTEGER}
+	</update>
+
+	<select id="listByCustomerId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_SMALLTABLE_USERINFO
+		where CUSTOMERID = #{customerId, jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByUserId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_SMALLTABLE_USERINFO
+		where USERID = #{userId, jdbcType=INTEGER}
+	</select>
+
+</mapper>

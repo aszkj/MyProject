@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.RedEnvelopeActivityMapper">
+	<resultMap id="BaseResultMap" type="RedEnvelopeActivity">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="ACTIVITYNAME" property="activityName" jdbcType="VARCHAR" />
+		<result column="INVOKEPROBABILITY" property="invokeProbability" jdbcType="INTEGER" />
+		<result column="VALIDSTARTTIME" property="validStartTime" jdbcType="TIMESTAMP" />
+		<result column="VALIDENDTIME" property="validEndTime" jdbcType="TIMESTAMP" />
+		<result column="RULE" property="rule" jdbcType="VARCHAR" />
+		<result column="GLOBALACTIVITYID" property="globalActivityId" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, ACTIVITYNAME, INVOKEPROBABILITY, VALIDSTARTTIME, VALIDENDTIME, 
+		RULE, GLOBALACTIVITYID, CREATEUSERID, CREATETIME, MODIFYUSERID, MODIFYTIME
+	</sql>
+	
+	<resultMap id="RedEnvelopeActivityInfoMap" type="RedEnvelopeActivityInfo">
+		<result column="ID" property="id" jdbcType="INTEGER" />
+		<result column="ACTIVITYNAME" property="activityName" jdbcType="VARCHAR" />
+		<result column="VALIDSTARTTIME" property="validStartTime" jdbcType="TIMESTAMP" />
+		<result column="VALIDENDTIME" property="validEndTime" jdbcType="TIMESTAMP" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<insert id="save" parameterType="RedEnvelopeActivity" useGeneratedKeys="true" keyProperty="id">
+		insert into P_RED_ENVELOPE_ACTIVITY 
+		(ACTIVITYNAME, INVOKEPROBABILITY, VALIDSTARTTIME, VALIDENDTIME, 
+		RULE, GLOBALACTIVITYID, CREATEUSERID, CREATETIME)
+		values (#{activityName,jdbcType=VARCHAR}, #{invokeProbability,jdbcType=INTEGER}, 
+		#{validStartTime,jdbcType=TIMESTAMP}, #{validEndTime,jdbcType=TIMESTAMP},
+		#{rule,jdbcType=VARCHAR}, #{globalActivityId,jdbcType=INTEGER},
+		#{createUserId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<update id="updateByIdSelective" parameterType="RedEnvelopeActivity">
+		update P_RED_ENVELOPE_ACTIVITY
+		<set>
+			<if test="activityName != null">
+				ACTIVITYNAME = #{activityName,jdbcType=VARCHAR},
+			</if>
+			<if test="invokeProbability != null">
+				INVOKEPROBABILITY = #{invokeProbability,jdbcType=INTEGER},
+			</if>
+			<if test="validStartTime != null">
+				VALIDSTARTTIME = #{validStartTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="validEndTime != null">
+				VALIDENDTIME = #{validEndTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="rule != null">
+				RULE = #{rule,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_RED_ENVELOPE_ACTIVITY
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="loadByCurrentDateTime" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_RED_ENVELOPE_ACTIVITY
+		where VALIDSTARTTIME &lt;= #{currentDateTime, jdbcType=TIMESTAMP}
+		and VALIDENDTIME &gt;= #{currentDateTime, jdbcType=TIMESTAMP}
+	</select>
+	
+	<select id="loadByGlobalActivityId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_RED_ENVELOPE_ACTIVITY
+		where GLOBALACTIVITYID = #{globalActivityId,jdbcType=INTEGER}
+	</select>
+
+	<select id="findRedEnvelopeActivities" resultMap="RedEnvelopeActivityInfoMap" parameterType="RedEnvelopeActivityQuery">
+		select
+		ID,ACTIVITYNAME,VALIDSTARTTIME,VALIDENDTIME,CREATETIME
+		from P_RED_ENVELOPE_ACTIVITY
+		<where>
+			<if test="activityName != null">
+				ACTIVITYNAME like
+				CONCAT('%',#{activityName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="status != null and status == 'REDENVELOPEACTIVITYSTATUS_NOT_START'">
+				and VALIDSTARTTIME &gt; CURRENT_TIME
+			</if>
+			<if test="status != null and status == 'REDENVELOPEACTIVITYSTATUS_STARTING'">
+				and VALIDSTARTTIME &lt;= CURRENT_TIME
+				and VALIDENDTIME &gt;= CURRENT_TIME
+			</if>
+			<if test="status != null and status == 'REDENVELOPEACTIVITYSTATUS_END'">
+				and VALIDENDTIME &lt; CURRENT_TIME
+			</if>
+			<if test="startValidTime !=null">
+				and VALIDSTARTTIME &gt;= #{startValidTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endValidTime !=null">
+				and VALIDENDTIME &lt;= #{endValidTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by CREATETIME desc
+	</select>
+	
+	<select id="listRedEnvelopeActivities" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_RED_ENVELOPE_ACTIVITY
+		order by CREATETIME desc
+	</select>
+
+</mapper>

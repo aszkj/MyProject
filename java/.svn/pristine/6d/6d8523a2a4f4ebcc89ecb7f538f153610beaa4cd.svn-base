@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.CouponMapper">
+	<resultMap id="BaseResultMap" type="Coupon">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="CONPACKID" property="conPackId" jdbcType="INTEGER" />
+		<result column="BATCHNO" property="batchNo" jdbcType="VARCHAR" />
+		<result column="STAGENO" property="stageNo" jdbcType="INTEGER" />
+		<result column="USERANGECODE" property="useRangeCode" jdbcType="VARCHAR" />
+		<result column="USERANGE" property="useRange" jdbcType="VARCHAR" />
+		<result column="VALIDTYPE" property="validType" jdbcType="VARCHAR" />
+		<result column="VALIDTYPEVALUE" property="validTypeValue" jdbcType="VARCHAR" />
+		<result column="GRANTRANGE" property="grantRange" jdbcType="VARCHAR" />
+		<result column="GRANTWAY" property="grantWay" jdbcType="VARCHAR" />
+		<result column="RULE" property="rule" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="BUYERUSERTYPE" property="buyerUserType" jdbcType="VARCHAR" />
+		<result column="SELLERUSERTYPE" property="sellerUserType" jdbcType="VARCHAR" />
+		<result column="GRANTUSERID" property="grantUserId" jdbcType="INTEGER" />
+		<result column="GRANTTIME" property="grantTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,CONPACKID,BATCHNO,STAGENO,USERANGECODE,USERANGE,VALIDTYPE,VALIDTYPEVALUE,GRANTRANGE,
+		GRANTWAY,RULE,CUSTOMERTYPE,BUYERUSERTYPE,SELLERUSERTYPE,GRANTTIME,GRANTUSERID
+	</sql>
+
+	<insert id="save" parameterType="Coupon" useGeneratedKeys="true" keyProperty="id">
+		insert into T_COUPON
+		(CONPACKID,BATCHNO,STAGENO,USERANGECODE,USERANGE,VALIDTYPE,VALIDTYPEVALUE,GRANTRANGE,GRANTWAY,
+		RULE,CUSTOMERTYPE,BUYERUSERTYPE,SELLERUSERTYPE,GRANTTIME,GRANTUSERID)
+		values
+		(#{conPackId,jdbcType=INTEGER}, #{batchNo,jdbcType=VARCHAR},
+		#{stageNo,jdbcType=INTEGER},#{useRangeCode,jdbcType=VARCHAR},
+		#{useRange,jdbcType=VARCHAR}, #{validType,jdbcType=VARCHAR},
+		#{validTypeValue,jdbcType=VARCHAR},#{grantRange,jdbcType=VARCHAR},
+		#{grantWay,jdbcType=VARCHAR},#{rule,jdbcType=VARCHAR},
+		#{customerType,jdbcType=VARCHAR},#{buyerUserType,jdbcType=VARCHAR},
+		#{sellerUserType,jdbcType=VARCHAR},#{grantTime,jdbcType=TIMESTAMP},
+		#{grantUserId,jdbcType=INTEGER})
+	</insert>
+
+	<select id="loadCouponById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_COUPON where ID =#{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listCouponsForRedEnvelopeActivity" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_COUPON
+		where GRANTWAY =#{grantWay,jdbcType=VARCHAR}
+		and CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+		and BUYERUSERTYPE = #{buyerUserType,jdbcType=VARCHAR}
+		and CONPACKID = #{conPackId,jdbcType=INTEGER}
+	</select>
+	<select id="listCouponsForShareRule" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_COUPON
+		where
+		CONPACKID = #{conPackId,jdbcType=INTEGER }
+		AND GRANTWAY = 'COUPONSGRANTWAY_SHARE_GIFT'
+	</select>
+	
+	<select id="getCouponByGrantWay" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_COUPON
+		where
+		GRANTWAY = #{grantWay,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findGrantRecord" parameterType="com.yilidi.o2o.order.model.query.CouponQuery" resultType="com.yilidi.o2o.order.model.result.CouponInfo">
+		SELECT
+			t.BATCHNO as batchNo,
+			t.RULE as rule,
+			t.GRANTWAY as grantWay,
+			t.GRANTTIME as grantTime,
+			t.GRANTUSERID as grantUserId,
+			(SELECT COUNT(1) FROM T_USER_COUPON WHERE BATCHNO = t.BATCHNO) AS grantNum,
+			(SELECT COUNT(1) FROM T_USER_COUPON WHERE BATCHNO = t.BATCHNO AND `STATUS` = 'USERCOUPONSSTATUS_USED') AS useNum,
+			(SELECT COUNT(1) FROM T_USER_COUPON WHERE BATCHNO = t.BATCHNO AND `STATUS` = 'USERCOUPONSSTATUS_EXPIRED') AS overdueNum
+		FROM
+			T_COUPON t
+		WHERE
+			t.CONPACKID = #{conPackId,jdbcType=VARCHAR}
+		<if test="beginTime != null">
+			and t.GRANTTIME &gt;= #{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			and t.GRANTTIME &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="rule != null and rule != ''">
+			and t.RULE like CONCAT('%',#{rule,jdbcType=VARCHAR},'%')
+		</if>
+		GROUP BY t.BATCHNO
+		ORDER BY t.GRANTTIME DESC
+	</select>
+	
+	<select id="getCouponGrantRecord" resultType="com.yilidi.o2o.order.model.result.CouponInfo">
+		SELECT
+			t.CONPACKID as conPackId,
+			t.USERANGECODE as useRangeCode,
+			CASE
+				WHEN t.USERANGECODE='COUPONSUSERANGE_ALL' THEN '全场'
+				WHEN t.USERANGECODE='COUPONSUSERANGE_PRODUCT_CLASS' THEN '产品品类'
+				WHEN t.USERANGECODE='COUPONSUSERANGE_PRODUCT_LABEL' THEN '产品标示'
+				WHEN t.USERANGECODE='COUPONSUSERANGE_SINGLE_PRODUCT' THEN '单个产品'
+				ELSE '无' 
+			END AS useRangeCodeName,
+			t.USERANGE as useRange,
+			t.VALIDTYPE as validType,
+			CASE
+				WHEN t.VALIDTYPE='COUPONVALIDTYPE_CUSTOMTYPE' THEN '自定义时间'
+				WHEN t.VALIDTYPE='COUPONVALIDTYPE_SYSTEMTYPE' THEN '系统时间周期'
+			END AS validTypeName,
+			GROUP_CONCAT(t.VALIDTYPEVALUE SEPARATOR '^') AS validTypeValue,
+			t.GRANTRANGE as grantRange,
+			CASE
+				WHEN t.GRANTRANGE='COUPONSGRANTRANGE_BATCH' THEN '批量发放'
+				WHEN t.GRANTRANGE='COUPONSGRANTRANGE_SINGLE' THEN '单独发放'
+				ELSE '无'
+			END AS grantRangeName,
+			t.BUYERUSERTYPE as buyerUserType,
+			t.GRANTWAY as grantWay,
+			CASE
+				WHEN t.GRANTWAY='COUPONSGRANTWAY_RED_ENVELOPE' THEN '抢红包'
+				WHEN t.GRANTWAY='COUPONSGRANTWAY_SHARE_GIFT' THEN '分享有礼'
+				WHEN t.GRANTWAY='COUPONSGRANTWAY_AUTO_RELEASE' THEN '系统自动发放'
+				WHEN t.GRANTWAY='COUPONSGRANTWAY_REGIST_GIFT' THEN '注册有礼'
+				WHEN t.GRANTWAY='COUPONSGRANTWAY_ACTIVITY_MANAGER' THEN '活动管理'
+				ELSE '无'
+			END AS grantWayName,
+			t.RULE as rule
+		FROM
+			T_COUPON t
+		WHERE
+			t.CONPACKID = #{conPackId,jdbcType=INTEGER}
+		AND t.BATCHNO = #{batchNo,jdbcType=VARCHAR}
+		GROUP BY t.BATCHNO
+	</select>
+	
+	<select id="getCouponByPackIdBatchNoGrantWay" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+			T_COUPON t
+		WHERE
+			t.CONPACKID = #{conPackId,jdbcType=INTEGER}
+		AND t.BATCHNO = #{batchNo,jdbcType=VARCHAR}
+		AND t.GRANTWAY = #{grantWay,jdbcType=VARCHAR}
+		order by t.STAGENO
+	</select>
+	
+	<select id="getValidRegistUseCouponActive" resultMap="BaseResultMap">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			`T_COUPON`
+		WHERE
+			VALIDTYPE = 'COUPONVALIDTYPE_SYSTEMTYPE'
+		AND GRANTWAY = 'COUPONSGRANTWAY_REGIST_GIFT'
+		AND CONPACKID IN (
+			SELECT
+				ID
+			FROM
+				T_COUPON_PACKAGE
+			WHERE
+				STATE = 'COUPONSSTATE_GRANTED'
+		)
+	</select>
+	
+	<select id="findCouponByGrantWay" parameterType="com.yilidi.o2o.order.model.query.CouponQuery" resultType="com.yilidi.o2o.order.model.result.CouponInfo">
+		SELECT
+			b.CONNAME AS conPackName,
+			a.ID AS id,
+			a.BATCHNO AS batchNo,
+			a.GRANTTIME AS grantTime,
+			a.USERANGECODE AS useRangeCode,
+			a.STAGENO AS stageNo,
+			a.RULE AS rule
+		FROM
+			T_COUPON a
+		JOIN T_COUPON_PACKAGE b ON a.CONPACKID = b.ID
+		AND b.STATE = 'COUPONSSTATE_GRANTED'
+		WHERE 
+		a.CUSTOMERTYPE = 'CUSTOMERTYPE_BUYER'
+		AND a.BUYERUSERTYPE = 'BUYERUSERTYPELABEL_ALL'
+		AND a.GRANTWAY=#{grantWay,jdbcType=VARCHAR}
+		<if test="beginTime != null">
+			and a.GRANTTIME &gt;= #{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			and a.GRANTTIME &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		ORDER BY a.CONPACKID DESC,a.GRANTTIME DESC,a.STAGENO
+		
+	</select>
+</mapper>

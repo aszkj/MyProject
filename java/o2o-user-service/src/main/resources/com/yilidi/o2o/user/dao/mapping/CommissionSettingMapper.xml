@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.CommissionSettingMapper">
+	<resultMap id="BaseResultMap" type="CommissionSetting">
+		<id column="SETTINGID" property="settingId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="CLEARTYPE" property="clearType" jdbcType="VARCHAR" />
+		<result column="RATE" property="rate" jdbcType="INTEGER" />
+		<result column="EFFECTIVEDATE" property="effectiveDate"
+			jdbcType="TIMESTAMP" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		SETTINGID, STOREID, CLEARTYPE, RATE, EFFECTIVEDATE, STATUS
+	</sql>
+
+	<insert id="save" parameterType="CommissionSetting">
+		insert into U_COMMISSION_SETTING (STOREID, CLEARTYPE,
+		RATE, EFFECTIVEDATE, STATUS)
+		values (#{storeId,jdbcType=INTEGER},
+		#{clearType,jdbcType=VARCHAR},
+		#{rate,jdbcType=INTEGER}, #{effectiveDate,jdbcType=TIMESTAMP}, #{status, jdbcType=VARCHAR})
+	</insert>
+
+	<update id="updateByIdSelective" parameterType="CommissionSetting">
+		update U_COMMISSION_SETTING
+		<set>
+			<if test="clearType != null">
+				CLEARTYPE = #{clearType,jdbcType=VARCHAR},
+			</if>
+			<if test="rate != null">
+				RATE = #{rate,jdbcType=INTEGER},
+			</if>
+			<if test="effectiveDate != null">
+				EFFECTIVEDATE = #{effectiveDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				STATUS = #{status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where SETTINGID = #{settingId,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_COMMISSION_SETTING
+		where SETTINGID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByStoreId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_COMMISSION_SETTING
+		where STOREID = #{storeId,jdbcType=INTEGER}
+	</select>
+
+	<select id="listByType" resultMap="BaseResultMap" parameterType="string">
+		select
+		<include refid="Base_Column_List" />
+		from U_COMMISSION_SETTING
+		where CLEARTYPE = #{type,jdbcType=VARCHAR}
+	</select>
+
+
+</mapper>

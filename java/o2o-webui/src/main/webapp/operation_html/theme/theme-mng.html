@@ -1,0 +1,690 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.box-mask {
+	position: fixed;
+	width: 600px;
+	height: auto;
+	ovflow: hidden;
+	z-index: 9999999;
+	left: 50%;
+	top: 0;
+	margin-left: -300px;
+}
+
+.mask_close {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size: 16px;
+	color: red;
+	background: #fff;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+}
+
+.theme_img li{float:left;margin:0 6px 0 0}
+.theme_img .img{display:block;width:400px;height:100px;border:1px dashed #e3e4e4;text-align:center; line-height:100px;}
+.theme_img a.img{background:#fcfcfc url(/static-resource/images/base/image_bg.gif) no-repeat center center;overflow:hidden;text-align:left;text-indent:-1000px;cursor:pointer}
+.theme_img .img img{max-width:400px;max-height:100px;_height: expression(this.height > 100 ? "100" : true); _width: expression(this.width > 400 ? "400" : true); line-height:100px;}
+.theme_img p{text-align:center;line-height:24px}
+.theme_img p label{padding:0 8px 0 2px;}
+.theme_img p input {vertical-align: -2px;}
+
+.theme_imgnote{line-height:22px;overflow:hidden;padding:10px 0 0;}
+.theme_imgnote em{color:#E94B01;float:left;text-align:right;}
+.theme_imgnote p{color:#DF9067; margin:0 0 0 400px;}
+
+.slogan_img li{float:left;margin:0 6px 0 0}
+.slogan_img .img{display:block;width:400px;height:50px;border:1px dashed #e3e4e4;text-align:center; line-height:50px;}
+.slogan_img a.img{background:#fcfcfc url(/static-resource/images/base/image_bg.gif) no-repeat center center;overflow:hidden;text-align:left;text-indent:-1000px;cursor:pointer}
+.slogan_img .img img{max-width:400px;max-height:50px;_height: expression(this.height > 50 ? "50" : true); _width: expression(this.width > 400 ? "400" : true); line-height:50px;}
+.slogan_img p{text-align:center;line-height:24px}
+.slogan_img p label{padding:0 8px 0 2px;}
+.slogan_img p input {vertical-align: -2px;}
+
+.slogan_imgnote{line-height:22px;overflow:hidden;padding:10px 0 0;}
+.slogan_imgnote em{color:#E94B01;float:left;text-align:right;}
+.slogan_imgnote p{color:#DF9067; margin:0 0 0 400px;}
+</style>
+<script type="text/javascript">
+	var method = getUrlParam("method");
+	function loadThemeInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id + '/loadById',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+					listTypeCodeList(data.entity.typeCode);
+					//listBaseColorList(data.entity.baseColor);
+					$("#themeName").val(data.entity.themeName);
+					$("#baseColor").val(data.entity.baseColor);
+					var html = [];
+					var themeImageUrl = data.entity.themeImageUrl;
+					var themeImageFullUrl = data.entity.themeImageFullUrl;
+					if (themeImageUrl != null && themeImageUrl != '') {
+						html.push('<span class="img"><a href="javascript:void(0)" onclick="showThemeImg(\''
+								 + themeImageFullUrl
+								 + '\')" title="点击查看大图"><img src="');
+						html.push(themeImageFullUrl);
+						html.push('" alt="" width="400" height="100" border="0"/></a></span><p>');
+						html.push('<a href="javascript:;" class="ablue" onclick="delUploadImgForThemeImage()">删除</a></p>');
+						$('#themeImageUrl').val(themeImageUrl);
+						//IMAGEFLAG_NO表示是数据库正式环境的图片
+						$('#imageFlagForThemeImage').val('IMAGEFLAG_NO');
+						$('#uploadLiForThemeImage').html(html.join(''));
+					}
+					var html = [];
+					var sloganImageUrl = data.entity.sloganImageUrl;
+					var sloganImageFullUrl = data.entity.sloganImageFullUrl;
+					if (sloganImageUrl != null && sloganImageUrl != '') {
+						html.push('<span class="img"><a href="javascript:void(0)" onclick="showSloganImg(\''
+								 + sloganImageFullUrl
+								 + '\')" title="点击查看大图"><img src="');
+						html.push(sloganImageFullUrl);
+						html.push('" alt="" width="400" height="50" border="0"/></a></span><p>');
+						html.push('<a href="javascript:;" class="ablue" onclick="delUploadImgForSloganImage()">删除</a></p>');
+						$('#sloganImageUrl').val(sloganImageUrl);
+						//IMAGEFLAG_NO表示是数据库正式环境的图片
+						$('#imageFlagForSloganImage').val('IMAGEFLAG_NO');
+						$('#uploadLiForSloganImage').html(html.join(''));
+					}
+					
+					$("#id").val(id);
+				}//非必须
+			});
+
+		}
+	}
+
+	function dataEditSubmit() {
+		if (method != 'add' && method != 'edit') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url = OPERATION_SYSTEM_IDENTITY + '/createTheme';
+			if (!validateData()) {
+				return;
+			}
+		} else if (method == 'edit') {
+			url = OPERATION_SYSTEM_IDENTITY + '/updateTheme';
+			if (!validateData()) {
+				return;
+			}
+		} else {
+			return;
+		}
+		$('#themeName').val($.trim($('#themeName').val()));
+		$('#baseColor').val($.trim($('#baseColor').val()));
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					contentType : 'application/json',
+					dataType : 'json',
+					data : formJsonStr,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					},
+					url : TERMINAL_URL + url,
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window.setTimeout(function() {
+								var urlParam = window.location.search;
+								locationHref("/theme/theme-index.html"
+										+ urlParam);
+							}, 1000);
+						} else {
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							$('#promptMessage').text(data.msg);
+						}
+					}
+				});
+	}
+
+	var validate = (function() {
+		return {
+			validateThemeName : function() {
+				var themeName = $.trim($('#themeName').val()), $themeNameMsg = $('#themeNameMsg');
+				if (!themeName) {
+					$themeNameMsg.html('请填写专题名称！').attr('class', 'error');
+					return false;
+				}
+				$themeNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateTypeCode : function() {
+				var typeCode = $.trim($('#typeCode').val()), $typeCodeMsg = $('#typeCodeMsg');
+				if (!typeCode) {
+					$typeCodeMsg.html('请选择专题类型！').attr('class', 'error');
+					return false;
+				}
+				$typeCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateThemeImageUrl : function() {
+				var themeImageUrl = $.trim($('#themeImageUrl').val()), $themeImageUrlMsg = $('#themeImageUrlMsg');
+				if (!themeImageUrl) {
+					$themeImageUrlMsg.html('请上传图片！').attr('class', 'error');
+					return false;
+				}
+				$themeImageUrlMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateSloganImageUrl : function() {
+				var sloganImageUrl = $.trim($('#sloganImageUrl').val()), $sloganImageUrlMsg = $('#sloganImageUrlMsg');
+				if (!sloganImageUrl) {
+					$sloganImageUrlMsg.html('请上传图片！').attr('class', 'error');
+					return false;
+				}
+				$sloganImageUrlMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateBaseColor : function() {
+				var baseColor = $.trim($('#baseColor').val()), $baseColorMsg = $('#baseColorMsg');
+				if (!baseColor) {
+					$baseColorMsg.html('请填写专题底色！').attr('class', 'error');
+					return false;
+				}
+				if (baseColor.length != 6) {
+					$baseColorMsg.html('专题底色的长度只能为6位字符！').attr('class', 'error');
+					return false;
+				}
+				$baseColorMsg.html('').attr('class', 'right');
+				return true;
+			},
+		}
+	})();
+
+	function validateData() {
+		if (!validate.validateThemeName()) {
+			return false;
+		}
+		if (!validate.validateTypeCode()) {
+			return false;
+		}
+		if (!validate.validateThemeImageUrl()) {
+			return false;
+		}
+		if (!validate.validateSloganImageUrl()) {
+			return false;
+		}
+		if (!validate.validateBaseColor()) {
+			return false;
+		}
+		return true;
+	}
+	
+	function showUploadBox(imageType) {
+		$('#uploadImgType').val();
+		if ($('#uploadBtn').attr('disabled') == 'disabled') {
+			$('#uploadBtn').attr('disabled', false);
+		}
+		$('#uploadnote').html('');
+		$('#imageType').val(imageType);
+		showBox('上传图片','uploadBox');
+	}
+	
+	function uploadSubmit() {
+		var file = $.trim($('#uploadFile').val());
+		if (file == '') {
+			showBox('提示!', "上传的图片不能为空!", 'alert');
+			return;
+		}
+		var imageType = $('#imageType').val();
+		var url = '';
+		if('THEME' == imageType){
+			url = '/uploadThemeImageTemp';
+		}
+		if('SLOGAN' == imageType){
+			url = '/uploadSloganImageTemp';
+		}
+		$('#uploadBtn').attr('disabled', 'disabled');
+		ajax({
+			uploadForm : 'uploadForm',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + url,
+			type:'post',
+			contentType:'application/json',
+			dataType : 'json',//非必须.默认text
+			async : false,
+			error : function() {
+				return;
+			}, //非必须
+			success : function(data) {
+				checkJsonRight(data);
+				if (data.msgCode != 1) {
+					$('#uploadnote').html(data.msg);
+					return;
+				}
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				if('THEME' == imageType){
+					var html = [];
+					var themeImageUrl = data.entity;
+					html.push('<span class="img"><a href="javascript:void(0)" onclick="showThemeImg(\''
+							+ UPLOAD_FILE_TEMP_URL
+							+ themeImageUrl
+							+ '\')"><img src="');
+					html.push((UPLOAD_FILE_TEMP_URL + themeImageUrl));
+					html.push('" width="400" height="100" alt="" /></a></span><p>');
+					html.push('<a href="javascript:;" class="ablue" onclick="delUploadImgForThemeImage()">删除</a></p>');
+					$('#themeImageUrl').val(themeImageUrl);
+					//IMAGEFLAG_YES表示是上传的图片
+					$('#imageFlagForThemeImage').val('IMAGEFLAG_YES');
+					$('#uploadLiForThemeImage').html(html.join(''));
+				}
+				if('SLOGAN' == imageType){
+					var html = [];
+					var sloganImageUrl = data.entity;
+					html.push('<span class="img"><a href="javascript:void(0)" onclick="showSloganImg(\''
+							+ UPLOAD_FILE_TEMP_URL
+							+ sloganImageUrl
+							+ '\')"><img src="');
+					html.push((UPLOAD_FILE_TEMP_URL + sloganImageUrl));
+					html.push('" width="400" height="50" alt="" /></a></span><p>');
+					html.push('<a href="javascript:;" class="ablue" onclick="delUploadImgForSloganImage()">删除</a></p>');
+					$('#sloganImageUrl').val(sloganImageUrl);
+					//IMAGEFLAG_YES表示是上传的图片
+					$('#imageFlagForSloganImage').val('IMAGEFLAG_YES');
+					$('#uploadLiForSloganImage').html(html.join(''));
+				}
+				$('#uploadnote').html(data.msg);
+				$('#uploadBtn').attr('disabled', 'disabled');
+				setTimeout(function() {
+					closeBox();
+				}, 1000);
+			}//非必须
+		});
+	}
+
+	/*删除专题图片*/
+	function delUploadImgForThemeImage() {
+		if (confirm("您确定删除该专题图片吗？")) {
+			$('#uploadLiForThemeImage').html(
+					'<a class="img" onclick="showUploadBox(\'THEME\')">点击上传</a>');
+			var tempPicPath = $('#themeImageUrl').val();
+			//如果是刚刚上传的，则需要删除临时服务器上的图片
+			if ($("#imageFlagForThemeImage").val() == 'IMAGEFLAG_YES') {
+				ajax({
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+							+ '/deleteThemeTemp?tempPicPath=' + tempPicPath,
+					type : 'post',//非必须.默认get
+					dataType : 'json',//非必须.默认text
+					error : function(data) {
+					}, //非必须
+					success : function(data) {
+						$('#themeImageUrl').val('');
+					}//非必须
+				});
+			} else if ($("#imageFlagForThemeImage").val() == 'IMAGEFLAG_NO') { //如果原本就是正式环境的图片，先记下其url
+				delPicString = $('#themeImageUrl').val();
+				$("#delImageUrlForThemeImage").val(delPicString);
+				$("#themeImageUrl").val('');
+			}
+		}
+	}
+	/*删除专题slogan*/
+	function delUploadImgForSloganImage() {
+		if (confirm("您确定删除该专题slogan吗？")) {
+			$('#uploadLiForSloganImage').html(
+					'<a class="img" onclick="showUploadBox(\'SLOGAN\')">点击上传</a>');
+			var tempPicPath = $('#sloganImageUrl').val();
+			//如果是刚刚上传的，则需要删除临时服务器上的图片
+			if ($("#imageFlagForSloganImage").val() == 'IMAGEFLAG_YES') {
+				ajax({
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+							+ '/deleteFileTemp?tempPicPath=' + tempPicPath,
+					type : 'post',//非必须.默认get
+					dataType : 'json',//非必须.默认text
+					error : function(data) {
+					}, //非必须
+					success : function(data) {
+						$('#sloganImageUrl').val('');
+					}//非必须
+				});
+			} else if ($("#imageFlagForSloganImage").val() == 'IMAGEFLAG_NO') { //如果原本就是正式环境的图片，先记下其url
+				delPicString = $('#sloganImageUrl').val();
+				$("#delImageUrlForSloganImage").val(delPicString);
+				$("#sloganImageUrl").val('');
+			}
+		}
+	}
+	
+	function closeme() {
+		$(".box-mask").remove();
+	}
+	function showThemeImg(path) {
+		showBox("查看专题图片","<img src='"+path+"' alt='' width='600' height='300' />");
+	}
+	function showSloganImg(path) {
+		showBox("查看专题slogan","<img src='"+path+"' alt='' width='600' height='150' />");
+	}
+
+	function showErr(errorType) {
+		if (errorType == 'themeName') {
+			$('#themeNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'typeCode') {
+			$('#typeCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'themeImageUrl') {
+			$('#themeImageUrlMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'sloganImageUrl') {
+			$('#sloganImageUrlMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'baseColor') {
+			$('#baseColorMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+	}
+
+	function comebackList() {
+		var urlParam = window.location.search;
+		locationHref('/theme/theme-index.html' + urlParam);
+	}
+
+	//加载专题类型
+	function listTypeCodeList(val){
+		var systemDictType = 'SALEZONETYPE';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#typeCode').html(html);
+			}
+		});
+	}
+	
+/* 	//加载专题底色
+	function listBaseColorList(val){
+		var systemDictType = 'THEMEBASECOLOR';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#baseColor').html(html);
+			}
+		});
+	} */
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		listTypeCodeList();
+		//listBaseColorList();
+		if (method == 'edit') {
+			$("#breadName").html('修改专题');
+			$("#pageTitle").html('修改专题');
+			loadThemeInfo();
+			$('#typeCode').attr('disabled', true);
+		} else if (method == 'add') {
+			$("#breadName").html('新增专题');
+			$("#pageTitle").html('新增专题');
+		} 
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 专题管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<input type="hidden" id="imageFlagForThemeImage" name="imageFlagForThemeImage" /> 
+							<input type="hidden" id="delImageUrlForThemeImage" name="delImageUrlForThemeImage" />
+							<input type="hidden" id="imageFlagForSloganImage" name="imageFlagForSloganImage" /> 
+							<input type="hidden" id="delImageUrlForSloganImage" name="delImageUrlForSloganImage" />
+							<input type="text" style="display:none"/>
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>专题名称：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-39" id="themeName"
+											name="themeName" onmousedown="showErr('themeName')" />&nbsp;&nbsp;
+										<span class="cred" id="themeNameMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>专题类型：
+									</dt>
+									<dd>
+										<select class="select grid-40" id="typeCode" name="typeCode"
+											onmousedown="showErr('typeCode')"></select>&nbsp;&nbsp; <span
+											class="cred" id="typeCodeMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>专题图片：
+									</dt>
+									<input type="hidden" id="themeImageUrl" name="themeImageUrl" />
+									<dd>
+										<ul class="theme_img img">
+											<li id="uploadLiForThemeImage" class="pr"><a onclick="showUploadBox('THEME')"
+												class="img">点击上传</a></li>
+						
+										</ul>
+										<div class="theme_imgnote agray">
+											<em>温馨提示：</em>
+											<p style="color: #DF9067; margin: 0 0 0 0; padding: 0px">
+												请上传图片大小≤3M的图片！ <span id="themeImageUrlMsg">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>
+											</p>
+										</div>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>专题slogan：
+									</dt>
+									<input type="hidden" id="sloganImageUrl" name="sloganImageUrl" />
+									<dd>
+										<ul class="slogan_img img">
+											<li id="uploadLiForSloganImage" class="pr"><a onclick="showUploadBox('SLOGAN')"
+												class="img">点击上传</a></li>
+						
+										</ul>
+										<div class="slogan_imgnote agray">
+											<em>温馨提示：</em>
+											<p style="color: #DF9067; margin: 0 0 0 0; padding: 0px">
+												请上传图片大小≤3M的图片！ <span id="sloganImageUrlMsg">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>
+											</p>
+										</div>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>专题底色：
+									</dt>
+									<!-- 
+									<dd>
+										<select class="select grid-40" id="baseColor" name="baseColor"
+											onmousedown="showErr('baseColor')"></select>&nbsp;&nbsp; <span
+											class="cred" id="baseColorMsg"></span>
+									</dd>
+									-->
+									<dd>
+										<input type="text" class="txt grid-39" id="baseColor"
+											name="baseColor" onmousedown="showErr('baseColor')" />&nbsp;&nbsp;
+										<span class="cred" id="baseColorMsg"></span>
+									</dd>
+								</dl>
+							</div>
+
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit(method)">&nbsp;&nbsp;&nbsp;<input type="button"
+											id="goBack" class="btn_gray" value="返回"
+											onclick="javascript:comebackList();"> <span
+											id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden" id="id" name="id" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+	<div id="uploadBox" class="hide">
+		<form id="uploadForm" onsubmit="uploadSubmit();return false;">
+		<input type="hidden" id="imageType" name="imageType" /> 
+			<div class="uploadbox">
+				<p>
+					<input id="uploadImgIndex" type="hidden" /> <input
+						id="uploadImgRow" type="hidden" /> <input id="uploadImgType"
+						type="hidden" /> <input id="uploadFile" name="file"
+						type="file" /> <span id="uploadnote" class="cred"></span>
+				</p>
+				<div class="uploadbox_btn">
+					<input type="submit" value="确定" class="btn_sure" id="uploadBtn" />
+					<input type="reset" onclick="closeBox()" value="取消"
+						class="btn_gray" />
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

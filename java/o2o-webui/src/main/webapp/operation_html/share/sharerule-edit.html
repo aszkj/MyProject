@@ -1,0 +1,1478 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/lang/zh_CN.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.box-mask {
+	position: fixed;
+	width: 600px;
+	height: auto;
+	ovflow: hidden;
+	z-index: 9999999;
+	left: 50%;
+	top: 0;
+	margin-left: -300px;
+}
+
+.mask_close {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size: 16px;
+	color: red;
+	background: #fff;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+}
+
+.sharerule_img li {
+	float: left;
+	margin: 0 6px 0 0
+}
+
+.sharerule_img .img {
+	display: block;
+	width: 400px;
+	height: 100px;
+	border: 1px dashed #e3e4e4;
+	text-align: center;
+	line-height: 100px;
+}
+
+.sharerule_img a.img {
+	background: #fcfcfc url(/static-resource/images/base/image_bg.gif)
+		no-repeat center center;
+	overflow: hidden;
+	text-align: left;
+	text-indent: -1000px;
+	cursor: pointer
+}
+
+.sharerule_img .img img {
+	max-width: 400px;
+	max-height: 100px;
+	_height: expression(this.height > 100 ? "100" : true);
+	_width: expression(this.width > 400 ? "400" : true);
+	line-height: 100px;
+}
+
+.sharerule_img p {
+	text-align: center;
+	line-height: 24px
+}
+
+.sharerule_img p label {
+	padding: 0 8px 0 2px;
+}
+
+.sharerule_img p input {
+	vertical-align: -2px;
+}
+
+.backgroundimage_note {
+	line-height: 22px;
+	overflow: hidden;
+	padding: 10px 0 0;
+}
+
+.backgroundimage_note em {
+	color: #E94B01;
+	float: left;
+	text-align: right;
+}
+
+.backgroundimage_note p {
+	color: #DF9067;
+	margin: 0 0 0 400px;
+}
+</style>
+<script type="text/javascript">
+//默认加载出优惠券包数据
+var packageData = [];
+//动态加载券包数据
+function loadPackData(){
+	var grantWay = 'COUPONSGRANTWAY_SHARE_GIFT';
+	$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' +grantWay + '/listAvailableCouponPackage',
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1){
+				return;
+			}
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			packageData = data.entity;
+		},
+		error:function(){
+			return;
+		}
+	});
+}
+
+	var invitedSelectedProductDatas = {};
+	var inviterSelectedProductDatas = {};
+	var ruleId = getUrlParam("shareRuleId");
+	var status = 0;
+	function detail(id) {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/sharerule/' + id + '/detail',
+			data : '',
+			dataType : 'json',//非必须.默认text
+			error : function() {
+			}, //非必须
+			success : function(data) {
+				/* checkJsonRight(data); */
+				if (data.msgCode == 1) {
+					var shareRule = data.entity;
+					if ('SHARERULESTATUS_NORMAL' != shareRule.status) {
+						$(".editable-class").attr("disabled", true);
+						status = 1;
+					}
+					if ('SHARERULESTATUS_OFF' == shareRule.status) {
+						$("#shareRuleName").attr("disabled", true);
+						$("#strEndValidTime").attr("disabled", true);
+						$("#submit").removeClass("btn_sure").addClass(
+								"btn_disabled");
+						$("#dataForm").attr("disabled", true);
+						status = 2;
+					}
+					$("#shareRuleName").val(shareRule.shareRuleName);
+					$("#strStartValidTime").val(shareRule.startValidTime);
+					$("#strEndValidTime").val(shareRule.endValidTime);
+					$("#roleType").val(shareRule.roleType);
+					var invitedConditionType = shareRule.invitedConditionType || "";
+					$("#invitedConditionType").val(invitedConditionType);
+					if (invitedConditionType == "SHARERULEINVITEDCONDITIONTYPE_PRODUCT") {
+						var productIds = shareRule.invitedUseProduct.split(",");
+						$("#invitedSelectedProduct").show();
+						$("#invitedSelectedProductCount").html(
+								productIds.length);
+						$("#invitedSelectedProductText").html(
+								shareRule.invitedUseProductName || "");
+						$("#invitedSelectedProductInput").val(
+								shareRule.invitedUseProduct);
+					}
+					var invitedAwardTypeValue = shareRule.invitedAwardType || "";
+					$("#invitedAwardType").val(invitedAwardTypeValue);
+					if (invitedAwardTypeValue == "") {
+						$("#invited").hide();
+					} else {
+						initAwardTypeValue(0,shareRule);
+						$(".invitedAwardType." + invitedAwardTypeValue).show();
+						$("#invited").show();
+					}
+					var inviterConditionType = shareRule.inviterConditionType || "";
+					$("#inviterConditionType").val(inviterConditionType);
+					if (inviterConditionType == "SHARERULEINVITERCONDITIONTYPE_PRODUCT") {
+						var productIds = shareRule.inviterUseProduct.split(",");
+						$("#inviterSelectedProduct").show();
+						$("#inviterSelectedProductCount").html(productIds.length);
+						$("#inviterSelectedProductText").html(shareRule.inviterUseProductName || "");
+						$("#inviterSelectedProductInput").val(shareRule.inviterUseProduct);
+					}
+					var inviterAwardTypeValue = shareRule.inviterAwardType || "";
+					$("#inviterAwardType").val(inviterAwardTypeValue);
+					if (inviterAwardTypeValue == "") {
+						$("#inviter").hide();
+					} else {
+						initAwardTypeValue(1,shareRule);
+						$(".inviterAwardType." + inviterAwardTypeValue).show();
+						$("#inviter").show();
+					}
+					var html = [];
+					var backgroundImageUrl = data.entity.backgroundImageUrl;
+					var fullBackgroundImageUrl = data.entity.fullBackgroundImageUrl;
+					if (backgroundImageUrl != null && backgroundImageUrl != '') {
+						html.push('<span class="img"><a href="javascript:void(0)" onclick="showShareRuleImg(\''
+										+ fullBackgroundImageUrl
+										+ '\')" title="点击查看大图"><img src="');
+						html.push(fullBackgroundImageUrl);
+						html.push('" alt="" width="400" height="100" border="0"/></a></span><p>');
+						if (status == 0) {
+							html.push('<a href="javascript:;" class="ablue" onclick="delUploadImg()">删除</a></p>');
+						}
+						$('#imageUrl').val(backgroundImageUrl);
+						//IMAGEFLAG_NO表示是数据库正式环境的图片
+						$('#imageFlag').val('IMAGEFLAG_NO');
+						$('#uploadLi').html(html.join(''));
+					}
+					$("#backgroundImageUrl").val(backgroundImageUrl);
+					//IMAGEFLAG_NO表示是数据库正式环境的图片
+					$('#imageFlag').val('IMAGEFLAG_NO');
+					$("#h5DrawUrl").val(data.entity.h5DrawUrl || '');
+					$("#descriptionUrl").val(data.entity.descriptionUrl || '');
+					$("#smsContent").val(data.entity.smsContent || '');
+					$("#friendTitle").val(data.entity.friendTitle || '');
+					$("#friendContent").val(data.entity.friendContent || '');
+					$("#avatarHeight").val(data.entity.avatarHeight || '');
+					$("#mobileHeight").val(data.entity.mobileHeight || '');
+					$("#qrCodeHeight").val(data.entity.qrCodeHeight || '');
+					$("#shareRuleId").val(id);
+				} else {
+					showBox('提示信息', data.msg, 'alert');
+				}
+			}//非必须
+		});
+	}
+	function dataEditSubmit() {
+		var url = OPERATION_SYSTEM_IDENTITY + '/sharerule/edit';
+		if (!validateData(status)) {
+			return;
+		}
+		var inviterCash = $("#inviterCash").val() || "";
+		var invitedCash = $("#invitedCash").val() || "";
+		if (inviterCash != "") {
+			$("#inviterCash").val(toMul(parseFloat(inviterCash), 1000));
+		}
+		if (invitedCash != "") {
+			$("#invitedCash").val(toMul(parseFloat(invitedCash), 1000));
+		}
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$.ajax({
+			type : 'post',
+			url : TERMINAL_URL + url,
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			cache : false,
+			error : function() {
+				$('#promptMessage').text('保存数据失败，请稍后再试');
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+			},
+			beforeSubmit : function() {
+			},
+			success : function(data) {
+				//响应返回的业务处理  
+				if (data.msgCode == 1) {
+					$('#promptMessage').text('保存成功');
+					window.setTimeout(function() {
+						comeback();
+					}, 1000);
+				} else {
+					if (inviterCash != "") {
+						$("#inviterCash").val(toCenti(parseFloat(inviterCash)));
+					}
+					if (invitedCash != "") {
+						$("#invitedCash").val(toCenti(parseFloat(invitedCash)));
+					}
+					$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					$('#promptMessage').text(data.msg);
+				}
+			}
+		});
+	}
+	var validate = (function() {
+		return {
+			validateShareRuleName : function() {
+				var shareRuleName = $.trim($('#shareRuleName').val());
+				$shareRuleNameMsg = $('#shareRuleNameMsg');
+				if (!shareRuleName) {
+					$shareRuleNameMsg.html('请填写规则名称').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$shareRuleNameMsg.html('').attr('class', 'right');
+				$('#shareRuleName').val(shareRuleName);
+				return true;
+			},
+			validateValidTime : function() {
+				var strStartTime = $.trim($('#strStartValidTime').val());
+				$validTimeMsg = $('#validTimeMsg');
+				if (!strStartTime) {
+					$validTimeMsg.html('请输入活动开始时间').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$validTimeMsg.html('').attr('class', 'right');
+				$('#strStartValidTime').val(strStartTime);
+				var strEndTime = $.trim($('#strEndValidTime').val());
+				if (!strEndTime) {
+					$validTimeMsg.html('请输入活动结束时间').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$validTimeMsg.html('').attr('class', 'right');
+				$('#strEndValidTime').val(strEndTime);
+				return true;
+			},
+			validateRoleType : function() {
+				var roleType = $.trim($('#roleType').val());
+				$roleTypeMsg = $('#roleTypeMsg');
+				if (!roleType) {
+					$roleTypeMsg.html('请选择角色类型').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$roleTypeMsg.html('').attr('class', 'right');
+				$('#roleType').val(roleType);
+				return true;
+			},
+			validateInvitedConditionType : function() {
+				var invitedConditionType = $.trim($('#invitedConditionType')
+						.val());
+				$invitedConditionTypeMsg = $('#invitedConditionTypeMsg');
+				if (invitedConditionType == "SHARERULEINVITEDCONDITIONTYPE_PRODUCT") {
+					if ($("#invitedSelectedProductInput").val() == "") {
+						$invitedConditionTypeMsg.html('请选择商品').attr('class',
+								'error');
+						setTimeout(closeTip, 3000);
+						return false;
+					}
+				}
+				$invitedConditionTypeMsg.html('').attr('class', 'right');
+				$('#invitedConditionType').val(invitedConditionType);
+				return true;
+			},
+			validateInviterConditionType : function() {
+				var inviterConditionType = $.trim($('#inviterConditionType')
+						.val());
+				$inviterConditionTypeMsg = $('#inviterConditionTypeMsg');
+				if (inviterConditionType == "SHARERULEINVITERCONDITIONTYPE_PRODUCT") {
+					if ($("#inviterSelectedProductInput").val() == "") {
+						$inviterConditionTypeMsg.html('请选择商品').attr('class',
+								'error');
+						setTimeout(closeTip, 3000);
+						return false;
+					}
+				}
+				$inviterConditionTypeMsg.html('').attr('class', 'right');
+				$('#inviterConditionType').val(inviterConditionType);
+				return true;
+			},
+			validateInviterAwardType : function() {
+				var inviterAwardType = $.trim($('#inviterAwardType').val());
+				$inviterAwardTypeMsg = $('#inviterAwardTypeMsg');
+				var inviterConditionType = $.trim($('#inviterConditionType')
+						.val());
+				$inviterConditionTypeMsg = $('#inviterConditionTypeMsg');
+				if (inviterAwardType && !inviterConditionType) {
+					$inviterConditionTypeMsg.html('请选择条件设置').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				if (inviterAwardType == "SHARERULEAWARDTYPE_CASH") { //现金
+					return this.validateAwardCash('inviterCash',
+							'inviterCashMsg', '邀请人','inviterAward');
+				}
+				if (inviterAwardType == "SHARERULEAWARDTYPE_POINTS") { //积分
+					return this.validateAwardPoints('inviterPoints',
+							'inviterPointsMsg', '邀请人','inviterAward');
+				}
+				if (inviterAwardType == "SHARERULEAWARDTYPE_COUPON") { //优惠券
+					return this.validateAwardCoupon('inviterCouponId',
+							'inviterCouponNumber', 'inviterCouponMsg', '邀请人','inviterAward');
+				}
+				$inviterAwardTypeMsg.html('').attr('class', 'right');
+				$inviterConditionTypeMsg.html('').attr('class', 'right');
+				$('#inviterAwardType').val(inviterAwardType);
+				return true;
+			},
+			validateInvitedAwardType : function() {
+				var invitedAwardType = $.trim($('#invitedAwardType').val());
+				$invitedAwardTypeMsg = $('#invitedAwardTypeMsg');
+				var invitedConditionType = $.trim($('#invitedConditionType')
+						.val());
+				$invitedConditionTypeMsg = $('#invitedConditionTypeMsg');
+				if (invitedAwardType && !invitedConditionType) {
+					$invitedConditionTypeMsg.html('请选择被邀请人条件设置').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				if (invitedAwardType == "SHARERULEAWARDTYPE_CASH") { //现金
+					return this.validateAwardCash('invitedCash',
+							'invitedCashMsg', '被邀请人','invitedAward');
+				}
+				if (invitedAwardType == "SHARERULEAWARDTYPE_POINTS") { //积分
+					return this.validateAwardPoints('invitedPoints',
+							'invitedPointsMsg', '被邀请人','invitedAward');
+				}
+				if (invitedAwardType == "SHARERULEAWARDTYPE_COUPON") { //优惠券
+					return this.validateAwardCoupon('invitedCouponId',
+							'invitedCouponNumber', 'invitedCouponMsg', '被邀请人','invitedAward');
+				}
+				$invitedAwardTypeMsg.html('').attr('class', 'right');
+				$invitedConditionTypeMsg.html('').attr('class', 'right');
+				$('#invitedAwardType').val(invitedAwardType);
+				return true;
+			},
+			validateAwardCash : function(id, msgId, msgContent,avardVal) {
+				var awardCash = $.trim($('#' + id).val());
+				$awardCashMsg = $('#' + msgId);
+				if (!awardCash) {
+					$awardCashMsg.html('请填写' + msgContent + '金额').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				var legalNum = /^0$|^0\.\d{1,2}$|^[1-9]\d*\.?\d{1,2}$|^[1-9]\d*$/;
+				if (!legalNum.test(awardCash)) {
+					$awardCashMsg.html('请填写合法的数字！(最多包含两个小数点)').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$awardCashMsg.html('').attr('class', 'right');
+				
+				$('#'+avardVal).val(parseFloat(awardCash));
+				return true;
+			},
+			validateAwardPoints : function(id, msgId, msgContent,avardVal) {
+				var awardPoints = $.trim($('#' + id).val());
+				$awardPointsMsg = $('#' + msgId);
+				if (!awardPoints) {
+					$awardPointsMsg.html('请填写' + msgContent + '积分').attr(
+							'class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				var legalNum = /^[1-9]\d{0,9}$/;
+				if (!legalNum.test(awardPoints)) {
+					$awardPointsMsg.html('请填写合法的数字！').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$awardPointsMsg.html('').attr('class', 'right');
+				
+				$('#'+avardVal).val(awardPoints);
+				return true;
+			},
+			validateAwardCoupon : function(id, numId, msgId, msgContent,avardVal) {
+				var awardCoupon = [];
+				if(id == 'inviterCouponId'){
+					awardCoupon = $(".inviterCouponInfo");
+				}else{
+					awardCoupon = $(".invitedCouponInfo");
+				}
+				if(awardCoupon == null || awardCoupon.length == 0){
+					return false;
+				}
+				var awardCouponId = null;
+				var awardCouponNum = null;
+				var legalNum = /^[1-9]\d{0,9}$/;
+				var num = 0;
+				var awardStr = "";
+				awardCoupon.each(function(){
+					awardCouponId = $(this).find(".couponSelect").val();
+					awardCouponNum = $(this).find(".couponNumber").val();
+					var msg = "";
+					if(awardCouponId == ""){
+						num ++;
+						msg += '请选择' + msgContent + '优惠券;';
+					}
+					if(awardCouponNum == ""){
+						num ++;
+						msg += '请填写' + msgContent + '优惠券数量;'
+					}else{
+						if (!legalNum.test(awardCouponNum)) {
+							num ++;
+							msg += '请填写合法的数字！;';
+						}
+					}
+					//控制可不可以连接字符串及提示
+					if(num == 0){
+						if(awardStr.length > 0){
+							awardStr +=";";
+						}
+						awardStr += awardCouponId +","+awardCouponNum;
+						$(this).find('span[sp="'+msgId+'"]').html('').attr('class', 'right');
+					}else{
+						$(this).find('span[sp="'+msgId+'"]').html(msg).attr('class', 'error');
+					}
+				});
+				//控制可不可以提交
+				if(num > 0){
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$('#'+avardVal).val(awardStr);
+				return true;
+			},
+			validateUrl : function() {
+				var h5DrawUrl = $.trim($('#h5DrawUrl').val());
+				$h5DrawUrlMsg = $('#h5DrawUrlMsg');
+				if (!h5DrawUrl) {
+					$h5DrawUrlMsg.html('请输入分享领取H5页面地址').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				if (strlen(h5DrawUrl) > 128) {
+					$h5DrawUrlMsg.html('地址长度不能超过128个字符').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				if (/[\u4e00-\u9fa5\uF900-\uFA2D\uFF00-\uFFEF]/.test(h5DrawUrl)) {
+					$h5DrawUrlMsg.html('地址不能含有全角中日韩字符').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$h5DrawUrlMsg.html('').attr('class', 'right');
+				var descriptionUrl = $.trim($('#descriptionUrl').val());
+				$descriptionUrlMsg = $('#descriptionUrlMsg');
+				if (!descriptionUrl) {
+					$descriptionUrlMsg.html('请输入分享规则页面地址').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				if (strlen(descriptionUrl) > 128) {
+					$descriptionUrlMsg.html('地址长度不能超过128个字符').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				if (/[\u4e00-\u9fa5\uF900-\uFA2D\uFF00-\uFFEF]/
+						.test(descriptionUrl)) {
+					$descriptionUrlMsg.html('地址不能含有全角中日韩字符').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$descriptionUrlMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateBackgroundImageUrl : function() {
+				var backgroundImageUrl = $.trim($('#backgroundImageUrl').val());
+				$backgroundImageUrlMsg = $('#backgroundImageUrlMsg');
+				if (!backgroundImageUrl) {
+					$backgroundImageUrlMsg.html('背景图片不能为空').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$backgroundImageUrlMsg.html('').attr('class', 'right');
+				$('#backgroundImageUrl').val(backgroundImageUrl);
+				return true;
+			},
+			validateAvatarHeight : function() {
+				var avatarHeight = $.trim($('#avatarHeight').val());
+				$avatarHeightMsg = $('#avatarHeightMsg');
+				if (!avatarHeight) {
+					$avatarHeightMsg.html('请输入头像高度').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				var legalNum = /^[0-9]\d{0,9}$/g;
+				if (!legalNum.test(avatarHeight)) {
+					$avatarHeightMsg.html('请输入合法的头像高度').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$avatarHeightMsg.html('').attr('class', 'right');
+				$('#avatarHeight').val(avatarHeight);
+				return true;
+			},
+			validateMobileHeight : function() {
+				var mobileHeight = $.trim($('#mobileHeight').val());
+				$mobileHeightMsg = $('#mobileHeightMsg');
+				if (!mobileHeight) {
+					$mobileHeightMsg.html('请输入头像高度').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				var legalNum = /^[0-9]\d{0,9}$/g;
+				if (!legalNum.test(mobileHeight)) {
+					$mobileHeightMsg.html('请输入合法的头像高度').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$mobileHeightMsg.html('').attr('class', 'right');
+				$('#mobileHeight').val(mobileHeight);
+				return true;
+			},
+			validateQrCodeHeight : function() {
+				var qrCodeHeight = $.trim($('#qrCodeHeight').val());
+				$qrCodeHeightMsg = $('#qrCodeHeightMsg');
+				if (!qrCodeHeight) {
+					$qrCodeHeightMsg.html('请输入头像高度').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				var legalNum = /^[0-9]\d{0,9}$/g;
+				if (!legalNum.test(qrCodeHeight)) {
+					$qrCodeHeightMsg.html('请输入合法的头像高度').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$qrCodeHeightMsg.html('').attr('class', 'right');
+				$('#qrCodeHeight').val(qrCodeHeight);
+				return true;
+			},
+			validateSmsContent : function() {
+				var smsContent = $.trim($('#smsContent').val());
+				$smsContentMsg = $('#smsContentMsg');
+				if (!smsContent) {
+					$smsContentMsg.html('请输入分享短信内容').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				if (strlen(smsContent) > 200) {
+					$smsContentMsg.html('分享短信内容不能超过200个字符').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$smsContentMsg.html('').attr('class', 'right');
+				$('#smsContent').val(smsContent);
+				return true;
+			},
+			validateFriendTitle : function() {
+				var friendTitle = $.trim($('#friendTitle').val());
+				$friendTitleMsg = $('#friendTitleMsg');
+				if (!friendTitle) {
+					$friendTitleMsg.html('请输入分享短信内容').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				if (strlen(friendTitle) > 200) {
+					$friendTitleMsg.html('分享短信内容不能超过200个字符').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$friendTitleMsg.html('').attr('class', 'right');
+				$('#friendTitle').val(friendTitle);
+				return true;
+			},
+			validateFriendContent : function() {
+				var friendContent = $.trim($('#friendContent').val());
+				$friendContentMsg = $('#friendContentMsg');
+				if (!friendContent) {
+					$friendContentMsg.html('请输入微信好友分享内容')
+							.attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				if (strlen(friendContent) > 200) {
+					$friendContentMsg.html('微信好友分享内容不能超过200个字符').attr('class',
+							'error');
+					setTimeout(closeTip, 3000);
+					return false;
+				}
+				$friendContentMsg.html('').attr('class', 'right');
+				$('#friendContent').val(friendContent);
+				return true;
+			}
+		}
+	})();
+	function validateData(status) {
+		if (!validate.validateShareRuleName()) {
+			return false;
+		}
+		if (!validate.validateValidTime()) {
+			return false;
+		}
+		if (status == 0) {
+			if (!validate.validateRoleType()) {
+				return false;
+			}
+			if (!validate.validateInvitedConditionType()) {
+				return false;
+			}
+			if (!validate.validateInviterConditionType()) {
+				return false;
+			}
+			if (!validate.validateInvitedAwardType()) {
+				return false;
+			}
+			if (!validate.validateInviterAwardType()) {
+				return false;
+			}
+			if (!validate.validateUrl()) {
+				return false;
+			}
+			if (!validate.validateBackgroundImageUrl()) {
+				return false;
+			}
+			if (!validate.validateAvatarHeight()) {
+				return false;
+			}
+			if (!validate.validateMobileHeight()) {
+				return false;
+			}
+			if (!validate.validateQrCodeHeight()) {
+				return false;
+			}
+			if (!validate.validateSmsContent()) {
+				return false;
+			}
+			if (!validate.validateFriendTitle()) {
+				return false;
+			}
+			if (!validate.validateFriendContent()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	function closeTip() {
+		$(".error").html("").removeClass("error");
+	}
+	function comeback() {
+		locationHref('/share/sharerule-index.html');
+	}
+	function selectProduct() {
+		showBox("选择商品",
+				'/share/sharerule-select-product.html?width=800&height=650');
+	}
+	function strlen(str) {
+		return str.replace(/[^\x00-\xff]/g, "**").length;
+	}
+	function showShareRuleImg(path) {
+		showBox("查看广告图片",
+				"<img src='"+path+"' alt='' width='600' height='300' />");
+	}
+	function showUploadBox(el) {
+		if ($(el).attr("disabled")) {
+			return;
+		}
+		$('#uploadImgType').val();
+		if ($('#uploadBtn').attr('disabled') == 'disabled') {
+			$('#uploadBtn').attr('disabled', false);
+		}
+		$('#uploadnote').html('');
+		showBox('上传图片', 'uploadBox');
+	}
+	/*删除广告图片*/
+	function delUploadImg() {
+		if (confirm("您确定删除该广告图片吗？")) {
+			$('#uploadLi').html(
+					'<a class="img" onclick="showUploadBox()">点击上传</a>');
+			var tempPicPath = $('#backgroundImageUrl').val();
+			//如果是刚刚上传的，则需要删除临时服务器上的图片
+			if ($("#imageFlag").val() == 'IMAGEFLAG_YES') {
+				ajax({
+					url : TERMINAL_URL
+							+ OPERATION_SYSTEM_IDENTITY
+							+ '/deleteShareRuleBackgroundImageTemp?tempPicPath='
+							+ tempPicPath,
+					type : 'post',//非必须.默认get
+					dataType : 'json',//非必须.默认text
+					error : function(data) {
+					}, //非必须
+					success : function(data) {
+						$('#backgroundImageUrl').val('');
+					}//非必须
+				});
+			} else if ($("#imageFlag").val() == 'IMAGEFLAG_NO') { //如果原本就是正式环境的图片，先记下其url
+				delPicString = $('#backgroundImageUrl').val();
+				$("#delImageUrl").val(delPicString);
+				$("#backgroundImageUrl").val('');
+			}
+		}
+	}
+	function uploadSubmit() {
+		var file = $.trim($('#uploadFile').val());
+		if (file == '') {
+			showBox('提示!', "上传的图片不能为空!", 'alert');
+			return;
+		}
+		var url = '/uploadShareRuleBackgroundImageTemp';
+		$('#uploadBtn').attr('disabled', 'disabled');
+		ajax({
+			uploadForm : 'uploadForm',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + url,
+			type : 'post',
+			contentType : 'application/json',
+			dataType : 'json',//非必须.默认text  
+			async : false,
+			error : function() {
+				return;
+			}, //非必须
+			success : function(data) {
+				checkJsonRight(data);
+				if (data.msgCode != 1) {
+					$('#uploadnote').html(data.msg);
+					return;
+				}
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = [];
+				var shareRuleImageUrl = data.entity;
+				html.push('<span class="img"><a href="javascript:void(0)" onclick="showShareRuleImg(\''
+								+ UPLOAD_FILE_TEMP_URL
+								+ shareRuleImageUrl
+								+ '\')"><img src="');
+				html.push((UPLOAD_FILE_TEMP_URL + shareRuleImageUrl));
+				html.push('" width="400" height="100" alt="" /></a></span><p>');
+				html.push('<a href="javascript:;" class="ablue" onclick="delUploadImg()">删除</a></p>');
+				$('#backgroundImageUrl').val(shareRuleImageUrl);
+				//IMAGEFLAG_YES表示是上传的图片
+				$('#imageFlag').val('IMAGEFLAG_YES');
+				$('#uploadLi').html(html.join(''));
+				$('#uploadnote').html(data.msg);
+				$('#uploadBtn').attr('disabled', 'disabled');
+				setTimeout(function() {
+					closeBox();
+				}, 1000);
+			}//非必须
+		});
+	}
+	function listSelectList(val, type, el) {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + type
+					+ '/getSystemDictInfoList',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						if (val == mapList[i].id) {
+							html += '<option selected="selected" value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						} else {
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						}
+					}
+				}
+				var elArr = el.split(",");
+				for (var i = 0; i < elArr.length; i++) {
+					$('#' + elArr[i]).html(html);
+				}
+			}
+		});
+	}
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#strStartValidTime').datetimepicker({
+			minDateTime : new Date()
+		});
+		$('#strEndValidTime').datetimepicker({
+			minDateTime : new Date()
+		});
+	}
+	function setSelectProductValue(type) {
+		var productIdStr = "";
+		var productNameText = "";
+		var totalNumber = 0;
+		var productTextEl = type == 0 ? $("#invitedSelectedProductText")
+				: $("#inviterSelectedProductText");
+		var productIdEl = type == 0 ? $("#invitedSelectedProductInput")
+				: $("#inviterSelectedProductInput");
+		var productCountEl = type == 0 ? $("#invitedSelectedProductCount")
+				: $("#inviterSelectedProductCount");
+		var datas = type == 0 ? invitedSelectedProductDatas
+				: inviterSelectedProductDatas;
+		for ( var key in datas) {
+			totalNumber++;
+			if (productIdStr != "") {
+				productIdStr += ","
+			}
+			if (productNameText != "") {
+				productNameText += ","
+			}
+			productIdStr += key;
+			productNameText += datas[key].productName;
+
+		}
+		productTextEl.html(productNameText);
+		productIdEl.val(productIdStr);
+		productCountEl.html(totalNumber);
+	}
+	function initAwardTypeValue(type,shareRule) {
+		if (type == 0) {
+			if(shareRule != null && shareRule.invitedAwardType != null && shareRule.invitedAwardType != ""){
+				if(shareRule.invitedAwardType == "SHARERULEAWARDTYPE_CASH"){
+					$("#invitedCash").val(shareRule.invitedAward);
+				}else if(shareRule.invitedAwardType == "SHARERULEAWARDTYPE_POINTS"){
+					$("#invitedPoints").val(shareRule.invitedAward);
+				}else if(shareRule.invitedAwardType == "SHARERULEAWARDTYPE_COUPON"){
+					if(shareRule.invitedCouponInfos != null &&　shareRule.invitedCouponInfos.length>0){
+						var html = '';
+						$.each(shareRule.invitedCouponInfos,function(i,item){
+							html = createInvitedCouponInfoHtml(item);
+							$(".invitedAwardType." + shareRule.invitedAwardType).append(html);
+							loadCouponData($(".invitedAwardType." + shareRule.invitedAwardType).children("div:last").find('.invitedPackageId'), item);
+						});
+					}
+				}
+			}else{
+				$("#invitedCash").val("");
+				$("#invitedPoints").val("");
+				$("#invitedAward").val("");
+			}
+		} else {
+			if(shareRule != null && shareRule.inviterAwardType != null && shareRule.inviterAwardType != ""){
+				if(shareRule.inviterAwardType == "SHARERULEAWARDTYPE_CASH"){
+					$("#inviterCash").val(shareRule.inviterAward);
+				}else if(shareRule.inviterAwardType == "SHARERULEAWARDTYPE_POINTS"){
+					$("#inviterPoints").val(shareRule.inviterAward);
+				}else if(shareRule.inviterAwardType == "SHARERULEAWARDTYPE_COUPON"){
+					if(shareRule.inviterCouponInfos != null &&　shareRule.inviterCouponInfos.length>0){
+						var html = '';
+						$.each(shareRule.inviterCouponInfos,function(i,item){
+							html = createInviterCouponInfoHtml(item);
+							$(".inviterAwardType." + shareRule.inviterAwardType).append(html);
+							loadCouponData($(".inviterAwardType." + shareRule.inviterAwardType).children("div:last").find('.inviterPackageId'), item);
+							
+						});
+					}
+				}
+			}else{
+				$("#inviterCash").val("");
+				$("#inviterPoints").val("");
+				$("#inviterAward").val("");
+			}
+			
+		}
+	}
+	function loadCouponData(obj,obj1) {
+		var couponId;
+		if(obj1 != null){
+			couponId = obj1.couponId;
+		}
+		$.ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + obj.val() + '/listCouponForShareRule',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			contentType : "application/json",
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						var couponName = mapList[i].conName + "(发放时间:"
+								+ mapList[i].grantTime + ",第"+ mapList[i].stageNo+"阶段)"
+						if (mapList[i].conId == couponId) {
+							html += '<option value="'+mapList[i].conId+'" selected="selected">';
+						} else { 
+							html += '<option value="'+mapList[i].conId+'">';
+						}
+						html += couponName;
+						html += '</option>'
+					}
+				}
+				obj.parent().find('.couponSelect').html(html);
+			}
+		});
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		loadPackData(); //加载优惠券包数据
+		loadTimeInput();
+		listSelectList('SHARERULEROLETYPE_BUYER','SHARERULEROLETYPE', 'roleType');
+		listSelectList(null, 'SHARERULEINVITEDCONDITIONTYPE','invitedConditionType');
+		listSelectList(null, 'SHARERULEINVITERCONDITIONTYPE','inviterConditionType');
+		listSelectList(null, 'SHARERULEAWARDTYPE','invitedAwardType,inviterAwardType');
+		detail(ruleId);
+		$("#invitedConditionType").change(function() {
+			var invitedConditionTypeValue = "SHARERULEINVITEDCONDITIONTYPE_PRODUCT";
+			if ($(this).val() == invitedConditionTypeValue) {
+				$("#invitedSelectedProduct").show();
+			} else {
+				invitedSelectedProductDatas = {};
+				setSelectProductValue(0);
+				$("#invitedSelectedProduct").hide();
+			}
+		});
+		$("#inviterConditionType").change(function() {
+			var invitedConditionTypeValue = "SHARERULEINVITERCONDITIONTYPE_PRODUCT";
+			if ($(this).val() == invitedConditionTypeValue) {
+				$("#inviterSelectedProduct").show();
+			} else {
+				inviterSelectedProductDatas = {};
+				setSelectProductValue(1);
+				$("#inviterSelectedProduct").hide();
+			}
+		});
+		$("#invitedAwardType").change(function() {
+			var awardTypeValue = $(this).val();
+			if ("SHARERULEAWARDTYPE_COUPON" == awardTypeValue) {
+				$(".invitedAwardType." + awardTypeValue).html(createInvitedCouponInfoHtml());
+			}
+			initAwardTypeValue(0);
+			$(".invitedAwardType").hide();
+			if (awardTypeValue != "") {
+				$("#invited").show();
+				$(".invitedAwardType." + awardTypeValue).show();
+			}else{
+				$("#invited").hide();
+			}
+		});
+		$("#inviterAwardType").change(function() {
+			var awardTypeValue = $(this).val();
+			if ("SHARERULEAWARDTYPE_COUPON" == awardTypeValue) {
+				$(".inviterAwardType." + awardTypeValue).html(createInviterCouponInfoHtml());
+			}
+			initAwardTypeValue(1);
+			$(".inviterAwardType").hide();
+			if (awardTypeValue != "") {
+				$("#inviter").show();
+				$(".inviterAwardType." + awardTypeValue).show();
+			}else{
+				$("#inviter").hide();
+			}
+		});
+		
+		//被邀请人添加奖励  
+		$('#invited').on('click','#invitedAdd',function(){
+			$(this).parent().parent().append(createInvitedCouponInfoHtml());
+		});
+		//邀请人添加奖励
+		$('#inviter').on('click','#inviterAdd',function(){
+			$(this).parent().parent().append(createInviterCouponInfoHtml());
+		});
+		
+		//被邀请人下拉框选择生成优惠券下拉框
+		$('.complaint_main').on('change','.invitedPackageId',function(){
+			loadCouponData($(this));
+		});
+		//邀请人下拉框选择生成优惠券下拉框
+		$('.complaint_main').on('change','.inviterPackageId',function(){
+			loadCouponData($(this));
+		});
+		//删除
+		$('.complaint_main').on('click','.deleteDiv',function(){
+			$(this).parent().remove();
+		});
+	});
+	
+	//被邀请人
+	function createInvitedCouponInfoHtml(obj1){
+		var invitedCouponInfoHtml = '<div style="margin: 10px 10px;" class="invitedCouponInfo">';
+		invitedCouponInfoHtml+='<span style="width: 80px; text-align: right; display: inline-block;">被邀请人：</span>';
+		invitedCouponInfoHtml+='<select class="select invitedPackageId" disabled="disabled">';
+		invitedCouponInfoHtml+='<option value="">--请选择--</option>';
+			if(packageData != null && packageData.length > 0){
+				$.each(packageData,function(i,item){
+					if(obj1 != null && obj1.conPackId == item.id){
+						invitedCouponInfoHtml+='<option value="'+item.id+'" selected="selected">'+item.conName+'</option>';
+					}else{
+						invitedCouponInfoHtml+='<option value="'+item.id+'">'+item.conName+'</option>';
+					}
+				});
+			}
+		invitedCouponInfoHtml+='</select>';
+		invitedCouponInfoHtml+='<select class="select invitedCouponId couponSelect" disabled="disabled">';
+		invitedCouponInfoHtml+='<option value="">--请选择--</option>';
+		invitedCouponInfoHtml+='</select>'; 
+		if(obj1 != null){
+			invitedCouponInfoHtml+='<input type="number" class="select grid-7 couponNumber invitedCouponNumber" disabled="disabled" value="'+obj1.couponNumber+'"/>&nbsp;&nbsp;张';
+		}else{
+			invitedCouponInfoHtml+='<input type="number" class="select grid-7 couponNumber invitedCouponNumber" disabled="disabled" value=""/>&nbsp;&nbsp;张';
+		}
+		invitedCouponInfoHtml+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span sp="invitedCouponMsg"></span>';
+		invitedCouponInfoHtml+='</div>';
+		return invitedCouponInfoHtml;
+	}
+	
+	//邀请人
+	function createInviterCouponInfoHtml(obj1){
+		var inviterCouponInfoHtml = '<div style="margin: 10px 10px;" class="inviterCouponInfo">';
+		inviterCouponInfoHtml+='<span style="width: 80px; text-align: right; display: inline-block;">邀请人：</span>';
+		inviterCouponInfoHtml+='<select class="select inviterPackageId" disabled="disabled">';
+		inviterCouponInfoHtml+='<option value="">--请选择--</option>';
+			if(packageData != null && packageData.length > 0){
+				$.each(packageData,function(i,item){
+					if(obj1 != null && obj1.conPackId == item.id){
+						inviterCouponInfoHtml+='<option value="'+item.id+'" selected="selected">'+item.conName+'</option>';
+					}else{
+						inviterCouponInfoHtml+='<option value="'+item.id+'">'+item.conName+'</option>';
+					}
+				});
+			}
+		inviterCouponInfoHtml+='</select>';
+		inviterCouponInfoHtml+='<select class="select inviterCouponId couponSelect" disabled="disabled">';
+		inviterCouponInfoHtml+='<option value="">--请选择--</option>';
+		inviterCouponInfoHtml+='</select>'; 
+		if(obj1 != null ){
+			inviterCouponInfoHtml+='<input type="number" class="select grid-7 couponNumber inviterCouponNumber" disabled="disabled" value="'+obj1.couponNumber+'"/>&nbsp;&nbsp;张';
+		}else{
+			inviterCouponInfoHtml+='<input type="number" class="select grid-7 couponNumber inviterCouponNumber" disabled="disabled" value=""/>&nbsp;&nbsp;张';
+		}
+		inviterCouponInfoHtml+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span sp="inviterCouponMsg"></span>';
+		inviterCouponInfoHtml+='</div>';
+		return inviterCouponInfoHtml;
+	}
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt;分享管理 &gt; <span id="breadName">编辑分享规则</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">修改分享规则</div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<input type="hidden" name="id" id="shareRuleId"> <input
+								type="hidden" id="imageFlag" name="imageFlag" /> <input
+								type="hidden" id="delImageUrl" name="delImageUrl" />
+							<dl>
+								<dt>
+									<em class="cred">*</em>规则名称：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-13" name="shareRuleName"
+										id="shareRuleName" /> <span id="shareRuleNameMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>活动时间：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-13 editable-class"
+										id="strStartValidTime" name="strStartValidTime" /> 至 <input
+										type="text" class="txt grid-13" id="strEndValidTime"
+										name="strEndValidTime" /> <span id="validTimeMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>角色类型：
+								</dt>
+								<dd>
+									<select class="select grid-13 editable-class" id="roleType"
+										name="roleType"></select> <span id="roleTypeMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>被邀请人条件设置：</dt>
+								<dd>
+									<select class="select grid-13 editable-class"
+										id="invitedConditionType" name="invitedConditionType"></select>
+									<span id="invitedConditionTypeMsg"></span>
+								</dd>
+								<dd class="hide" style="margin-top: 5px;"
+									id="invitedSelectedProduct">
+									<input type="button" class="btn_sure editable-class"
+										value="选择商品" onClick="selectProduct(0);" /><br /> 已选择商品(共<span
+										id="invitedSelectedProductCount">0</span>个):<span
+										id="invitedSelectedProductText"></span> <input type="hidden"
+										name="invitedUseProduct" class="editable-class"
+										id="invitedSelectedProductInput" value="" />
+								</dd>
+							</dl>
+							<dl>
+								<dt>被邀请人奖励设置：</dt>
+								<dd>
+									<select class="editable-class select grid-13" id="invitedAwardType"
+										name="invitedAwardType"></select> <span
+										id="invitedAwardTypeMsg"></span>
+								</dd>
+								<dd>
+									<div id="invited" class="hide" style="border: 1px solid #66CCFF; margin: 10px 0;">
+										<input type="hidden" id="invitedAward" name="invitedAward">
+										<!-- 现金 -->
+										<div class="hide invitedAwardType SHARERULEAWARDTYPE_CASH">
+											<div style="margin: 10px 10px;">
+												<span
+													style="width: 80px; text-align: right; display: inline-block;">被邀请人：</span>
+												<input type="text" class="select grid-7" id="invitedCash"
+													name="invitedCash" />&nbsp;&nbsp;元 <span
+													id="invitedCashMsg"></span>
+											</div>
+										</div>
+										<!-- 优惠券 -->
+										<div class="hide invitedAwardType SHARERULEAWARDTYPE_COUPON">
+										</div>
+										<!-- 积分 -->
+										<div class="hide invitedAwardType SHARERULEAWARDTYPE_POINTS">
+											<div style="margin: 10px 10px;">
+												<span
+													style="width: 80px; text-align: right; display: inline-block;">被邀请人：</span>
+												<input type="number" class="select grid-7"
+													id="invitedPoints" name="invitedPoints" />&nbsp;&nbsp;积分<span
+													id="invitedPointsMsg"></span>
+											</div>
+										</div>
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>邀请人条件设置：</dt>
+								<dd>
+									<select class="select grid-13 editable-class"
+										id="inviterConditionType" name="inviterConditionType"></select>
+									<span id="inviterConditionTypeMsg"></span>
+								</dd>
+								<dd class="hide" style="margin-top: 5px;"
+									id="inviterSelectedProduct">
+									<input type="button" class="btn_sure editable-class"
+										value="选择商品" onClick="selectProduct(1);" /><br /> 已选择商品(共<span
+										id="inviterSelectedProductCount">0</span>个):<span
+										id="inviterSelectedProductText"></span> <input type="hidden"
+										name="inviterUseProduct" id="inviterSelectedProductInput"
+										class="editable-class" value="" />
+								</dd>
+							</dl>
+							<dl>
+								<dt>邀请人奖励设置：</dt>
+								<dd>
+									<select class="editable-class select grid-13" id="inviterAwardType"
+										name="inviterAwardType"></select> <span
+										id="inviterAwardTypeMsg"></span>
+								</dd>
+								<dd>
+									<div id="inviter" class="hide" style="border: 1px solid #66CCFF; margin: 10px 0;">
+										<input type="hidden" id="inviterAward" name="inviterAward">
+										<!-- 现金 -->
+										<div class="hide inviterAwardType SHARERULEAWARDTYPE_CASH">
+											<div style="margin: 10px 10px;">
+												<span
+													style="width: 80px; text-align: right; display: inline-block;">邀请人：</span>
+												<input type="text" class="select grid-7" id="inviterCash"
+													name="inviterCash" />&nbsp;&nbsp;元 <span
+													id="inviterCashMsg"></span>
+											</div>
+										</div>
+										<!-- 优惠券 -->
+										<div class="hide inviterAwardType SHARERULEAWARDTYPE_COUPON">
+											<div style="margin: 10px 10px;"></div>
+										</div>
+										<!-- 积分 -->
+										<div class="hide inviterAwardType SHARERULEAWARDTYPE_POINTS">
+											<div style="margin: 10px 10px;">
+												<span
+													style="width: 80px; text-align: right; display: inline-block;">邀请人：</span>
+												<input type="number" class="select grid-7"
+													id="inviterPoints" name="inviterPoints" />&nbsp;&nbsp;积分 <span
+													id="inviterPointsMsg"></span>
+											</div>
+										</div>
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>分享领取H5页面：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-30 editable-class"
+										name="h5DrawUrl" placeholder="分享活动领取h5页面url" id="h5DrawUrl" />
+									<span id="h5DrawUrlMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>分享规则页面：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-30 editable-class"
+										name="descriptionUrl" placeholder="分享活动规则说明页面"
+										id="descriptionUrl" /> <span id="descriptionUrlMsg"></span>
+								</dd>
+							</dl>
+							<div
+								style="height: 30px; text-indent: 2em; line-height: 30px; background-color: #CCCCCC; margin-top: 10px; margin-bottom: 5px;">
+								<span>朋友圈分享内容设置</span>
+							</div>
+							<dl>
+								<dt>
+									<em class="cred">*</em>背景图片上传：
+								</dt>
+								<input type="hidden" id="backgroundImageUrl"
+									class="editable-class" name="backgroundImageUrl" />
+								<dd>
+									<ul class="sharerule_img img editable-class">
+										<li id="uploadLi" class="pr "><a
+											onclick="showUploadBox(this);" class="img editable-class">点击上传</a></li>
+
+									</ul>
+									<div class="backgroundimage_note agray">
+										<em>温馨提示：</em>
+										<p style="color: #DF9067; margin: 0 0 0 0; padding: 0px">
+											请上传图片大小≤3M的图片！ <span id="backgroundImageUrlMsg">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>
+										</p>
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>头像高度：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-20 editable-class"
+										name="avatarHeight" id="avatarHeight" /> <span
+										id="avatarHeightMsg" class="gray">单位：像素</span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>手机号码高度：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-20 editable-class"
+										name="mobileHeight" id="mobileHeight" /> <span
+										id="mobileHeightMsg" class="gray">单位：像素</span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>二维码高度：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-20 editable-class"
+										name="qrCodeHeight" id="qrCodeHeight" /> <span
+										id="qrCodeHeightMsg" class="gray">单位：像素</span>
+								</dd>
+							</dl>
+							<div
+								style="height: 30px; text-indent: 2em; line-height: 30px; background-color: #CCCCCC; margin-top: 10px; margin-bottom: 5px;">
+								<span>分享短信内容设置</span>
+							</div>
+							<dl>
+								<dt>
+									<em class="cred">*</em>短信内容：
+								</dt>
+								<dd>
+									<textarea type="text" class="txt grid-46 editable-class"
+										id="smsContent" placeholder="请输入短信内容" name="smsContent"
+										rows="8" maxlength="200"></textarea>
+									&nbsp;&nbsp; <span id="smsContentMsg" class="cred"></span>
+								</dd>
+							</dl>
+							<div
+								style="height: 30px; text-indent: 2em; line-height: 30px; background-color: #CCCCCC; margin-top: 10px; margin-bottom: 5px;">
+								<span>微信好友分享内容设置</span>
+							</div>
+							<dl>
+								<dt>
+									<em class="cred">*</em>标题：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-20 editable-class"
+										name="friendTitle" id="friendTitle" /> <span
+										id="friendTitleMsg" class="red"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>内容简称：
+								</dt>
+								<dd>
+									<textarea type="text" class="txt grid-46 editable-class"
+										id="friendContent" placeholder="请输入内容简称" name="friendContent"
+										rows="8" maxlength="200"></textarea>
+									&nbsp;&nbsp; <span id="friendContentMsg" class="cred"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit()" /> <input type="reset" id="reset"
+											class="btn_gray" value="重置" /> <input type="button"
+											id="goBack" class="btn_gray" value="取消"
+											onClick="javascript:comeback();" /> <span id="promptMessage"
+											class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+	<div id="uploadBox" class="hide">
+		<form id="uploadForm" onsubmit="uploadSubmit();return false;">
+			<div class="uploadbox">
+				<p>
+					<input id="uploadImgIndex" type="hidden" /> <input
+						id="uploadImgRow" type="hidden" /> <input id="uploadImgType"
+						type="hidden" /> <input id="uploadFile" name="file" type="file" />
+					<span id="uploadnote" class="cred"></span>
+				</p>
+				<div class="uploadbox_btn">
+					<input type="submit" value="确定" class="btn_sure" id="uploadBtn" />
+					<input type="reset" onclick="closeBox()" value="取消"
+						class="btn_gray" />
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

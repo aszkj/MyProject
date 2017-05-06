@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.PriceOthernessMapper">
+	<resultMap id="OthernessMap" type="PriceOtherness">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="OPERATORID" property="operatorId" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="PROMOTIONALPRICEDELTA" property="promotionalPriceDelta" jdbcType="BIGINT" />
+		<result column="RETAILPRICEDELTA" property="retailPriceDelta" jdbcType="BIGINT" />
+		<result column="PRODUCTCLASS" property="productClass" jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="AreaMap" type="PriceOthernessArea">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="OTHERNESSPRICEID" property="othernessPriceId" jdbcType="INTEGER" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="CollectionMap" type="PriceOtherness" autoMapping="true">
+		<collection property="areas" ofType="PriceOthernessArea" column="OTHERNESSPRICEID" resultMap="AreaMap" javaType="ArrayList" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, OPERATORID, PRODUCTID, PROMOTIONALPRICEDELTA,
+		RETAILPRICEDELTA, PRODUCTCLASS,
+		BRANDCODE, PRODUCTNAME,
+		STATUS,
+		CREATETIME, CREATEUSERID, MODIFYUSERID, MODIFYTIME, NOTE
+	</sql>
+
+	<insert id="save" parameterType="PriceOtherness">
+		insert into P_PRICE_OTHERNESS
+		(ID, OPERATORID, PRODUCTID,
+		PROMOTIONALPRICEDELTA,
+		RETAILPRICEDELTA,
+		PRODUCTCLASS, BRANDCODE, PRODUCTNAME, STATUS,
+		CREATETIME, CREATEUSERID,
+		NOTE)
+		values (#{id,jdbcType=INTEGER},
+		#{operatorId,jdbcType=INTEGER},
+		#{productId,jdbcType=INTEGER},
+		#{promotionalPriceDelta,jdbcType=BIGINT},
+		#{retailPriceDelta,jdbcType=BIGINT}, #{productClass,
+		jdbcType=VARCHAR},
+		#{brandCode, jdbcType=VARCHAR}, #{productName,
+		jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=INTEGER},
+		#{note,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="updateStatusById" parameterType="PriceOtherness">
+		update P_PRICE_OTHERNESS
+		set
+		STATUS = #{1,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{2,jdbcType=INTEGER},
+		MODIFYTIME = CURRENT_TIME
+		where ID = #{0,jdbcType=INTEGER}
+	</update>
+
+
+	<select id="loadById" resultMap="CollectionMap" parameterType="java.lang.Integer">
+		select PO.*, PA.* from P_PRICE_OTHERNESS PO
+		left join
+		P_PRICE_OTHERNESS_AREA PA
+		on PO.ID = PA.OTHERNESSPRICEID
+		where PO.ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByProductIdAndAreaCode" resultMap="CollectionMap">
+		select PO.* FROM P_PRICE_OTHERNESS PO 
+		left join P_PRICE_OTHERNESS_AREA POA
+		on PO.ID = POA.OTHERNESSPRICEID
+		where 
+		PO.PRODUCTID = #{productId, jdbcType=INTEGER}
+		and (POA.PROVINCECODE = #{provinceCode, jdbcType=VARCHAR} or POA.PROVINCECODE='0')
+		and (POA.CITYCODE = #{cityCode, jdbcType=VARCHAR} or POA.CITYCODE = '0')
+	</select>
+
+	<select id="listByOperatorId" resultMap="OthernessMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRICE_OTHERNESS
+		where OPERATORID = #{operatorId,jdbcType=INTEGER}
+	</select>
+
+	<select id="list" resultMap="OthernessMap" parameterType="PriceOthernessQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRICE_OTHERNESS
+		<where>
+			<if test="productClass != null">
+				PRODUCTCLASS = #{productClass, jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null">
+				and BRANDCODE = #{brandCode, jdbcType=VARCHAR}
+			</if>
+			<if test="productName != null">
+				and PRODUCTNAME = #{productName, jdbcType=VARCHAR}
+			</if>
+			<if test="operatorId != null">
+				and OPERATORID = #{operatorId,jdbcType=INTEGER}
+			</if>
+			<if test="status != null">
+				and STATUS = #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

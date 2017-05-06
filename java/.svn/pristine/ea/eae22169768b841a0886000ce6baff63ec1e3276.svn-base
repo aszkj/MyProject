@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<title>忘记密码</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+				+ Math.random() + "'><\/script>");
+    document.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+				+ Math.random() + "'><\/script>");
+</script>
+<script type="text/javascript" src="../static-resource/js/angular.js"></script>
+<script type="text/javascript" src="../static-resource/js/controller.js"></script>
+</head>
+<body ng-app="register" ng-controller="registerController" style="background-color: #eeeeee;">
+	<div class="forgot-top">
+		<p>
+			<span class="verify" style="color:#ff5555;">验证身份</span><span>></span><span class="reset">重置密码</span>
+		</p>
+	</div>
+	<div class="bot-con">
+		<form name="forgotForm" class="forgotForm" style="background-color: #fff;">
+			<label>手机号:
+				<input class="checkCode send-code" type="button" id="btn" ng-disabled="forgotForm.teleNumber.$invalid" value="发送验证码" /> <input type="tel" name="teleNumber"
+				class="teleNumber" id="tele" placeholder="请输入您的手机号" ng-model="user.teleNumber" onKeyUp="showBtn(tele,clearBtn);" required ng-maxlength="11" ng-minlength="11">
+				<div class="clean" id="clearBtn" onClick="clearText(tele,clearBtn);" style="right:2.2rem;">
+					<img src="../static-resource/images/register/clean.png">
+				</div>
+			</label>
+			<div role="alert">
+				<span class="error" error-msg="tele" id="errorTipForTele"></span>
+			</div>
+			<label>验证码:
+				<input id="vcode" type="text" name="vcode" placeholder="请输入验证码" ng-model="user.vcode" required ng-minlength="4">
+			</label>
+		</form>
+		<div class="sub-btn">
+			<button type="submit" id="reg-btn" ng-disabled="forgotForm.$invalid" onclick="validCheckCode()">下一步</button>
+		</div>
+		<div class="other">
+			<p style="color:#000;">
+				收不到短信验证码，请拨打客服电话<a href="tel:4001116366" style="color:#2b95ed;">400-111-6366</a>
+			</p>
+		</div>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	$(function() {
+		$("#btn").click(function() {
+			checkCodeTime();
+		});
+	})
+	function checkCodeTime() {
+		var param = new Object();
+		param.mobile = $("#tele").val();
+		param.type = 3; //注册发送验证码
+		ajax("/system/sendcaptcha", param, function(data) {
+			if (!data)
+				return;
+			resetInterval(data.remainClock, "btn");
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	function validCheckCode() {
+		var param = new Object();
+		param.mobile = $("#tele").val();
+		param.code = $("#vcode").val();
+		param.type = 3;
+		ajax("/system/checkcaptcha", param, function(data) {
+			location.href = "resetpassword.html";
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+</script>
+<script type="text/javascript">
+	document.write("<script type='text/javascript' src='../static-resource/js/verify.js?"
+			+ Math.random() + "'><\/script>");
+</script>
+</html>

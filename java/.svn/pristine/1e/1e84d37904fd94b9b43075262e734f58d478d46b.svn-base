@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.ExceptionMessageManualHandlingMapper">
+	<resultMap id="BaseResultMap" type="ExceptionMessageManualHandling">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="MESSAGENAME" property="messageName" jdbcType="VARCHAR" />
+		<result column="PRODUCERCLASSNAME" property="producerClassName" jdbcType="VARCHAR" />
+		<result column="PARAMETERJSONSTRING" property="parameterJsonString" jdbcType="LONGVARCHAR" />
+		<result column="PARAMETERCLASSNAME" property="parameterClassName" jdbcType="VARCHAR" />
+		<result column="CROSSDOMAINTRANSACTIONNAME" property="crossDomainTransactionName" jdbcType="VARCHAR" />
+		<result column="CROSSDOMAINTRANSACTIONID" property="crossDomainTransactionId" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, MESSAGENAME, PRODUCERCLASSNAME, PARAMETERJSONSTRING, PARAMETERCLASSNAME, CROSSDOMAINTRANSACTIONNAME, CROSSDOMAINTRANSACTIONID, CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="ExceptionMessageManualHandling">
+		insert into S_EXCEPTION_MESSAGE_MANUAL_HANDLING(MESSAGENAME, PRODUCERCLASSNAME, PARAMETERJSONSTRING, PARAMETERCLASSNAME, CROSSDOMAINTRANSACTIONNAME, CROSSDOMAINTRANSACTIONID, CREATETIME)
+		values (#{messageName,jdbcType=VARCHAR},
+		#{producerClassName,jdbcType=VARCHAR},
+		#{parameterJsonString,jdbcType=LONGVARCHAR},
+		#{parameterClassName,jdbcType=VARCHAR},
+		#{crossDomainTransactionName,jdbcType=VARCHAR},
+		#{crossDomainTransactionId,jdbcType=VARCHAR},
+		CURRENT_TIME)
+	</insert>
+	
+	<select id="loadById" resultMap="BaseResultMap" parameterType="integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_EXCEPTION_MESSAGE_MANUAL_HANDLING
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<delete id="deleteById" parameterType="integer">
+		delete from S_EXCEPTION_MESSAGE_MANUAL_HANDLING
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<select id="findExceptionMessageManualHandlings" resultMap="BaseResultMap" parameterType="ExceptionMessageManualHandlingQuery">
+		select
+		<include refid="Base_Column_List" />
+		from S_EXCEPTION_MESSAGE_MANUAL_HANDLING
+		<where>
+			<if test="messageName != null">
+				MESSAGENAME = #{messageName, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+</mapper>

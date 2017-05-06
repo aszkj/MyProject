@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.ConnectUserMapper">
+	<resultMap id="BaseResultMap" type="ConnectUser">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="OPENID" property="openId" jdbcType="VARCHAR" />
+		<result column="UNIONID" property="unionId" jdbcType="VARCHAR" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="NICKNAME" property="nickName" jdbcType="VARCHAR" />
+		<result column="GENDER" property="gender" jdbcType="INTEGER" />
+		<result column="HEADIMGURL" property="headImgUrl" jdbcType="VARCHAR" />
+		<result column="CONNECTTYPE" property="connectType" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, OPENID, UNIONID,USERID, NICKNAME, GENDER,
+		HEADIMGURL,CONNECTTYPE,CREATETIME,MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="ConnectUser" useGeneratedKeys="true" keyProperty="id">
+		insert into U_CONNECT_USER (
+		OPENID,
+		UNIONID,
+		USERID,
+		NICKNAME,
+		GENDER,
+		HEADIMGURL,
+		CONNECTTYPE,
+		CREATETIME,
+		MODIFYTIME
+		)
+		values
+		(
+		#{openId,jdbcType=VARCHAR},
+		#{unionId,jdbcType=VARCHAR},
+		#{userId,jdbcType=INTEGER},
+		#{nickName,jdbcType=VARCHAR},
+		#{gender,jdbcType=INTEGER},
+		#{headImgUrl,jdbcType=VARCHAR},
+		#{connectType,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{modifyTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<update id="updateBindUserIdByOpenId" parameterType="ConnectUser">
+		update U_CONNECT_USER
+		set
+		USERID = #{userId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where OPENID = #{openId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateBindUserIdByUnionId" parameterType="ConnectUser">
+		update U_CONNECT_USER
+		set
+		USERID = #{userId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where UNIONID = #{unionId,jdbcType=VARCHAR}
+	</update>
+	<select id="loadByOpenId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from U_CONNECT_USER
+		where OPENID = #{openId,jdbcType=VARCHAR}
+	</select>
+	<select id="loadByUserIdAndConnectType" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_CONNECT_USER
+		where USERID = #{userId,jdbcType=INTEGER}
+		and CONNECTTYPE=#{connectType,jdbcType=VARCHAR}
+	</select>
+	<select id="listByUserId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_CONNECT_USER
+		<where>
+			USERID = #{userId,jdbcType=INTEGER}
+			<if test="connectTypes != null">
+				and CONNECTTYPE in
+				<foreach item="item" index="index" collection="connectTypes" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	<select id="listByUnionId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from U_CONNECT_USER
+		where UNIONID = #{unionId,jdbcType=VARCHAR}
+	</select>
+	<select id="loadByUnionIdAndConnectType" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_CONNECT_USER
+		where UNIONID = #{unionId,jdbcType=VARCHAR}
+		and CONNECTTYPE=#{connectType,jdbcType=VARCHAR}
+	</select>
+</mapper>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>一里递</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+        document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+                + Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee;">
+    <header>
+        <!--顶部标题详细品牌名称-->
+        <div class="top-big-tit">
+            <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+            <p id="secondClassName"></p>
+        </div>
+    </header>
+    <div class="contentWrap" style="background-color: #eeeeee;">
+            <div class="cateProducts" style="padding-top: 1rem;">
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+        <div id="pullUp" class="hide">
+                <span class="loading">
+                    <span class="pullUpIcon"></span>
+                </span>
+            <span class="pullUpLabel">上拉加载更多...</span>
+        </div>
+    </div>
+    <div class="noMoreContent hide">
+        <p>没有更多内容了，别拉啦!</p>
+    </div>
+    <!--loading-->
+    <section id="pageloading" class="hide">
+        <img src="../static-resource/images/loading.png">
+    </section>
+    <footer>
+        <!--悬浮购物车-->
+        <div class="bot-cart-wrap">
+            <div class="bot-cart-btn cart-btn" onclick="window.location.href='../cart/cart.html'">
+                <div class="forcartimg" id="end"></div>
+                <input class="cart-pro-number" id="cartProNumber" readonly="readonly" value="" />
+            </div>
+        </div>
+    </footer>
+</body>
+<script type="text/javascript">
+    var pageNum = 0;
+    var pageSize = 12;
+    var totalPages = 0;
+    $(function() {
+        brandProductList(1);
+        showCartNum();
+    });
+    function getAddToCartPosition(obj, e) {
+        var x = $(e).offset().left;
+        var y = $(e).offset().top;
+        var start = new Array();
+        start.push(x);
+        start.push(y);
+        validCartToAdd(obj, addCartSuccess, start, e);
+    }
+    function addCartSuccess(productInfo, startLocation, doc) {
+        addOperation(doc, productInfo);
+        showCartNum();
+    }
+    function brandProductList(pageNumTemp) {
+        var params = new Object();
+        var brandName=decodeURIComponent(getUrlParam("brandName"));//品牌名称
+        $("#secondClassName").html(brandName);
+        params.brandCode = decodeURIComponent(getUrlParam("brandCode"));//品牌编码
+        params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+        params.pageNum = pageNumTemp;
+        params.pageSize = pageSize;
+        ajax("/brand/searchproductbybrand", params, function(data) {
+            totalPages = data.totalPages;
+            pageNum = data.pageNum;
+            if (pageNum == 1) {
+                $(".cateProducts").html("");
+            }
+            loadable = pageNum <= totalPages;
+            if(loadable||totalPages==0)
+            $("#tmplPeople").tmpl(data).appendTo(".cateProducts");
+            $("#pullUp").addClass("hide");
+            //拉到最后一页时候提示
+            if(pageNum!=1&&!loadable){
+                $(".noMoreContent").removeClass("hide");
+                setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+            }
+        }, function(data) {
+            if (myScroll)
+                myScroll.refresh();
+            alert(data);
+        }, true);
+    }
+    /*分页加载*/
+    $(window).scroll(function(){
+        if($(".contentWrap").height()-$(window).scrollTop()<=document.documentElement.clientHeight){
+            $("#pullUp").removeClass("hide");
+            pageNum++;
+            brandProductList(pageNum);
+        }
+    });
+    function getClass(item) {
+        return item % 2 == 0 ? "floor-pro-iteml" : "";
+    }
+    function getReduceToCart(doc, productInfo) {
+        if (reduceOperation(doc, productInfo)) {
+            showCartNum();
+        }
+    }
+</script>
+<script id="tmplPeople" type="text/x-jquery-tmpl">
+{{if (list && list.length > 0) }}
+        {{each(i,v) list}}
+         <div class="floor-pro-item ${getClass(i)}">
+            <div class="floor-pro-img"  onclick="window.location.href='../pro-detail/pro-detail.html?saleProductId=${v.saleProductId}'">
+                <img src="${v.saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+            </div>
+            <div class="pro-det"  onclick="window.location.href='../pro-detail/pro-detail.html?saleProductId=${v.saleProductId}'">
+                <p class="floor-pro-name">
+                    ${v.saleProductName}
+                </p>
+                <p class="floor-pro-size">
+                    ${v.saleProductSpec}
+                </p>
+                <p class="floor-pro-normal-price ">
+                    普通￥<span>${toCenti(v.retailPrice,2)}</span>
+                </p>
+                <p class="floor-pro-vip-price">
+                    VIP￥<span>${toCenti(v.promotionalPrice,2)}</span>
+                </p>
+            </div>
+             <div class="countBox">
+                <div class="count">
+                    <div class="reduce ${getShowClass(saleProductId)}" name="" type="button" onclick="getReduceToCart(this,${JSON.stringify(v)})"></div>
+                    <input class="pro-number ${getShowClass(saleProductId)}" name="" readonly="readonly" type="text" value="${getCartNum(saleProductId)}"/>
+                    <div class="add ${getBtnClass(saleProductId,stockNum)}" name="" type="button" onclick="getAddToCartPosition(${JSON.stringify(v)},this)"></div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+        {{else}}
+            <div class="not-find-box">
+            <img src="../static-resource/images/search/notfind.png">
+            <p>没有找到相关的商品</p>
+           </div>
+        {{/if}}
+</script>
+</html>

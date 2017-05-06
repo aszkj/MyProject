@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="window.location.href='my.html'"></div>
+        <p>设置</p>
+    </div>
+</header>
+<div class="bord"></div>
+<section class="bg setItemWrap">
+    <div class="setItem" onclick="window.location.href='personalProfile.html'">
+        <p>个人资料</p>
+    </div>
+    <div class="setItem" onclick="toAccountSafe()">
+        <p>账户安全</p>
+    </div>
+    <div class="setItem" onclick="window.location.href='/address/myAddress.html'">
+        <p id="noBorder">地址管理</p>
+    </div>
+    <div class="bord"></div>
+    <div class="setItem" onclick="window.location.href='customerFeedback.html'">
+        <p>意见反馈</p>
+    </div>
+    <div class="setItem" onclick="window.location.href='../buyer/faq.html'">
+        <p>常见问题</p>
+    </div>
+    <div class="setItem" onclick="window.location.href='../buyer/about-us.html'">
+        <p>关于我们</p>
+    </div>
+    <div class="setItem" id="customItem">
+        <p id="noBorder">客服电话<a href="tel:4001333866">4001-333-866</a></p>
+    </div>
+</section>
+<footer>
+    <button class="logOutBtn" onclick="loginOut()">退出当前账号</button>
+</footer>
+</body>
+<script type="text/javascript">
+    /*退出登录*/
+    function loginOut() {
+        var params = new Object();
+        ajax("/user/logout", params, function(data) {
+            clearUserInfo();
+            window.location.href = '/index.html';
+        }, function(msg) {
+            alert(msg);
+        });
+    }
+    /*去账户安全页面*/
+    function toAccountSafe(){
+        window.location.href="accountSafe.html";
+    }
+</script>
+</html>

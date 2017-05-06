@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.LogisticSettingAreaMapper">
+	<resultMap id="BaseResultMap" type="LogisticSettingArea">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SETTINGID" property="settingId" jdbcType="INTEGER" />
+		<result column="OPERATORID" property="operatorId" jdbcType="INTEGER" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="FIRSTCOUNT" property="firstCount" jdbcType="INTEGER" />
+		<result column="FIRSTFEE" property="firstFee" jdbcType="BIGINT" />
+		<result column="ADDCOUNT" property="addCount" jdbcType="INTEGER" />
+		<result column="ADDFEE" property="addFee" jdbcType="BIGINT" />
+		<result column="BLOCKID" property="blockId" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SETTINGID, OPERATORID, PROVINCECODE, CITYCODE, COUNTYCODE, FIRSTCOUNT, FIRSTFEE,
+		ADDCOUNT, ADDFEE, BLOCKID, CREATEUSERID, CREATETIME, MODIFYUSERID, MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="LogisticSettingArea">
+		insert into U_LOGISTICS_SETTING_AREA (SETTINGID, OPERATORID,
+		PROVINCECODE, CITYCODE, COUNTYCODE,
+		FIRSTCOUNT, FIRSTFEE, ADDCOUNT, ADDFEE, BLOCKID, 
+		CREATEUSERID, CREATETIME, MODIFYUSERID, MODIFYTIME)
+		values (#{settingId,jdbcType=INTEGER}, #{operatorId,jdbcType=INTEGER},
+		#{provinceCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR}, #{countyCode,jdbcType=VARCHAR},
+		#{firstCount,jdbcType=INTEGER}, #{firstFee,jdbcType=BIGINT}, #{addCount,jdbcType=INTEGER},
+		#{addFee,jdbcType=BIGINT}, #{blockId,jdbcType=INTEGER}, #{createUserId,jdbcType=INTEGER}, 
+		#{createTime,jdbcType=TIMESTAMP}, #{modifyUserId,jdbcType=INTEGER}, #{modifyTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from U_LOGISTICS_SETTING_AREA
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<delete id="deleteBySettingIdAndBlockId">
+		delete from U_LOGISTICS_SETTING_AREA
+		where SETTINGID = #{settingId,jdbcType=INTEGER}
+		and BLOCKID = #{blockId,jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateByIdSelective" parameterType="LogisticSettingArea">
+		update U_LOGISTICS_SETTING_AREA
+		<set>
+			<if test="provinceCode != null">
+				PROVINCECODE = #{provinceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cityCode != null">
+				CITYCODE = #{cityCode,jdbcType=VARCHAR},
+			</if>
+			<if test="countyCode != null">
+				COUNTYCODE = #{countyCode,jdbcType=VARCHAR},
+			</if>
+			<if test="firstCount != null">
+				FIRSTCOUNT = #{firstCount,jdbcType=INTEGER},
+			</if>
+			<if test="firstFee != null">
+				FIRSTFEE = #{firstFee,jdbcType=BIGINT},
+			</if>
+			<if test="addCount != null">
+				ADDCOUNT = #{addCount,jdbcType=INTEGER},
+			</if>
+			<if test="addFee != null">
+				ADDFEE = #{addFee,jdbcType=BIGINT},
+			</if>
+			<if test="blockId != null">
+				BLOCKID = #{blockId,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null" >
+	        	MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+	        </if>
+	        <if test="modifyUserId != null" >
+	        	MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+	        </if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGISTICS_SETTING_AREA
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listBySettingId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGISTICS_SETTING_AREA
+		where SETTINGID = #{settingId,jdbcType=INTEGER}
+		order by BLOCKID, PROVINCECODE, CITYCODE, COUNTYCODE
+	</select>
+	
+	<select id="listBySettingIdAndBlockId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGISTICS_SETTING_AREA
+		where SETTINGID = #{settingId,jdbcType=INTEGER}
+		and BLOCKID = #{blockId,jdbcType=INTEGER}
+		order by PROVINCECODE, CITYCODE, COUNTYCODE
+	</select>
+	
+	<select id="listBySettingIdExcludeAssignedBlock" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGISTICS_SETTING_AREA
+		where SETTINGID = #{settingId,jdbcType=INTEGER}
+		and BLOCKID &lt;&gt; #{blockId,jdbcType=INTEGER}
+		order by BLOCKID, PROVINCECODE, CITYCODE, COUNTYCODE
+	</select>
+	
+	<select id="loadChargeSettingBySettingIdAndBlockId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGISTICS_SETTING_AREA
+		group by SETTINGID,BLOCKID
+		having SETTINGID = #{settingId,jdbcType=INTEGER}
+		and BLOCKID = #{blockId,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadAreaSettingByProvinceCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGISTICS_SETTING_AREA
+		where SETTINGID = #{settingId,jdbcType=INTEGER}
+		and PROVINCECODE = #{provinceCode, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="loadAreaSettingByCityCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGISTICS_SETTING_AREA
+		where SETTINGID = #{settingId,jdbcType=INTEGER}
+		and CITYCODE = #{cityCode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="loadAreaSettingByCountyCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGISTICS_SETTING_AREA
+		where SETTINGID = #{settingId,jdbcType=INTEGER}
+		and COUNTYCODE = #{countyCode,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

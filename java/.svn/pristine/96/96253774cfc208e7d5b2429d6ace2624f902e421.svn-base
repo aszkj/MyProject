@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.UserVoucherMapper">
+	<resultMap id="BaseResultMap" type="UserVoucher">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="VOUID" property="vouId" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="BATCHNO" property="batchNo" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="USETIME" property="useTime" jdbcType="TIMESTAMP" />
+		<result column="ACTIVITYID" property="activityId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,VOUID,USERID,BATCHNO,STATUS,USETIME,ACTIVITYID
+	</sql>
+
+	<insert id="save" parameterType="UserVoucher">
+		insert into T_USER_VOUCHER
+		(VOUID,USERID,BATCHNO,STATUS,USETIME,ACTIVITYID)
+		values
+		(#{vouId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER},
+		#{batchNo,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},#{useTime,jdbcType=TIMESTAMP},
+		#{activityId,jdbcType=INTEGER})
+	</insert>
+
+	<select id="loadUserVoucherById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_USER_VOUCHER where ID =#{id,jdbcType=INTEGER}
+	</select>
+
+	<resultMap id="UserVoucherInfoMap" type="UserVoucherInfo">
+		<result column="USERVOUCHERID" property="userVoucherId" jdbcType="INTEGER" />
+		<result column="VOUID" property="vouId" jdbcType="INTEGER" />
+		<result column="VOUNAME" property="vouName" jdbcType="VARCHAR" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="VOUAMOUNT" property="vouAmount" jdbcType="BIGINT" />
+		<result column="ORDERAMOUNTLIMIT" property="orderAmountLimit" jdbcType="BIGINT" />
+		<result column="PRODUCTCLASSLIMIT" property="productClassLimit" jdbcType="VARCHAR" />
+		<result column="BUSINESSRULELIMIT" property="businessRuleLimit" jdbcType="VARCHAR" />
+		<result column="PRODUCTLIMIT" property="productLimit" jdbcType="VARCHAR" />
+		<result column="VALIDSTARTTIME" property="validStartTime" jdbcType="TIMESTAMP" />
+		<result column="VALIDENDTIME" property="validEndTime" jdbcType="TIMESTAMP" />
+		<result column="GRANTTIME" property="grantTime" jdbcType="TIMESTAMP" />
+		<result column="USETIME" property="useTime" jdbcType="TIMESTAMP" />
+		<result column="RULE" property="rule" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<select id="findUserVouchers" resultMap="UserVoucherInfoMap" parameterType="UserVoucherQuery">
+		SELECT
+		C.VOUNAME AS VOUNAME,
+		D.USERNAME AS USERNAME,
+		D.USERMOBILE AS PHONE,
+		A.STATUS AS STATUS,
+		B.VOUAMOUNT AS VOUAMOUNT,
+		B.ORDERAMOUNTLIMIT AS ORDERAMOUNTLIMIT,
+		B.PRODUCTCLASSLIMIT AS PRODUCTCLASSLIMIT,
+		B.BUSINESSRULELIMIT AS BUSINESSRULELIMIT,
+		B.PRODUCTLIMIT AS PRODUCTLIMIT,
+		B.VALIDSTARTTIME AS VALIDSTARTTIME,
+		B.VALIDENDTIME AS VALIDENDTIME,
+		B.GRANTTIME AS GRANTTIME,
+		A.USETIME AS USETIME
+		FROM T_USER_VOUCHER A
+		LEFT JOIN T_VOUCHER B ON A.VOUID = B.ID
+		LEFT JOIN T_VOUCHER_PACKAGE C ON B.VOUPACKID= C.ID
+		LEFT JOIN T_SMALLTABLE_USERINFO D ON A.USERID = D.USERID
+		<where>
+				C.ID =#{vouPackId,jdbcType=INTEGER}
+				and A.BATCHNO =#{batchNo,jdbcType=VARCHAR}
+			<if test="status !=null">
+				AND A.STATUS =#{status,jdbcType=VARCHAR}
+			</if>
+			<if test="phone !=null">
+				AND D.USERMOBILE =#{phone,jdbcType=VARCHAR}
+			</if>
+			<if test="startUseTime !=null">
+				AND A.USETIME &gt;= #{startUseTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endUseTime !=null">
+				AND A.USETIME &lt;= #{endUseTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="startGrantTime !=null">
+				AND B.GRANTTIME &gt;= #{startGrantTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endGrantTime !=null">
+				AND B.GRANTTIME &lt;= #{endGrantTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="startValidTime !=null">
+				AND B.VALIDSTARTTIME &gt;= #{startValidTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endValidTime !=null">
+				AND B.VALIDENDTIME &lt;= #{endValidTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		ORDER BY B.GRANTTIME DESC,A.VOUID ASC,A.USETIME DESC
+	</select>
+
+	<select id="listByActivityIdAndVouIds" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_USER_VOUCHER
+		<where>
+			<if test="activityId !=null">
+				ACTIVITYID = #{activityId,jdbcType=INTEGER}
+			</if>
+			<if test="vouIds !=null">
+				AND VOUID IN
+				<foreach item="item" index="index" collection="vouIds" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="listByActivityIdAndVouIdsAndUserIdAndStatus" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_USER_VOUCHER
+		<where>
+			<if test="activityId !=null">
+				ACTIVITYID = #{activityId,jdbcType=INTEGER}
+			</if>
+			<if test="vouIds !=null">
+				AND VOUID IN
+				<foreach item="item" index="index" collection="vouIds" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="userId !=null">
+				AND USERID = #{userId,jdbcType=INTEGER}
+			</if>
+			<if test="statusList !=null">
+				AND STATUS IN
+				<foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="listVouchersForNeedAutoUpdateStatus" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_USER_VOUCHER
+		<where>
+			<if test="statusList !=null">
+				STATUS IN
+				<foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<update id="updateStatusById">
+		update T_USER_VOUCHER
+		set
+		STATUS =#{status,jdbcType=VARCHAR}
+		where ID =#{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateUseVoucherById">
+		update T_USER_VOUCHER
+		set
+		STATUS =#{status,jdbcType=VARCHAR},
+		USETIME = #{useTime,jdbcType=TIMESTAMP}
+		where ID =#{id,jdbcType=INTEGER}
+	</update>
+	<select id="findUserVouchersByRealTimeStatus" resultMap="UserVoucherInfoMap">
+		SELECT
+		A.ID AS USERVOUCHERID,
+		B.ID AS VOUID,
+		C.VOUNAME AS VOUNAME,
+		A.STATUS AS
+		STATUS,
+		B.VOUAMOUNT AS
+		VOUAMOUNT,
+		B.ORDERAMOUNTLIMIT AS ORDERAMOUNTLIMIT,
+		B.PRODUCTCLASSLIMIT AS PRODUCTCLASSLIMIT,
+		B.BUSINESSRULELIMIT AS
+		BUSINESSRULELIMIT,
+		B.PRODUCTLIMIT AS PRODUCTLIMIT,
+		B.VALIDSTARTTIME AS VALIDSTARTTIME,
+		B.VALIDENDTIME AS
+		VALIDENDTIME,
+		B.GRANTTIME AS GRANTTIME,
+		A.USETIME AS USETIME,
+		B.RULE AS RULE
+		FROM
+		T_USER_VOUCHER A
+		LEFT JOIN T_VOUCHER B ON
+		A.VOUID = B.ID
+		LEFT JOIN T_VOUCHER_PACKAGE C
+		ON B.VOUPACKID = C.ID
+		<where>
+			<if test="userId !=null">
+				AND A.USERID =#{userId,jdbcType=INTEGER}
+			</if>
+			<choose>
+				<when test="isValid == false">
+					AND (B.VALIDENDTIME &lt; #{currentTime, jdbcType=TIMESTAMP}
+					OR A.STATUS = #{usedStatus, jdbcType=VARCHAR})
+				</when>
+				<otherwise>
+					AND (B.VALIDSTARTTIME &gt;#{currentTime, jdbcType=TIMESTAMP}
+					OR (B.VALIDSTARTTIME &lt;= #{currentTime,
+					jdbcType=TIMESTAMP}
+					and B.VALIDENDTIME &gt;=#{currentTime, jdbcType=TIMESTAMP}))
+					and A.STATUS &lt;&gt; #{usedStatus,
+					jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+		</where>
+		ORDER BY B.GRANTTIME DESC
+	</select>
+	<select id="listValidAndUsebleUserVouchers" resultMap="UserVoucherInfoMap">
+		SELECT
+		A.ID AS USERVOUCHERID,
+		B.ID AS VOUID,
+		C.VOUNAME AS VOUNAME,
+		A.STATUS AS
+		STATUS,
+		B.VOUAMOUNT AS
+		VOUAMOUNT,
+		B.ORDERAMOUNTLIMIT AS ORDERAMOUNTLIMIT,
+		B.PRODUCTCLASSLIMIT AS PRODUCTCLASSLIMIT,
+		B.BUSINESSRULELIMIT AS
+		BUSINESSRULELIMIT,
+		B.PRODUCTLIMIT AS PRODUCTLIMIT,
+		B.VALIDSTARTTIME AS VALIDSTARTTIME,
+		B.VALIDENDTIME AS
+		VALIDENDTIME,
+		B.GRANTTIME AS GRANTTIME,
+		A.USETIME AS USETIME,
+		B.RULE AS RULE
+		FROM
+		T_USER_VOUCHER A
+		LEFT JOIN T_VOUCHER B ON
+		A.VOUID = B.ID
+		LEFT JOIN T_VOUCHER_PACKAGE C
+		ON B.VOUPACKID = C.ID
+		<where>
+			<if test="userId !=null">
+				AND A.USERID =#{userId,jdbcType=INTEGER}
+			</if>
+			<if test="currentTime != null">
+				AND B.VALIDSTARTTIME &lt;= #{currentTime, jdbcType=TIMESTAMP}
+				AND B.VALIDENDTIME &gt;=#{currentTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="usedStatus != null">
+				AND A.STATUS &lt;&gt; #{usedStatus, jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY B.GRANTTIME DESC
+	</select>
+	<select id="loadUserVoucherByUserIdAndUserVoucherId" resultMap="UserVoucherInfoMap">
+		SELECT
+		A.ID AS USERVOUCHERID,
+		B.ID AS VOUID,
+		C.VOUNAME AS VOUNAME,
+		A.STATUS AS
+		STATUS,
+		B.VOUAMOUNT AS
+		VOUAMOUNT,
+		B.ORDERAMOUNTLIMIT AS ORDERAMOUNTLIMIT,
+		B.PRODUCTCLASSLIMIT AS PRODUCTCLASSLIMIT,
+		B.BUSINESSRULELIMIT AS
+		BUSINESSRULELIMIT,
+		B.PRODUCTLIMIT AS PRODUCTLIMIT,
+		B.VALIDSTARTTIME AS VALIDSTARTTIME,
+		B.VALIDENDTIME AS
+		VALIDENDTIME,
+		B.GRANTTIME AS GRANTTIME,
+		A.USETIME AS USETIME,
+		B.RULE AS
+		RULE
+		FROM
+		T_USER_VOUCHER A
+		LEFT JOIN T_VOUCHER B ON
+		A.VOUID = B.ID
+		LEFT JOIN T_VOUCHER_PACKAGE C
+		ON B.VOUPACKID = C.ID
+		<where>
+			A.ID = #{userVoucherId,jdbcType=INTEGER}
+			<if test="userId != null">
+				and A.USERID =#{userId,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	<select id="getValidUserVoucherCountByUserId" resultType="int">
+		SELECT
+		count(1)
+		FROM
+		T_USER_VOUCHER A
+		LEFT JOIN T_VOUCHER B ON
+		A.VOUID = B.ID
+		LEFT JOIN T_VOUCHER_PACKAGE C
+		ON B.VOUPACKID = C.ID
+		where
+		A.USERID =#{userId,jdbcType=INTEGER}
+		AND
+		(B.VALIDSTARTTIME &gt;#{currentTime, jdbcType=TIMESTAMP}
+		OR (B.VALIDSTARTTIME &lt;= #{currentTime,
+		jdbcType=TIMESTAMP}
+		and
+		B.VALIDENDTIME &gt;=#{currentTime, jdbcType=TIMESTAMP}))
+		and A.STATUS &lt;&gt; #{usedStatus,
+		jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getUserCouponByConPackIdAndBatchNo" resultMap="BaseResultMap">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			T_USER_VOUCHER a
+		WHERE
+			a.BATCHNO =#{batchNo,jdbcType=VARCHAR}
+		and a.VOUID in (
+			select 
+				b.ID 
+			from
+				T_VOUCHER b
+			where b.VOUPACKID = #{vouPackId,jdbcType=INTEGER}
+		)
+	</select>
+</mapper>

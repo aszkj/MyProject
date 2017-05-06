@@ -1,0 +1,189 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	function detail() {
+		var warehouseId = getUrlParam("storeId");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(warehouseId))) {
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+						+ warehouseId + '/getWarehouseBasicInfo',
+				data : '',
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode == 1) {
+						$("#warehouseCode").html(data.entity.storeCode);
+						$("#warehouseName").html(data.entity.storeName);
+						$("#warehouseContact").html(data.entity.contact);
+						$("#warehouseMobile").html(data.entity.mobile);
+						$("#warehouseAddress").html(data.entity.fullAddress);
+					} else {
+						showBox('提示信息', data.msg, 'alert');
+					}
+				}//非必须
+			});
+		}
+	}
+	
+	function list() {
+		var warehouseId = getUrlParam("storeId");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(warehouseId))) {
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+						+ warehouseId + '/listWarehousePartners',
+				data : '',
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					if (data.msgCode == 1) {
+						 var html = '';
+						 var dataList = data.entity.resultList;
+						 if(null != dataList && dataList.length > 0){
+							 for (var i = 0, j = dataList.length; i < j; i++) {
+								 html += '<tr><td>';
+								 html += dataList[i].storeCode;
+								 html += '</td><td>';
+								 html += dataList[i].storeName;
+								 html += '</td><td>';
+								 html += dataList[i].mobile;
+								 html += '</td><td>';
+								 html += dataList[i].fullAddress;
+								 html += '</td><td>';
+								 html += dataList[i].associateTime;
+								 html += '</td><td>';
+								 html += toCenti(dataList[i].finishOrderAmount,2);
+								 html += '</td><td>';
+								 html += dataList[i].finishOrderCount;
+								 html += '</td></tr>';
+							} 
+						 }else{
+							 html += '<tr><td colspan="7">暂无数据</td></tr>';
+						 }
+						 $("#tbody").html(html);
+					} else {
+						showBox('提示信息', data.msg, 'alert');
+					}
+				}//非必须
+			});
+		}
+	}
+
+	function comebackList() {
+		var urlParam = window.location.search;
+		locationHref('/store/store-index.html' + urlParam);
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		detail();
+		list();
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; <span>商家管理</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">查看门店</div>
+					<div class="complaint_main">
+						<table cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td height="30" align="left">微仓编码：<span id="warehouseCode"></span></td>
+								<td align="left">微仓名称：<span id="warehouseName"></span></td>
+								<td align="left">微仓联系人：<span id="warehouseContact"></span></td>
+								<td align="left">微仓手机号：<span id="warehouseMobile"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left" colspan="4">微仓地址：<span
+									id="warehouseAddress"></span></td>
+							</tr>
+						</table>
+						</br>
+						<div >
+							<p>
+								已关联服务门店信息
+							</p>
+						</div>
+						</br>
+						<div class="order_index">
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<th>门店编码</th>
+										<th>门店名称</th>
+										<th>门店手机号</th>
+										<th width="320">门店地址</th>
+										<th>关联时间</th>
+										<th>销售总额（元）</th>
+										<th>订单完成总数</th>
+									</tr>
+								</thead>
+								<tbody id="tbody"></tbody>
+							</table>
+						</div>
+						</br>
+						<p>
+							<input type="button" value="返回" class="btn_gray" onClick="comebackList()" />
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/login.css"
+	rel="stylesheet" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/md5.js"></script>
+<script type="text/javascript">
+	$(function() {
+		bindEvent();
+	})
+
+	function bindEvent() {
+		$('.login').on('blur', '#userName', validate.validateUserName).on(
+				'blur', '#password', validate.validatePasswd).on('focus',
+				'#userName', function() {
+					$(this).removeClass('warning').siblings("p").html('');
+				}).on('focus', '#password', function() {
+			$(this).removeClass('warning').siblings("p").html('');
+		}).on('click', '#login', loginForm);
+		$(document).keypress(function(e) {
+			if (e.which == 13) {
+				$('#login').click();
+			}
+		})
+	}
+
+	var validate = (function() {
+		return {
+			validateUserName : function() {
+				var userName = $.trim($('#userName').val()), $userNameMsg = $('#userNameMsg');
+
+				if (!userName) {
+					$userNameMsg.html('用户名不能为空').attr('class', 'warningTips');
+					$('#userName').addClass('warning');
+					return false;
+				}
+				$userNameMsg.html('').attr('class', '');
+				$('#userName').removeClass('warning');
+				return true;
+			},
+			validatePasswd : function() {
+				var password = $.trim($('#password').val()), $passwordMsg = $('#passwordMsg');
+
+				if (!password) {
+					$passwordMsg.html('密码不能为空').attr('class', 'warningTips');
+					$('#password').addClass('warning');
+					return false;
+				}
+				$passwordMsg.html('').attr('class', '');
+				$('#password').removeClass('warning');
+				return true;
+			}
+		}
+	})();
+
+	function loginForm() {
+		if (!validate.validateUserName()) {
+			return false;
+		}
+		if (!validate.validatePasswd()) {
+			return false;
+		}
+		$('#password').val(hex_md5($('#password').val()));
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$.ajax({
+			url : TERMINAL_URL + WAREHOUSE_SYSTEM_IDENTITY + '/login',
+			type : 'post',
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			success : function(data) {
+				if (data.msgCode == 1) {
+					var url = '/index.html';
+					location.href = url;
+				} else {
+					$('#passwordMsg').html(data.msg).attr('class',
+							'warningTips');
+					$('#userName').val(null);
+					$('#password').val(null);
+				}
+			}
+		})
+	}
+</script>
+<!--[if IE 6]>
+<script src="/js/DD_belatedPNG_0.0.8a-min.js" mce_src="/js/DD_belatedPNG_0.0.8a-min.js"></script>
+<script type="text/javascript">
+DD_belatedPNG.fix('img,.top,.bottom'); 
+</script>
+<![endif]-->
+</head>
+
+<body>
+	<div class="top">
+		<a href="/">
+			<!-- <img src="/static-resource/images/base/yilidilogo.png" width="60" height="60"> -->
+		</a>
+	</div>
+	<div class="login_box">
+		<div class="login_inner">
+			<div class="login">
+				<h1>登录</h1>
+				<div class="line"></div>
+				<form id="dataForm" name="dataForm" method="post">
+					<div class="inputarea">
+						<label>用户名：</label> <input type="text" class="input grid-26"
+							id="userName" name="userName" />
+						<p id="userNameMsg"></p>
+					</div>
+					<div class="inputarea">
+						<label>密码：</label> <input type="password" class="input grid-26"
+							id="password" name="password" />
+						<p id="passwordMsg"></p>
+					</div>
+					<div class="btnarea">
+						<input type="button" class="button" value="登录" id="login" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="bottom">
+		<p style="padding-right: 20px;">一里递商务科技有限公司</p>
+	</div>
+</body>
+</html>

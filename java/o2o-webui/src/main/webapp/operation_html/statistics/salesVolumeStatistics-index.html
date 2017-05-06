@@ -1,0 +1,504 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/echarts.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#beginTimeStr').datepicker({
+			dateFormat : 'yy-mm-dd',
+			constrainInput : true
+		});
+		$('#endTimeStr').datepicker({
+			dateFormat : 'yy-mm-dd',
+			constrainInput : true
+		});
+	}
+
+	function dataSubmit() {
+		var pattern = /\d+/;
+		var size = $.trim($("#size").val());
+		var beginTimeStr = $.trim($("#beginTimeStr").val());
+		var endTimeStr = $.trim($("#endTimeStr").val());
+		var barCode = $.trim($("#barCode").val());
+		var productClassCode = $.trim($("#productClassCode").val());
+
+		var jsonDate = {
+			"size" : size,
+			"beginTimeStr" : beginTimeStr,
+			"endTimeStr" : endTimeStr,
+			"barCode" : barCode,
+			"productClassCode" : productClassCode
+		};
+		/* jsonDate = JSON.parse(jsonDate);JSON.parse */
+		loadData(jsonDate);
+	}
+
+	function searchDate(num) {
+		var size = $.trim($("#size").val());
+		var searchDateType = $.trim(num);
+		var jsonDate = {
+			"size" : size,
+			"searchDateType" : searchDateType
+		};
+		/* jsonDate = JSON.parse(jsonDate); */
+		loadData(jsonDate);
+	}
+
+	/* 加载订单销售统计 */
+	function loadOrderStatistics() {
+		$.ajax({
+			type : 'post',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/getOrderStatistics',
+			dataType : 'json',
+			success : function(data) {
+				if (data.msgCode == 1) {
+					if (data.entity != null) {
+						var html1 = '';
+						if (data.entity.todayMap != null) {
+							html1 = initOrderStatistics(data.entity.todayMap.cation, data.entity.todayMap.statisticsNumber, data.entity.todayMap.statisticsPrice);
+						} else {
+							html1 = initOrderStatistics("今日销量",0,0);
+						}
+						$("#todayMap").html(html1);
+						var html2 = '';
+						if (data.entity.yesterdayMap != null) {
+							html2 = initOrderStatistics(data.entity.yesterdayMap.cation, data.entity.yesterdayMap.statisticsNumber, data.entity.yesterdayMap.statisticsPrice);
+						} else {
+							html2 = initOrderStatistics("昨日销量",0,0);
+						}
+						$("#yesterdayMap").html(html2);
+						var html3 = '';
+						if (data.entity.thisweekMap != null) {
+							html3 = initOrderStatistics(data.entity.thisweekMap.cation, data.entity.thisweekMap.statisticsNumber, data.entity.thisweekMap.statisticsPrice);
+						} else {
+							html3 = initOrderStatistics("本周销量",0,0);
+						}
+						$("#thisweekMap").html(html3);
+						var html4 = '';
+						if (data.entity.thismonthMap != null) {
+							html4 = initOrderStatistics(data.entity.thismonthMap.cation, data.entity.thismonthMap.statisticsNumber, data.entity.thismonthMap.statisticsPrice);
+						} else {
+							html4 = initOrderStatistics("本月销量",0,0);
+						}
+						$("#thismonthMap").html(html4);
+					}
+				}
+			},
+			error : function(error) {
+				$("#orderStatistics").html("请求出错了，请重试");
+			}
+		});
+	}
+
+	function initOrderStatistics(title, number, price) {
+		var html = '';
+		html += '<span style="font-size: 15px">' + title + '</span><br>';
+		html += '<span style="font-size: 15px;color:#F00">' + number + '件</span><br>';
+		html += '<span style="font-size: 15px;color:#F00">' + toCenti(price, 2) + '元</span><br>';
+		return html;
+	}
+
+	/* 加载数据 */
+	function loadData(jsonDate) {
+		$.ajax({
+			type : 'post',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/getProductStatistics',
+			data : jsonDate,
+			dataType : 'json',
+			success : function(data) {
+				if (data.msgCode == 1) {
+					if (data.entity != null) {
+						if (data.entity.productNumberList != null) {
+							productNumberPie(data.entity.productNumberList);
+							$("#productNumberPie").show();
+						} else {
+							$("#productNumberPie").hide();
+						}
+						if (data.entity.productPriceList != null) {
+							productPricePie(data.entity.productPriceList);
+							$("#productPricePie").show();
+						} else {
+							$("#productPricePie").hide();
+						}
+						if (data.entity.classesNumberList != null) {
+							classesNumberPie(data.entity.classesNumberList);
+							$("#classesNumberPie").show();
+						} else {
+							$("#classesNumberPie").hide();
+						}
+						if (data.entity.classesPriceList != null) {
+							classesPricePie(data.entity.classesPriceList);
+							$("#classesPricePie").show();
+						} else {
+							$("#classesPricePie").hide();
+						}
+						if (data.entity.storeNumberList != null) {
+							storeNumberPie(data.entity.storeNumberList);
+							$("#storeNumberPie").show();
+						} else {
+							$("#storeNumberPie").hide();
+						}
+						if (data.entity.storePriceList != null) {
+							storePricePie(data.entity.storePriceList);
+							$("#storePricePie").show();
+						} else {
+							$("#storePricePie").hide();
+						}
+					}
+				} else {
+					initDefaultPie();
+				}
+			},
+			errot : function(error) {
+				return null;
+			}
+		});
+	}
+
+	function initDefaultPie() {
+		var data1 = [ '暂无数据' ];
+		var data2 = [ {
+			value : 0,
+			name : '暂无数据'
+		} ];
+		initPic("productNumberPie", "单个商品销量排行占比", data1, data2);
+		initPic("productPricePie", "单个商品销售额排行占比", data1, data2);
+		initPic("classesNumberPie", "商品分类销量排行占比", data1, data2);
+		initPic("classesPricePie", "商品分类销售额排行占比", data1, data2);
+		initPic("storeNumberPie", "门店销量排行占比", data1, data2);
+		initPic("storePricePie", "门店销售额排行占比", data1, data2);
+		$("#productNumberPie").show();
+		$("#productPricePie").show();
+		$("#classesNumberPie").show();
+		$("#classesPricePie").show();
+		$("#storeNumberPie").show();
+		$("#storePricePie").show();
+	}
+
+	function productNumberPie(resultData) {
+		if (resultData != null) {
+			var elementId = "productNumberPie";
+			var text = "单个商品销量排行占比";
+			var data = getData(resultData, "number", "product");
+			initPic(elementId, text, data[0], data[1]);
+		}
+	}
+	function productPricePie(resultData) {
+		if (resultData != null) {
+			var elementId = "productPricePie";
+			var text = "单个商品销售额排行占比";
+			var data = getData(resultData, "price", "product");
+			initPic(elementId, text, data[0], data[1]);
+		}
+	}
+	function classesNumberPie(resultData) {
+		if (resultData != null) {
+			var elementId = "classesNumberPie";
+			var text = "商品分类销量排行占比";
+			var data = getData(resultData, "number", "classes");
+			initPic(elementId, text, data[0], data[1]);
+		}
+	}
+	function classesPricePie(resultData) {
+		if (resultData != null) {
+			var elementId = "classesPricePie";
+			var text = "商品分类销售额排行占比";
+			var data = getData(resultData, "price", "classes");
+			initPic(elementId, text, data[0], data[1]);
+		}
+	}
+	function storeNumberPie(resultData) {
+		if (resultData != null) {
+			var elementId = "storeNumberPie";
+			var text = "门店销量排行占比";
+			var data = getData(resultData, "number", "store");
+			initPic(elementId, text, data[0], data[1]);
+		}
+	}
+	function storePricePie(resultData) {
+		if (resultData != null) {
+			var elementId = "storePricePie";
+			var text = "门店销售额排行占比";
+			var data = getData(resultData, "price", "store");
+			initPic(elementId, text, data[0], data[1]);
+		}
+	}
+	/* 组装饼图数据 */
+	function getData(resultData, x, y) {
+		var dataArray = [];
+		var legendData = [];
+		var seriesData = [];
+		var object = null;
+		var name = "";
+		var value = "";
+		$.each(resultData, function(i, item) {
+			if (x == "number") {
+				value = item.saleCount;
+			} else if (x == "price") {
+				value = toCenti(item.amount, 2);
+			}
+			if (y == "product") {
+				name = item.productName;
+			} else if (y == "classes") {
+				name = item.productClassName;
+			} else if (y == "store") {
+				name = item.storeName;
+			}
+			legendData[i] = name;
+			object = {
+				value : value,
+				name : name
+			};
+			seriesData[i] = object;
+		});
+		dataArray[0] = legendData;
+		dataArray[1] = seriesData;
+		return dataArray;
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		loadTimeInput();
+		loadOrderStatistics();
+		var jsonDate = {
+			"size" : $("#size").val()
+		};
+		loadData(jsonDate);
+		loadSubClass("TOP_LEVEL_CLASS");
+	});
+
+
+	/* 初始化饼图 */
+	function initPic(elementId, text, legendData, seriesData) {
+		var myChart = echarts.init(document.getElementById(elementId));
+		option = {
+			title : {
+				text : text,
+				subtext : '',
+				x : 'center'
+			},
+			tooltip : {
+				trigger : 'item',
+				formatter : "{a} <br/>{b} : {c} ({d}%)"
+			},
+			series : [ {
+				name : '数据展示',
+				type : 'pie',
+				radius : '40%',
+				center : [ '50%', '60%' ],
+				data : seriesData,
+				itemStyle : {
+					emphasis : {
+						shadowBlur : 10,
+						shadowOffsetX : 0,
+						shadowColor : 'rgba(0, 0, 0, 0.5)'
+					}
+				}
+			} ]
+		};
+		myChart.setOption(option);
+	}
+	
+	/* 加载商品分类 */
+	function loadSubClass(productClassCode){
+		$.ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+productClassCode+'/getAllNextProductClassByUpCode', 
+			type:'post',
+			dataType:'json',
+			success:function(data){
+				if(data.msgCode != 1) return;
+				//特殊处理 尖括号
+				data = JSON.parse(encodeString(JSON.stringify(data)));
+				if(null != data.entity && data.entity.length > 0){
+					initProductClassSelect(data.entity);
+				}
+			}
+		});
+	}
+	function initProductClassSelect(listProductClass){
+		var	html = '<select class="select grid-15" onchange=changeClassSelect(this)>';
+		  	html += '<option value="">--请选择--</option>';
+			for(var i=0;i<listProductClass.length;i++){
+				html += '<option value="'+listProductClass[i].classCode+'">';
+				html += listProductClass[i].className;
+				html +='</option>'
+			}
+		html += '<select/>';
+		$("#productClassDiv").append(html);
+	}
+
+	function changeClassSelect(ele){
+		var productClass = $(ele);
+		productClass.nextAll().each(function(){
+			$(this).remove();
+		});
+		if(productClass.val()!= ""){
+			$("#productClassCode").val(productClass.val());
+			loadSubClass($.trim($("#productClassCode").val()));
+		}else{
+			var parentClassCode = productClass.prev();
+			if(parentClassCode != null){
+				//如果选择了请选择就默认选择此节点上一个节点的值
+				$("#productClassCode").val(productClass.prev().val());
+			}else{
+				$("#productClassCode").val("TOP_LEVEL_CLASS");
+			}
+		}
+	}
+
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 数据统计 &gt; <span>商品销量统计</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" style="font-size: 15px">销售额/销量统计</div>
+					<div id="orderStatistics" style="height: 200px;">
+						<div style="height: 150px; width: 150px;  padding: 10px;float: left" id="todayMap"></div>
+						<div style="height: 150px; width: 150px;  padding: 10px;float: left" id="yesterdayMap"></div>
+						<div style="height: 150px; width: 150px;  padding: 10px;float: left" id="thisweekMap"></div>
+						<div style="height: 150px; width: 150px;  padding: 10px;float: left" id="thismonthMap"></div>
+					</div>
+					<hr>
+					<div class="complaint_main" >
+						<div class="main_search">
+							<dl>
+								<dt>显示排行基数:</dt>
+								<dt>
+									<input type="text" class="txt grid-12" id="size" name="size"
+										value="10" /> <span>默认为10，可输入0以上的数值</span>
+								</dd>
+							</dl>
+						</div>
+					</div>
+					<div class="complaint_main">
+						<form method="get" id="dataForm">
+							<div class="main_search">
+								<dl>
+									<dt></dt>
+									<dd>
+										<input type="text" class="txt grid-11" id="beginTimeStr"
+											name="beginTimeStr" placeholder="请输入开始时间" />
+									</dd>
+									<dt class="mlr5">至</dt>
+									<dd>
+										<input type="text" class="txt grid-11" id="endTimeStr"
+											name="endTimeStr" placeholder="请输入结束时间" />
+									</dd>
+								</dl>
+								<dl>
+									<dt></dt>
+									<dt>
+										<input type="text" class="txt grid-12" id="barCode"
+											name="barCode" placeholder="请输入商品条形码" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>产品分类：</dt>
+									<dd>
+										<input type="hidden" id="productClassCode" name="productClassCode">
+										<div id="productClassDiv">
+											<!-- <select class="select grid-15" id="productClass" name="productClassCode">
+												<option value="" selected>--请选择产品分类--</option>
+											</select> -->
+										</div>
+									</dd>
+								</dl>
+								<p class="main_search_btn">
+									<input type="button" value="查询" class="btn_sure" id="btnSearch"
+										onClick="dataSubmit(1)" />
+								</p>
+							</div>
+							<!--搜索结束-->
+						</form>
+						<div>
+							<input type="button" id="yesterday" value="昨日"
+								onclick="searchDate(-1)" class="btn_sure"> <input
+								type="button" id="today" value="今天" onclick="searchDate(1)"
+								class="btn_sure"> <input type="button" id="thisweek"
+								value="本周" onclick="searchDate(7)" class="btn_sure"> <input
+								type="button" value="本月" onclick="searchDate(30)"
+								class="btn_sure">
+						</div>
+						<div class="order_index">
+							<!-- 商品销量统计 -->
+							<div style="width:100%;">
+								<div id="productNumberPie"
+									style="height: 500px; width: 500px; border: 1px solid #ccc; padding: 10px;float: left"></div>
+								<div id="productPricePie"
+									style="height: 500px; width: 500px; border: 1px solid #ccc; padding: 10px;float: left"></div>
+									<div class="clear" style="clear:both;"></div>
+							</div>
+							<!-- 分类销量统计 -->
+							<div style="width:100%;">
+								<div id="classesNumberPie"
+									style="height: 500px; width: 500px; border: 1px solid #ccc; padding: 10px;float: left"></div>
+								<div id="classesPricePie"
+									style="height: 500px; width: 500px; border: 1px solid #ccc; padding: 10px;float: left"></div>
+									<div class="clear" style="clear:both;"></div>
+							</div>
+							<!-- 店铺销量统计 -->
+							<div style="width:100%;">
+								<div id="storeNumberPie"
+									style="height: 500px; width: 500px; border: 1px solid #ccc; padding: 10px;float: left"></div>
+								<div id="storePricePie"
+									style="height: 500px; width: 500px; border: 1px solid #ccc; padding: 10px;float: left"></div>
+									<div class="clear" style="clear:both;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

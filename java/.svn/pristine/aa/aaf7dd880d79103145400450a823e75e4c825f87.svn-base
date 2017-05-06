@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.FlittingOrderMapper">
+	<resultMap id="BaseResultMap" type="FlittingOrder">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="FLITTINGORDERNO" property="flittingOrderNo" jdbcType="VARCHAR" />
+		<result column="SRCSTOREID" property="srcStoreId" jdbcType="INTEGER" />
+		<result column="SRCSTORENAME" property="srcStoreName" jdbcType="VARCHAR" />
+		<result column="DESTSTOREID" property="destStoreId" jdbcType="INTEGER" />
+		<result column="DESTSTORENAME" property="destStoreName" jdbcType="VARCHAR" />
+		<result column="FLITTINGCOUNT" property="flittingCount" jdbcType="INTEGER" />
+		<result column="FLITTINGAMOUNT" property="flittingAmount" jdbcType="BIGINT" />
+		<result column="SRCPROVINCECODE" property="srcProvinceCode" jdbcType="VARCHAR" />
+		<result column="SRCCITYCODE" property="srcCityCode" jdbcType="VARCHAR" />
+		<result column="SRCCOUNTYCODE" property="srcCountyCode" jdbcType="VARCHAR" />
+		<result column="DESTPROVINCECODE" property="destProvinceCode" jdbcType="VARCHAR" />
+		<result column="DESTCITYCODE" property="destCityCode" jdbcType="VARCHAR" />
+		<result column="DESTCOUNTYCODE" property="destCountyCode" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="APPLYNOTE" property="applyNote" jdbcType="VARCHAR" />
+		<result column="ORDERSTATUS" property="orderStatus" jdbcType="VARCHAR" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSERID" property="updateUserId" jdbcType="INTEGER" />
+		<result column="ACCEPTSTATUS" property="acceptStatus" jdbcType="VARCHAR" />
+		<result column="ACCEPTTIME" property="acceptTime" jdbcType="TIMESTAMP" />
+		<result column="ACCEPTUSERID" property="acceptUserId" jdbcType="INTEGER" />
+		<result column="ACCEPTREJECTREASON" property="acceptRejectReason" jdbcType="VARCHAR" />
+		<result column="SENDSTATUS" property="sendStatus" jdbcType="VARCHAR" />
+		<result column="SENDTIME" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="SENDUSERID" property="sendUserId" jdbcType="INTEGER" />
+		<result column="CHECKSTATUS" property="checkStatus" jdbcType="VARCHAR" />
+		<result column="CHECKTIME" property="checkTime" jdbcType="TIMESTAMP" />
+		<result column="CHECKUSERID" property="checkUserId" jdbcType="INTEGER" />
+		<result column="REALFLITTINGCOUNT" property="realFlittingCount" jdbcType="INTEGER" />
+		<result column="REALFLITTINGAMOUNT" property="realFlittingAmount" jdbcType="BIGINT" />
+		<result column="AUDITSTATUS" property="auditStatus" jdbcType="VARCHAR" />
+		<result column="AUDITTIME" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITUSERID" property="auditUserId" jdbcType="INTEGER" />
+		<result column="AUDITREJECTREASON" property="auditRejectReason" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,FLITTINGORDERNO, SRCSTOREID, SRCSTORENAME, DESTSTOREID, DESTSTORENAME, FLITTINGCOUNT, FLITTINGAMOUNT,
+		SRCPROVINCECODE, SRCCITYCODE, SRCCOUNTYCODE, DESTPROVINCECODE, DESTCITYCODE, DESTCOUNTYCODE, CREATETIME, CREATEUSERID,
+		APPLYNOTE, ORDERSTATUS, UPDATETIME, UPDATEUSERID, ACCEPTSTATUS, ACCEPTTIME, ACCEPTUSERID, ACCEPTREJECTREASON, SENDSTATUS,
+		SENDTIME, SENDUSERID, CHECKSTATUS, CHECKTIME, CHECKUSERID, REALFLITTINGCOUNT, REALFLITTINGAMOUNT, AUDITSTATUS, AUDITTIME,
+		AUDITUSERID, AUDITREJECTREASON
+	</sql>
+
+	<insert id="save" parameterType="FlittingOrder" useGeneratedKeys="true" keyProperty="id">
+		insert into T_FLITTING_ORDER (
+		FLITTINGORDERNO, SRCSTOREID, SRCSTORENAME, DESTSTOREID,
+		DESTSTORENAME, FLITTINGCOUNT, FLITTINGAMOUNT, SRCPROVINCECODE, SRCCITYCODE, SRCCOUNTYCODE, DESTPROVINCECODE, DESTCITYCODE,
+		DESTCOUNTYCODE, CREATETIME, CREATEUSERID, APPLYNOTE, ORDERSTATUS, UPDATETIME, UPDATEUSERID
+		)
+		values(
+		#{flittingOrderNo,jdbcType=VARCHAR},
+		#{srcStoreId,jdbcType=INTEGER},
+		#{srcStoreName,jdbcType=VARCHAR},
+		#{destStoreId,jdbcType=INTEGER},
+		#{destStoreName,jdbcType=VARCHAR},
+		#{flittingCount,jdbcType=INTEGER},
+		#{flittingAmount,jdbcType=BIGINT},
+		#{srcProvinceCode,jdbcType=VARCHAR},
+		#{srcCityCode,jdbcType=VARCHAR},
+		#{srcCountyCode,jdbcType=VARCHAR},
+		#{destProvinceCode,jdbcType=VARCHAR},
+		#{destCityCode,jdbcType=VARCHAR},
+		#{destCountyCode,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{applyNote,jdbcType=VARCHAR},
+		#{orderStatus,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUserId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<update id="updateAcceptStautsByFlittingOrderNo">
+		update T_FLITTING_ORDER
+		<set>
+			ORDERSTATUS = #{flittingOrder.orderStatus,jdbcType=VARCHAR},
+			UPDATETIME = #{flittingOrder.updateTime, jdbcType=TIMESTAMP},
+			UPDATEUSERID = #{flittingOrder.updateUserId,jdbcType=INTEGER},
+			ACCEPTSTATUS =
+			#{flittingOrder.acceptStatus,jdbcType=VARCHAR},
+			ACCEPTTIME = #{flittingOrder.acceptTime, jdbcType=TIMESTAMP},
+			ACCEPTUSERID =
+			#{flittingOrder.acceptUserId,jdbcType=INTEGER}
+			<if test="flittingOrder.acceptRejectReason != null">
+				, ACCEPTREJECTREASON = #{flittingOrder.acceptRejectReason,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where
+		FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR} and ACCEPTSTATUS = #{oriAcceptStatus,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateSendStautsByFlittingOrderNo">
+		update T_FLITTING_ORDER
+		set
+		ORDERSTATUS = #{flittingOrder.orderStatus,jdbcType=VARCHAR},
+		UPDATETIME =
+		#{flittingOrder.updateTime, jdbcType=TIMESTAMP},
+		UPDATEUSERID = #{flittingOrder.updateUserId,jdbcType=INTEGER},
+		SENDSTATUS =
+		#{flittingOrder.sendStatus,jdbcType=VARCHAR},
+		SENDTIME = #{flittingOrder.sendTime, jdbcType=TIMESTAMP},
+		SENDUSERID =
+		#{flittingOrder.sendUserId,jdbcType=INTEGER}
+		where
+		FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR} and SENDSTATUS =
+		#{oriSendStatus,jdbcType=VARCHAR} and ACCEPTSTATUS = #{oriAcceptStatus,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateCheckStautsByFlittingOrderNo">
+		update T_FLITTING_ORDER
+		set
+		ORDERSTATUS = #{flittingOrder.orderStatus,jdbcType=VARCHAR},
+		UPDATETIME =
+		#{flittingOrder.updateTime, jdbcType=TIMESTAMP},
+		UPDATEUSERID = #{flittingOrder.updateUserId,jdbcType=INTEGER},
+		CHECKSTATUS =
+		#{flittingOrder.checkStatus,jdbcType=VARCHAR},
+		CHECKTIME = #{flittingOrder.checkTime, jdbcType=TIMESTAMP},
+		CHECKUSERID =
+		#{flittingOrder.checkUserId,jdbcType=INTEGER}
+		where
+		FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR} and CHECKSTATUS =
+		#{oriCheckStatus,jdbcType=VARCHAR} and SENDSTATUS = #{oriSendStatus,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateCheckedByFlittingOrderNo">
+		update T_FLITTING_ORDER
+		set
+		ORDERSTATUS = #{flittingOrder.orderStatus,jdbcType=VARCHAR},
+		UPDATETIME =
+		#{flittingOrder.updateTime, jdbcType=TIMESTAMP},
+		UPDATEUSERID = #{flittingOrder.updateUserId,jdbcType=INTEGER},
+		CHECKSTATUS =
+		#{flittingOrder.checkStatus,jdbcType=VARCHAR},
+		CHECKTIME = #{flittingOrder.checkTime, jdbcType=TIMESTAMP},
+		CHECKUSERID =
+		#{flittingOrder.checkUserId,jdbcType=INTEGER},
+		REALFLITTINGCOUNT = #{flittingOrder.realFlittingCount,jdbcType=INTEGER},
+		REALFLITTINGAMOUNT = #{flittingOrder.realFlittingAmount,jdbcType=BIGINT}
+		where
+		FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR} and CHECKSTATUS =
+		#{oriCheckStatus,jdbcType=VARCHAR} and SENDSTATUS = #{oriSendStatus,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateAuditStautsByFlittingOrderNo">
+		update T_FLITTING_ORDER
+		<set>
+			ORDERSTATUS = #{flittingOrder.orderStatus,jdbcType=VARCHAR},
+			UPDATETIME = #{flittingOrder.updateTime, jdbcType=TIMESTAMP},
+			UPDATEUSERID = #{flittingOrder.updateUserId,jdbcType=INTEGER},
+			AUDITSTATUS = #{flittingOrder.auditStatus,jdbcType=VARCHAR},
+			AUDITTIME = #{flittingOrder.auditTime, jdbcType=TIMESTAMP},
+			AUDITUSERID = #{flittingOrder.auditUserId,jdbcType=INTEGER}
+			<if test="flittingOrder.auditRejectReason != null">
+				, AUDITREJECTREASON = #{flittingOrder.auditRejectReason,jdbcType=VARCHAR}
+			</if>
+			<if test="flittingOrder.realFlittingCount != null">
+				, REALFLITTINGCOUNT = #{flittingOrder.realFlittingCount,jdbcType=INTEGER}
+			</if>
+			<if test="flittingOrder.realFlittingAmount != null">
+				, REALFLITTINGAMOUNT = #{flittingOrder.realFlittingAmount,jdbcType=BIGINT}
+			</if>
+		</set>
+		where
+		FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR} and AUDITSTATUS = #{oriAuditStatus,jdbcType=VARCHAR} and
+		CHECKSTATUS = #{oriCheckStatus,jdbcType=VARCHAR}
+	</update>
+
+	<select id="loadByFlittingOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_FLITTING_ORDER
+		where FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadForUpdateByFlittingOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_FLITTING_ORDER
+		where FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR} for update
+	</select>
+
+	<select id="findFlittingOrderInfos" resultMap="BaseResultMap" parameterType="FlittingOrderQuery">
+		select
+		<include refid="Base_Column_List" />
+		from T_FLITTING_ORDER
+		<where>
+			<if test="flittingOrderNo != null">
+				and FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="orderStatus !=null">
+				and ORDERSTATUS = #{orderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="excludeOrderStatus != null">
+				and ORDERSTATUS &lt;&gt; #{excludeOrderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="orderStatusList != null">
+				and ORDERSTATUS IN
+				<foreach item="item" index="index" collection="orderStatusList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="beginCreateTime != null">
+				and CREATETIME &gt;= #{beginCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="srcStoreId != null">
+				and SRCSTOREID = #{srcStoreId,jdbcType=INTEGER}
+			</if>
+			<if test="destStoreId != null">
+				and DESTSTOREID = #{destStoreId,jdbcType=INTEGER}
+			</if>
+			<if test="srcStoreName != null">
+				and SRCSTORENAME like concat('%',#{srcStoreName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="destStoreName != null">
+				and DESTSTORENAME like concat('%',#{destStoreName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="srcProvinceCode !=null">
+				and SRCPROVINCECODE = #{srcProvinceCode,jdbcType=VARCHAR}
+			</if>
+			<if test="srcCityCode !=null">
+				and SRCCITYCODE = #{srcCityCode,jdbcType=VARCHAR}
+			</if>
+			<if test="srcCountyCode !=null">
+				and SRCCOUNTYCODE = #{srcCountyCode,jdbcType=VARCHAR}
+			</if>
+			<if test="destProvinceCode !=null">
+				and DESTPROVINCECODE = #{destProvinceCode,jdbcType=VARCHAR}
+			</if>
+			<if test="destCityCode !=null">
+				and DESTCITYCODE = #{destCityCode,jdbcType=VARCHAR}
+			</if>
+			<if test="destCountyCode !=null">
+				and DESTCOUNTYCODE = #{destCountyCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by CREATETIME desc
+	</select>
+
+</mapper>

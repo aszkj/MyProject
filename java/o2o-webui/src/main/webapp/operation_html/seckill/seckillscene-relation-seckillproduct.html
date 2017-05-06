@@ -1,0 +1,343 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var sceneId = getUrlParam("sceneId");
+	function detail() {
+		ajax({
+			//waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/seckillscene/detail/' + sceneId,
+			data : '',
+			dataType : 'json',//非必须.默认text
+			error : function() {
+			}, //非必须
+			success : function(data) {
+				if (data.msgCode == 1) {
+					var secKillScene = data.entity;
+					$("#sceneName").html(secKillScene.sceneName);
+					$("#startTime").html(secKillScene.startTime);
+					$("#repeatType").html(secKillScene.repeatTypeName);
+					$("#statusCode").html(secKillScene.statusCodeName);
+					var secKillProducts = data.entity.secKillProductDtos || [];
+					if (secKillProducts.length > 0) {
+						var html = '';
+						for (var i = 0, j = secKillProducts.length; i < j; i++) {
+							html += '<tr><td>';
+							var checkBoxHtml = "<input type='checkbox' "
+								+ " name='secKillProductId' value='"
+								+ secKillProducts[i].id + "'>";
+							html += checkBoxHtml
+							html += '</td><td>'
+							html += secKillProducts[i].productName;
+							html += '</td><td>';
+							html += secKillProducts[i].barCode;
+							html += '</td><td>';
+							html += secKillProducts[i].secKillTime / 60;
+							html += '</td><td>';
+							html += toCenti(
+									secKillProducts[i].secKillProductPrice, 2);
+							html += '</td><td>';
+							html += secKillProducts[i].remainCount;
+							html += '</td><td>';
+							html += secKillProducts[i].secKillCount;
+							html += '</td><td>';
+							html += secKillProducts[i].limitOrderCount;
+							html += '</td><td>';
+							html += secKillProducts[i].statusCodeName;
+							html += '</td><td>';
+							html += '<a href="javascript:void(0)" onclick="edit('
+									+ secKillProducts[i].id
+									+ ')" class="ablue">编辑</a>&nbsp;&nbsp;&nbsp;';
+							html += '</td></tr>';
+						}
+					} else {
+						html += '<tr><td colspan="10">暂无数据</td></tr>';
+					}
+					$("#tbody").html(html);
+				} else {
+					showBox('提示信息', data.msg, 'alert');
+				}
+				$("#checkAll").prop("checked",false);
+			}//非必须
+		});
+	}
+	function edit(id) {
+		locationHref('/seckill/seckillproduct-edit.html?secKillProductId='
+				+ id);
+	}
+	function checkAll() {
+		var checked = $("#checkAll").is(":checked");
+		$("input[name=secKillProductId]:checkbox", "#tbody").each(function() {
+			this.checked = checked ? false : true;
+			$(this).click();
+		});
+	}
+	function releaseSecKillProduct() {
+		var st = $("input:checkbox[name=secKillProductId]:checked", "#tbody");
+		if (st.length <= 0) {
+			showBox('提示信息', '请选择秒杀商品', 'alert');
+			return;
+		}
+		var result = "";
+		for (var i = 0, length = st.length; i < length; i++) {
+			if (i == length - 1) {
+				result += st[i].value;
+			} else {
+				result += st[i].value + ",";
+			}
+		}
+		var paramObj = {
+			"sceneId" : sceneId,
+			"secKillProductIds" : result
+		};
+		var formJsonStr = JSON.stringify(paramObj);
+		showBox('确认', '确认取消关联吗？', 'confirm', function() {
+			$.ajax({
+				type : 'post',
+				contentType : 'application/json',
+				dataType : 'json',
+				data : formJsonStr,
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+						+ '/seckillscene/releaseseckillproduct',
+				error : function() {
+					showBox('提示信息', '操作失败，请稍后再试', 'alert');
+				},
+				success : function(data) {
+					if (data.msgCode != 1) {
+						showBox('提示信息', data.msg, 'alert');
+					} else {
+						showBox('系统提示', data.msg, 'alert');
+						setTimeout(function() {
+							closeBox();
+							detail();
+						}, 1000);
+					}
+				}
+			});
+		})
+	}
+	function invalidateSecKillProduct() {
+		var st = $("input:checkbox[name=secKillProductId]:checked", "#tbody");
+		if (st.length <= 0) {
+			showBox('提示信息', '请选择秒杀商品', 'alert');
+			return;
+		}
+		var result = "";
+		for (var i = 0, length = st.length; i < length; i++) {
+			if (i == length - 1) {
+				result += st[i].value;
+			} else {
+				result += st[i].value + ",";
+			}
+		}
+		var paramObj = {
+			"sceneId" : sceneId,
+			"secKillProductIds" : result
+		};
+		var formJsonStr = JSON.stringify(paramObj);
+		showBox('确认', '确认失效商品吗？', 'confirm', function() {
+			$.ajax({
+				type : 'post',
+				contentType : 'application/json',
+				dataType : 'json',
+				data : formJsonStr,
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+						+ '/seckillscene/invalidateseckillproduct',
+				error : function() {
+					showBox('提示信息', '操作失败，请稍后再试', 'alert');
+				},
+				success : function(data) {
+					if (data.msgCode != 1) {
+						showBox('提示信息', data.msg, 'alert');
+					} else {
+						showBox('系统提示', data.msg, 'alert');
+						setTimeout(function() {
+							closeBox();
+							detail();
+						}, 1000);
+					}
+				}
+			});
+		})
+	}
+	function validSecKillProduct() {
+		var st = $("input:checkbox[name=secKillProductId]:checked", "#tbody");
+		if (st.length <= 0) {
+			showBox('提示信息', '请选择秒杀商品', 'alert');
+			return;
+		}
+		var result = "";
+		for (var i = 0, length = st.length; i < length; i++) {
+			if (i == length - 1) {
+				result += st[i].value;
+			} else {
+				result += st[i].value + ",";
+			}
+		}
+		var paramObj = {
+			"sceneId" : sceneId,
+			"secKillProductIds" : result
+		};
+		var formJsonStr = JSON.stringify(paramObj);
+		showBox('确认', '确认有效商品吗？', 'confirm', function() {
+			$.ajax({
+				type : 'post',
+				contentType : 'application/json',
+				dataType : 'json',
+				data : formJsonStr,
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+						+ '/seckillscene/validseckillproduct',
+				error : function() {
+					showBox('提示信息', '操作失败，请稍后再试', 'alert');
+				},
+				success : function(data) {
+					if (data.msgCode != 1) {
+						showBox('提示信息', data.msg, 'alert');
+					} else {
+						showBox('系统提示', data.msg, 'alert');
+						setTimeout(function() {
+							closeBox();
+							detail();
+						}, 1000);
+					}
+				}
+			});
+		})
+	}
+	function selectSecKillProduct() {
+		showBox("关联秒杀商品",
+				'/seckill/seckillscene-selectseckillproduct.html?width=800&height=610?sceneId='
+						+ sceneId);
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		detail();
+	});
+	$(document)
+			.on(
+					"click",
+					"#tbody input[name=secKillProductId]:checkbox",
+					function() {
+						if ($("#tbody input[name=secKillProductId]:checkbox").length == $(
+								"input:checkbox[name=secKillProductId]:checked",
+								"#tbody").length) {
+							document.getElementById("checkAll").checked = true;
+						} else {
+							document.getElementById("checkAll").checked = false;
+						}
+					});
+	//$(document).on("click", "#tbody tr", function() {
+		//$(this).find("td input[type=checkbox]").click();
+	//});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 秒杀管理 &gt; <span>关联秒杀商品</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">关联秒杀商品</div>
+					<div class="complaint_main">
+						<table cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td height="30" align="left">场次名称：<span id="sceneName"></span></td>
+								<td align="left">开始时间：<span id="startTime"></span></td>
+							</tr>
+							<tr>
+								<td align="left">场次状态：<span id="statusCode"></span></td>
+								<td align="left">是否重复开启：<span id="repeatType"></span><input
+									type="button" value="关联商品" style="margin-left: 100px;"
+									class="btn_sure" onClick="selectSecKillProduct();" /></td>
+							</tr>
+						</table>
+						<div class="order_index">
+							<div
+								style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px; margin-bottom: 5px;">
+								<span>已选择商品</span>
+							</div>
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<th width="40"></th>
+										<th width="80">商品名称</th>
+										<th width="80">商品编码</th>
+										<th width="100">抢购时间(分)</th>
+										<th width="100">秒杀价</th>
+										<th width="60">活动库存</th>
+										<th width="80">秒中数量</th>
+										<th width="80">限购数量</th>
+										<th width="80">是否失效</th>
+										<th width="100">操作</th>
+									</tr>
+								</thead>
+								<tbody id="tbody"></tbody>
+							</table>
+						</div>
+						<dl class="main_pagination">
+							<input type="checkbox" onclick="checkAll()" id="checkAll" />
+							<a href="javascript:$('#checkAll').click();">全选</a>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="button" style="cursor: pointer;"
+								onclick="javascript:releaseSecKillProduct();" title=""
+								value="取消关联" class="btn_sure" /> &nbsp;&nbsp;
+							<input type="button" style="cursor: pointer;"
+								onclick="javascript:invalidateSecKillProduct();" title=""
+								value="商品失效" class="btn_sure" /> &nbsp;&nbsp;
+							<input type="button" style="cursor: pointer;"
+								onclick="javascript:validSecKillProduct();" title=""
+								value="商品有效" class="btn_sure" />
+						</dl>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

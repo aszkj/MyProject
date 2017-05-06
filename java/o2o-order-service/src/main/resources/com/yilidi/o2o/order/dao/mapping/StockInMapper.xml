@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.StockInMapper">
+	<resultMap id="BaseResultMap" type="StockIn">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STOCKINCOUNT" property="stockInCount" jdbcType="INTEGER" />
+		<result column="STOCKINTYPE" property="stockInType" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, STOREID, STOCKINCOUNT, STOCKINTYPE, CREATETIME, CREATEUSERID, NOTE
+	</sql>
+
+	<insert id="save" parameterType="StockIn" useGeneratedKeys="true" keyProperty="id">
+		insert into T_STOCKIN (
+		STOREID, STOCKINCOUNT, STOCKINTYPE, CREATETIME, CREATEUSERID,
+		NOTE
+		)
+		values (
+		#{storeId,jdbcType=INTEGER}, #{stockInCount,jdbcType=INTEGER}, #{stockInType,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=INTEGER}, #{note,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKIN
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="findStockIns" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKIN
+		<where>
+			<if test="storeId != null">
+				and STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="stockInCode != null">
+				and STOCKINTYPE = #{stockInType, jdbcType=VARCHAR}
+			</if>
+			<if test="startDate != null">
+				and CREATETIME &gt; #{startDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endDate != null">
+				and CREATETIME &lt; #{endDate,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.InventoryStatisticsMapper" >
+  <resultMap id="BaseResultMap" type="SaleInventoryStatistics" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="STOREID" property="storeId" jdbcType="INTEGER" />
+    <result column="PRODUCTCLASSCODE" property="productClassCode" jdbcType="VARCHAR" />
+    <result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+    <result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+    <result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+    <result column="REMAINCOUNT" property="remainCount" jdbcType="INTEGER" />
+    <result column="ORDEREDCOUNT" property="orderedCount" jdbcType="INTEGER" />
+    <result column="STANDBYCOUNT" property="standbyCount" jdbcType="INTEGER" />
+    <result column="STATISTICSDATE" property="statisticsDate" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, STOREID, PRODUCTCLASSCODE, BRANDCODE, PRODUCTNAME, SALEPRODUCTID,
+    REMAINCOUNT, ORDEREDCOUNT, STANDBYCOUNT, STATISTICSDATE
+  </sql>
+  
+  <insert id="save" parameterType="SaleInventoryStatistics" >
+    insert into P_INVENTORY_STATISTICS (
+		STOREID, PRODUCTCLASSCODE, BRANDCODE, PRODUCTNAME, SALEPRODUCTID,
+	    REMAINCOUNT, ORDEREDCOUNT, STANDBYCOUNT, STATISTICSDATE
+    )
+    values (#{storeId,jdbcType=INTEGER}, #{productClassCode,jdbcType=VARCHAR}, #{brandCode,jdbcType=VARCHAR},
+    	#{productName,jdbcType=VARCHAR}, #{saleProductId,jdbcType=INTEGER}, #{remainCount,jdbcType=INTEGER},
+    	#{orderedCount,jdbcType=INTEGER}, #{aviableCount,jdbcType=INTEGER}, #{standbyCount,jdbcType=INTEGER}, 
+      	#{statisticsDate,jdbcType=DATE}
+	)
+  </insert>
+  
+  <select id="listReport" resultType="hashmap" parameterType="SaleReportQuery" >
+    SELECT PS.STATISTICSDATE as date, 
+    SUM(PS.REMAINCOUNT) as inventoryCount, 
+    SUM(PS.ORDEREDCOUNT) as orderCount, 
+    SUM(PS.STANDBYCOUNT) as standByCount
+	FROM P_INVENTORY_STATISTICS PS 
+	<where>
+		<if test="productClass != null">
+			PS.PRODUCTCLASSCODE = #{productClass, jdbcType=VARCHAR}
+		</if>
+		<if test="brandCode != null">
+			AND PS.BRANDCODE = #{brandCode, jdbcType=VARCHAR}
+		</if>
+		<if test="productName != null">
+			AND PS.PRODUCTNAME = #{productName, jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null">
+			AND STATISTICSDATE &gt;= #{startTime, jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			AND STATISTICSDATE &lt;= #{endTime, jdbcType=TIMESTAMP}
+		</if>
+	</where>
+	GROUP BY PS.STATISTICSDATE
+  </select>
+ 
+</mapper>

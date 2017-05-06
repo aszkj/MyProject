@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.OnlinePayDetailMapper">
+	<resultMap id="BaseResultMap" type="OnlinePayDetail">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SERIALNO" property="serialNo" jdbcType="VARCHAR" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="PAYPLATFORM" property="payPlatform" jdbcType="VARCHAR" />
+		<result column="PAYACCOUNT" property="payAccount" jdbcType="VARCHAR" />
+		<result column="PAYAMOUNT" property="payAmount" jdbcType="BIGINT" />
+		<result column="PAYSTATUS" property="payStatus" jdbcType="VARCHAR" />
+		<result column="REFUNDTYPE" property="refundType" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="USEDESC" property="useDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="OnlinePayDetailRelatedInfoResultMap" type="OnlinePayDetailRelatedInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="SERIALNO" property="serialNo" jdbcType="VARCHAR" />
+		<result column="PAYPLATFORM" property="payPlatform" jdbcType="VARCHAR" />
+		<result column="PAYAMOUNT" property="payAmount" jdbcType="BIGINT" />
+		<result column="PAYSTATUS" property="payStatus" jdbcType="VARCHAR" />
+		<result column="REFUNDTYPE" property="refundType" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="USEDESC" property="useDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,SERIALNO,USERID,CUSTOMERTYPE,ACCOUNTTYPECODE,
+		PAYPLATFORM,PAYACCOUNT,PAYAMOUNT,PAYSTATUS,
+		REFUNDTYPE,CREATETIME,USEDESC
+	</sql>
+
+	<insert id="save" parameterType="OnlinePayDetail">
+		insert into U_ONLINE_PLAY_LOG
+		(SERIALNO,USERID,PAYPLATFORM,PAYACCOUNT,PAYAMOUNT,
+		PAYSTATUS,REFUNDTYPE,CREATETIME,USEDESC)
+		values
+		(#{serialNo,jdbcType=VARCHAR},
+		#{userId,jdbcType=INTEGER},
+		#{payPlatform,jdbcType=VARCHAR},
+		#{payAccount,jdbcType=VARCHAR},
+		#{payAmount,jdbcType=BIGINT},
+		#{payStatus,jdbcType=VARCHAR},
+		#{refundType,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{useDesc,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_ONLINE_PLAY_LOG
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+		
+	<select id="findOnlinePayDetails" resultMap="OnlinePayDetailRelatedInfoResultMap" parameterType="AccountDetailQuery">
+		SELECT A.ID,A.USERID,B.CUSTOMERTYPE,D.STORECODE,B.CUSTOMERNAME AS STORENAME,A.SERIALNO,A.PAYPLATFORM,
+		A.PAYAMOUNT,A.PAYSTATUS,A.REFUNDTYPE,A.CREATETIME,A.USEDESC,C.USERNAME FROM U_ONLINE_PLAY_LOG A
+		LEFT JOIN U_CUSTOMER B ON B.ID = A.USERID
+		LEFT JOIN U_USER C ON  B.MASTERUSERID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON D.STOREID = A.USERID
+		<where>
+			1=1
+			<if test="payPlatform != null">
+				and A.PAYPLATFORM = #{payPlatform, jdbcType=VARCHAR}
+			</if>
+			<if test="payStatus != null">
+				and A.PAYSTATUS = #{payStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="serialNo != null">
+				and A.SERIALNO = #{serialNo, jdbcType=VARCHAR}
+			</if>
+			<if test="userId != null">
+				and A.USERID = #{userId, jdbcType=INTEGER}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;=#{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;=#{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="customerType != null">
+				and B.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and C.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<select id="listDataForExportOnlinePayDetails" resultMap="OnlinePayDetailRelatedInfoResultMap">
+		SELECT A.ID,A.USERID,B.CUSTOMERTYPE,D.STORECODE,B.CUSTOMERNAME AS STORENAME,A.SERIALNO,A.PAYPLATFORM,
+		A.PAYAMOUNT,A.PAYSTATUS,A.REFUNDTYPE,A.CREATETIME,A.USEDESC,C.USERNAME FROM U_ONLINE_PLAY_LOG A
+		LEFT JOIN U_CUSTOMER B ON B.ID = A.USERID
+		LEFT JOIN U_USER C ON  B.MASTERUSERID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON D.STOREID = A.USERID
+		<where>
+			1=1
+			<if test="accountDetailQuery.payPlatform != null">
+				and A.PAYPLATFORM = #{accountDetailQuery.payPlatform, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.payStatus != null">
+				and A.PAYSTATUS = #{accountDetailQuery.payStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.storeCode != null">
+				and D.STORECODE = #{accountDetailQuery.storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{accountDetailQuery.storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="accountDetailQuery.serialNo != null">
+				and A.SERIALNO = #{accountDetailQuery.serialNo, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.userId != null">
+				and A.USERID = #{accountDetailQuery.userId, jdbcType=INTEGER}
+			</if>
+			<if test="accountDetailQuery.startCreateTime != null">
+				and A.CREATETIME &gt;=#{accountDetailQuery.startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="accountDetailQuery.endCreateTime != null">
+				and A.CREATETIME &lt;=#{accountDetailQuery.endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="accountDetailQuery.customerType != null">
+				and B.CUSTOMERTYPE = #{accountDetailQuery.customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.userName != null">
+				and C.USERNAME = #{accountDetailQuery.userName, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.order != null">
+				order by ${accountDetailQuery.order}
+				<if test="accountDetailQuery.sort != null">
+					${accountDetailQuery.sort}
+				</if>
+			</if>
+		</where>
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCountsForExportOnlinePayDetails" parameterType="AccountDetailQuery" resultType="java.lang.Long">
+		SELECT COUNT(*) FROM U_ONLINE_PLAY_LOG A
+		LEFT JOIN U_CUSTOMER B ON B.ID = A.USERID
+		LEFT JOIN U_USER C ON  B.MASTERUSERID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON D.STOREID = A.USERID
+		<where>
+			1=1
+			<if test="payPlatform != null">
+				and A.PAYPLATFORM = #{payPlatform, jdbcType=VARCHAR}
+			</if>
+			<if test="payStatus != null">
+				and A.PAYSTATUS = #{payStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="serialNo != null">
+				and A.SERIALNO = #{serialNo, jdbcType=VARCHAR}
+			</if>
+			<if test="userId != null">
+				and A.USERID = #{userId, jdbcType=INTEGER}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;=#{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;=#{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="customerType != null">
+				and B.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and C.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+</mapper>

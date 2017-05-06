@@ -1,0 +1,128 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<style>
+#prompt {
+	color: #E84244;
+}
+</style>
+<script type="text/javascript">
+	function closeBox() {
+		var g_boxId = $.trim(getUrlParam("boxId"));
+		if (g_boxId != '' && parent && parent.closeBox) {
+			parent.dataSubmit();
+			parent.closeBox(g_boxId);
+		}
+	}
+
+	var validate = (function() {
+		return {
+			validateDisplayOrder : function() {
+				var displayOrder = $.trim($('#displayOrder').val()), $displayOrderMsg = $('#displayOrderMsg');
+				if (!displayOrder) {
+					$displayOrderMsg.html('请填写商品顺序！').attr('class', 'error');
+					return false;
+				}
+				var legalNum = /^\+?[1-9][0-9]*$/;
+				if (!legalNum.test(displayOrder)) {
+					$displayOrderMsg.html('请填写合法的顺序数字！(顺序为正整数)').attr('class',
+							'error');
+					return false;
+				}
+				$displayOrderMsg.html('').attr('class', 'right');
+				return true;
+			},
+		}
+	})();
+	function validateData() {
+		if (!validate.validateDisplayOrder()) {
+			return false;
+		}
+		return true;
+	}
+
+	function dataSubmit() {
+		var id = decodeURIComponent($.trim(getUrlParam("id")));
+		var strParamJson = '{"displayOrder":"'
+				+ $.trim($("#displayOrder").val()) + '"}';
+		if (!validateData()) {
+			return;
+		}
+
+		$
+				.ajax({
+					url : TERMINAL_URL + WAREHOUSE_SYSTEM_IDENTITY
+							+ '/saleproduct/' + id + '/updatedisplayorder',
+					type : 'post',
+					contentType : 'application/json',
+					data : strParamJson,
+					dataType : 'json',
+					success : function(data) {
+						if (data.msgCode == 3) {
+							loginError(data.msg);
+						}
+						if (data.msgCode != 1) {
+							$('#prompt').text(data.msg);
+							$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+							return;
+						}
+						$('#prompt').text('操作成功');
+						setTimeout(function() {
+							parent.closeBox();
+						}, 2000);
+					}
+				});
+	}
+</script>
+</head>
+<body>
+	<div class="system_form">
+		<dl>
+			<dt>
+				<em class="cred">*</em>商品顺序：
+			</dt>
+			<dd>
+				<input type="text" class="txt grid-10" id="displayOrder"
+					name="displayOrder" /><span id="displayOrderMsg"></span>
+			</dd>
+		</dl>
+		<dl>
+			<p>
+				<input type="button" value="保 存" class="btn_sure"
+					onclick="dataSubmit()" id="submit" /> <input type="button"
+					value="取 消" class="btn_gray" onclick="closeBox()" /> <span
+					id="prompt" class="cred"></span>
+			</p>
+		</dl>
+	</div>
+
+
+</body>
+</html>

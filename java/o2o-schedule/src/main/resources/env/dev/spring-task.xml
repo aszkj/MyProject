@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd"
+	default-lazy-init="true">
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false">
+		<property name="triggers">
+			<list>
+				<ref bean="sessionTimeoutCheckTrigger" />
+				<!-- <ref bean="exceptionMessageRetySendTrigger" /> -->
+				<!-- <ref bean="orderShardingByCreateTimeTrigger" /> -->
+				<!-- <ref bean="smsReportHandleTrigger" /> -->
+				<ref bean="orderStatusCancelTrigger" />
+				<ref bean="orderStatusFinishedTrigger" />
+				<ref bean="customerVipExpireTrigger" />
+				<ref bean="productSaleDailyStatisticsTrigger" />
+				<!-- <ref bean="pickUpOrderStatusCancelTrigger" /> -->
+				<ref bean="secKillSceneStatusUpdateTrigger" />
+				<ref bean="secKillSceneRepeatTrigger" />
+				<ref bean="shareRuleStatusUpdatelTrigger" />
+				<ref bean="couponStatusTrigger" />
+				<ref bean="voucherStatusTrigger" />
+				<ref bean="inviterUserShareWeekTopWeeklyTrigger" />
+				<ref bean="inviterUserShareWeekTopMonthlyTrigger" />
+				<ref bean="storeScoreDailyStatisticsTrigger" />
+				<ref bean="buyRewardActivityStatusUpdateTrigger" />
+			</list>
+		</property>
+		<property name="quartzProperties">
+			<props>
+				<prop key="org.quartz.threadPool.threadCount">10</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- sessionTimeoutCheckTrigger Job -->
+	<bean id="sessionTimeoutCheckTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sessionTimeoutCheckJobDetail" />
+		<property name="cronExpression" value="0 */30 * * * ?" />
+	</bean>
+	<bean id="sessionTimeoutCheckJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="sessionTimeoutCheckJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="sessionTimeoutCheckJob" class="com.yilidi.o2o.schedule.web.SessionTimeoutCheckJob">
+		<property name="sessionTimeoutCheck" ref="sessionTimeoutCheck" />
+	</bean>
+
+	<!-- exceptionMessageRetySendTrigger Job -->
+	<bean id="exceptionMessageRetySendTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="exceptionMessageRetySendJobDetail" />
+		<property name="cronExpression" value="0 */1 * * * ?" />
+	</bean>
+	<bean id="exceptionMessageRetySendJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="exceptionMessageRetySendJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="exceptionMessageRetySendJob" class="com.yilidi.o2o.schedule.system.ExceptionMessageRetySendJob">
+		<property name="exceptionMessageOperationService" ref="exceptionMessageOperationService" />
+	</bean>
+
+	<!-- orderShardingByCreateTimeTrigger Job -->
+	<bean id="orderShardingByCreateTimeTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="orderShardingByCreateTimeJobDetail" />
+		<property name="cronExpression" value="0 0 0 * * ?" /><!-- 每天零点触发 -->
+	</bean>
+	<bean id="orderShardingByCreateTimeJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="orderShardingByCreateTimeJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="orderShardingByCreateTimeJob" class="com.yilidi.o2o.schedule.order.OrderShardingByCreateTimeJob">
+		<property name="orderShardingService" ref="orderShardingService" />
+	</bean>
+
+	<!-- smsReportHandleTrigger Job -->
+	<bean id="smsReportHandleTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="smsReportHandleJobDetail" />
+		<property name="cronExpression" value="0 */2 * * * ?" />
+	</bean>
+	<bean id="smsReportHandleJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="smsReportHandleJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="smsReportHandleJob" class="com.yilidi.o2o.schedule.system.SmsReportHandleJob">
+		<property name="smsReportHandleService" ref="smsReportHandleService" />
+	</bean>
+
+	<!-- orderStatusCancelTrigger Job -->
+	<bean id="orderStatusCancelTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="orderStatusCancelJobDetail" />
+		<property name="cronExpression" value="0 */5 * * * ?" /><!-- 每隔5分钟触发 -->
+	</bean>
+	<bean id="orderStatusCancelJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="orderStatusCancelJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="orderStatusCancelJob" class="com.yilidi.o2o.schedule.order.OrderStatusCancelJob">
+		<property name="orderService" ref="orderService" />
+		<property name="storeProfileService" ref="storeProfileService" />
+	</bean>
+	<!-- orderStatusFinishedTrigger Job -->
+	<bean id="orderStatusFinishedTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="orderStatusFinishedJobDetail" />
+		<property name="cronExpression" value="0 */5 * * * ?" /><!-- 每隔5分钟触发 -->
+	</bean>
+	<bean id="orderStatusFinishedJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="orderStatusFinishedJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="orderStatusFinishedJob" class="com.yilidi.o2o.schedule.order.OrderStatusFinishedJob">
+		<property name="orderService" ref="orderService" />
+	</bean>
+	<!-- customerVipExpireTrigger Job -->
+	<bean id="customerVipExpireTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="customerVipExpireJobDetail" />
+		<property name="cronExpression" value="0 0 0 * * ?" /><!-- 每天零时触发 -->
+	</bean>
+	<bean id="customerVipExpireJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="customerVipExpireJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="customerVipExpireJob" class="com.yilidi.o2o.schedule.user.CustomerVipExpireJob">
+		<property name="customerService" ref="customerService" />
+	</bean>
+	<!-- productSaleDailyStatisticsTrigger Job -->
+	<bean id="productSaleDailyStatisticsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="productSaleDailyStatisticsJobDetail" />
+		<property name="cronExpression" value="0 0 0 * * ?" /><!-- 每天零时触发 -->
+	</bean>
+	<bean id="productSaleDailyStatisticsJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="productSaleDailyStatisticsJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="productSaleDailyStatisticsJob" class="com.yilidi.o2o.schedule.product.ProductSaleDailyStatisticsJob">
+		<property name="saleOrderItemService" ref="saleOrderItemService" />
+		<property name="saleDailyService" ref="saleDailyService" />
+		<property name="storeWarehouseService" ref="storeWarehouseService" />
+	</bean>
+	<!-- pickUpOrderStatusCancelTrigger Job -->
+	<bean id="pickUpOrderStatusCancelTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="pickUpOrderStatusCancelJobDetail" />
+		<property name="cronExpression" value="0 */30 * * * ?" /><!-- 每隔半小时触发 -->
+	</bean>
+	<bean id="pickUpOrderStatusCancelJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="pickUpOrderStatusCancelJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="pickUpOrderStatusCancelJob" class="com.yilidi.o2o.schedule.order.PickUpOrderStatusCancelJob">
+		<property name="orderService" ref="orderService" />
+		<property name="storeProfileService" ref="storeProfileService" />
+	</bean>
+	<!-- secKillSceneStatusUpdateTrigger Job -->
+	<bean id="secKillSceneStatusUpdateTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="secKillSceneStatusUpdateJobDetail" />
+		<property name="cronExpression" value="0 */2 * * * ?" /><!-- 每隔两分钟触发 -->
+	</bean>
+	<bean id="secKillSceneStatusUpdateJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="secKillSceneStatusUpdateJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="secKillSceneStatusUpdateJob" class="com.yilidi.o2o.schedule.product.SecKillSceneStatusUpdateJob">
+		<property name="secKillSceneService" ref="secKillSceneService" />
+	</bean>
+	<!-- secKillSceneRepeatTrigger Job -->
+	<bean id="secKillSceneRepeatTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="secKillSceneRepeaJobDetail" />
+		<property name="cronExpression" value="0 0 0 * * ?" /><!-- 每天零时触发 -->
+	</bean>
+	<bean id="secKillSceneRepeaJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="secKillSceneRepeaJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="secKillSceneRepeaJob" class="com.yilidi.o2o.schedule.product.SecKillSceneRepeatJob">
+		<property name="secKillSceneService" ref="secKillSceneService" />
+	</bean>
+	<!-- shareRuleStatusUpdatelTrigger Job -->
+	<bean id="shareRuleStatusUpdatelTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="shareRuleStatusUpdatelJobDetail" />
+		<property name="cronExpression" value="0 */2 * * * ?" /><!-- 每隔2分钟触发 -->
+	</bean>
+	<bean id="shareRuleStatusUpdatelJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="shareRuleStatusUpdatelJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="shareRuleStatusUpdatelJob" class="com.yilidi.o2o.schedule.user.ShareRuleStatusUpdatelJob">
+		<property name="shareRuleService" ref="shareRuleService" />
+	</bean>
+	<!-- couponStatusTrigger Job -->
+	<bean id="couponStatusTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="couponStatusJobDetail" />
+		<property name="cronExpression" value="0 */2 * * * ?" /><!-- 每隔2分钟触发 -->
+	</bean>
+	<bean id="couponStatusJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="couponStatusJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="couponStatusJob" class="com.yilidi.o2o.schedule.order.CouponStatusJob">
+		<property name="couponService" ref="couponService" />
+	</bean>
+	<!-- voucherStatusTrigger Job -->
+	<bean id="voucherStatusTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="voucherStatusJobDetail" />
+		<property name="cronExpression" value="0 */2 * * * ?" /><!-- 每隔2分钟触发 -->
+	</bean>
+	<bean id="voucherStatusJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="voucherStatusJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="voucherStatusJob" class="com.yilidi.o2o.schedule.order.VoucherStatusJob">
+		<property name="voucherService" ref="voucherService" />
+	</bean>
+	<!-- inviterUserShareWeekTopWeeklyTrigger Job -->
+	<bean id="inviterUserShareWeekTopWeeklyTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="inviterUserShareWeekTopWeeklyJobDetail" />
+		<property name="cronExpression" value="0 0 0 1/7 * ?" /><!-- 凌晨执行每隔7天触发 -->
+	</bean>
+	<bean id="inviterUserShareWeekTopWeeklyJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="inviterUserShareWeekTopWeeklyJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="inviterUserShareWeekTopWeeklyJob" class="com.yilidi.o2o.schedule.user.InviterUserShareWeekTopWeeklyJob">
+		<property name="invitedUserShareAwardService" ref="invitedUserShareAwardService" />
+		<property name="inviterUserShareWeekTopService" ref="inviterUserShareWeekTopService" />
+		<property name="inviterUserShareWeekTopHistoryService" ref="inviterUserShareWeekTopHistoryService" />
+		<property name="userService" ref="userService" />
+	</bean>
+	<!-- inviterUserShareWeekTopMonthlyTrigger Job -->
+	<bean id="inviterUserShareWeekTopMonthlyTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="inviterUserShareWeekTopMonthlyJobDetail" />
+		<property name="cronExpression" value="0 0 1 1 * ?" /><!-- 每月1号凌晨1点触发 -->
+	</bean>
+	<bean id="inviterUserShareWeekTopMonthlyJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="inviterUserShareWeekTopMonthlyJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="inviterUserShareWeekTopMonthlyJob" class="com.yilidi.o2o.schedule.user.InviterUserShareWeekTopMonthlyJob">
+		<property name="invitedUserShareAwardService" ref="invitedUserShareAwardService" />
+		<property name="inviterUserShareWeekTopService" ref="inviterUserShareWeekTopService" />
+		<property name="inviterUserShareWeekTopHistoryService" ref="inviterUserShareWeekTopHistoryService" />
+		<property name="userService" ref="userService" />
+	</bean>
+	<!-- storeScoreDailyStatisticsTrigger Job -->
+	<bean id="storeScoreDailyStatisticsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="storeScoreDailyStatisticsJobDetail" />
+		<property name="cronExpression" value="0 0 0 * * ?" /><!-- 每天零时触发 -->
+	</bean>
+	<bean id="storeScoreDailyStatisticsJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="storeScoreDailyStatisticsJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="storeScoreDailyStatisticsJob" class="com.yilidi.o2o.schedule.user.StoreScoreDailyStatisticsJob">
+		<property name="storeEvaluationService" ref="storeEvaluationService" />
+		<property name="storeProfileService" ref="storeProfileService" />
+	</bean>
+	<!-- buyRewardActivityStatusUpdateTrigger Job -->
+	<bean id="buyRewardActivityStatusUpdateTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="buyRewardActivityStatusUpdateJobDetail" />
+		<property name="cronExpression" value="0 */5 * * * ?" /><!-- 每隔5分钟触发 -->
+	</bean>
+	<bean id="buyRewardActivityStatusUpdateJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="buyRewardActivityStatusUpdateJob" />
+		<property name="targetMethod" value="performance" />
+	</bean>
+	<bean id="buyRewardActivityStatusUpdateJob" class="com.yilidi.o2o.schedule.product.BuyRewardActivityStatusUpdateJob">
+		<property name="buyRewardActivityService" ref="buyRewardActivityService" />
+	</bean>
+</beans>

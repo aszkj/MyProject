@@ -1,0 +1,459 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style type="text/css">
+		#allmap{
+			width: 600px;height: 400px;margin-top: 20px;
+		}
+</style>
+<script type="text/javascript">	
+	var method = getUrlParam("method");
+	var lot;
+	var lat;
+	function loadCouponsInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id + '/getCommunityDetail',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+					$("#communityName").val(data.entity.name);
+					$("#provinceCode").val(data.entity.provinceCode);
+					$("#cityCode").val(data.entity.cityCode);
+					$("#countyCode").val(data.entity.countyCode);
+					loadCounty(data.entity.cityCode,data.entity.countyCode);
+					$("#addressDetail").val(data.entity.addressDetail);
+					$("#display").val(data.entity.display);
+					$("#longitude").val(data.entity.longitude);
+					$("#latitude").val(data.entity.latitude);
+					lot=data.entity.longitude;
+					lat=data.entity.latitude;
+					$("#id").val(id);
+				}//非必须
+			});
+
+		}
+	}
+	
+	function dataEditSubmit() {
+		if (method != 'add' && method != 'edit') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url =OPERATION_SYSTEM_IDENTITY+'/createCommunity';
+			if (!validateData()) {
+				return;
+			}
+		} else if (method == 'edit') {
+			url =OPERATION_SYSTEM_IDENTITY +'/updateCommunity';
+			if (!validateData()) {
+				return;
+			}
+		} else {
+			return;
+		}
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$.ajax(
+						{
+							type : 'post',
+							contentType:'application/json',
+							dataType : 'json',
+							data : formJsonStr,
+							error : function() {
+								$('#promptMessage').text('保存数据失败，请稍后再试');
+								$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							},
+							url : TERMINAL_URL + url,
+							beforeSubmit : function() {
+							},
+							success : function(data) {
+								//响应返回的业务处理  
+								if (data.msgCode == 1) {
+									$('#promptMessage').text('保存成功');
+									window.setTimeout(
+													function() {
+														var urlParam=window.location.search;
+														locationHref("/community/community-index.html"+urlParam);
+													}, 1000);
+								} else {
+									$('#submit').removeClass().addClass(
+											'btn_sure')[0].disabled = false;
+									$('#promptMessage').text(data.msg);
+								}
+							}
+						});
+	}
+	
+	var validate = (function() {
+		return {
+			validateName : function() {
+				var communityName = $.trim($('#communityName').val()), $communityNameMsg = $('#communityNameMsg');
+				if (!communityName) {
+					$communityNameMsg.html('请填写小区名称！').attr('class', 'error');
+					return false;
+				}
+				if (communityName.length > 20) {
+					$communityNameMsg.html('小区名称长度过长，请重新输入！').attr('class', 'error');
+					return false;
+				}
+				$communityNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateProvinceCode : function() {
+				var provinceCode = $.trim($('#provinceCode').val()), $provinceCodeMsg = $('#provinceCodeMsg');
+				if (!provinceCode) {
+					$provinceCodeMsg.html('请选择省份！').attr('class', 'error');
+					return false;
+				}
+				$provinceCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateCityCode : function() {
+				var cityCode = $.trim($('#cityCode').val()), $cityCodeMsg = $('#cityCodeMsg');
+				if (!cityCode) {
+					$cityCodeMsg.html('请选择市县！').attr('class', 'error');
+					return false;
+				}
+				$cityCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateCountyCode : function() {
+				var countyCode = $.trim($('#countyCode').val()), $countyCodeMsg = $('#countyCodeMsg');
+				if (!countyCode) {
+					$countyCodeMsg.html('请选择区镇！').attr('class', 'error');
+					return false;
+				}
+				$countyCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateAddressDetail : function() {
+				var addressDetail = $.trim($('#addressDetail').val()), $addressDetailMsg = $('#addressDetailMsg');
+				if (!addressDetail) {
+					$addressDetailMsg.html('请填写详细地址！').attr('class', 'error');
+					return false;
+				}
+				$addressDetailMsg.html('').attr('class', 'right');
+				return true;
+			}
+		}
+	})();
+	
+	function validateData() {
+		if (!validate.validateName()) {
+			return false;
+		}
+		if (!validate.validateProvinceCode()) {
+			return false;
+		}
+		if (!validate.validateCityCode()) {
+			return false;
+		}
+		if (!validate.validateCountyCode()) {
+			return false;
+		}
+		if (!validate.validateAddressDetail()) {
+			return false;
+		}
+		return true;
+	}
+	
+	function showErr(errorType) {
+		if (errorType == 'communityName') {
+			$('#communityNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'provinceCode') {
+			$('#provinceCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'cityCode') {
+			$('#cityCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'countyCode') {
+			$('#countyCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'addressDetail') {
+			$('#addressDetailMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+	}
+	
+	/*加载广东省下面的地市菜单*/
+function loadCity() {
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/440000/getAreaDictsByParentCode', 
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var listCity = data.entity;
+			var html = '';
+			html += '<option value="">--请选择--</option>';
+			for (var i = 0; i < listCity.length; i++) {
+				var city = listCity[i];
+				html += '<option value="' + city.id + '">' + city.text + '</option>';
+			}
+			
+			$("#cityCode").html(html);
+		}
+	});
+}
+
+/*加载县区菜单*/
+function loadCounty(val,childval){
+	$("#countyCode").html("");
+	$("#countyCode").html('<option value="">--请选择--</option>'); 
+	$.ajax({
+		url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/'+val+'/getAreaDictsByParentCode', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var html = '';
+			var county = data.entity;
+			html='<option value="">--请选择--</option>';
+			if(null != county && county.length > 0){
+				var len = county.length;
+				for(var i=0;i<len;i++){
+					var countyTemp = county[i];
+					if(childval==countyTemp.id){
+						html += '<option selected value="'+countyTemp.id+'">';
+						html += countyTemp.text;
+						html +='</option>'
+					}else{
+						html += '<option value="'+countyTemp.id+'">';
+						html += countyTemp.text;
+						html +='</option>'
+					}
+					
+				}
+			}
+			$("#countyCode").html(html);
+		}
+	});
+}
+
+function comebackList() {
+	var urlParam=window.location.search;
+	locationHref('/community/community-index.html'+urlParam);
+}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		loadCity();
+		if (method == 'edit') {
+			$("#breadName").html('修改小区');
+			$("#pageTitle").html('修改小区');
+			loadCouponsInfo();
+		} else if(method == 'add') {
+			$("#breadName").html('新增小区');
+			$("#pageTitle").html('新增小区');
+		}
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 小区管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>小区名称：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="communityName" name="name" onmousedown="showErr('communityName')" />&nbsp;&nbsp;
+										<span class="cred" id="communityNameMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>所在地区：
+									</dt>
+									<dd>
+									省份
+									<select class="select grid-12" id="provinceCode" name="provinceCode" onmousedown="showErr('provinceCode')">
+										<option value="440000">广东</option>
+									</select>
+									<span id="provinceCodeMsg" class="cred"></span>
+									&nbsp;&nbsp;
+									市/县
+									<select class="select grid-12" id="cityCode" name="cityCode" onChange="loadCounty(this.value)" onmousedown="showErr('cityCode')">
+										<option value="" selected>--请选择--</option>
+									</select>
+									<span id="cityCodeMsg" class="cred"></span>
+									&nbsp;&nbsp;
+									区/镇
+									<select class="select grid-12" id="countyCode" name="countyCode" onmousedown="showErr('countyCode')">
+										<option value="" selected>--请选择--</option>
+									</select>
+									<span id="countyCodeMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>详细地址：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="addressDetail" name="addressDetail" onmousedown="showErr('addressDetail')"/>
+										<span id="addressDetailMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>是否显示：
+									</dt>
+									<dd>
+									<select class="select grid-2" id="display" name="display">
+										<option value="COMMUNITYDISPLAY_YES">是</option>
+										<option value="COMMUNITYDISPLAY_NO">否</option>
+									</select>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										X：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="longitude" name="longitude" value="114.02597366"/>
+										&nbsp;&nbsp;&nbsp;&nbsp;Y：
+										<input type="text" class="txt " id="latitude" name="latitude" value="22.54605355"/>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+									</dt>
+									<dd>
+										<div id="allmap"></div>
+									</dd>
+								</dl>
+							</div>
+							
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit(method)"> <input
+											type="button" id="goBack" class="btn_gray" value="返回"
+											onclick="javascript:comebackList();"> <span
+											id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden"  id="id" name="id" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+<script type="text/javascript">
+function init() {
+	//设置默认中心点坐标
+	lot = lot ==null?114.02597366:lot;
+	lat = lat ==null?22.54605355:lat;
+	var map = new BMap.Map("allmap");    // 创建Map实例
+	map.centerAndZoom(new BMap.Point(lot,lat), 12);  // 初始化地图,设置中心点坐标和地图级别
+	map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+	map.setCurrentCity("深圳");          // 设置地图显示的城市 此项是必须设置的
+	map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放  
+	var marker = new BMap.Marker(new BMap.Point(lot,lat));// 创建标注
+	map.addOverlay(marker);             // 将标注添加到地图中
+	marker.enableDragging();//可以拖曳
+	//移动获取经纬度
+	marker.addEventListener("dragend",function(e){
+		$('#longitude').val(e.point.lng);
+		$('#latitude').val(e.point.lat);
+	});
+}  
+	//百度地图API功能
+	function loadJScript() {
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.src = "http://api.map.baidu.com/api?v=2.0&ak=X4PBxInb7vBti83QpX2URBki&callback=init";
+		document.body.appendChild(script);
+	}
+	window.onload = loadJScript;  //异步加载地图
+</script>
+</html>

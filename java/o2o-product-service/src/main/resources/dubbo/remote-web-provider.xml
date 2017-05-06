@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+ 
+    <dubbo:service interface="com.yilidi.o2o.product.service.IStoreProductSubsidySettingService" ref="storeProductSubsidySettingService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.product.service.IProductClassService" ref="productClassService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IProductService" ref="productService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IProductFavoriteService" ref="productFavoriteService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IProductBrandService" ref="productBrandService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IProductTempService" ref="productTempService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IProductProfileService" ref="productProfileService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IProductImageService" ref="productImageService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IProductPriceService" ref="productPriceService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.product.service.ISaleProductService" ref="saleProductService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.product.service.ISaleProductTempService" ref="saleProductTempService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.ISaleProductProfileService" ref="saleProductProfileService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.ISaleProductImageService" ref="saleProductImageService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.ISaleProductPriceService" ref="saleProductPriceService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IProductClassMapStoreTypeService" ref="productClassMapStoreTypeService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IProductClassMappingService" ref="productClassMappingService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IAdvertisementService" ref="advertisementService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.ISecKillSceneService" ref="secKillSceneService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.ISecKillProductService" ref="secKillProductService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IThemeService" ref="themeService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.ISaleZoneService" ref="saleZoneService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IFloorService" ref="floorService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IFloorProductService" ref="floorProductService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IFloorAdvertisementTypeService" ref="floorAdvertisementTypeService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IThemeColumnService" ref="themeColumnService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IThemeColumnProductService" ref="themeColumnProductService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IRedEnvelopeService" ref="redEnvelopeService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IAuditProductBatchInfoService" ref="auditProductBatchInfoService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IAuditProductService" ref="auditProductService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IAuditProductImageService" ref="auditProductImageService" protocol="${dubbo.protocol.id}" />
+ 	<dubbo:service interface="com.yilidi.o2o.product.service.IBuyRewardActivityAuditService" ref="buyRewardActivityAuditService" protocol="${dubbo.protocol.id}" />
+</beans>

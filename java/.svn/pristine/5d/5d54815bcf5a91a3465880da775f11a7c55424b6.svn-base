@@ -1,0 +1,429 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN"  xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()} 
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页");}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	pageNo = pageNo ||1;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listStoreEvaluations',
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr><td>' + (i+1) + '</td><td>';
+						html += dataList[i].createTime;
+						html += '</td><td>';
+						html += dataList[i].storeCode;
+						html += '</td><td>';
+						html += dataList[i].storeName==null?'--':dataList[i].storeName;
+						html += '</td><td>';
+						html += dataList[i].userName==null?'--':dataList[i].userName;
+						html += '</td><td>';
+						html += dataList[i].saleOrderNo==null?'--':dataList[i].saleOrderNo;
+						html += '</td><td>';
+						html += dataList[i].anonymityEvaluate==null?'--':(dataList[i].anonymityEvaluate=='STOREEVALUATIONANONYMITYEVAL_YES')?'是':'否';
+						html += '</td><td>';
+						html += dataList[i].systemEvaluate==null?'--':(dataList[i].systemEvaluate=='STOREEVALUATIONSYSTEMEVAL_YES')?'是':'否';
+						html += '</td><td>';
+						html += dataList[i].content==null?'--':dataList[i].content;
+						html += '</td><td>';
+						html += dataList[i].showStatus==null?'--':(dataList[i].showStatus=='STOREEVALUATIONSTATUS_YES')?'显示':'取消显示';
+						html += '</td><td>';
+						html += '<permission code="FUNCTION_VIEW_STORE_EVALUATION_MANAGEMENT">';
+						html += '<a href="/user/store-evaluation-mng.html?method=view&id='+dataList[i].id+'&'+ getParamValue()+'" class="ablue">查看</a>';
+						html += '</permission>';
+						//html += '<a href="javascript:detail('+dataList[i].id+')" class="ablue">查看</a> ';
+						html += '&nbsp;&nbsp;';
+						if(dataList[i].showStatus=='STOREEVALUATIONSTATUS_YES'){
+							html += '<permission code="FUNCTION_OFFSHOW_STORE_EVALUATION_MANAGEMENT">';
+							html += '<a href="javascript:void(0)" onclick="changeState('+dataList[i].id+', 0)" class="ablue">取消显示</a>';
+							html += '</permission>';
+						}else{
+				    		html += '<permission code="FUNCTION_ONSHOW_STORE_EVALUATION_MANAGEMENT">';
+				    	   	html += '<a href="javascript:void(0)" onclick="changeState('+dataList[i].id+', 1)" class="ablue">显示</a>';
+				    	   	html += '</permission>';
+						}
+				    	html += '&nbsp;&nbsp;';
+						//html += '<a href="javascript:void(0)" onclick="deleteEvaluation('+dataList[i].id+')" class="ablue">删除</a>';
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="11">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	});
+	$('#checkall').prop('checked',false);
+}
+
+/*加载时间控件*/
+function loadTimeInput(){
+	$('#startCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+}
+
+/**
+ * 修改显示状态
+ */
+function changeState(id,status){
+	var showStatus = 'STOREEVALUATIONSTATUS_YES';
+	if(status == 0){
+		showStatus = 'STOREEVALUATIONSTATUS_NO';
+	}
+	showBox('提示！','确认进行操作？','confirm',function(){
+		ajax({
+			url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + '/' + id + '-' + showStatus + '/updateStoreEvaluationShowStatus',
+			type:'post',
+			dataType: 'json',
+			error: function(){},
+			success: function(data){
+			  if(data.msgCode != 1){ return; }
+			  showBox('系统提示',data.msg,'alert',function(){
+			  	dataSubmit();
+			  });
+			}
+		});
+	});
+}
+
+/**
+ * 删除评价
+ */
+function deleteEvaluation(id){
+	showBox('提示！','确认删除该评价吗？','confirm',function(){
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY  +'/'+ id +'/deleteStoreEvaluation',
+			type: 'post',
+			dataType: 'json',
+			async: true,
+			cache: false,
+			timeout: 30000,
+			error: function(){},
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					dataSubmit();
+				}
+			}
+		});
+	});
+}
+
+function exportStoreEvaluation(){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/exportStoreEvaluation',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$("#download_link").attr("href",DOWNLOAD_FILE_TEMP_URL + data.entity.reportFilePath);
+				$("#download_link").show();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+/*获取返回页面的上次查询条件*/
+function setParamValue() {
+	$('#storeCode').val(decodeURIComponent(getUrlParam('storeCode')));
+	$('#storeName').val(decodeURIComponent(getUrlParam('storeName')));
+	$('#userName').val(decodeURIComponent(getUrlParam('userName')));
+	$('#saleOrderNo').val(decodeURIComponent(getUrlParam('saleOrderNo')));
+	$('#content').val(decodeURIComponent(getUrlParam('content')));
+	$('#systemEvaluate').val(decodeURIComponent(getUrlParam('systemEvaluate')));
+	$('#showStatus').val(decodeURIComponent(getUrlParam('showStatus')));
+	$('#startCreateTime').val(
+			decodeURIComponent(getUrlParam('startCreateTime')));
+	$('#endCreateTime').val(
+			decodeURIComponent(getUrlParam('endCreateTime')));
+	if ("" != getUrlParam('pageSize') && "" != getUrlParam('start')) {
+		param.pageSize = getUrlParam('pageSize');
+		param.currentPage = getUrlParam('start');
+	}
+}
+
+function getParamValue() {
+	var passParam = [];
+	var storeCode = $.trim($("#storeCode").val());
+	var storeName = $.trim($("#storeName").val());
+	var userName = $.trim($("#userName").val());
+	var saleOrderNo = $.trim($("#saleOrderNo").val());
+	var content = $.trim($("#content").val());
+	var systemEvaluate = $.trim($("#systemEvaluate").val());
+	var showStatus = $.trim($("#showStatus").val());
+	var startCreateTime = $.trim($("#startCreateTime").val());
+	var endCreateTime = $.trim($("#endCreateTime").val());
+	var start = $.trim($("#start").val());
+	var pageSize = $.trim($("#pageSize").val());
+	passParam.push('storeCode=' + storeCode);
+	passParam.push('storeName=' + storeName);
+	passParam.push('userName=' + userName);
+	passParam.push('saleOrderNo=' + saleOrderNo);
+	passParam.push('content=' + content);
+	passParam.push('systemEvaluate=' + systemEvaluate);
+	passParam.push('showStatus=' + showStatus);
+	passParam.push('startCreateTime=' + startCreateTime);
+	passParam.push('endCreateTime=' + endCreateTime);
+	passParam.push('start=' + start);
+	passParam.push('pageSize=' + pageSize);
+	return passParam.join('&');
+}
+
+$(document).ready(function(e){
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	loadTimeInput();
+	setParamValue();
+	dataSubmit(param.currentPage);
+});
+</script>
+</head>
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; <a href="/">评价管理</a> &gt;<span>门店评论管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">门店评论管理</div>
+				<div class="complaint_main">
+					<form method="get" id="dataForm">
+						<div class="main_search">
+							<dl>
+								<dt>门店编码：</dt>
+								<dd><input type="text" class="txt grid-10" id="storeCode" name="storeCode" /></dd>
+							</dl>
+							<dl>
+								<dt>门店名称：</dt>
+								<dd><input type="text" class="txt grid-10" id="storeName" name="storeName" /></dd>
+							</dl>
+							<dl>
+								<dt>评论用户：</dt>
+								<dd><input type="text" class="txt grid-10" id="userName" name="userName" /></dd>
+							</dl>
+							<dl>
+								<dt>订单编号：</dt>
+								<dd><input type="text" class="txt grid-15" id="saleOrderNo" name="saleOrderNo" /></dd>
+							</dl>
+							<dl>
+								<dt>评论内容：</dt>
+								<dd><input type="text" class="txt grid-15" id="content" name="content" /></dd>
+							</dl>
+							<dl>
+								<dt>系统评价：</dt>
+								<dd>
+									<select class="select grid-11" id="systemEvaluate" name="systemEvaluate">
+										<option value="">--全部--</option>
+										<option value="STOREEVALUATIONSYSTEMEVAL_YES">是</option>
+										<option value="STOREEVALUATIONSYSTEMEVAL_NO">否</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<dt>显示状态：</dt>
+								<dd>
+									<select class="select grid-11" id="showStatus" name="showStatus">
+										<option value="">--全部--</option>
+										<option value="STOREEVALUATIONSTATUS_YES">显示</option>
+										<option value="STOREEVALUATIONSTATUS_NO">取消显示</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+			                      <dt>评论时间：</dt>
+			                      <dd><input type="text" class="txt grid-10" id="startCreateTime" name="startCreateTime" /></dd>
+			                      <dt class="mlr5">&nbsp;&nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+			                      <dd><input type="text" class="txt grid-10" id="endCreateTime" name="endCreateTime" /></dd>
+		                   	</dl>
+							<p class="main_search_btn">
+							&nbsp;&nbsp;
+								<permission code="FUNCTION_SEARCH_STORE_EVALUATION_MANAGEMENT">
+								<input type="button" value="查询" class="btn_sure" id="orderSearch" onClick="dataSubmit()" /> 
+								</permission>
+								<permission code="FUNCTION_EXPORT_STORE_EVALUATION_MANAGEMENT">
+								<input type="button" value="导出" class="btn_sure" onClick="javascript:exportStoreEvaluation();" />
+			                    </permission>
+			                    <a hidden id="download_link" style="color:red;text-decoration: underline;"><span style="color:red">点击下载</span></a>
+								<permission code="FUNCTION_ADD_STORE_EVALUATION_MANAGEMENT">
+								<input type="button" value="新建店铺评论" class="btn_sure" id="addStoreEvaluation" onClick="locationHref('/user/store-evaluation-add.html?method=add')" />
+								</permission>
+								<permission code="FUNCTION_BATCH_ADD_STORE_EVALUATION_MANAGEMENT">
+								<input type="button" value="批量添加门店评论" class="btn_sure" onClick="locationHref('/user/store-evaluation-import.html')" id="importStoreEvaluation" />
+								</permission>
+								<input type="hidden"  id="start" name="start" />
+								<input type="hidden"  id="pageSize" name="pageSize" />
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="20">序号</th>
+									<th width="70">评论时间</th>
+									<th width="60">门店编码</th>
+									<th width="80">门店名称</th>
+									<th width="50">评论用户</th>
+									<th width="100">订单号</th>
+									<th width="50">是否匿名评价</th>
+									<th width="50">是否系统评价</th>
+									<th width="80">评价内容</th>
+									<th width="50">显示状态</th>
+									<th width="80">操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营平台</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

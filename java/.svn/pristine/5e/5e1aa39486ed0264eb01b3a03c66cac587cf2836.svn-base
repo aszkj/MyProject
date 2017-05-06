@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleProductImageTempMapper">
+	<resultMap id="BaseResultMap" type="SaleProductImageTemp">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="TEMPID" property="tempId"
+			jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId"
+			jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="MASTERFLAG" property="masterFlag" jdbcType="VARCHAR" />
+		<result column="IMAGEURL1" property="imageUrl1" jdbcType="VARCHAR" />
+		<result column="IMAGEURL2" property="imageUrl2" jdbcType="VARCHAR" />
+		<result column="IMAGEURL3" property="imageUrl3" jdbcType="VARCHAR" />
+		<result column="IMAGEORDER" property="imageOrder" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,TEMPID, SALEPRODUCTID, CHANNELCODE, MASTERFLAG, IMAGEURL1,
+		IMAGEURL2 , IMAGEURL3, IMAGEORDER, CREATETIME,
+		CREATEUSERID,MODIFYTIME, MODIFYUSERID
+	</sql>
+	<select id="loadSaleProductImageTempById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_IMAGE_TEMP
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<insert id="saveSaleProductImageTemp" parameterType="SaleProductImageTemp"
+		useGeneratedKeys="true" keyProperty="tempId">
+		insert into
+		P_SALE_PRODUCT_IMAGE_TEMP
+		(ID,TEMPID, SALEPRODUCTID, CHANNELCODE,
+		MASTERFLAG, IMAGEURL1,
+		IMAGEURL2,
+		IMAGEURL3,
+		IMAGEORDER,CREATETIME, CREATEUSERID )
+		values
+		(#{id,jdbcType=INTEGER},
+		#{tempId,jdbcType=INTEGER}, #{saleProductId,jdbcType=INTEGER},
+		#{channelCode,jdbcType=VARCHAR} ,#{masterFlag,jdbcType=VARCHAR},
+		#{imageUrl1,jdbcType=VARCHAR}, #{imageUrl2,jdbcType=VARCHAR},
+		#{imageUrl3,jdbcType=VARCHAR}, #{imageOrder,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=INTEGER})
+	</insert>
+
+	<delete id="deleteSaleProductImageTempByTempIdAndChannelCode">
+		delete
+		from
+		P_SALE_PRODUCT_IMAGE_TEMP
+		where 
+		TEMPID = #{tempId,jdbcType=INTEGER}
+		and 
+		CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+	</delete>
+
+	<select id="listSaleProductImageTempsBySaleProductIdAndChannelCode"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_IMAGE_TEMP
+		where 
+		SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+		and 
+		CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

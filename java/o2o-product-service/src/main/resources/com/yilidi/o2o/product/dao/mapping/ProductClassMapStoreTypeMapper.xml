@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductClassMapStoreTypeMapper">
+	<resultMap id="BaseResultMap" type="ProductClassStoreType">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STORETYPE" property="storeType" jdbcType="VARCHAR" />
+		<result column="CLASSCODE" property="classCode" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="BaseResultRelatedMap" type="ProductClassStoreTypeRelatedInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STORETYPE" property="storeType" jdbcType="VARCHAR" />
+		<result column="STORETYPENAME" property="storeTypeName"
+			jdbcType="VARCHAR" />
+		<result column="CLASSCODE" property="classCode" jdbcType="VARCHAR" />
+		<result column="CLASSNAME" property="className" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, STORETYPE,CLASSCODE,CREATEUSERID, CREATETIME
+	</sql>
+
+	<insert id="saveProductClassStoreType" useGeneratedKeys="true"
+		parameterType="java.util.List">
+		insert into
+		P_STORE_TYPE_PRODUCT_CLASS
+		(STORETYPE,CLASSCODE,CREATEUSERID,CREATETIME)
+		values
+		<foreach collection="productClassStoreTypeList" item="productClassStoreType"
+			index="index" separator=",">
+			(#{productClassStoreType.storeType},
+			#{productClassStoreType.classCode},
+			#{productClassStoreType.createUserId},
+			#{productClassStoreType.createTime})
+		</foreach>
+	</insert>
+
+	<delete id="deleteAllProductClassStoreType" parameterType="java.lang.String">
+		delete from
+		P_STORE_TYPE_PRODUCT_CLASS
+		where
+		STORETYPE =
+		#{storeType,jdbcType=VARCHAR}
+	</delete>
+
+	<select id="listBasicClassStoreType" resultMap="BaseResultRelatedMap"
+		parameterType="java.lang.String">
+		SELECT
+		P.ID as ID,
+		P.STORETYPE as STORETYPE,
+		P.CLASSCODE as CLASSCODE,
+		PC.CLASSNAME as CLASSNAME,
+		P.CREATEUSERID as CREATEUSERID,
+		P.CREATETIME
+		as CREATETIME
+		FROM
+		P_STORE_TYPE_PRODUCT_CLASS P
+		left join P_PRODUCT_CLASS
+		PC on PC.CLASSCODE = P.CLASSCODE
+		<where>
+			1=1
+			<if test="storeType != null">
+				and P.STORETYPE = #{storeType, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and PC.STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

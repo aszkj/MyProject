@@ -1,0 +1,318 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var GLOBAL_PARAM = {
+	userId : $.trim(getUrlParam("userId")),
+	userName : $.trim(getUrlParam("userName")),
+	currentBalance : $.trim(getUrlParam("currentBalance")),
+	usedAccountTotalAmount : $.trim(getUrlParam("usedAccountTotalAmount"))
+};
+	
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()} 
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页")}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+/*查询用户欧币交易明细管理开始*/
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	$('#userId').val(GLOBAL_PARAM.userId);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listAccountDetailByUserId',
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr><td>' + (i+1) + '</td><td>';
+						html += dataList[i].createTime==null?'--': dataList[i].createTime;
+						html += '</td><td>';
+						html += toCenti(dataList[i].cashAccountAmount,2);
+						html += '</td><td>';
+						html += dataList[i].detailType=='ACCOUNTDETAILTYPE_OUT'?'支出':'收入';
+						html += '</td><td>';
+						html += dataList[i].serialNo==null?'--': dataList[i].serialNo;
+						html += '</td><td>';
+						html += dataList[i].changeTypeName==null?'--':dataList[i].changeTypeName;
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="6">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	}); 
+}
+
+function exportUserAccountDetails(){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/exportUserAccountDetails',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$("#download_link").attr("href",DOWNLOAD_FILE_TEMP_URL + data.entity.reportFilePath);
+				$("#download_link").show();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+
+/*加载时间控件*/
+function loadTimeInput(){
+	$('#startCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+}
+
+
+function listChangeTypeList(){
+	var systemDictType = 'ACCOUNTCHANGETYPE';  //买家交易明细（资金变动类型）类型
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+		type:'post',
+		async:false,
+		dataType:'json',
+		error:function(){return;}, 
+		success:function(data){
+			if(data.msgCode!=1){return;}
+			var changeTypeMapList = data.entity;
+			var changeTypeMapHtml = [];
+			if(changeTypeMapList != null && changeTypeMapList.length >0){
+			changeTypeMapHtml.push('<option value="">--请选择--</option>');
+				for(var i=0,length=changeTypeMapList.length;i<length;i++){
+					changeTypeMapHtml.push('<option value="'+changeTypeMapList[i].id);
+					changeTypeMapHtml.push('" name="'+changeTypeMapList[i].name+'">'+changeTypeMapList[i].name+'</option>');
+				}
+			}
+			$('#changeType').html(changeTypeMapHtml.join(''));
+		}
+	});
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	listChangeTypeList();
+	$('#userName').text(GLOBAL_PARAM.userName);
+	$('#currentBalance').text(GLOBAL_PARAM.currentBalance);
+	$('#usedAccountTotalAmount').text(GLOBAL_PARAM.usedAccountTotalAmount);
+	loadTimeInput();
+	dataSubmit(1);
+});
+</script>
+</head>
+<body id="bodyId">
+<!--头部-->
+<div id="headerId"></div>
+<!--头部结束-->
+<div class="bread"><a href="/">首页</a> &gt; 财务管理 &gt;欧币管理 &gt; <span>交易明细</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+			  <div class="page_title">交易明细</div>
+			  <div class="page_main"></div>
+			  <div class="page_subtitle" style="font-weight: 100;">
+			  	<span class="mlr5">会员：</span><span class="mlr5" id="userName"></span>
+			  	<span class="ml20">可用欧币：</span><span class="mlr5 cred" id="currentBalance"></span>(元/个)
+			  	<span class="ml20">已用欧币：</span><span class="mlr5 cred" id="usedAccountTotalAmount"></span>(元/个)
+			  </div>
+				<div class="complaint_main">
+		            	<form method="get" id="dataForm">
+		            	   <input type="hidden" id="userId" name="userId">
+		               	   <div class="main_search">
+			                   <dl>
+			                      <dt>收入/支出：</dt>
+			                      <dd>
+			                      	<select class="select" id="detailType" name="detailType">
+			                      		<option value="">--请选择--</option>
+			                      		<option value="ACCOUNTDETAILTYPE_IN">收入</option>
+			                      		<option value="ACCOUNTDETAILTYPE_OUT">支出</option>
+			                      	</select>
+								  </dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>订单号：</dt>
+			                      <dd><input type="text" class="txt grid-10" id="serialNo" name="serialNo" /></dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>交易类型：</dt>
+			                      <dd>
+			                      	<select class="select" id="changeType" name="changeType"></select>
+								  </dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>交易时间：</dt>
+			                      <dd><input type="text" class="txt grid-8" id="startCreateTime" name="startCreateTime" /></dd>
+			                      <dt class="mlr5">至</dt>
+			                      <dd><input type="text" class="txt grid-8" id="endCreateTime" name="endCreateTime" /></dd>
+		                   	   </dl>
+			                   <p class="main_search_btn">
+			                   	 <input type="button" value="查询" class="btn_sure" onClick="dataSubmit()" />
+			                     <input type="button" value="导出" class="btn_sure" onClick="javascript:exportUserAccountDetails();" />
+			                     <a hidden id="download_link" style="color:red;text-decoration: underline;"><span style="color:red">点击下载</span></a>
+			                     <input type="hidden"  id="start" name="start" />
+								 <input type="hidden"  id="pageSize" name="pageSize" />
+			                   </p>
+		              	   </div>
+		              	   </form>
+			               <div class="order_index">
+		                   <table cellpadding="0" cellspacing="0" width="100%" class="simple_table">
+		                       <thead>
+		                          <tr>
+		                          	 <th width="20">序号</th>
+		                             <th width="80">交易时间</th>
+		                             <th width="50">欧币数量(个/元)</th>
+		                             <th width="50">收入/支出</th>
+		                             <th width="80">订单号</th>
+		                             <th width="80">交易类型</th>
+		                          </tr>
+		                       </thead>
+		                       <tbody id="tbody">
+		                       </tbody> 
+		                   </table>
+		                  <div id="orderContent"></div> 
+		               	</div><!-- 显示财务管理->欧币交易明细管理结束-->
+		               	  
+						<dl class="main_pagination">
+						 <dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span> 
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>		               	  
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

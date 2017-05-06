@@ -1,0 +1,295 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var GLOBAL_PARAM = {
+	storeCode : $.trim(getUrlParam("storeCode")),
+	storeName : $.trim(decodeURI(decodeURI(getUrlParam("storeName"),"utf-8")))
+};
+
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()} 
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页")}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+	
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	if(GLOBAL_PARAM.storeCode!=null&&GLOBAL_PARAM.storeCode!=''){
+		$('#storeCode').val(GLOBAL_PARAM.storeCode);
+	}
+	if(GLOBAL_PARAM.storeName!=null&&GLOBAL_PARAM.storeName!=''){
+		$('#storeName').val(GLOBAL_PARAM.storeName);
+	}
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listSellerAccountPlayLog',
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr><td>' + (i+1) + '</td><td>';
+						html += dataList[i].storeCode;
+						html += '</td><td>';
+						html += dataList[i].storeName;
+						html += '</td><td>';
+						html += dataList[i].serialNo;
+						html += '</td><td>';
+						html += toCenti(dataList[i].totalAccountAmount,2);
+						html += '</td><td>';
+						html += toCenti(dataList[i].cashAccountAmount,2);
+						html += '</td><td>';
+						html += toCenti(dataList[i].productAccountAmount,2);
+						html += '</td><td>';
+						html += toCenti(dataList[i].couponAccountAmount,2);
+						html += '</td><td>';
+						html += toCenti(dataList[i].logisticsAccountAmount,2);
+						html += '</td><td>';
+						html += dataList[i].createTime==null?'--':dataList[i].createTime;
+						html += '</td><td>';
+						html += dataList[i].useDesc==null?'--':dataList[i].useDesc;
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="11">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				GLOBAL_PARAM.storeCode="";
+				GLOBAL_PARAM.storeName="";
+				updatePageInfo();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	}); 
+}
+
+function exportSellerAccountPayLog(){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/exportSellerAccountPayLog',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$("#download_link").attr("href",DOWNLOAD_FILE_TEMP_URL + data.entity.reportFilePath);
+				$("#download_link").show();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+
+/*加载时间控件*/
+function loadTimeInput(){
+	$('#startCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#startUpdateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endUpdateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	loadTimeInput();
+	dataSubmit(1);
+});
+</script>
+</head>
+<body id="bodyId">
+<!--头部-->
+<div id="headerId"></div>
+<!--头部结束-->
+<div class="bread"><a href="/">首页</a> &gt; 财务管理 &gt;门店账本管理 &gt;门店账本明细管理 &gt; <span>门店账本支付明细</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">门店账本支付明细</div>
+				<div class="complaint_main">
+		            	<form method="get" id="dataForm">
+		               	   <div class="main_search">
+			                   <dl>
+			                      <dt>门店编码：</dt>
+			                      <dd><input type="text" class="txt grid-10" id="storeCode" name="storeCode" /></dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>门店名称：</dt>
+			                      <dd><input type="text" class="txt grid-10" id="storeName" name="storeName" /></dd>
+			                   </dl>
+			                    <dl>
+			                      <dt>订单号：</dt>
+			                      <dd><input type="text" class="txt grid-10" id="serialNo" name="serialNo" /></dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>支付时间：</dt>
+			                      <dd><input type="text" class="txt grid-8" id="startCreateTime" name="startCreateTime" /></dd>
+			                      <dt class="mlr5">至</dt>
+			                      <dd><input type="text" class="txt grid-8" id="endCreateTime" name="endCreateTime" /></dd>
+		                   	   </dl>
+			                   <p class="main_search_btn">
+			                   	 <input type="button" value="查询" class="btn_sure" onClick="javascript:dataSubmit();" />
+			                     <input type="button" value="导出" class="btn_sure" onClick="javascript:exportSellerAccountPayLog();" />
+			                     <a hidden id="download_link" style="color:red;text-decoration: underline;"><span style="color:red">点击下载</span></a>
+			                     <input type="hidden"  id="start" name="start" />
+								 <input type="hidden"  id="pageSize" name="pageSize" />
+			                   </p>
+		              	   </div>
+		              	   </form>
+			               <div class="order_index">
+		                   <table cellpadding="0" cellspacing="0" width="100%" class="simple_table">
+		                       <thead>
+		                          <tr>
+		                          	 <th width="20">序号</th>
+		                             <th width="50">门店编号</th>
+		                             <th width="80">门店名称</th>
+		                             <th width="60">订单号</th>
+		                             <th width="50">账户交易金额(元)</th>
+		                             <th width="40">现金(元)</th>
+		                             <th width="40">商品补贴(元)</th>
+		                             <th width="40">优惠补贴(元)</th>
+		                             <th width="40">运费补贴(元)</th>
+		                             <th width="60">支付时间</th>
+		                             <th width="100">支付内容</th>
+		                          </tr>
+		                       </thead>
+		                       <tbody id="tbody">
+		                       </tbody> 
+		                   </table>
+		                  <div id="orderContent"></div> 
+		               	</div><!-- 显示财务管理->用户支付日志结束-->
+		               	  
+						<dl class="main_pagination">
+						 <dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span> 
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>		               	  
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

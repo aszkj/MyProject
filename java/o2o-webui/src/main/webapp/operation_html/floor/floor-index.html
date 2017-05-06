@@ -1,0 +1,186 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet"  />
+<script type="text/javascript">
+var sid = null;
+function dataSubmit(pageNo,businessType){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			showBox('提示信息','提交数据失败，请稍后再试','alert');
+		},
+		url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/listFloors',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity;
+				var id = getUrlParam('id');
+				if(null != dataList && dataList.length > 0){
+				for(var i=0,j=dataList.length;i<j;i++){
+					html += '<tr';
+					if(id == dataList[i].id){
+						html += ' name="selrow" bgcolor="#c8e3f8"';
+					}
+					if(null != sid && sid == dataList[i].id){
+						html += ' name="selrow" bgcolor="#c8e3f8"';
+					}
+					html += '><td>';
+					html += i+1;
+					html += '</td><td>';
+					html += dataList[i].floorName;
+					html += '</td><td>';
+					html += dataList[i].sort;
+					html += '</td><td>';
+					html += dataList[i].statusCodeName;
+					html += '</td><td>';
+					html += '<permission code="FUNCTION_EDIT_FLOOR_MANAGEMENT">';
+					html += '<a href="javascript:void(0)" onclick="editFloor('+dataList[i].id+')" class="ablue">修改楼层</a>&nbsp;&nbsp;&nbsp;';
+					html += '</permission>';
+					html += '<permission code="FUNCTION_ASSOCIATE_PRODUCT_FLOOR_MANAGEMENT">';
+					html += '<a href="javascript:void(0)" onclick="associateProduct('+dataList[i].id+')" class="ablue">关联产品</a>&nbsp;&nbsp;&nbsp;';
+					html += '</permission>';
+					html += '<permission code="FUNCTION_ASSOCIATE_ADVERTISEMENT_FLOOR_MANAGEMENT">';
+					var advertisementTypeCode = null == dataList[i].advertisementTypeCode ? '' : dataList[i].advertisementTypeCode;
+					html += '<a href="javascript:void(0)" onclick="associateAdvertisementType(\''+advertisementTypeCode+'\','+dataList[i].id+')" class="ablue">关联广告类型</a>';
+					html += '</permission>';
+					html += '</td></tr>';
+					}
+				}else {
+					html += '<tr><td colspan="5">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	}); 
+}
+
+function associateProduct(floorId){
+	locationHref('/floor/associate-product.html?floorId='+floorId);
+}
+
+function associateAdvertisementType(advertisementTypeCode,floorId){
+ 	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + floorId  + '/listAllOptionalAdvertisementType',
+		type:'post',
+		dataType:'json',
+		cache:false,
+		async:false,
+		data:'',
+		success:function(data){
+			st=data.entity;	
+			if(null != st && st.length > 0){
+				var message = '选择广告类型';
+				if(null == advertisementTypeCode || '' == advertisementTypeCode){
+					showBox(message,'/floor/associate-advertisementtype.html?width=700&height=400&floorId='+floorId);
+				}else{
+					showBox(message,'/floor/associate-advertisementtype.html?width=700&height=400&advertisementTypeCode='+advertisementTypeCode+'&floorId='+floorId);
+				}
+			}else{
+				showBox('提示信息','没有可供关联的广告类型','alert');
+			}
+		}
+	});	 
+}
+
+function addFloor(){
+	locationHref('/floor/floor-mng.html?method=add');
+}
+
+function editFloor(id){
+	locationHref('/floor/floor-mng.html?method=edit&id='+id);
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	dataSubmit();
+});
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 楼层管理 &gt; <span>楼层管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">楼层管理</div>
+				<div class="complaint_main">
+					<form method="get" id="dataForm"> 
+						<div class="main_search">
+							<permission code="FUNCTION_ADD_FLOOR_MANAGEMENT">
+								<input type="button" value="新增楼层" class="btn_sure" onClick="addFloor()" />
+							</permission>
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="100">序号</th>
+									<th width="500">楼层名称</th>
+									<th width="100">楼层排序</th>
+									<th width="100">是否启用</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

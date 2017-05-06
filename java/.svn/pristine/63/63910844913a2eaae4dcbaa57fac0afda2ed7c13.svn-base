@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.StoreDeliveryOrderRecordMapper">
+	<resultMap id="BaseResultMap" type="StoreDeliveryOrderRecord">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="DELIVERYID" property="deliveryId" jdbcType="INTEGER" />
+		<result column="ORDERNO" property="orderNo" jdbcType="VARCHAR" />
+		<result column="STEP" property="step" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,DELIVERYID,ORDERNO,STEP,CREATETIME
+	</sql>
+	
+	<select id="loadById"  resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select 
+		<include refid="Base_Column_List" />
+		from U_STORE_DELIVERY_ORDER_RECORD WHERE ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<insert id="save" parameterType="StoreDeliveryOrderRecord" useGeneratedKeys="true" keyProperty="id">
+		insert into U_STORE_DELIVERY_ORDER_RECORD (DELIVERYID,ORDERNO,STEP,CREATETIME)
+		values
+		(#{deliveryId,jdbcType=INTEGER}, 
+		#{orderNo,jdbcType=VARCHAR}, 
+		#{step,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP}
+	</insert>
+
+	<resultMap id="StoreDeliveryOrderRecordInfoMap" type="StoreDeliveryOrderRecordInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="CONTACT" property="contact" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="ORDERNO" property="orderNo" jdbcType="VARCHAR" />
+		<result column="STEP" property="step" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<select id="findStoreDeliveryOrderRecord" resultMap="StoreDeliveryOrderRecordInfoMap" parameterType="StoreDeliveryOrderRecordQuery">
+		SELECT R.ID AS ID,D.USERNAME AS USERNAME,D.CONTACT AS CONTACT,D.MOBILE AS MOBILE,R.ORDERNO AS ORDERNO,R.STEP AS STEP,R.CREATETIME AS CREATETIME
+		FROM U_STORE_DELIVERY_ORDER_RECORD R,U_STORE_DELIVERY D WHERE R.DELIVERYID = D.ID 
+			<if test="userName != null">
+				and D.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+			<if test="orderNo != null">
+				and R.ORDERNO = #{orderNo, jdbcType=VARCHAR}
+			</if>
+			<if test="step != null">
+				and R.STEP = #{step, jdbcType=VARCHAR}
+			</if>
+			<if test="strStartCreateTime != null">
+				and R.CREATETIME &gt;= #{strStartCreateTime, jdbcType=VARCHAR}
+			</if>
+			<if test="strEndCreateTime != null">
+				and R.CREATETIME &lt;= #{strEndCreateTime, jdbcType=VARCHAR}
+			</if>
+	</select>
+</mapper>

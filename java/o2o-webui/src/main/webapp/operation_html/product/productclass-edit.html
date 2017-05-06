@@ -1,0 +1,528 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<!-- <link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />-->
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<style>
+#prompt {
+	color: #E84244;
+}
+
+.box-mask {
+	position: fixed;
+	width: 600px;
+	height: auto;
+	ovflow: hidden;
+	z-index: 9999999;
+	left: 50%;
+	top: 0;
+	margin-left: -300px;
+}
+
+.mask_close {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size: 16px;
+	color: red;
+	background: #fff;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+}
+
+.system_form {
+	margin: 0 auto;
+}
+
+.system_form dt {
+	float: left;
+	line-height: 30px;
+	padding-left: 20px;
+	text-align: right;
+	width: 110px;
+}
+
+.product_release_imgnote em {
+	color: #E94B01;
+	float: left;
+	text-align: right;
+	width: 100px;
+}
+</style>
+<script type="text/javascript">
+	var GLOBAL_PARAM = {
+		countWordsFlag : true,
+	};
+	var method = getUrlParam("method");
+	var classLevel = getUrlParam("classLevel");
+	var classCode = getUrlParam("classCode");
+	
+	var delPicString = "";
+	$(document).ready(function() {
+		if (method == "edit" || method == "view") {
+			loadClass();
+		}
+		if (method == "edit" || method == "add") {
+			$("#reset").show();
+		}
+		$("#classTypeName").text('类别名称：');
+	});
+
+	function closeBox() {
+		var g_boxId = $.trim(getUrlParam("boxId"));
+		if (g_boxId != '' && parent && parent.closeBox) {
+			parent.location.reload();
+			parent.closeBox(g_boxId);
+		}
+	}
+
+	function loadClass() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ decodeURIComponent(getUrlParam("classCode"))
+					+ '/loadProductClass',
+			type : 'post',
+			dataType : 'json',
+			cache : false,
+			success : function(data) {
+				if (data.msgCode == 3) {
+					loginError(data.msg);
+				}
+				if (data.msgCode != 1)
+					return;
+				var productClass = data.entity;
+				var className = productClass.className;
+				var classCode = productClass.classCode;
+				var classLevel = productClass.classLevel;
+				var statusCode = productClass.statusCode;
+				var display = productClass.display;
+				var classSort = productClass.classSort;
+				var note = productClass.note;
+				$('#className').val(className);
+				/* $('#classCode').val(classCode); */
+				$('#statusCode').val(statusCode);
+				$('#display').val(display);
+				$('#classSort').val(classSort);
+				$('#note').val(note);
+				if (method == 'view') {
+					$("#className").show();
+					$("#className").attr("disabled", "disabled");
+					$("#statusCode").attr("disabled", "disabled");
+					$("#classSort").attr("disabled", "disabled");
+					$("#note").attr("disabled", "disabled");
+				}
+
+				var html = [];
+				var classImageUrl = productClass.classImageUrl;
+				if (classImageUrl != null && classImageUrl != '') {
+					html
+							.push('<span class="img"><a href="javascript:void(0)" onclick="showProductImg(\''
+									+ UPLOAD_FILE_URL
+									+ classImageUrl
+									+ '\')" title="点击查看大图"><img src="');
+					html.push((UPLOAD_FILE_URL + classImageUrl).replace('.jpg',
+							'.jpg'));
+					html
+							.push('" alt="" width="100" height="120" border="0"/></a></span><p>');
+					if (method == 'add' || method == 'edit') {
+						html
+								.push('<a href="javascript:;" class="ablue" onclick="delUploadImg()">删除</a></p>');
+					}
+					$('#classImageUrl').val(classImageUrl);
+					//IMAGEFLAG_NO表示是数据库正式环境的图片
+					$('#imageFlag').val('IMAGEFLAG_NO');
+					$('#uploadLi').html(html.join(''));
+				}
+				if (method == 'view') {
+					viewimg();
+					removeButton();
+				}
+			}
+		});
+	}
+	function viewimg() {
+		$('.appimg li').each(function() {
+			if (!$(this).children('span').hasClass('img')) {
+				$(this).remove();
+			}
+		})
+	}
+	function removeButton() {
+		$("#submit").remove();
+	}
+	var validate = (function() {
+		return {
+			validateClassName : function() {
+				var className = $.trim($('#className').val()), $classNameMsg = $('#classNameMsg');
+				if (!className) {
+					$classNameMsg.html('请输入产品类别名称！').attr('class', 'error');
+					return false;
+				}
+				$classNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateClassImageUrl : function() {
+				var classImageUrl = $.trim($('#classImageUrl').val()), $classImageUrlMsg = $('#classImageUrlMsg');
+				if (!classImageUrl) {
+					$classImageUrlMsg.html('请上传图片！').attr('class', 'error');
+					return false;
+				}
+				return true;
+			},
+		}
+	})();
+
+	function validateData() {
+		if (!validate.validateClassName()) {
+			return false;
+		}
+		if (!validate.validateClassImageUrl()) {
+			return false;
+		}
+		return true;
+	}
+
+	function dataSubmit() {
+		if (method != 'add' && method != 'edit') {
+			$('#prompt').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		var strParamJson = '';
+		if (method == 'add') {
+			url = OPERATION_SYSTEM_IDENTITY + '/saveProductClass';
+			strParamJson = '{"classLevel":"'
+					+ decodeURIComponent(classLevel)
+					+ '","className":"' + $.trim($("#className").val())
+					+ '","classCode":"' + decodeURIComponent(classCode)
+					+ '","statusCode":"' + $.trim($("#statusCode").val())
+					+ '","display":"' + $.trim($("#display").val())
+					+ '","classImageUrl":"' + $.trim($("#classImageUrl").val())
+					+ '","delImageUrl":"' + $.trim($("#delImageUrl").val())
+					+ '","imageFlag":"' + $.trim($("#imageFlag").val())
+					+ '","classSort":"' + $.trim($("#classSort").val())
+					+ '","note" : "' + $.trim($("#note").val()) + '"}';
+		} else if (method == 'edit') {
+			url = OPERATION_SYSTEM_IDENTITY + '/updateProductClass';
+			strParamJson = '{"className":"' + $.trim($("#className").val())
+					+ '","classCode":"' + decodeURIComponent(classCode)
+					+ '","statusCode":"' + $.trim($("#statusCode").val())
+					+ '","display":"' + $.trim($("#display").val())
+					+ '","classImageUrl":"' + $.trim($("#classImageUrl").val())
+					+ '","delImageUrl":"' + $.trim($("#delImageUrl").val())
+					+ '","imageFlag":"' + $.trim($("#imageFlag").val())
+					+ '","classSort":"' + $.trim($("#classSort").val())
+					+ '","note" : "' + $.trim($("#note").val()) + '"}';
+		}
+		if (!validateData()) {
+			return;
+		}
+		$('#submit').addClass('btn_disabled')[0].disabled = true;
+		$('#submit').attr("disabled", "disabled");
+		$.ajax({
+			url : TERMINAL_URL + url,
+			type : 'post',
+			contentType : 'application/json',
+			data : strParamJson,
+			dataType : 'json',
+			error : function() {
+				$("#prompt").text('保存失败');
+				$('#submit').addClass('btn_sure')[0].disabled = false;
+				$('#submit').removeAttr("disabled");
+			},
+			success : function(data) {
+				if (data.msgCode == 1) {
+					$('#submit').addClass('btn_disabled')[0].disabled = true;
+					$('#submit').attr("disabled", "disabled");
+					$("#prompt").text('操作成功，正在产品类别信息列表页.....');
+					window.setTimeout(function() {
+						parent.location.reload();
+					}, 1000);
+				} else {
+					$('#prompt').text(data.msg);
+					$('#submit').removeClass('btn_disabled').addClass(
+							'btn_sure')[0].disabled = false;
+					$('#submit').removeAttr("disabled");
+				}
+			}
+		});
+	}
+
+	function showUploadBox() {
+		$('#uploadImgType').val();
+		if ($('#uploadBtn').attr('disabled') == 'disabled') {
+			$('#uploadBtn').attr('disabled', false);
+		}
+		$('#uploadnote').html('');
+		$('#uploadBox').show();
+	}
+
+	function hideUploadBox() {
+		$('#uploadBox').hide();
+	}
+
+	function hasProductImg() {
+		if ($('.img img').length > 0) {
+			$('#uploadImgTxt').html('&nbsp;').attr('class', 'success');
+		}
+
+	}
+
+	/*删除图片*/
+	function delUploadImg() {
+		if (confirm("您确定删除该商品图片吗？")) {
+			$('#uploadLi').html(
+					'<a class="img" onclick="showUploadBox()">点击上传</a>');
+			var tempPicPath = $('#classImageUrl').val();
+			//如果是刚刚上传的，则需要删除临时服务器上的图片
+			if ($("#imageFlag").val() == 'IMAGEFLAG_YES') {
+				ajax({
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+							+ '/deleteFileTemp?tempPicPath=' + tempPicPath,
+					type : 'post',//非必须.默认get
+					dataType : 'json',//非必须.默认text
+					error : function(data) {
+					}, //非必须
+					success : function(data) {
+						$('#classImageUrl').val('');
+					}//非必须
+				});
+			} else if ($("#imageFlag").val() == 'IMAGEFLAG_NO') { //如果原本就是正式环境的图片，先记下其url
+				delPicString = $('#classImageUrl').val();
+				$("#delImageUrl").val(delPicString);
+				$("#classImageUrl").val('');
+			}
+			hasProductImg();
+		}
+	}
+	function closeme() {
+		$(".box-mask").remove();
+	}
+	function showProductImg(path) {
+		var temphtml = "<div class='box-mask'><i class='mask_close' onclick='closeme();'>x</i><div style='width:100%; height:auto;overflow:hidden;text-align:center;line-height:600px;'><img src='"
+				+ path
+				+ "' style='max-width:100%; max-height:auto;' /></div></div>";
+		$('body').append(temphtml);
+	}
+	//可输入的文字数量
+	function countwords(id) {
+		var inputLength = $("#" + id).val().length;
+		var maxCount = 50;
+		if (inputLength == 0) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + maxCount + "个字");
+		} else if (inputLength > 0 && inputLength <= maxCount) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + (maxCount - inputLength) + "个字");
+		} else if (inputLength > maxCount) {
+			GLOBAL_PARAM.countWordsFlag = false;
+			$("#" + id + "Err").html(
+					"<strong class='cred'>已经超过" + (inputLength - maxCount)
+							+ "个字</strong>");
+		}
+	}
+
+	function resetSubmit() {
+		if (method == 'edit') {
+			editProduct();
+		} else if (method == 'add') {
+			/* $('#classCode').val(''); */
+			$('#classTypeName').val('');
+			$('#className').val('');
+			$('#statusCode').val('PRODUCTCLASSSTATUS_ON');
+			$('#display').val('PRODUCTCLASSDISPLAY_YES');
+			$('#classSort').val('');
+			$('#note').val('');
+		}
+	}
+
+	function uploadSubmit() {
+		var file = $.trim($('#uploadFile').val());
+		if (file == '') {
+			//showBox('提示!', "上传的图片不能为空!", 'alert');
+			alert('上传的图片不能为空!');
+			return;
+		}
+		$('#uploadBtn').attr('disabled', 'disabled');
+		ajax({
+			uploadForm : 'uploadForm',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + "/uploadFileTemp",
+			//type:'post',
+			//contentType:'application/json',
+			dataType : 'json',//非必须.默认text
+			async : false,
+			error : function() {
+				return;
+			}, //非必须
+			success : function(data) {
+				checkJsonRight(data);
+				if (data.msgCode != 1) {
+					$('#uploadnote').html(data.msg);
+					return;
+				}
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = [];
+				var classImageUrl = data.entity;
+				html
+						.push('<span class="img"><a href="javascript:void(0)" onclick="showProductImg(\''
+								+ UPLOAD_FILE_TEMP_URL
+								+ classImageUrl
+								+ '\')"><img src="');
+				html.push((UPLOAD_FILE_TEMP_URL + classImageUrl).replace(
+						'.jpg', '.jpg'));
+				html.push('" alt="" /></a></span><p>');
+				html
+						.push('<a href="javascript:;" class="ablue" onclick="delUploadImg()">删除</a></p>');
+				$('#classImageUrl').val(classImageUrl);
+				//IMAGEFLAG_YES表示是上传的图片
+				$('#imageFlag').val('IMAGEFLAG_YES');
+				$('#uploadLi').html(html.join(''));
+				hasProductImg();
+				$('#uploadnote').html(data.msg);
+				$('#uploadBtn').attr('disabled', 'disabled');
+				setTimeout(function() {
+					hideUploadBox();
+				}, 1000);
+			}//非必须
+		});
+	}
+</script>
+</head>
+<body>
+	<div class="system_form" id="system_form">
+		<!-- <input type="hidden" id="classCode" name="classCode" /> --> <input
+			type="hidden" id="imageFlag" name="imageFlag" /> <input
+			type="hidden" id="delImageUrl" name="delImageUrl" />
+		<dl>
+			<dt>
+				<em class="cred">*</em><span id="classTypeName" style="color: #000"></span>
+			</dt>
+			<dd>
+				<input id="className" name="className" type="text"
+					class="txt grid-10" /><span id="classNameMsg"></span>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<em class="cred">*</em>是否有效：
+			</dt>
+			<dd>
+				<select class="txt grid-8" id="statusCode">
+					<option value="PRODUCTCLASSSTATUS_ON">是</option>
+					<option value="PRODUCTCLASSSTATUS_OFF">否</option>
+				</select>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<em class="cred">*</em>是否显示：
+			</dt>
+			<dd>
+				<select class="txt grid-8" id="display">
+					<option value="PRODUCTCLASSDISPLAY_YES">是</option>
+					<option value="PRODUCTCLASSDISPLAY_NO">否</option>
+				</select>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<em class="cred">*</em>产品类别图片：
+			</dt>
+			<input type="hidden" id="classImageUrl" name="classImageUrl" />
+			<dd>
+				<div id="uploadBox" class="hide">
+					<form id="uploadForm" onsubmit="uploadSubmit();return false;">
+						<div class="uploadbox">
+							<p>
+								<input id="uploadImgIndex" type="hidden" /> <input
+									id="uploadImgRow" type="hidden" /> <input id="uploadImgType"
+									type="hidden" /> <input id="uploadFile" name="file"
+									type="file" /> <span id="uploadnote" class="cred"></span>
+							</p>
+							<div class="uploadbox_btn">
+								<input type="submit" value="确定" class="btn_sure" id="uploadBtn" />
+								<input type="reset" onclick="hideUploadBox()" value="取消"
+									class="btn_gray" />
+							</div>
+						</div>
+					</form>
+				</div>
+				<ul class="product_release_img img">
+					<li id="uploadLi" class="pr"><a onclick="showUploadBox()"
+						class="img">点击上传</a></li>
+
+				</ul>
+				<div class="product_release_imgnote agray">
+					<em>温馨提示：</em>
+					<p style="color: #DF9067; margin: 0 0 0 100px; padding: 0px">
+						请上传图片大小≤3M的图片！ <span id="classImageUrlMsg">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>推荐上传100*100像素图片
+					</p>
+				</div>
+			</dd>
+		</dl>
+		<dl>
+			<dt>显示顺序：</dt>
+			<dd>
+				<input id="classSort" name="classSort" type="text"
+					class="txt grid-10"
+					onkeyup="this.value=this.value.replace(/[^\d]/g,'')" /><span
+					id="classSortMsg"></span>
+			</dd>
+		</dl>
+		<dl>
+			<dt>描述：</dt>
+			<dd>
+				<textarea type="text" id="note" name="note" class="txt grid-25"
+					rows="3" onkeyup="countwords('note')"></textarea>
+				<span id="noteErr" class="gray" style="padding: 1px 100px">可以输入50个字</span>
+			</dd>
+		</dl>
+		<dl>
+			<p>
+				<input type="submit" value="保 存" id="submit" class="btn_sure"
+					onclick="dataSubmit()" /> <input type="reset"
+					style="display: none" id="reset" class="btn_gray" value="重置"
+					onClick="javascript:resetSubmit()"> <input type="button"
+					value="取 消" class="btn_gray" onclick="closeBox()" /> <span
+					id="prompt" class="cred"></span>
+			</p>
+		</dl>
+	</div>
+
+
+</body>
+</html>

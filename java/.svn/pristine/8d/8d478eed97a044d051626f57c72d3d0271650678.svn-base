@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!--关闭所有服务启动时检查依赖的服务是否可用 -->
+	<dubbo:consumer check="false" />
+
+	<dubbo:reference id="communityProxyService"
+		interface="com.yilidi.o2o.user.proxy.ICommunityProxyService" />
+	<dubbo:reference id="consigneeAddressProxyService"
+		interface="com.yilidi.o2o.user.proxy.IConsigneeAddressProxyService" />
+	<dubbo:reference id="messageProxyService"
+		interface="com.yilidi.o2o.system.proxy.IMessageProxyService" />
+	<dubbo:reference id="customerProxyService"
+		interface="com.yilidi.o2o.user.proxy.ICustomerProxyService" />
+	<dubbo:reference id="productProxyService"
+		interface="com.yilidi.o2o.product.proxy.IProductProxyService" />
+	<dubbo:reference id="logisticProxyService"
+		interface="com.yilidi.o2o.user.proxy.ILogisticProxyService" />
+	<dubbo:reference id="userProxyService"
+		interface="com.yilidi.o2o.user.proxy.IUserProxyService" />
+	<dubbo:reference id="storeProfileProxyService"
+		interface="com.yilidi.o2o.user.proxy.IStoreProfileProxyService" />
+	<dubbo:reference id="storeSubsidyRecordProxyService"
+		interface="com.yilidi.o2o.user.proxy.IStoreSubsidyRecordProxyService" />
+	<dubbo:reference id="areaDictProxyService"
+		interface="com.yilidi.o2o.system.proxy.IAreaDictProxyService" />
+	<dubbo:reference id="systemParamsProxyService"
+		interface="com.yilidi.o2o.system.proxy.ISystemParamsProxyService" />
+	<dubbo:reference id="systemDictProxyService"
+		interface="com.yilidi.o2o.system.proxy.ISystemDictProxyService" />
+	<dubbo:reference id="secKillProductProxyService"
+		interface="com.yilidi.o2o.product.proxy.ISecKillProductProxyService" />
+	<dubbo:reference id="secKillSceneProxyService"
+		interface="com.yilidi.o2o.product.proxy.ISecKillSceneProxyService" />
+	<dubbo:reference id="redEnvelopeProxyService"
+		interface="com.yilidi.o2o.product.proxy.IRedEnvelopeProxyService" />
+	<dubbo:reference id="storeWarehouseProxyService"
+		interface="com.yilidi.o2o.user.proxy.IStoreWarehouseProxyService" />
+	<dubbo:reference id="productClassProxyService"
+		interface="com.yilidi.o2o.product.proxy.IProductClassProxyService" />
+	<dubbo:reference id="systemMessageProxyService"
+		interface="com.yilidi.o2o.system.proxy.ISystemMessageProxyService" />
+	<dubbo:reference id="buyRewardActivityProxyService"
+		interface="com.yilidi.o2o.product.proxy.IBuyRewardActivityProxyService" />
+</beans>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css" />
+<link rel="stylesheet" href="../static-resource/css/swiper-3.4.1.min.css" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+	<script type="text/javascript" src="../static-resource/js/swiper-3.4.1.jquery.min.js"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body>
+	<header id="proDetailBanner">
+		<!--返回上一页按钮-->
+		<div class="back-tit">
+			<div class="back-tit-btn" onclick="history.back()"></div>
+		</div>
+		<!--商品详情banner-->
+	</header>
+	<section>
+		<!--商品名称价格信息-->
+		<div class="pro-detail-det" id="saleProductDetailDiv"></div>
+		<!--商品评价内容展示-->
+		<div class="commentShowSome">
+			<div id="commentTitBox">
+			</div>
+			<div id="commentShowBox">
+			</div>
+		</div>
+		<!--店铺名称时间信息-->
+		<div class="pro-detail-store storeOn" id="storeInfoDiv"></div>
+		<!--有商品具体详情-->
+		<div class="pro-detail-con hide">
+			<div id="toLoadDetail" onclick="toLoadDetail()">
+				<p>点击查看更多商品详情</p>
+			</div>
+		</div>
+		<!--无详情图文-->
+		<div class="non-detail hide">
+			<img src="../static-resource/images/pro-detail/cry.png">
+			<p>暂无详情图文</p>
+		</div>
+	</section>
+	<!--评论大图显示-->
+	<div class="userComItemBig hide" onclick="hideBigComPic(this)"></div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<footer>
+		<!--购物车-->
+		<div class="topPaddingBox" style="padding-top: 1rem;"></div>
+		<div class="pro-bot-cart">
+			<div class="collect noCollect">
+				<p id="collectText">收藏</p>
+			</div>
+			<div class="cart-box" onclick="window.location.href='../cart/cart.html'">
+				<input class="cart-pro-number hide" id="cartProNumber" value="" readonly="readonly" />
+				<p>购物车</p>
+			</div>
+			<div class="add-to-cart-box" id="addToCartDiv">
+				<a href="javascript:void(0);">加入购物车</a>
+			</div>
+		</div>
+	</footer>
+<script type="text/javascript">
+		var saleProductId = getUrlParam("saleProductId"); //商品ID
+		var barCode = getUrlParam("barCode"); //商品条形码
+		var storeInfo = getSessionStorage(sessionStorageStoreKey);
+		var productId=0;
+		$(function() {
+			$("#storeInfoTmpl").tmpl(storeInfo).appendTo("#storeInfoDiv");//店铺信息渲染
+			initSaleProductDetailData(saleProductId);//商品信息初始化渲染
+			//店铺休息中状态显示
+			if (!isStoreOn()) {
+				$(".pro-detail-store").removeClass("storeOn").addClass(
+						"storePause");
+			}
+			commentSummaryTmpl();//评价内容展示
+			$(".collect").click(function() {
+				if (!isLogin()) {
+					if (getSessionStorage(sessionStorageWXCodeKey) && isUserUnbinding())
+						window.location.replace("/user/bindTeleNumber.html");
+					else {
+						var urlLoc = "http://m.yldbkd.com/wx-code.html?appid=wx2a7706db5d469293&redirect_uri="
+								+ "http://"
+								+ document.domain
+								+ "/user/inLogining.html"
+								+ "&response_type=code&scope=snsapi_userinfo&state=wx#wechat_redirect"
+						window.location.replace(urlLoc);
+					}
+				}
+				if($(".collect").hasClass("noCollect"))
+					toCollect();
+				else
+					cancelCollcet();
+			});
+		});
+		/*收藏商品操作*/
+		function toCollect(){
+			$(".collect").removeClass("noCollect");
+			$(".collect").addClass("isCollect");
+			var param= new Object();
+			param.productId=productId;
+			ajax("/product/collectsaleproduct",param,function(data) {
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		/*取消收藏商品操作*/
+		function cancelCollcet() {
+			$(".collect").removeClass("isCollect");
+			$(".collect").addClass("noCollect");
+			var param= new Object();
+			param.productIds=productId;
+			ajax("/product/cancelwithcollected",param,function(data) {
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		function toAllComment(){
+			window.location.href="proComment.html?saleProductId="+saleProductId;
+		}
+		function initSaleProductDetailData(saleProductId) {
+			var params = new Object();
+			params.saleProductId = saleProductId;
+			ajax("/product/productdetail", params, function(data) {
+				productId=data.productId;
+				if (data) {
+					$("#proDetailBannerTmpl").tmpl(data).appendTo(
+							"#proDetailBanner");
+					$("#saleProductDetailTmpl").tmpl(data).appendTo(
+							"#saleProductDetailDiv");
+					if (data.productDetail) {
+						$(".pro-detail-con").removeClass("hide");
+					} else {
+						$(".non-detail").removeClass("hide");
+					}
+					if(data.isCollected==1){
+						$(".collect").removeClass("noCollect");
+						$(".collect").addClass("isCollect");
+					}else{
+						$(".collect").removeClass("isCollect");
+						$(".collect").addClass("noCollect");
+					}
+					initCurrentCartPriceAndNumber(data);
+					setSessionStorage(sessionStorageProductDetailKey,
+							data.productDetail);
+				} else {
+					$(".noStore").show();
+				}
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		function initCurrentCartPriceAndNumber(goods) {
+			var totalCount = getCartCount();
+			var totalPrice = toCenti(getCartPrice(),2);
+			var currentCount = getCartNum(goods.saleProductId);
+			if (totalCount > 0) {
+				$("#cartProNumber").val(totalCount);
+				$("#cartProNumber").show();
+			}
+			$("#cartProPrice").val(totalPrice);
+			if (currentCount >= goods.stockNum) {
+				$("#addToCartDiv").addClass("add-to-cart-no");
+				$("#addToCartDiv a").attr("href", "javascript:void(0);");
+			} else {
+				$("#addToCartDiv").removeClass("add-to-cart-no");
+				$("#addToCartDiv a").attr(
+						"href",
+						"javascript:validCartToAdd(" + JSON.stringify(goods)
+								+ ",addCartSuccess,'','');");
+			}
+		}
+		function addCartSuccess(productInfo, startLocation, doc) {
+			initCurrentCartPriceAndNumber(productInfo);
+		}
+		function toLoadDetail() {
+			window.location.href = "productDetailMore.html";
+		}
+		function isStoreOn() {
+			var store = getSessionStorage(sessionStorageStoreKey);
+			if (!store || !store.storeStatus || store.storeStatus == 0)
+				return false;
+			var beginTime = getLongTime(store.businessHoursBegin);
+			var endTime = getLongTime(store.businessHoursEnd);
+			var date = getLongTime(new Date().toTimeString().split(" ")[0]);
+			if (beginTime < endTime)
+				return beginTime < date && date < endTime;
+			if (endTime < beginTime)
+				return beginTime < date || date < endTime;
+		}
+		function getLongTime(time) {
+			var times = time.split(":");
+			return 3600 * times[0] + 60 * times[1] + times[2];
+		}
+		/*获取商品评价内容汇总信息*/
+		function commentSummaryTmpl(){
+			var params = new Object();
+			params.saleProductId = saleProductId;
+			ajax("/product/getevaluationsummary", params, function(data) {
+				$("#commentTmpl").tmpl(data).appendTo("#commentTitBox");
+				if (!data)
+					return;
+				var summaryValue = data[0].summaryValue;
+				productCommentTmpl(1);
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		/*获取商品评论相关信息*/
+		function productCommentTmpl(summaryValue) {
+			var params = new Object();
+			params.pageNum = 1;
+			params.pageSize = 2;
+			params.saleProductId = saleProductId;
+			params.summaryValue = summaryValue;
+			ajax("/product/getevaluations", params, function(data) {
+				totalPages = data.totalPages;
+				pageNum = data.pageNum;
+				$("#productCommentTmpl").tmpl(data).appendTo("#commentShowBox");
+				starScore();
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		/*星星显示*/
+		function starScore(){
+			$(".starScore").each(function(){
+				var saleProductScore=$(this).attr("data-saleProductScore");
+				var starWidth=(saleProductScore)*20;
+				$(this).width(starWidth+'%');
+			});
+		}
+		/*放大显示评论图片和内容*/
+		function showBigComPic(data,e){
+			var initialSlideIndex=$(e).attr("data-index");
+			$(".userComItemBig").html("");
+			$(".userComItemBig").removeClass("hide");
+			$("#productCommentBigImgTmpl").tmpl(data).appendTo(".userComItemBig");
+			var swiper = new Swiper('.swiper-container', {
+				pagination : '.swiper-pagination',
+				paginationType : 'fraction',
+				initialSlide : initialSlideIndex
+			});
+			$(window).resize();
+		}
+		/*隐藏放大显示的评论图片和内容*/
+		function hideBigComPic(e){
+			$(e).addClass("hide");
+		}
+		function getBigImgUrl(url){
+			if(!url){
+				return null;
+			}
+			var  i = url.lastIndexOf("/");
+			var imageName = (url.substring(0, i + 1))+url.substring(url.indexOf("_") + 1, url.length);
+			return imageName;
+		}
+		/*控制放大的评论图片的居中显示位置*/
+		$(window).resize(function(){
+			$(".comBigImgDom").each(function(){
+				var domHeight=$(this).outerHeight();
+				var domWidth=$(this).outerWidth();
+				if(domHeight==0)
+					domHeight=375;
+				if(domHeight>=$(window).height()){
+					$(this).css({
+						position: "absolute",
+						left: ($(window).width() - domWidth)/2,
+						top: 0,
+					});
+				}else{
+					$(this).css({
+						position: "absolute",
+						left: ($(window).width() - domWidth)/2,
+						top: ($(window).height() - domHeight)/2,
+					});
+				}
+			})
+		});
+</script>
+<script id="saleProductDetailTmpl" type="text/x-jquery-tmpl">
+        <p class="floor-pro-name">${saleProductName ? saleProductName : ''}</p>
+        <p class="floor-pro-size">${saleProductSpec ? saleProductSpec : ''}</p>
+        <p class="floor-pro-normal-price">普通￥<span>${retailPrice ? toCenti(retailPrice,2) : 0.00}</span></p>
+        <p class="floor-pro-vip-price pro-detail-vip-price">VIP￥<span>${promotionalPrice ? toCenti(promotionalPrice,2) : 0.00}</span></p>
+</script>
+<script id="storeInfoTmpl" type="text/x-jquery-tmpl">
+        <p class="pro-store-name">${storeName ? storeName :''}</p>
+        <p class="store-open-time">营业时间:${businessHoursBegin ? businessHoursBegin:''}-${businessHoursEnd?businessHoursEnd:''}</p>
+        <p class="pro-delivery-ins">本店满${toCenti(deduceTransCostAmount)}元免${toCenti(transCostAmount)}元运费</p>
+</script>
+<script id="proDetailBannerTmpl" type="text/x-jquery-tmpl">
+		<div class="floor-top-banner-img"> <img src="${saleProductImageUrl}" onerror="setErrorDefaultImg(this)"> </div>
+</script>
+<script id="commentTmpl" type="text/x-jquery-tmpl">
+	{{if $index==0}}
+		{{if summaryCount>0 }}
+			<div class="comShowTit bg">
+					<p>商品评价<span class="comTotalCount">(${summaryCount})</span></p>
+					<p onclick="toAllComment()">查看全部评价</p>
+			</div>
+			{{else}}
+			<div class="noComment">
+					<p>暂无评论</p>
+			</div>
+		{{/if}}
+	{{/if}}
+</script>
+<script id="productCommentTmpl" type="text/x-jquery-tmpl">
+   {{if $data.list&&$data.list.length>0}}
+{{each(i,v) list}}
+    <div class="userComItem bg" >
+        <div class="userComTit">
+           <img src="${v.userImageUrl}" class="userComImg" onerror="setErrorDefaultImg(this)">
+           <p class="userTeleNum">${v.userName}</p>
+           <div class="starWrap">
+              <div class="starDefault">
+                  <div class="starScore" data-saleProductScore="${v.saleProductScore}">
+                  </div>
+              </div>
+           </div>
+            <p class="comTime">${v.createTime}</p>
+        </div>
+        <div class="clearfix"></div>
+        <p class="userComText">${v.evaluateContent}</p>
+        <div class="comImg">
+        {{each evaluateImages}}
+        <div class="comImgBox comImgBoxInPro">
+        <img src="${imageUrl}" data-index="${$index}" onclick="showBigComPic(${JSON.stringify(v)},this)" onerror="setErrorDefaultImg(this)">
+        </div>
+        {{/each}}
+       </div>
+        <div class="clearfix"></div>
+    </div>
+     {{/each}}
+{{/if}}
+</script>
+<script id="productCommentBigImgTmpl" type="text/x-jquery-tmpl">
+        <div class="comItemTop">
+            <div class="comBackBtn"></div>
+        </div>
+        <p class="userComText">${evaluateContent}</p>
+        <div class="comImgBigWrap">
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+               {{each evaluateImages}}
+				 <div class="swiper-slide">
+				 <img src="${getBigImgUrl(imageUrl)}" class="comBigImgDom" onerror="setErrorDefaultImg(this)">
+				</div>
+			   {{/each}}
+              </div>
+              <div class="swiper-pagination"></div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+</script>
+</body>
+</html>

@@ -1,0 +1,1077 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/lang/zh_CN.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var method = getUrlParam("method");
+var delPicListString = "";
+var nameIsExist = true;
+function createProductClassSelect(classCode){
+	if(classCode == null || classCode == "" || classCode == "TOP_LEVEL_CLASS"){
+		loadSubClass("TOP_LEVEL_CLASS");
+	}else{
+		$.ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+classCode+'/getUpClassAndNextProductClassByClassCode',
+			type:"post",
+			dataType:"json",
+			success:function(data){
+				var html = '';
+				if(data.msgCode == 1){
+					var productClassListMap = data.entity;
+					var classCode = "";
+					if(productClassListMap != null && productClassListMap.length > 0){
+						$.each(productClassListMap,function(i,item){
+							classCode = item.classCode;
+							html+='<select class="select grid-15" id="productClass" name="productClassCode" onchange=changeClassSelect(this)>';
+							html+='<option value="">--请选择--</option>';
+							var subClassList = item.subClassList;
+							if(subClassList != null && subClassList.length > 0){
+								$.each(subClassList,function(j,subItem){
+									html+='<option value="'+subItem.classCode+'"';
+									if(subItem.classCode == classCode){
+										html+='selected="selected"';
+									}
+									html+='>'+subItem.className+'</option>';
+								});
+							}
+							html+='</select>';
+						});
+					}
+				}
+				if(html == ""){
+					showBox('提示!','产品分类数据加载失败,默认初始化一级分类!','alert');
+					loadSubClass("TOP_LEVEL_CLASS");
+				}else{
+					$("#productClassDiv").html(html);
+					if(method == 'view'){
+						$("#productClassDiv").children().each(function(){
+							$(this).attr("disabled","disabled");
+						});
+					}
+				}
+			},
+			error:function(error){
+				showBox('提示!','请求有误请重试!','alert');
+			}
+		});
+	}
+}
+
+function editProduct(){
+	var id = getUrlParam("id");
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(id))){
+		ajax({
+			waitTagId:'bodyId',//非必须,设置等待图标在那个标签里显示
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ decodeURIComponent(getUrlParam("id")) + '/loadProductForView',
+			data:'',
+			dataType:'json',//非必须.默认text
+			error:function(){}, //非必须
+			success:function(data){
+				checkJsonRight(data);
+				if(data.msgCode!=1){
+					return;
+				}
+				var proData = data.entity;
+				$("#productClassCode").val(proData.productClassCode);
+				//生成产品分类
+				createProductClassSelect(proData.productClassCode);
+				/* loadSubClass(proData.productClassCode); */
+				$("#brandCode").val(proData.brandCode);
+				$("#brandName").val(proData.brandName);
+				$("#productName").val(proData.productName);
+				$("#barCode").val(proData.barCode);
+				$("#barCode").attr("disabled","disabled");
+				$("#productSpec").val(proData.productProfileDto.productSpec);
+				$("#costPrice").val(toCenti(proData.productPriceDto.costPrice));
+				$("#retailPrice").val(toCenti(proData.productPriceDto.retailPrice));
+				if('' != proData.productPriceDto.promotionalPrice && null != proData.productPriceDto.promotionalPrice){
+					$("#promotionalPrice").val(toCenti(proData.productPriceDto.promotionalPrice));
+				}
+				if('' != proData.productPriceDto.commissionPrice && null != proData.productPriceDto.commissionPrice){
+					$("#commissionPrice").val(toCenti(proData.productPriceDto.commissionPrice));
+				}
+				if('' != proData.productPriceDto.vipCommissionPrice && null != proData.productPriceDto.vipCommissionPrice){
+					$("#vipCommissionPrice").val(toCenti(proData.productPriceDto.vipCommissionPrice));
+				}
+				$("#saleStatus").val(proData.productProfileDto.saleStatus);
+				$("#displayOrder").val(proData.productProfileDto.displayOrder);
+				$("#maintainStoreFlag").val(proData.productProfileDto.maintainStoreFlag);
+				$("#productPriceId").val(proData.productPriceDto.id);
+				$("#productProfileId").val(proData.productProfileDto.id);
+				if(proData.productProfileDto.channelCode == "CHANNELTYPE_ALL"){
+					if(null != proData.productProfileDto.content){
+						$("#content").val(proData.productProfileDto.content);
+						loadHtmlDateFormat(proData.productProfileDto.content,UPLOAD_FILE_URL);
+						editor1.html(proData.productProfileDto.content)
+					}else{
+						if(method == 'view'){
+							$("#contentShow").hide();
+						}
+					}
+				}
+				if(method == 'view'){
+					$("#productName").attr("disabled","disabled");
+					$("#brandName").attr("disabled","disabled");
+					$("#barCode").attr("disabled","disabled");
+					$("#productSpec").attr("disabled","disabled");
+					$("#costPrice").attr("disabled","disabled");
+					$("#retailPrice").attr("disabled","disabled");
+					$("#promotionalPrice").attr("disabled","disabled");
+					$("#commissionPrice").attr("disabled","disabled");
+					$("#vipCommissionPrice").attr("disabled","disabled");
+					$("#saleStatus").attr("disabled","disabled");
+					$("#displayOrder").attr("disabled","disabled");
+					$("#maintainStoreFlag").attr("disabled","disabled");
+					editor1.readonly(true);
+				}
+				
+				var appItem = 1;
+				if(null != proData.productImageDtos){
+					for(var i=0,j=proData.productImageDtos.length;i<j;i++){
+						var productImage = proData.productImageDtos[i];
+						if(productImage.channelCode == "CHANNELTYPE_ALL"){
+							$("#appPicPath"+appItem).val(productImage.imageUrl);
+							$("#appPicOrder"+appItem).val(productImage.imageOrder);
+							$("#appPicSort"+appItem).val(appItem);
+							//刚加载出来的的给一个需要不增加的标示
+							$("#appImageFlag"+appItem).val('IMAGEFLAG_NO');
+							var html = '<span class="img"><a onclick="showProductImg(\''+UPLOAD_FILE_URL+productImage.imageUrl+'\')" href="javascript:void(0)"><img alt="" src="'+(UPLOAD_FILE_URL+productImage.imageUrl)+'"></a></span><p><input type="radio" class="mainpic" value="'+appItem+'" id="appIsMainPic'+appItem+'" name="appIsMainPic"';
+							if(productImage.masterFlag == "PRODUCTIMAGEMASTERFLAG_YES"){
+								html += ' checked="checked" ';
+							}
+							html += '><label for="appIsMainPic'+appItem+'">主图</label>'
+							if(method == 'add' || method == 'edit'){
+								html += '<a onclick="delUploadImg('+appItem+',\'app\')" class="ablue" href="javascript:;">删除</a></p>';
+							}
+							$("#appUploadLi"+appItem).html(html);
+							if(method == 'view'){
+								$("#appIsMainPic"+appItem).attr("disabled","disabled");
+							}
+							//修改的时候将图片id和图片顺序带过去
+							if(method == 'edit'){
+								$("#appPicId"+appItem).val(productImage.id);
+							}
+							appItem ++;
+						}
+					}
+				}else{
+					if(method == 'view'){
+						$("#productImageShow").hide();
+					}
+				}
+				if(method == 'view'){
+					viewimg();
+					removeButton();
+				}
+				
+			}//非必须
+		});
+	}
+}
+function setMainpic(){
+	$(document).on('click','.mainpic',function(){
+		var tempa="#appPicMain"+$(this).val();
+		$('.js-mainPicv').val(0);
+		$(tempa).val(1);
+	})
+}
+
+function viewimg(){
+	$('.appimg li').each(function(){
+		if(!$(this).children('span').hasClass('img')){
+			$(this).remove();
+		}
+	})
+}
+function removeButton(){
+	$("#submit").remove();
+	$("#reset").remove();
+}
+function showUploadBox(index,type){
+	$('#uploadImgIndex').val(index);
+	$('#uploadImgType').val(type);
+	showBox('上传图片','uploadBox');
+}
+function hasProductImg(type){
+	if($('.'+type+'img img').length>0){
+	   $('#'+type+'UploadImgTxt').html('&nbsp;').attr('class', 'success');			 
+	}
+	else{
+		$('#'+type+'UploadImgTxt').html('请上传图片！').attr('class', 'error');
+	}
+}
+function uploadSubmit(){
+	var index=parseInt($('#uploadImgIndex').val());
+	var type = $('#uploadImgType').val();
+	var file=$.trim($("#uploadFile").val());
+	if(index<=0)return;
+	if(file==''){
+		showBox('提示!','上传的图片不能为空!','alert');
+		return;
+	}
+	
+	$('#uploadBtn').attr('disabled','');
+	ajax({
+		uploadForm:'uploadForm',
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/uploadFileTemp',
+		dataType:'json',//非必须.默认text
+		async:false,
+		error:function(){
+			$('#uploadnote').html(data.msg);
+			return;
+		}, //非必须
+		success:function(data){
+			checkJsonRight(data);
+			if(data.msgCode!=1){
+				$('#uploadnote').html(data.msg);
+				return;
+			}
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var html=[];
+			var picpath = data.entity;
+			html.push('<span class="img"><a href="javascript:void(0)" onclick="showProductImg(\''+UPLOAD_FILE_TEMP_URL+picpath+'\')"><img src="');
+			html.push((UPLOAD_FILE_TEMP_URL+picpath).replace('.jpg','.jpg'));
+			html.push('" alt="" /></a></span><p><input type="radio" name="'+type+'IsMainPic" id="'+type+'IsMainPic');
+			html.push(index);
+			html.push('" value="');
+			html.push(index);
+			html.push('" ');
+			if(index==1||$('.product_release_img input:checked').length<=0) {html.push(' checked="checked"')};
+			html.push(' /><label for="mainpic');
+			html.push(index);
+			html.push('">主图</label><a href="javascript:;" class="ablue" onclick="delUploadImg('+index+',\''+type+'\')">删除</a></p>');
+			$('#'+type+'PicPath'+index).val(picpath);
+			$('#'+type+'PicSort'+index).val(index);
+			$('#'+type+'UploadLi'+index).html(html.join(''));
+			//刚上传的给一个需要增加的标示
+			$('#'+type+'ImageFlag'+index).val('IMAGEFLAG_YES');
+			mainpicY(type);
+			hasProductImg(type);
+			$('#uploadnote').html(data.msg);
+			$('#uploadBtn').attr('disabled','disabled');
+			setTimeout(function(){
+				closeBox();
+			},1000);
+		}//非必须
+	});
+}
+function mainpicY(type){
+	var mainpic=$('.'+type+'img input:checked').attr('id');
+	var index = mainpic.slice(-1);
+	$("#"+type+"IsMainPic").val(index);
+}
+function showProductImg(path){
+	showBox("查看产品图片","<img src='"+path+"' alt='' height='400' />");
+}
+/*删除图片*/
+function delUploadImg(index,type){
+	 showBox('系统提示','您确定删除该产品图片吗？',"confirm",function(){
+		$('#'+type+'UploadLi'+index).html('<a class="img" onclick="showUploadBox('+index+',\''+type+'\')">点击上传</a>');
+	 	if($("#"+type+'ImageFlag'+index).val()=='IMAGEFLAG_YES'){
+			var tempPicPath = $("#"+type+'PicPath'+index).val();
+			ajax({
+				url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/deleteFileTemp?tempPicPath=' + tempPicPath,
+				type:'post',//非必须.默认get
+				dataType:'json',//非必须.默认text
+				error:function(data){
+				}, //非必须
+				success:function(data){
+					$("#"+type+'PicPath'+index).val('');
+				}//非必须
+			});
+			hasProductImg(type);
+	 	}else if($("#"+type+'ImageFlag'+index).val()=='IMAGEFLAG_NO'){
+	 		delPicListString =  delPicListString + $("#"+type+'PicPath'+index).val() + ",";
+	 		$("#"+type+'PicPath'+index).val('');
+	 	}
+	 });
+}
+
+
+function dataEditSubmit(){
+	if(method != 'add' && method != 'edit'){
+		$('#promptMessage').text('参数有误，请返回重试!');
+		return;
+	}
+	var url = '';
+	if(method == 'add'){
+		url = OPERATION_SYSTEM_IDENTITY  + '/saveProduct';
+	}else if(method == 'edit'){
+		url = OPERATION_SYSTEM_IDENTITY  + '/updateProduct';
+		$("#id").val(decodeURIComponent(getUrlParam("id")));
+	}
+  	if(!validateData()){
+		return;
+	}  
+  	if(null != $("#costPrice").val() && '' != $("#costPrice").val()){
+		var costPrice = parseFloat($("#costPrice").val());
+		$("#costPrice").val(toMul(costPrice,1000));
+	}
+	if(null != $("#retailPrice").val() && '' != $("#retailPrice").val()){
+		var retailPrice = parseFloat($("#retailPrice").val());
+		$("#retailPrice").val(toMul(retailPrice,1000));
+	}
+	if(null != $("#promotionalPrice").val() && '' != $("#promotionalPrice").val()){
+		var promotionalPrice = parseFloat($("#promotionalPrice").val());
+		$("#promotionalPrice").val(toMul(promotionalPrice,1000));
+	}
+	if(null != $("#commissionPrice").val() && '' != $("#commissionPrice").val()){
+		var commissionPrice = parseFloat($("#commissionPrice").val());
+		$("#commissionPrice").val(toMul(commissionPrice,1000));
+	}
+	if(null != $("#vipCommissionPrice").val() && '' != $("#vipCommissionPrice").val()){
+		var vipCommissionPrice = parseFloat($("#vipCommissionPrice").val());
+		$("#vipCommissionPrice").val(toMul(vipCommissionPrice,1000));
+	}
+	if(null != delPicListString && '' != delPicListString){
+ 		delPicListString = delPicListString.substring(0,delPicListString.length-1);
+		$("#deleteImageUrls").val(delPicListString);
+	}
+	htmlDateFormat($("#content").val(),UPLOAD_FILE_URL);
+	$("#productClassCode").val($.trim($("#productClassCode").val()));
+	$("#productName").val($.trim($("#productName").val()));
+	$("#brandName").val($.trim($("#brandName").val()));
+	$("#barCode").val($.trim($("#barCode").val()));
+	$("#productSpec").val($.trim($("#productSpec").val()));
+	$("#retailPrice").val($.trim($("#retailPrice").val()));
+	$("#promotionalPrice").val($.trim($("#promotionalPrice").val()));
+	$("#displayOrder").val($.trim($("#displayOrder").val()));
+	$("#costPrice").val($.trim($("#costPrice").val()));
+	$("#commissionPrice").val($.trim($("#commissionPrice").val()));
+	$("#vipCommissionPrice").val($.trim($("#vipCommissionPrice").val()));
+	$("#saleStatus").val($.trim($("#saleStatus").val()));
+	$("#maintainStoreFlag").val($.trim($("#maintainStoreFlag").val()));
+	$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+	$('#promptMessage').text('正在保存...');
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		url:TERMINAL_URL+url,
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		error : function(){
+			if(method == 'edit' || method == 'add'){
+				$('#promptMessage').text('保存数据失败，请稍后再试');
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+			  	if(null != $("#costPrice").val() && '' != $("#costPrice").val()){
+					$("#costPrice").val(toCenti($("#costPrice").val()));
+				}
+				if(null != $("#retailPrice").val() && '' != $("#retailPrice").val()){
+					$("#retailPrice").val(toCenti($("#retailPrice").val()));
+				}
+				if(null != $("#promotionalPrice").val() && '' != $("#promotionalPrice").val()){
+					$("#promotionalPrice").val(toCenti($("#promotionalPrice").val()));
+				}
+				if(null != $("#commissionPrice").val() && '' != $("#commissionPrice").val()){
+					$("#commissionPrice").val(toCenti($("#commissionPrice").val()));
+				}
+				if(null != $("#vipCommissionPrice").val() && '' != $("#vipCommissionPrice").val()){
+					$("#vipCommissionPrice").val(toCenti($("#vipCommissionPrice").val()));
+				}
+			}
+		},
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$('#promptMessage').text('保存成功');
+				window.setTimeout(function(){
+					locationHref("/product/product-index.html");
+				},1000);
+			}else{
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+				$('#promptMessage').text(data.msg);
+			  	if(null != $("#costPrice").val() && '' != $("#costPrice").val()){
+					$("#costPrice").val(toCenti($("#costPrice").val()));
+				}
+				if(null != $("#retailPrice").val() && '' != $("#retailPrice").val()){
+					$("#retailPrice").val(toCenti($("#retailPrice").val()));
+				}
+				if(null != $("#promotionalPrice").val() && '' != $("#promotionalPrice").val()){
+					$("#promotionalPrice").val(toCenti($("#promotionalPrice").val()));
+				}
+				if(null != $("#commissionPrice").val() && '' != $("#commissionPrice").val()){
+					$("#commissionPrice").val(toCenti($("#commissionPrice").val()));
+				}
+				if(null != $("#vipCommissionPrice").val() && '' != $("#vipCommissionPrice").val()){
+					$("#vipCommissionPrice").val(toCenti($("#vipCommissionPrice").val()));
+				}
+			}
+		}
+	});   
+}
+var editor1;
+KindEditor.ready(function(K) {
+	editor1 = K.create('#content', {
+		uploadJson : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/uploadContentFileTemp',
+		items : [
+		'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
+		'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+		'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+		'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+		'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+		'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 
+		'flash', 'media', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
+		'anchor', 'link', 'unlink', '|', 'about'
+		],
+		afterCreate : function() { 
+			this.sync(); 
+		}, 
+		afterBlur:function(){ 
+			this.sync();
+		}           
+	});
+});
+var validate = (function(){
+	return {
+		validateProductClass : function() {
+			var productClass = $.trim($('#productClassCode').val());
+				$productClassMsg = $('#productClassMsg');
+			if (!productClass) {
+				$productClassMsg.html('请选择产品分类！').attr('class', 'error');
+				return false;
+			}
+			$productClassMsg.html('').attr('class', 'right');
+			return true;
+		},
+		validateProductName : function(){
+			var productName = $.trim($('#productName').val());
+				$productNameMsg = $('#productNameMsg');
+			if(!productName){
+				$productNameMsg.html('请填写产品名称！').attr('class', 'error');
+				return false;
+			}
+			$productNameMsg.html('').attr('class', 'right');
+			return true;
+		},
+		validateBrandName : function(){
+			var brandName = $.trim($('#brandName').val());
+				$brandNameMsg = $('#brandNameMsg');
+			if(!brandName){
+				$brandNameMsg.html('请填写品牌名称！').attr('class', 'error');
+				return false;
+			}
+			if(!nameIsExist){
+				$brandNameMsg.html('系统中不存在<'+brandName+'>品牌！').attr('class', 'error');
+				return false;
+			}
+			$brandNameMsg.html('').attr('class', 'right');
+			return true;
+		},
+		validateBarCode : function(){
+			var barCode = $.trim($('#barCode').val());
+				$barCodeMsg = $('#barCodeMsg');
+			if(!barCode){
+				$barCodeMsg.html('请填写产品条形码！').attr('class', 'error');
+				return false;
+			}
+			var legalNum = /^\d*$/; 
+			if(!legalNum.test(barCode)){
+				$barCodeMsg.html('请填写合法的条形码，仅由数字构成!').attr('class', 'error');
+				return false;
+			}
+			$barCodeMsg.html('').attr('class', 'right');
+			return true;
+		},
+		validateProductSpec : function(){
+			var productSpec = $.trim($('#productSpec').val());
+				$productSpecMsg = $('#productSpecMsg');
+			if(!productSpec){
+				$productSpecMsg.html('请填写产品规格！').attr('class', 'error');
+				return false;
+			}
+			$productSpecMsg.html('').attr('class', 'right');
+			return true;
+		},
+		validateCostPrice : function(){
+			var costPrice = $.trim($('#costPrice').val());
+			$costPriceMsg = $('#costPriceMsg');
+			if(!costPrice){
+				$costPriceMsg.html('请填写采购价格！').attr('class', 'error');
+				return false;
+			}
+			var legalNum = /^0$|^0\.\d{1,2}$|^[1-9]\d*\.?\d{1,2}$|^[1-9]\d*$/g;
+			if(!legalNum.test(costPrice)){
+				$costPriceMsg.html('请填写合法的数字！(最多包含两个小数点)').attr('class', 'error');
+				return false;
+			}
+			$costPriceMsg.html('').attr('class', 'right');
+			return true;
+		},
+		validateRetailPrice : function(){
+			var retailPrice = $.trim($('#retailPrice').val());
+			$retailPriceMsg = $('#retailPriceMsg');
+			if(!retailPrice){
+				$retailPriceMsg.html('请填写普通会员售价！').attr('class', 'error');
+				return false;
+			}
+			var legalNum = /^0$|^0\.\d{1,2}$|^[1-9]\d*\.?\d{1,2}$|^[1-9]\d*$/g;
+			if(!legalNum.test(retailPrice)){
+				$retailPriceMsg.html('请填写合法的数字！(最多包含两个小数点)').attr('class', 'error');
+				return false;
+			}
+			$retailPriceMsg.html('').attr('class', 'right');
+			return true;
+		},
+		validatePromotionalPrice : function(){
+			var promotionalPrice = $.trim($('#promotionalPrice').val());
+			$promotionalPriceMsg = $('#promotionalPriceMsg');
+			if(!promotionalPrice){
+				$promotionalPriceMsg.html('请填写VIP会员售价！').attr('class', 'error');
+				return false;
+			}
+			var legalNum = /^0$|^0\.\d{1,2}$|^[1-9]\d*\.?\d{1,2}$|^[1-9]\d*$/g;
+			if(!legalNum.test(promotionalPrice)){
+				$promotionalPriceMsg.html('请填写合法的数字！(最多包含两个小数点)').attr('class', 'error');
+				return false;
+			}
+			$promotionalPriceMsg.html('').attr('class', 'right');
+			return true;
+		},
+		validateCommissionPrice : function(){
+			var commissionPrice = $.trim($('#commissionPrice').val());
+			if(null != commissionPrice && '' != commissionPrice){
+				$commissionPriceMsg = $('#commissionPriceMsg');
+				var legalNum = /^0$|^0\.\d{1,2}$|^[1-9]\d*\.?\d{1,2}$|^[1-9]\d*$/g;
+				if(!legalNum.test(commissionPrice)){
+					$commissionPriceMsg.html('请填写合法的数字！(最多包含两个小数点)').attr('class', 'error');
+					return false;
+				}
+				$commissionPriceMsg.html('').attr('class', 'right');
+			}
+			return true;
+		},
+		validateVipCommissionPrice : function(){
+			var vipCommissionPrice = $.trim($('#vipCommissionPrice').val());
+			if(null != vipCommissionPrice && '' != vipCommissionPrice){
+				$vipCommissionPriceMsg = $('#vipCommissionPriceMsg');
+				var legalNum = /^0$|^0\.\d{1,2}$|^[1-9]\d*\.?\d{1,2}$|^[1-9]\d*$/g;
+				if(!legalNum.test(vipCommissionPrice)){
+					$vipCommissionPriceMsg.html('请填写合法的数字！(最多包含两个小数点)').attr('class', 'error');
+					return false;
+				}
+				$vipCommissionPriceMsg.html('').attr('class', 'right');
+			}
+			return true;
+		},
+		validateMainPic : function(){
+			var isFound = false;
+			var isExistPic = false;
+			var $picMessage = $('#picMessage');
+	 		$('.js-mainPicv').each(function(index){
+				var i = Number(index) + Number(1);
+				var obj = document.getElementById("appIsMainPic"+i);
+				if(null != obj){
+					isExistPic = true;
+					var mainPicChecked = document.getElementById("appIsMainPic"+i).checked;
+					if(mainPicChecked){
+						isFound = true;
+					}
+				}
+			}); 
+			if(isExistPic && !isFound){
+				$picMessage.html('请选择一张主图！').attr('class', 'error');
+				return false;	
+			}
+			$picMessage.html('').removeClass();
+			return true;
+		},
+	}				
+})();
+function validateData(){
+	/* if (!validate.validateParentCode()) {
+		return false;
+	} */
+	if(!validate.validateProductClass()){
+		return false;
+	}
+	if(!validate.validateProductName()){
+		return false;
+	}
+	if(!validate.validateBrandName()){
+		return false;
+	}
+	if(!validate.validateBarCode()){
+		return false;
+	}
+	if(!validate.validateProductSpec()){
+		return false;
+	}
+	if(!validate.validateCostPrice()){
+		return false;
+	}
+	if(!validate.validateRetailPrice()){
+		return false;
+	}
+	if(!validate.validatePromotionalPrice()){
+		return false;
+	}
+	if(!validate.validateCommissionPrice()){
+		return false;
+	}
+	if(!validate.validateVipCommissionPrice()){
+		return false;
+	}
+	if(!validate.validateMainPic()){
+		return false;	
+	}
+	return true;
+}
+
+
+function loadHtmlDateFormat(htmldate,urlName){
+	var arrays = new Array();
+	var picstr='';
+	var obj=htmldate;
+	$('#hidedv').html(obj);
+	$('#hidedv').find('img').each(function(){
+		var tempurl=$(this).attr('src');
+		var urlObj=new RegExp("http://.*?/");
+		var reset=tempurl.match(urlObj);
+		tempurlName=urlName+'/';
+		if(reset==tempurlName){
+			var urlObjx=new RegExp(urlName);
+			var urlhtml=tempurl.replace(urlObjx,'');
+			picstr+= urlhtml+',';
+		}
+	})
+	$("#loadContentImageUrls").val(picstr.substring(0, picstr.length-1));
+}
+function htmlDateFormat(htmldate,urlName){
+	var arrays = new Array();
+	var picstr='';
+	var obj=htmldate;
+	$('#hidedv').html(obj);
+	$('#hidedv').find('img').each(function(){
+		var tempurl=$(this).attr('src');
+		var urlObj=new RegExp("http://.*?/");
+		var reset=tempurl.match(urlObj);
+		if(reset==(urlName+'/')){
+			var urlObjx=new RegExp("local/");
+			var urlhtml=tempurl.replace(urlObjx,'');
+			$(this).attr('src',urlhtml);
+			var urlObjs=new RegExp("http://.*?/");
+			var newurl=urlhtml.replace(urlObjs,'');
+			picstr+= '/'+newurl+',';
+		}
+	})
+	$("#addContentImageUrls").val(picstr.substring(0, picstr.length-1));
+	$("#contentString").val($('#hidedv').html());
+}
+
+ /*加载产品类别的二级联动菜单*/
+
+//买点只能输入28字，兼容ie9
+function checklength(obj){
+	if (obj.value.length > 125) {
+	obj.value = obj.value.substr(0, 125);
+	}
+}
+function comeback(){
+	var urlParam=window.location.search;
+	locationHref('/product/product-index.html'+urlParam);
+}
+
+function resetSubmit(){
+	if(method == 'edit'){
+		editProduct();
+	}else if(method == 'add'){
+		reset();
+	}
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	/* loadSubClass(); */
+	setMainpic();
+	if(method == 'edit'){
+		$("#breadName").html('产品编辑');
+		$("#pageTitle").html('产品编辑');
+		editProduct();
+	}else if (method == 'view'){
+		$("#breadName").html('产品查看');
+		$("#pageTitle").html('产品查看');
+		editProduct();
+	}else{
+		$("#breadName").html('产品发布');
+		$("#pageTitle").html('产品发布');
+		loadSubClass("TOP_LEVEL_CLASS");
+	}
+});
+
+/* 加载商品分类   begin */
+function loadSubClass(productClassCode){
+	$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+productClassCode+'/getAllNextProductClassByUpCode', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			data = JSON.parse(encodeString(JSON.stringify(data)));
+			if(null != data.entity && data.entity.length > 0){
+				initProductClassSelect(data.entity);
+			}
+		}
+	});
+}
+function initProductClassSelect(listProductClass){
+	var	html = '<select class="select grid-15" onchange=changeClassSelect(this)>';
+	  	html += '<option value="">--请选择--</option>';
+		for(var i=0;i<listProductClass.length;i++){
+			html += '<option value="'+listProductClass[i].classCode+'">';
+			html += listProductClass[i].className;
+			html +='</option>'
+		}
+	html += '<select/>';
+	$("#productClassDiv").append(html);
+}
+
+function changeClassSelect(ele){
+	var productClass = $(ele);
+	productClass.nextAll().each(function(){
+		$(this).remove();
+	});
+	if(productClass.val()!= ""){
+		$("#productClassCode").val(productClass.val());
+		loadSubClass($.trim($("#productClassCode").val()));
+	}else{
+		var parentClassCode = productClass.prev();
+		if(parentClassCode != null){
+			//如果选择了请选择就默认选择此节点上一个节点的值
+			$("#productClassCode").val(productClass.prev().val());
+		}else{
+			$("#productClassCode").val("TOP_LEVEL_CLASS");
+		}
+	}
+}
+/* 加载商品分类   end */
+//校验品牌名称是否已存在
+	function checkBrandInfo(value) {
+		if (method == 'edit' && $('#brandName').attr("data-oldvalue")== $.trim(value) && "" != $.trim(value)) {
+			nameIsExist= true;
+			return;
+		}
+		if("" != $.trim(value)){
+			ajax({
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + $.trim(value)
+						+ '/checkBrandNameIsExistForCreateProduct',
+				type : 'get',
+				dataType : 'json',
+				error : function() {
+				},
+				success : function(data) {
+					if (data.msgCode == 1) {
+						if(data.entity){
+							$('#brandNameMsg').html('').attr('class', 'right');
+							nameIsExist= true;
+						}else{
+							$('#brandNameMsg').html('系统中不存在<'+value+'>品牌！').attr('class', 'error');
+							nameIsExist= false;
+						}
+					}else{
+						$('#brandNameMsg').text('品牌名称验证 出现系统异常');
+						nameIsExist= false;
+					}
+				}
+			});
+		}
+	}
+	//清理error提示信息
+	function clearErr(errorType) {
+		if (errorType == 'brandName') {
+			$('#brandNameMsg').html('').removeAttr('class');
+			return;
+		}
+	}
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 产品管理 &gt; <span id="breadName"></span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title" id="pageTitle"></div>
+				<div class="complaint_main">
+					<form method="post" class="user_form" id="dataForm">
+					<input type="hidden" id="id" name="id" />
+					<input type="hidden" id="deleteImageUrls" name="deleteImageUrls" />
+					<input type="hidden" id="loadContentImageUrls" name="loadContentImageUrls" />
+					<input type="hidden" id="addContentImageUrls" name="addContentImageUrls" />
+					<input type="hidden" id="contentString" name="contentString" />
+						<dl>
+							<dt><em class="cred">*</em>产品分类：</dt>
+							<dd>
+							<input type="hidden" id="productClassCode" name="productClassCode">
+								<div id="productClassDiv">
+									<!--  <select class="select grid-15" id="productClass" name="productClassCode">
+										<option value="" >--请选择产品分类--</option>
+									</select> -->
+								</div>
+								<span id="productClassMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>产品品牌：</dt>
+							<dd>
+								<input type="hidden" id="brandCode" name="brandCode">
+								<input type="text" class="txt grid-20" id="brandName" name="brandName" onmousedown="clearErr('brandName')"  onblur="checkBrandInfo(this.value)">
+								<span id="brandNameMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>产品名称：</dt>
+							<dd><input type="text" class="txt grid-20" id="productName" name="productName" /><span id="productNameMsg"></span></dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>产品条形码：</dt>
+							<dd><input type="text" class="txt grid-20" id="barCode" name="barCode" /><span id="barCodeMsg"></span></dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>产品规格：</dt>
+							<dd>
+								<span fieldset="productProfileDto">
+									<input type="hidden" id="productProfileId" name="id" />
+						   	 		<input class="txt grid-20" id="productSpec" name="productSpec"/>
+						    	</span>
+					   	 		<span id="productSpecMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>采购价格：</dt>
+							<dd>
+								<span fieldset="productPriceDto">
+									<input type="hidden" id="productPriceId" name="id" />
+						   	 		<input maxlength="10" class="txt grid-20" id="costPrice" name="costPrice"/>
+							    </span>
+					   	 		<span class="mlr5">单位（元）</span>
+					   	 		<span id="costPriceMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>普通会员售价：</dt>
+							<dd>
+								<span fieldset="productPriceDto">
+						   	 		<input maxlength="10" class="txt grid-20" id="retailPrice" name="retailPrice"/>
+							    </span>
+					   	 		<span class="mlr5">单位（元）</span>
+					   	 		<span id="retailPriceMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>VIP会员售价：</dt>
+							<dd>
+								<span fieldset="productPriceDto">
+						   	 		<input maxlength="10" class="txt grid-20" id="promotionalPrice" name="promotionalPrice"/>
+							    </span>
+					   	 		<span class="mlr5">单位（元）</span>
+					   	 		<span id="promotionalPriceMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt></em>普通会员返款：</dt>
+							<dd>
+								<span fieldset="productPriceDto">
+						   	 		<input maxlength="10" class="txt grid-20" id="commissionPrice" name="commissionPrice"/>
+							    </span>
+					   	 		<span class="mlr5">单位（元）</span>
+					   	 		<span id="commissionPriceMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt></em>VIP会员返款：</dt>
+							<dd>
+								<span fieldset="productPriceDto">
+						   	 		<input maxlength="10" class="txt grid-20" id="vipCommissionPrice" name="vipCommissionPrice"/>
+							    </span>
+					   	 		<span class="mlr5">单位（元）</span>
+					   	 		<span id="vipCommissionPriceMsg"></span>
+							</dd>
+						</dl>
+						<dl id="saleStatus_box">
+							<dt><em class="cred">*</em>是否上架：</dt>
+							<dd>
+								<span fieldset="productProfileDto">
+									<select class="select grid-10" id="saleStatus" name="saleStatus" >
+										<option value="PRODUCTSALESTATUS_INIT">未上架</option>
+										<option value="PRODUCTSALESTATUS_ONSALE" selected="selected">上架</option>
+										<option value="PRODUCTSALESTATUS_OFFSALE">下架</option>
+									</select>
+								</span>
+								<span id="saleStatusMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt>显示顺序：</dt>
+							<dd>
+								<span fieldset="productProfileDto">
+						   	 		<input class="txt grid-20" id="displayOrder" name="displayOrder"/>
+						    	</span>
+							</dd>
+				   	 		<span id="displayOrderMsg"></span>
+						</dl>
+						<dl id="maintainStoreFlag_box">
+							<dt><em class="cred">*</em>是否可维护库存：</dt>
+							<dd>
+								<span fieldset="productProfileDto">
+									<select class="select grid-10" id="maintainStoreFlag" name="maintainStoreFlag" >
+										<option value="MAINTAINSTOREFLAG_NO">否</option>
+										<option value="MAINTAINSTOREFLAG_YES" selected="selected">是</option>
+									</select>
+								</span>
+								<span id="maintainStoreFlagMsg"></span>
+							</dd>
+						</dl>
+						<dl id = "productImageShow">
+							<dt>产品图片：</dt>
+							<dd>
+								<span fieldset="firstAppImageProfileDto">
+									<input type="hidden" id="appPicPath1" name="appPicPath"  />
+									<input type="hidden" id="appPicSort1" name="appPicSort" /> 
+									<input type="hidden" id="appPicId1" name="appPicId" />
+									<input type="hidden" id="appPicOrder1" name="appPicOrder" />
+									<input type="hidden" id="appImageFlag1" name="appImageFlag" />
+									<input type="hidden" id="appPicMain1" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="secondAppImageProfileDto">
+									<input type="hidden" id="appPicId2" name="appPicId" />
+									<input type="hidden" id="appPicPath2" name="appPicPath" />
+									<input type="hidden" id="appPicOrder2" name="appPicOrder" />
+									<input type="hidden" id="appPicSort2" name="appPicSort" />
+									<input type="hidden" id="appImageFlag2" name="appImageFlag" />
+									<input type="hidden" id="appPicMain2" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="thirdAppImageProfileDto">
+									<input type="hidden" id="appPicId3" name="appPicId" />
+									<input type="hidden" id="appPicPath3" name="appPicPath"  />
+									<input type="hidden" id="appPicOrder3" name="appPicOrder" />
+									<input type="hidden" id="appPicSort3" name="appPicSort" />
+									<input type="hidden" id="appImageFlag3" name="appImageFlag" />
+									<input type="hidden" id="appPicMain3" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="fouthAppImageProfileDto">
+									<input type="hidden" id="appPicId4" name="appPicId" />
+									<input type="hidden" id="appPicPath4" name="appPicPath" />
+									<input type="hidden" id="appPicOrder4" name="appPicOrder" />
+									<input type="hidden" id="appPicSort4" name="appPicSort" />
+									<input type="hidden" id="appImageFlag4" name="appImageFlag" />
+									<input type="hidden" id="appPicMain4" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="fiveAppImageProfileDto">
+									<input type="hidden" id="appPicId5" name="appPicId" />
+									<input type="hidden" id="appPicPath5" name="appPicPath" />
+									<input type="hidden" id="appPicOrder5" name="appPicOrder" />
+									<input type="hidden" id="appPicSort5" name="appPicSort" />
+									<input type="hidden" id="appImageFlag5" name="appImageFlag" />
+									<input type="hidden" id="appPicMain5" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="sixAppImageProfileDto">
+									<input type="hidden" id="appPicId6" name="appPicId" />
+									<input type="hidden" id="appPicPath6" name="appPicPath" />
+									<input type="hidden" id="appPicOrder6" name="appPicOrder" />
+									<input type="hidden" id="appPicSort6" name="appPicSort" />
+									<input type="hidden" id="appImageFlag6" name="appImageFlag" />
+									<input type="hidden" id="appPicMain6" name="appPicMain" class="js-mainPicv"/>
+								</span> 
+								<ul class="product_release_img appimg">
+									<li id="appUploadLi1" class="pr"><a onclick="showUploadBox(1,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi2" class="pr"><a onclick="showUploadBox(2,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi3" class="pr"><a onclick="showUploadBox(3,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi4" class="pr"><a onclick="showUploadBox(4,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi5" class="pr"><a onclick="showUploadBox(5,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi6" class="pr"><a onclick="showUploadBox(6,'app')" class="img">点击上传</a></li>
+								</ul>
+								<span id="picMessage" class="cred"></span>
+								<div class="product_release_imgnote agray">
+									<em>温馨提示：</em>
+									<p>最多上传6张图片，每张图片大小≤3M，第1张为前台默认主图！ <span id="appUploadImgTxt">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>推荐上传800*600像素图片</p>
+								</div>
+							</dd>
+						</dl>
+						<dl id = "contentShow">
+							<dt></em>产品详情：</dt>
+							<dd>
+								<span fieldset="productProfileDto">
+									<textarea id="content" name="content" style="width:790px;height:600px;visibility:hidden"></textarea>
+								<span>
+								<span id="contentMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt></dt>
+							<dd>
+								<p class="main_search_btn">
+									<input type="button" class="btn_sure" value="保存" id="submit" onClick="dataEditSubmit(method)">
+									<input type="reset" id="reset" class="btn_gray" value="重置" onClick="javascript:resetSubmit()">
+									<input type="button" id="goBack" class="btn_gray" value="返回"  onClick="javascript:comeback();">
+									<span id="promptMessage" class="cred"></span>
+								</p>
+							</dd>
+						</dl>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营平台</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+<div id="uploadBox" class="hide">
+  <form id="uploadForm" onsubmit="uploadSubmit();return false;">
+	  <div class="uploadbox">
+	      <p><input id="uploadImgIndex" type="hidden" />
+		  <input id="uploadImgRow" type="hidden" />
+		  <input id="uploadImgType" type="hidden" />
+	      <input id="uploadFile" name="file" type="file"/> <span id="uploadnote" class="cred"></span></p>
+	      <div class="uploadbox_btn">
+	        <input type="submit"  value="确定" class="btn_sure" id="uploadBtn"/>
+	        <input type="reset" onclick="closeBox()"  value="取消"  class="btn_gray" />
+	      </div>
+	  </div>          
+  </form>
+</div>
+<div id="hidedv" style="display:none"></div>
+</body>
+</html>

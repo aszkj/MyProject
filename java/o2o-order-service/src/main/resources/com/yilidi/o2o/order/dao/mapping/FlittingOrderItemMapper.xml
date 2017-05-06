@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.FlittingOrderItemMapper">
+	<resultMap id="BaseResultMap" type="FlittingOrderItem">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="FLITTINGORDERNO" property="flittingOrderNo" jdbcType="VARCHAR" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSNAME" property="productClassName" jdbcType="VARCHAR" />
+		<result column="BRANDNAME" property="brandName" jdbcType="VARCHAR" />
+		<result column="SPECIFICATIONS" property="specifications" jdbcType="VARCHAR" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="QUANTITY" property="quantity" jdbcType="INTEGER" />
+		<result column="SRCSALEPRODUCTID" property="srcSaleProductId" jdbcType="INTEGER" />
+		<result column="DESTSALEPRODUCTID" property="destSaleProductId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="RECEIVEQUANTITY" property="receiveQuantity" jdbcType="INTEGER" />
+		<result column="REJECTQUANTITY" property="rejectQuantity" jdbcType="INTEGER" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSERID" property="updateUserId" jdbcType="INTEGER" />
+		<result column="PRODUCTIMAGEURL3" property="productImageUrl3" jdbcType="VARCHAR" />
+		<result column="COSTPRICE" property="costPrice" jdbcType="BIGINT" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, FLITTINGORDERNO, PRODUCTID, PRODUCTCLASSNAME, BRANDNAME, SPECIFICATIONS,PRODUCTNAME, BARCODE, QUANTITY,
+		SRCSALEPRODUCTID,
+		DESTSALEPRODUCTID, CREATETIME, CREATEUSERID, RECEIVEQUANTITY, REJECTQUANTITY, UPDATETIME, UPDATEUSERID,
+		PRODUCTIMAGEURL3,COSTPRICE
+	</sql>
+
+	<insert id="save" parameterType="FlittingOrderItem" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_FLITTING_ORDER_ITEM (
+		FLITTINGORDERNO, PRODUCTID, PRODUCTCLASSNAME,
+		BRANDNAME, SPECIFICATIONS,PRODUCTNAME, BARCODE,
+		QUANTITY,
+		SRCSALEPRODUCTID, DESTSALEPRODUCTID, CREATETIME, CREATEUSERID, PRODUCTIMAGEURL3,COSTPRICE
+		)
+		values(
+		#{flittingOrderNo,jdbcType=VARCHAR},
+		#{productId,jdbcType=INTEGER},
+		#{productClassName,jdbcType=VARCHAR},
+		#{brandName,jdbcType=VARCHAR},
+		#{specifications,jdbcType=VARCHAR},
+		#{productName,jdbcType=VARCHAR},
+		#{barCode,jdbcType=VARCHAR},
+		#{quantity,jdbcType=INTEGER},
+		#{srcSaleProductId,jdbcType=INTEGER},
+		#{destSaleProductId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{productImageUrl3,jdbcType=VARCHAR},
+		#{costPrice,jdbcType=BIGINT}
+		)
+	</insert>
+
+	<update id="updateReceiveQuantityByFlittingOrderItemId" parameterType="FlittingOrderItem">
+		update T_FLITTING_ORDER_ITEM
+		<set>
+			RECEIVEQUANTITY = #{receiveQuantity,jdbcType=VARCHAR},
+			REJECTQUANTITY = #{rejectQuantity,jdbcType=VARCHAR},
+			UPDATETIME =
+			#{updateTime, jdbcType=TIMESTAMP},
+			UPDATEUSERID = #{updateUserId,jdbcType=INTEGER}
+		</set>
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<select id="listFlittingOrderItems" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_FLITTING_ORDER_ITEM
+		where FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR}
+		order by PRODUCTID asc
+	</select>
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_FLITTING_ORDER_ITEM
+		where ID = #{flittingOrderItemId,jdbcType=INTEGER}
+	</select>
+</mapper>

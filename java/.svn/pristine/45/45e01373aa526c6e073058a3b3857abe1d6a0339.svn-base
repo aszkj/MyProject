@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.TradeEvaluationMapper">
+	<resultMap id="BaseResultMap" type="TradeEvaluation">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EVALUATIONGRADE" property="evaluationGrade" jdbcType="VARCHAR" />
+		<result column="COINCIDESTAR" property="coincideStar" jdbcType="INTEGER" />
+		<result column="SENDSTAR" property="sendStar" jdbcType="INTEGER" />
+		<result column="LOGISTICSSTAR" property="logisticsStar" jdbcType="INTEGER" />
+		<result column="ATTITUDESTAR" property="attitudeStar" jdbcType="INTEGER" />
+		<result column="IMPRESSION" property="impression" jdbcType="SMALLINT" />
+		<result column="IMAGE1" property="image1" jdbcType="VARCHAR" />
+		<result column="IMAGE2" property="image2" jdbcType="VARCHAR" />
+		<result column="IMAGE3" property="image3" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, SALEPRODUCTID, USERID, CONTENT, CREATETIME, EVALUATIONGRADE,
+		COINCIDESTAR, SENDSTAR, LOGISTICSSTAR, ATTITUDESTAR, IMPRESSION, IMAGE1, IMAGE2,
+		IMAGE3
+	</sql>
+
+	<insert id="save" parameterType="TradeEvaluation">
+		insert into T_TRADE_EVALUATION (ID, SALEORDERNO, SALEPRODUCTID,
+		USERID, CONTENT, CREATETIME,
+		EVALUATIONGRADE, COINCIDESTAR, SENDSTAR,
+		LOGISTICSSTAR, ATTITUDESTAR, IMPRESSION,
+		IMAGE1, IMAGE2, IMAGE3
+		)
+		values (#{id,jdbcType=VARCHAR}, #{saleOrderNo,jdbcType=VARCHAR}, #{saleProductId,jdbcType=INTEGER},
+		#{userId,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+		#{evaluationGrade,jdbcType=VARCHAR}, #{coincideStar,jdbcType=INTEGER}, #{sendStar,jdbcType=INTEGER},
+		#{logisticsStar,jdbcType=INTEGER}, #{attitudeStar,jdbcType=INTEGER}, #{impression,jdbcType=SMALLINT},
+		#{image1,jdbcType=VARCHAR}, #{image2,jdbcType=VARCHAR}, #{image3,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="listBySaleProductId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_TRADE_EVALUATION
+		where SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

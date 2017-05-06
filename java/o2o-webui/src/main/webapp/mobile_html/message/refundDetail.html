@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee">
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p id="messageTitle">退款详情</p>
+    </div>
+</header>
+<div class="bord"></div>
+<section id="messageDetailWrap" style="padding-top: .9rem">
+</section>
+<div class="custom">
+    <div class="customTel"><a href="tel:4001116366" style="color:#2b95ed;">客服热线：400-111-6366</a></div>
+    <div><p>如有任何问题，请在收货后24小时内联系客服处理</p></div>
+</div>
+</body>
+<script type="text/javascript">
+    var saleOrderNo=getUrlParam("directCode");
+    $(function(){
+       messageDetailTmpl();
+    });
+    function messageDetailTmpl(){
+       var param= new Object();
+        param.saleOrderNo=saleOrderNo;
+        ajax("/order/refundinfo",param,function(data){
+           $("#refundDetailTmpl").tmpl(data).appendTo("#messageDetailWrap");
+        },function(msg){
+            alert(msg);
+        })
+    }
+</script>
+<script id="refundDetailTmpl" type="text/x-jquery-tmpl">
+    <div class="refundTit bg">
+        <span>退款金额：</span><span id="refundAmount">${refundAmount}</span><span id="statusCodeName">${statusCodeName}</span>
+    </div>
+    <div class="clearfix"></div>
+    <div class="bg refundIns">
+       <p>订单编号<span>${saleOrderNo}</span></p>
+       <p>退款原因<span>${reason}</span></p>
+       <p>付款方式<span>${payTypeName}</span></p>
+       <p>退款周期<span>1-7个工作日</span></p>
+       <p>退款方式<span>${refundTypeName}</span></p>
+    </div>
+    <div class="bord"></div>
+    <div class="bg refundItemWrap">
+        {{each(i,v) refundStatusList}}
+            <div class="refundItemBox">
+                <div class="refundItem ${i==refundStatusList.length-1 ? 'refundItemLast' : ''}">
+                    <h4>${v.statusCodeName}</h4>
+                    <p class="statusNote">${v.statusNote}</p>
+                    <p>${statusTime}</p>
+                </div>
+                <div class="spaceBox"></div>
+                <div class="roundReBg ${i==refundStatusList.length-1 ? 'roundReBgLast' : 'roundReBg'}"></div>
+                <div class="borderReBg ${i==refundStatusList.length-1 ? 'hide' : 'show'}"></div>
+            </div>
+       {{/each}}
+    </div>
+</script>
+</html>

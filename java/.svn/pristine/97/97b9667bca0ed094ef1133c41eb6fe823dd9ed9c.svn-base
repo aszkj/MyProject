@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductBasicPropsValueMapper">
+	<resultMap id="BaseResultMap" type="ProductBasicPropsValue">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode"
+			jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="PROPSNAME" property="propsName" jdbcType="VARCHAR" />
+		<result column="PROPSCODE" property="propsCode" jdbcType="VARCHAR" />
+		<result column="PROPSVALUE" property="propsValue" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PRODUCTCLASSCODE, PRODUCTID, PROPSNAME, PROPSCODE, PROPSVALUE
+	</sql>
+
+	<insert id="save" parameterType="ProductBasicPropsValue">
+		insert into P_PRODUCT_BASIC_PROPS_VALUE (ID, PRODUCTCLASSCODE, PRODUCTID,
+		PROPSNAME, PROPSCODE, PROPSVALUE
+		)
+		values (#{id,jdbcType=INTEGER}, #{productClassCode,jdbcType=INTEGER},
+		#{productId,jdbcType=INTEGER},
+		#{propsName,jdbcType=VARCHAR}, #{propsCode,jdbcType=VARCHAR}, #{propsValue,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="updateValueById">
+		update P_PRODUCT_BASIC_PROPS_VALUE
+		set
+		PROPSVALUE = #{1,jdbcType=VARCHAR}
+		where ID = #{0,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateValueByProductIdAndCode">
+		update P_PRODUCT_BASIC_PROPS_VALUE
+		set
+		PROPSVALUE = #{2,jdbcType=VARCHAR}
+		where PRODUCTID = #{0,jdbcType=INTEGER}
+		and PROPSCODE = #{1, jdbcType=VARCHAR}
+	</update>
+
+
+	<select id="listByProductId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_BASIC_PROPS_VALUE
+		where PRODUCTID = #{productId,jdbcType=INTEGER}
+	</select>
+
+
+</mapper>

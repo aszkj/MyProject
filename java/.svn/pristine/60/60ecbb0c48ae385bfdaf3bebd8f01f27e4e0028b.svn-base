@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleProductProfileMapper">
+	<resultMap id="BaseResultMap" type="SaleProductProfile">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="LONGVARCHAR" />
+		<result column="PRODUCTOWNER" property="productOwner" jdbcType="VARCHAR" />
+		<result column="SELLPOINT" property="sellPoint" jdbcType="VARCHAR" />
+		<result column="HOTSALEFLAG" property="hotSaleFlag" jdbcType="VARCHAR" />
+		<result column="SALESTATUS" property="saleStatus" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTSPEC" property="saleProductSpec" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTSOURCE" property="saleProductSource" jdbcType="VARCHAR" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEPRODUCTID, CHANNELCODE, SELLPOINT, CONTENT,
+		PRODUCTOWNER, HOTSALEFLAG
+		,SALESTATUS,SALEPRODUCTSPEC,SALEPRODUCTSOURCE,DISPLAYORDER, CREATEUSERID, CREATETIME,
+		MODIFYUSERID, MODIFYTIME
+	</sql>
+
+	<insert id="saveSaleProductProfile" parameterType="SaleProductProfile" useGeneratedKeys="true" keyProperty="id">
+		insert
+		into P_SALE_PRODUCT_PROFILE
+		(ID, SALEPRODUCTID, CHANNELCODE,
+		SELLPOINT, CONTENT, PRODUCTOWNER,
+		HOTSALEFLAG
+		,SALESTATUS,SALEPRODUCTSPEC,SALEPRODUCTSOURCE,DISPLAYORDER,CREATEUSERID, CREATETIME)
+		values
+		(#{id,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER},
+		#{channelCode,jdbcType=VARCHAR},
+		#{sellPoint,jdbcType=VARCHAR},#{content,jdbcType=LONGVARCHAR},
+		#{productOwner,jdbcType=VARCHAR},#{hotSaleFlag,jdbcType=VARCHAR},
+		#{saleStatus,jdbcType=VARCHAR},
+		#{saleProductSpec,jdbcType=VARCHAR},#{saleProductSource,jdbcType=VARCHAR},#{displayOrder,jdbcType=INTEGER},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteSaleProductProfileById" parameterType="java.lang.Integer">
+		delete
+		from P_SALE_PRODUCT_PROFILE
+		where ID =
+		#{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteSaleProductProfileBySaleProductIdAndChannelCode">
+		delete from
+		P_SALE_PRODUCT_PROFILE
+		where
+		SALEPRODUCTID = #{saleProductId, jdbcType=INTEGER}
+		<if test="channelCode != null">
+			and
+			CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+		</if>
+	</delete>
+
+	<update id="updateSaleProductProfileById" parameterType="SaleProductProfile">
+		update P_SALE_PRODUCT_PROFILE
+		set
+		SELLPOINT =
+		#{sellPoint,jdbcType=VARCHAR},
+		CONTENT = #{content,jdbcType=LONGVARCHAR},
+		PRODUCTOWNER = #{productOwner,jdbcType=VARCHAR},
+		HOTSALEFLAG = #{hotSaleFlag,jdbcType=VARCHAR},
+		SALESTATUS = #{saleStatus,jdbcType=VARCHAR},
+		SALEPRODUCTSPEC =
+		#{saleProductSpec,jdbcType=LONGVARCHAR},
+		DISPLAYORDER = #{displayOrder,jdbcType=INTEGER},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateSaleProductProfileBySaleProductIdAndChannelCode">
+		update P_SALE_PRODUCT_PROFILE
+		set
+		SELLPOINT = #{sellPoint,jdbcType=VARCHAR},
+		CONTENT =
+		#{content,jdbcType=LONGVARCHAR},
+		PRODUCTOWNER = #{productOwner,jdbcType=VARCHAR},
+		HOTSALEFLAG =
+		#{hotSaleFlag,jdbcType=VARCHAR},
+		SALESTATUS =
+		#{saleStatus,jdbcType=VARCHAR},
+		SALEPRODUCTSPEC =
+		#{saleProductSpec,jdbcType=LONGVARCHAR},
+		DISPLAYORDER =
+		#{displayOrder,jdbcType=INTEGER},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER}
+		<if test="channelCode != null">
+			and
+			CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+		</if>
+	</update>
+
+	<update id="updateSaleStatusBySaleProductIdAndChannelCode">
+		update P_SALE_PRODUCT_PROFILE
+		set
+		SALESTATUS = #{saleStatus,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER}
+		<if test="channelCode != null">
+			and
+			CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+		</if>
+	</update>
+
+	<update id="updateHotSaleFlagBySaleProductIdAndChannelCode">
+		update
+		P_SALE_PRODUCT_PROFILE
+		set
+		HOTSALEFLAG = #{hotSaleFlag,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER}
+		<if test="channelCode != null">
+			and
+			CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+		</if>
+	</update>
+	<update id="updateSaleProductDisplayOrder">
+		update
+		P_SALE_PRODUCT_PROFILE
+		set
+		DISPLAYORDER = #{displayOrder,jdbcType=INTEGER},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER}
+		<if test="channelCode != null">
+			and
+			CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+		</if>
+	</update>
+
+	<select id="loadSaleProductProfileById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_PROFILE
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadSaleProductProfileBySaleProductIdAndSaleStatusAndChannelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_PROFILE
+		<where>
+			SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+			<if test="saleStatus != null">
+				and
+				SALESTATUS = #{saleStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="channelCode != null">
+				and
+				CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<select id="loadSaleProductProfileByBarCodeAndChannelCode" resultMap="BaseResultMap">
+		select
+		P.ID,
+		P.SALEPRODUCTID,
+		P.CHANNELCODE,
+		P.SELLPOINT,
+		P.CONTENT,
+		P.PRODUCTOWNER,
+		P.HOTSALEFLAG,
+		P.SALESTATUS,
+		P.SALEPRODUCTSPEC,
+		P.SALEPRODUCTSOURCE,
+		P.DISPLAYORDER,
+		P.CREATEUSERID,
+		P.CREATETIME,
+		P.MODIFYUSERID,
+		P.MODIFYTIME
+		from
+		P_SALE_PRODUCT_PROFILE P
+		left join P_SALE_PRODUCT SP on
+		P.SALEPRODUCTID = SP.ID
+		where
+		SP.BARCODE = #{barCode,jdbcType=VARCHAR}
+		and
+		SP.STOREID = #{storeId,jdbcType=INTEGER}
+		<if test="channelCode != null">
+			and
+			P.CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<select id="getOnSaleCountsBySaleProductIds" resultType="long" >
+		select count(ID) 
+		from P_SALE_PRODUCT_PROFILE
+		<where>
+			SALESTATUS = 'SALEPRODUCTSALESTATUS_ONSALE'
+			<if test="saleProductIds != null">
+				and SALEPRODUCTID IN
+				<foreach item="item" index="index" collection="saleProductIds" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+</mapper>

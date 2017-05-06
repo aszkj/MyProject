@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.AccountBindingMapper">
+	<resultMap id="BaseResultMap" type="AccountBinding">
+		<id column="BINGDINGACCOUNTID" property="bingdingAccountId" jdbcType="INTEGER" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="ACCOUNTBINDINGTYPE" property="accountBindingType" jdbcType="VARCHAR" />
+		<result column="ACCOUNTNAME" property="accountName" jdbcType="VARCHAR" />
+		<result column="ACCOUNTNO" property="accountNo" jdbcType="VARCHAR" />
+		<result column="TRANSFERACCOUNTTYPE" property="transferAccountType" jdbcType="VARCHAR" />
+		<result column="SUBBANKNAME" property="subBankName" jdbcType="VARCHAR" />
+		<result column="MASTERNAME" property="masterName" jdbcType="VARCHAR" />
+		<result column="MASTERIDCARDNO" property="masterIDcardNo"	jdbcType="VARCHAR" />
+		<result column="MASTERPHONENO" property="masterPhoneNo"	jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<resultMap id="AccountBindingRelatedInfoResultMap" type="AccountBindingRelatedInfo">
+		<id column="BINGDINGACCOUNTID" property="bingdingAccountId" jdbcType="INTEGER" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="CUSTOMERNAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="CONTACTNAME" property="contactName" jdbcType="VARCHAR" />
+		<result column="TELPHONE" property="telPhone" jdbcType="VARCHAR" />
+		<result column="ACCOUNTBINDINGTYPE" property="accountBindingType" jdbcType="VARCHAR" />
+		<result column="ACCOUNTNAME" property="accountName" jdbcType="VARCHAR" />
+		<result column="ACCOUNTNO" property="accountNo" jdbcType="VARCHAR" />
+		<result column="TRANSFERACCOUNTTYPE" property="transferAccountType" jdbcType="VARCHAR" />
+		<result column="SUBBANKNAME" property="subBankName" jdbcType="VARCHAR" />
+		<result column="MASTERNAME" property="masterName" jdbcType="VARCHAR" />
+		<result column="MASTERIDCARDNO" property="masterIDcardNo"	jdbcType="VARCHAR" />
+		<result column="MASTERPHONENO" property="masterPhoneNo"	jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		BINGDINGACCOUNTID, CUSTOMERID, ACCOUNTBINDINGTYPE, ACCOUNTNAME, ACCOUNTNO,TRANSFERACCOUNTTYPE, SUBBANKNAME, MASTERNAME, MASTERIDCARDNO,
+		MASTERPHONENO,CREATEUSERID, CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="AccountBinding">
+		insert into U_ACCOUNT_BINDING (CUSTOMERID, ACCOUNTBINDINGTYPE, ACCOUNTNAME,
+		ACCOUNTNO,TRANSFERACCOUNTTYPE, SUBBANKNAME, MASTERNAME, MASTERIDCARDNO,
+		MASTERPHONENO,CREATEUSERID, CREATETIME)
+		values (#{customerId,jdbcType=INTEGER}, #{accountBindingType,jdbcType=VARCHAR},
+		#{accountName,jdbcType=VARCHAR},
+		#{accountNo,jdbcType=VARCHAR},#{transferAccountType,jdbcType=VARCHAR},
+		#{subBankName,jdbcType=VARCHAR},#{masterName,jdbcType=VARCHAR},
+		#{masterIDcardNo,jdbcType=VARCHAR},	#{masterPhoneNo,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},#{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from U_ACCOUNT_BINDING
+		where BINGDINGACCOUNTID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateAccountBinding" parameterType="AccountBinding">
+		update U_ACCOUNT_BINDING
+		<set>
+			<if test="accountBindingType != null">
+				ACCOUNTBINDINGTYPE = #{accountBindingType,jdbcType=VARCHAR},
+			</if>
+			<if test="transferAccountType != null">
+				TRANSFERACCOUNTTYPE = #{transferAccountType,jdbcType=VARCHAR},
+			</if>
+			<if test="accountNo != null">
+				ACCOUNTNAME = #{accountName,jdbcType=VARCHAR},
+			</if>
+			<if test="accountNo != null">
+				ACCOUNTNO = #{accountNo,jdbcType=VARCHAR},
+			</if>
+			<if test="subBankName != null">
+				SUBBANKNAME = #{subBankName,jdbcType=VARCHAR},
+			</if>
+			<if test="masterName != null">
+				MASTERNAME = #{masterName,jdbcType=VARCHAR},
+			</if>
+			<if test="masterIDcardNo != null">
+				MASTERIDCARDNO = #{masterIDcardNo,jdbcType=VARCHAR},
+			</if>
+			<if test="masterPhoneNo != null">
+				MASTERPHONENO = #{masterPhoneNo,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where BINGDINGACCOUNTID = #{bingdingAccountId,jdbcType=INTEGER}
+	</update>
+	
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_ACCOUNT_BINDING
+		where BINGDINGACCOUNTID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listByCustomerId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_ACCOUNT_BINDING
+		where CUSTOMERID = #{customerId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="loadAccountBindingDetailById" resultMap="AccountBindingRelatedInfoResultMap" parameterType="java.lang.Integer">
+		select A.BINGDINGACCOUNTID,A.CUSTOMERID,A.ACCOUNTBINDINGTYPE,A.ACCOUNTNAME,A.ACCOUNTNO,A.TRANSFERACCOUNTTYPE,A.SUBBANKNAME,A.MASTERNAME,A.MASTERIDCARDNO,A.MASTERPHONENO,
+		B.CITYCODE,B.COUNTYCODE,B.CUSTOMERNAME,C.STORECODE,B.ADDRESSDETAIL,B.MASTERNAME AS CONTACTNAME,B.TELPHONE,A.CREATEUSERID,A.CREATETIME from U_ACCOUNT_BINDING A 
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		left join U_STORE_PROFILE C ON A.CUSTOMERID = C.STOREID
+		where A.BINGDINGACCOUNTID = #{id,jdbcType=INTEGER}
+	</select>
+		
+	<select id="findAccountBindingBanks" resultMap="AccountBindingRelatedInfoResultMap" parameterType="AccountBindingQuery">
+		select A.BINGDINGACCOUNTID,A.CUSTOMERID,A.ACCOUNTBINDINGTYPE,A.ACCOUNTNAME,A.ACCOUNTNO,A.TRANSFERACCOUNTTYPE,A.SUBBANKNAME,A.MASTERNAME,A.MASTERIDCARDNO,A.MASTERPHONENO,
+		B.CITYCODE,B.COUNTYCODE,B.CUSTOMERNAME,C.STORECODE,B.ADDRESSDETAIL,B.MASTERNAME AS CONTACTNAME,B.TELPHONE,A.CREATEUSERID,A.CREATETIME from U_ACCOUNT_BINDING A 
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		left join U_STORE_PROFILE C ON A.CUSTOMERID = C.STOREID
+		<where>
+			1=1
+			<if test="cityCode != null">
+				and B.CITYCODE = #{cityCode, jdbcType=VARCHAR}
+			</if>
+			<if test="countyCode != null">
+				and B.COUNTYCODE = #{countyCode, jdbcType=VARCHAR}
+			</if>
+			<if test="customerName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{customerName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeCode != null">
+				and C.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="masterName">
+				and A.MASTERNAME = #{masterName, jdbcType=VARCHAR}
+			</if>
+			<if test="telPhone != null">
+				and B.TELPHONE = #{telPhone, jdbcType=VARCHAR}
+			</if>
+			<if test="accountBindingType != null">
+				and A.ACCOUNTBINDINGTYPE = #{accountBindingType, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+</mapper>

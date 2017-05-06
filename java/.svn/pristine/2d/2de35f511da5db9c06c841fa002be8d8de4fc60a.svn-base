@@ -1,0 +1,441 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var method = getUrlParam("method");
+	function loadVoucherInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/' + id + '/getVoucherPackageDetail',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+					$("#vouName").val(data.entity.vouName);
+					if(data.entity.vouPackType == 'VOUPACKTYPETYPE_MULTIPLE_VOUCHER'){
+						document.getElementById('radio2').checked = true;
+						doMultipleVouchcer();
+						var vouPackContent = data.entity.vouPackContent;
+						var vouPackContentArray = vouPackContent.split(",");
+						var voucherInfoBlockArray = document.getElementsByName('voucherInfoBlock');
+						if(vouPackContentArray.length > 1){
+							for(var i=1 ; i<vouPackContentArray.length ; i++){
+								addVouchers();
+							}						
+						}
+						for(var i=0 ; i<vouPackContentArray.length ; i++){
+							var vouInfo = vouPackContentArray[i].split("_");
+							var price = vouInfo[0];
+							var count = vouInfo[1];
+							$(voucherInfoBlockArray[i]).find("input[name=voucherPrice]").attr("value",toCenti(price,2));
+							$(voucherInfoBlockArray[i]).find("input[name=voucherCount]").attr("value",count);
+						}
+					}
+					if(data.entity.vouPackType == 'VOUPACKTYPETYPE_SINGLE_VOUCHER'){
+						document.getElementById('radio1').checked = true;
+						doSingleVouchcer();
+						$("#amount").val(toCenti(data.entity.amount,2));
+					}
+					$("#id").val(id);
+				}//非必须
+			});
+
+		}
+	}
+	
+	function dataEditSubmit() {
+		if (method != 'add' && method != 'edit') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url =OPERATION_SYSTEM_IDENTITY +'/createVoucherPackage';
+			if (!validateData()) {
+				return;
+			}
+		} else if (method == 'edit') {
+			url = OPERATION_SYSTEM_IDENTITY +'/updateVoucherPackage';
+			if (!validateData()) {
+				return;
+			}
+		} else {
+			return;
+		}
+		
+		var radio1 = document.getElementById('radio1');
+		if(radio1.checked == true){
+			var amount = parseFloat($("#amount").val());
+			$("#amount").val(toMul(amount,1000));
+			$('#vouPackContent').val($("#amount").val() + '_' + '1')
+		}
+		var radio2 = document.getElementById('radio2');
+		if(radio2.checked == true){
+			var voucherInfoBlockArray = document.getElementsByName('voucherInfoBlock');
+			var amount = parseFloat(0);
+			var vouPackContent = '';
+			for(var i=0; i < voucherInfoBlockArray.length; i++){
+				var voucherPrice = parseFloat($(voucherInfoBlockArray[i]).find("input[name=voucherPrice]").val());
+				$(voucherInfoBlockArray[i]).find("input[name=voucherPrice]").val(toMul(voucherPrice,1000));
+				var voucherCount = parseInt($(voucherInfoBlockArray[i]).find("input[name=voucherCount]").val());
+				amount += toMul(voucherPrice,1000) * voucherCount;
+				vouPackContent += toMul(voucherPrice,1000) + '_' + voucherCount + ',';
+			}
+			$("#amount").val(amount);
+			vouPackContent = vouPackContent.substring(0, vouPackContent.length - 1);
+			$('#vouPackContent').val(vouPackContent);
+		}
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+ 		$.ajax(
+				{
+					type : 'post',
+					contentType:'application/json',
+					dataType : 'json',
+					data : formJsonStr,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+						var radio1 = document.getElementById('radio1');
+						if(radio1.checked == true){
+							$("#amount").val(toCenti($("#amount").val(),2));
+						}
+						var radio2 = document.getElementById('radio2');
+						if(radio2.checked == true){
+							var voucherInfoBlockArray = document.getElementsByName('voucherInfoBlock');
+							for(var i=0; i < voucherInfoBlockArray.length; i++){
+								$(voucherInfoBlockArray[i]).find("input[name=voucherPrice]").val(toCenti($(voucherInfoBlockArray[i]).find("input[name=voucherPrice]").val(),2));
+							}
+						}
+					},
+					url : TERMINAL_URL + url,
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window.setTimeout(
+											function() {
+												var urlParam=window.location.search;
+												locationHref("/voucher/voucher-index.html"+urlParam);
+											}, 1000);
+						} else {
+							$('#submit').removeClass().addClass(
+									'btn_sure')[0].disabled = false;
+							var radio1 = document.getElementById('radio1');
+							if(radio1.checked == true){
+								$("#amount").val(toCenti($("#amount").val(),2));
+							}
+							var radio2 = document.getElementById('radio2');
+							if(radio2.checked == true){
+								var voucherInfoBlockArray = document.getElementsByName('voucherInfoBlock');
+								for(var i=0; i < voucherInfoBlockArray.length; i++){
+									$(voucherInfoBlockArray[i]).find("input[name=voucherPrice]").val(toCenti($(voucherInfoBlockArray[i]).find("input[name=voucherPrice]").val(),2));
+								}
+							}
+							$('#promptMessage').text(data.msg);
+						}
+					}
+				}); 
+	}
+	
+	function doSingleVouchcer(){
+		var html = '';
+		html += '</br>';
+		html += '<input type="txt" class="txt grid-10" name="amount" id="amount" ';
+		html += 'onkeyup="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,2})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; "';
+		html += 'onafterpaste="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,2})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; "></input>&nbsp;<span class="gray">元</span>';
+		html += '<span id="amountMsg" class="cred"></span>';
+		$('#singleVouchcerSpan').html(html);
+		$('#multipleVouchcerSpan').html('');
+	}
+	
+	function doMultipleVouchcer(){
+		var html = '';
+		html += '</br>';
+		html += '<input type="hidden" name="amount" id="amount"/>';
+		html += '<input type="button" class="btn_sure" value="添加抵用券" id="addVoucher" onClick="addVouchers()">';
+		html += '</br>';
+		html += '<span name="voucherInfoBlock">';
+		html += '<input type="txt" class="txt grid-10" name="voucherPrice" ';
+		html += 'onkeyup="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,2})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; " ';
+		html += 'onafterpaste="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,2})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; "></input>&nbsp;<span class="gray">元</span>';
+		html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		html += '<input type="txt" class="txt grid-10" name="voucherCount" ';
+		html += 'onkeyup="this.value=this.value.replace(/^0+|\\D/g,\'\')" onafterpaste="this.value=this.value.replace(/^0+|\\D/g,\'\')"></input>&nbsp;<span class="gray">张</span>&nbsp;&nbsp;';
+		html += '<span name="voucherInfoBlockMsg" class="cred"></span>';
+		html += '</span>';
+		$('#multipleVouchcerSpan').html(html);
+		$('#singleVouchcerSpan').html('');
+	}
+	
+	function addVouchers(){
+		var html = '';
+		html += '<span name="voucherInfoBlock">';
+		html += '</br>';
+		html += '</br>';
+		html += '<input type="txt" class="txt grid-10" name="voucherPrice" ';
+		html += 'onkeyup="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,2})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; " ';
+		html += 'onafterpaste="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,2})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; "></input>&nbsp;<span class="gray">元</span>';
+		html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		html += '<input type="txt" class="txt grid-10" name="voucherCount" ';
+		html += 'onkeyup="this.value=this.value.replace(/^0+|\\D/g,\'\')" onafterpaste="this.value=this.value.replace(/^0+|\\D/g,\'\')"></input>&nbsp;<span class="gray">张</span>&nbsp;&nbsp;';
+		html += '<a href="javascript:void(0)" onclick="delVoucherBlock(this)" name="delVoucher" class="ablue">删除</a>&nbsp;&nbsp;';
+		html += '<span name="voucherInfoBlockMsg" class="cred"></span>';
+		html += '</span>';
+		$('#multipleVouchcerSpan').append(html);
+	}
+	
+	function delVoucherBlock(obj){
+		$(obj).parent().remove();
+	}
+	
+	var validate = (function() {
+		return {
+			validateConName : function() {
+				var vouName = $.trim($('#vouName').val()), $vouNameMsg = $('#vouNameMsg');
+				if (!vouName) {
+					$vouNameMsg.html('请填写劵包名称！').attr('class', 'error');
+					return false;
+				}
+				$vouNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateAmount : function() {
+				var amount = $.trim($('#amount').val()), $amountMsg = $('#amountMsg');
+				var radio1 = document.getElementById('radio1');
+				if(radio1.checked == true){
+					if (!amount) {
+						$amountMsg.html('请填写抵用券金额！').attr('class', 'error');
+						return false;
+					}
+					if(!checkMoney(amount)){
+						$amountMsg.html('请填写正确的抵用券金额格式！').attr('class', 'error');
+						return false;
+					}
+					if(Number(amount) == 0){
+						$amountMsg.html('抵用券金额必须大于0！').attr('class', 'error');
+						return false;
+					}
+				}
+				$amountMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateVoucherInfoBlock : function() {
+				var radio2 = document.getElementById('radio2');
+				if(radio2.checked == true){
+					var voucherInfoBlockArray = document.getElementsByName('voucherInfoBlock');
+					for(var i=0; i < voucherInfoBlockArray.length; i++){
+						var $voucherInfoBlockMsg = $(voucherInfoBlockArray[i]).find("span[name=voucherInfoBlockMsg]");
+						var voucherPrice = $(voucherInfoBlockArray[i]).find("input[name=voucherPrice]").val();
+	 					if (!voucherPrice) {
+	 						$voucherInfoBlockMsg.html('请填写抵用券金额！').attr('class', 'error');
+							return false;
+						}
+						if(!checkMoney(voucherPrice)){
+							$voucherInfoBlockMsg.html('请填写正确的抵用券金额格式！').attr('class', 'error');
+							return false;
+						}
+						if(Number(voucherPrice) == 0){
+							$voucherInfoBlockMsg.html('抵用券金额必须大于0！').attr('class', 'error');
+							return false;
+						}
+						for(var j=0; j < voucherInfoBlockArray.length; j++){
+							var vPrice = $(voucherInfoBlockArray[j]).find("input[name=voucherPrice]").val();
+							if(i != j){
+								if(Number(voucherPrice) == Number(vPrice)){
+									$voucherInfoBlockMsg.html('抵用券金额出现重复！').attr('class', 'error');
+									return false;
+								}
+							}
+						}
+						var voucherCount = $(voucherInfoBlockArray[i]).find("input[name=voucherCount]").val();
+	 					if (!voucherCount) {
+	 						$voucherInfoBlockMsg.html('请填写抵用券张数！').attr('class', 'error');
+							return false;
+						}
+	 					$voucherInfoBlockMsg.html('').attr('class', 'right');
+					}
+				}
+				return true;
+			}
+		}
+	})();
+	
+	function validateData() {
+		if (!validate.validateConName()) {
+			return false;
+		}
+		if (!validate.validateAmount()) {
+			return false;
+		}
+		if (!validate.validateVoucherInfoBlock()) {
+			return false;
+		}
+		return true;
+	}
+
+	//买点只能输入28字，兼容ie9
+	function checklength(obj) {
+		if (obj.value.length > 125) {
+			obj.value = obj.value.substr(0, 125);
+		}
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		if (method == 'edit') {
+			$("#breadName").html('编辑抵用劵包');
+			$("#pageTitle").html('编辑抵用劵包');
+			loadVoucherInfo();
+		} else if(method == 'add') {
+			$("#breadName").html('新增抵用劵包');
+			$("#pageTitle").html('新增抵用劵包');
+			document.getElementById('radio1').checked = true;
+			doSingleVouchcer();
+		} else if (method == 'detail') {
+			$("#breadName").html('查看抵用劵包');
+			$("#pageTitle").html('查看抵用劵包');
+			loadVoucherInfo();
+			disableAll();
+		}
+	});
+	
+	function comebackList() {
+		var urlParam=window.location.search;
+		locationHref('/voucher/voucher-index.html'+urlParam);
+	}
+
+	function disableAll() {
+		$('#vouName').attr('disabled', true);
+		$('#amount').attr('disabled', true);
+		$('#radio1').attr('disabled', true);
+		$('#radio2').attr('disabled', true);
+		if(document.getElementById('radio2').checked == true){
+			$('#addVoucher').attr('disabled', true);
+			$('#addVoucher').removeClass().addClass('btn_disabled');
+			var voucherInfoBlockArray = document.getElementsByName('voucherInfoBlock');
+			for(var i=0 ; i<voucherInfoBlockArray.length ; i++){
+				$(voucherInfoBlockArray[i]).find("input[name=voucherPrice]").attr('disabled', true);
+				$(voucherInfoBlockArray[i]).find("input[name=voucherCount]").attr('disabled', true);
+				if(i > 0){
+					$(voucherInfoBlockArray[i]).find("a[name=delVoucher]").remove();
+				}
+			}
+		}		
+		$('#submit').remove();
+		$('#reset').remove();
+	}
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 促销管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>劵包名称：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-25" id="vouName" name="vouName" >&nbsp;&nbsp;
+										<span class="cred" id="vouNameMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>抵用金额：
+									</dt>
+									<dd>
+										<input type="radio" id="radio1" name="vouPackType" value="VOUPACKTYPETYPE_SINGLE_VOUCHER" onclick="doSingleVouchcer();"/>&nbsp;单张抵用券&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="radio" id="radio2" name="vouPackType" value="VOUPACKTYPETYPE_MULTIPLE_VOUCHER" onclick="doMultipleVouchcer();"/>&nbsp;多张抵用券&nbsp;&nbsp;&nbsp;&nbsp;
+										<span class="gray">抵用券可以抵用的金额</span>
+										<span id="singleVouchcerSpan"></span>
+										<span id="multipleVouchcerSpan"></span>
+										<span id="voucherSpan"></span>
+									</dd>
+								</dl>
+							</div>
+							<input type="hidden" name="vouPackContent" id="vouPackContent">
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit(method)"> <input
+											type="button" id="goBack" class="btn_gray" value="返回"
+											onclick="javascript:comebackList();"> <span
+											id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden"  id="id" name="id" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

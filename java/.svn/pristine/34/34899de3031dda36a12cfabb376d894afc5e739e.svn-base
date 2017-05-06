@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.RefundApplyHistoryMapper">
+	<resultMap id="BaseResultMap" type="RefundApplyHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="APPLYID" property="applyId" jdbcType="INTEGER" />
+		<result column="APPLYUSERID" property="applyUserId" jdbcType="INTEGER" />
+		<result column="BUYERCUSTOMERID" property="buyerCustomerId" jdbcType="INTEGER" />
+		<result column="REFUNDAMOUNT" property="refundAmount" jdbcType="BIGINT" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="MESSAGE" property="message" jdbcType="VARCHAR" />
+		<result column="OPERATIONTIME" property="operationTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATIONUSERID" property="operationUserId" jdbcType="INTEGER" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, APPLYID, APPLYUSERID, BUYERCUSTOMERID, REFUNDAMOUNT, SALEORDERNO, STOREID, STATUSCODE,
+		MESSAGE,
+		OPERATIONTIME, OPERATIONUSERID, OPERATETYPE
+	</sql>
+
+	<insert id="save" parameterType="RefundApplyHistory">
+		insert into T_REFUND_APPLY_HISTORY (APPLYID, APPLYUSERID,
+		BUYERCUSTOMERID,
+		REFUNDAMOUNT, SALEORDERNO, STOREID,
+		STATUSCODE, MESSAGE, OPERATIONTIME,
+		OPERATIONUSERID, OPERATETYPE)
+		values
+		(#{applyId,jdbcType=INTEGER}, #{applyUserId,jdbcType=INTEGER},
+		#{buyerCustomerId,jdbcType=INTEGER},
+		#{refundAmount,jdbcType=BIGINT}, #{saleOrderNo,jdbcType=VARCHAR}, #{storeId,jdbcType=INTEGER},
+		#{statusCode,jdbcType=VARCHAR}, #{message,jdbcType=VARCHAR}, #{operationTime,jdbcType=TIMESTAMP},
+		#{operationUserId,jdbcType=INTEGER},#{operateType,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="listByAppleyId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_REFUND_APPLY_HISTORY
+		where APPLYID = #{applyId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

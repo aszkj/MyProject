@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<title>分享有礼</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css" />
+<script type="text/javascript" src="../static-resource/js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="../static-resource/js/resize.js"></script>
+<script type="text/javascript" src="../static-resource/js/base.js"></script>
+</head>
+<body>
+	<div class="share">
+		<header>
+			<div class="banner">
+				<img src="../static-resource/images/share/sharetopbg.png" /> <a href="javascript:void(0);" onclick="redirectRule();" class="toRule"></a>
+			</div>
+		</header>
+		<section>
+			<div class="shareContent">
+				<div id="canGetGift">
+					<p>好友下单成功</p>
+					<p>
+						各得<span>100元</span>大礼包
+					</p>
+				</div>
+				<div class="shareMainConBox">
+					<div id="shareMainCon">
+						<div class="champion">
+							<p>
+								恭喜<span>7</span>月冠军<span id="championTele"> 189****0987 </span> 已获得<span>100</span>元账户奖励！
+							</p>
+							<p>
+								<span>8</span>月榜冠军可获得<span>100</span>元账户奖励
+							</p>
+						</div>
+						<div class="opt">
+							<div id="rankTab">
+								<ul>
+									<li><a href="#tabRank" class="shareTab active firstTab">邀请排行榜</a></li>
+									<li><a href="#tabMyInvite" class="shareTab secondTab">我的邀请</a></li>
+								</ul>
+							</div>
+							<div class="tabsContainer">
+								<div class="content" id="tabRank">
+									<ul class="inviteList" id="rankList">
+										<li class="rankItem"><span>1</span>
+											<div class="rankImg">
+												<img src="../static-resource/images/share/toux.png">
+											</div>
+											<p class="rankTele">189****0987</p>
+											<div class="rankIns">
+												<h4>13人</h4>
+												<p>累计成功邀请</p>
+											</div></li>
+										<li class="rankItem"><span>2</span>
+											<div class="rankImg">
+												<img src="../static-resource/images/share/toux.png">
+											</div>
+											<p class="rankTele">189****0987</p>
+											<div class="rankIns">
+												<h4>13人</h4>
+												<p>累计成功邀请</p>
+											</div></li>
+									</ul>
+								</div>
+								<div class="content" id="tabMyInvite">
+									<div class="myInviteResult hide">
+										<p>累计赚取</p>
+										<h4>0元</h4>
+										<p>
+											已成功邀请<span>3</span>位好友
+										</p>
+									</div>
+									<ul id="myInviteFriends" class="inviteList hide">
+										<li class="rankItem"><span>1</span>
+											<div class="rankImg">
+												<img src="../static-resource/images/share/toux.png">
+											</div>
+											<p class="rankTele">189****0987</p>
+											<div class="rankIns">
+												<h4>2016-09-01</h4>
+												<p>邀请成功</p>
+											</div></li>
+										<li class="rankItem"><span>2</span>
+											<div class="rankImg">
+												<img src="../static-resource/images/share/toux.png">
+											</div>
+											<p class="rankTele">189****0987</p>
+											<div class="rankIns">
+												<h4>2016-08-04</h4>
+												<p>邀请成功</p>
+											</div></li>
+									</ul>
+									<div class="noInvite">
+										<img src="../static-resource/images/share/noinvite.png">
+										<h3>尚未赚取红包</h3>
+										<p>还不赶紧邀请好友</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</body>
+<script type="text/javascript">
+	var shareCode = getUrlParam("shareCode");
+	$(function() {
+		getShareActInfo();
+		$(".opt ul li a").click(function(e) {
+			$(".content").hide();
+			var x = $(this).attr("href");
+			$(x).fadeIn();
+			$(".opt ul li a").removeClass("active");
+			$(this).addClass("active");
+			return false;
+		});
+	});
+	function getShareActInfo() {
+		ajax("/share/shareactivityinfo", null, function(data) {
+			if (!data) {
+				showNoAct();
+				return;
+			}
+			if (!data.championRewardInfo) {
+				addChampionInfo(data.championRewardInfo)
+			}
+			addNextChampionInfo(data.nextRewardInfo);
+			requestInviteTop();
+		}, function(msg) {
+			alert(msg);
+		});
+	}
+	function showNoAct() {
+
+	}
+	function addChampionInfo(championInfo) {
+		var championHtml = "<p>恭喜<span>" + championInfo.period
+				+ "</span>冠军<span id='championTele'> "
+				+ championInfo.championName + "</span> 已获得<span>"
+				+ championInfo.rewardName + "</span>奖励！</p>";
+		$(".champion").prepend(championHtml);
+	}
+	function addNextChampionInfo(nextInfo) {
+		var championHtml = "<p><span>" + championInfo.period
+				+ "</span>榜冠军可获得<span>" + championInfo.rewardName
+				+ "</span>奖励！</p>";
+		$(".champion").append(championHtml);
+	}
+
+	function requestInviteTop() {
+		ajax("/share/invitetop", null, function(data) {
+			if (!data || !data.list)
+				return;
+			addInviteTop(data.list);
+		}, function(msg) {
+			alert(msg);
+		});
+	}
+	function addInviteTop(inviteInfoList) {
+		var inviteTopHtml;
+		for ( var index in inviteInfoList) {
+			inviteTopHtml += "<li class='rankItem'><span>"
+					+ index
+					+ "</span><div class='rankImg'><img src='"
+					+inviteInfoList[index].userImageUrl
+					+"'></div><p class='rankTele'>"
+					+ inviteInfoList[index].userName
+					+ "</p><div class='rankIns'><h4>"
+					+ inviteInfoList[index].inviteCount
+					+ "人</h4><p>累计成功邀请</p></div></li>";
+		}
+		$("#rankList").append(inviteTopHtml);
+	}
+
+	function corUserSessionId(sessionInfo) {
+		var session = eval("(" + sessionInfo + ")");
+		setCookie(session.key, session.value, -1);
+		requestMyInvite();
+	}
+	function requestMyInvite() {
+		ajax("/share/myinvitesummary", null, function(data) {
+			var shown = !data || !data.inviteCount || data.inviteCount <= 0;
+			showMyInviteInfo(!shown, data);
+		}, function(msg) {
+			alert(msg);
+		});
+	}
+	function showMyInviteInfo(shown, inviteInfo) {
+		if (shown) {
+			$(".myInviteResult").show();
+			$("#myInviteFriends").show();
+			$(".noInvite").hide();
+			var resultHtml = "<p>累计赚取</p><h4>" + inviteInfo.inviteRewardAmount
+					/ 1000 + "元</h4><p>已成功邀请<span>" + inviteInfo.inviteCount
+					+ "</span>位好友</p>";
+			$(".myInviteResult").html(resultHtml);
+			requestMyInviteList();
+		} else {
+			$(".myInviteResult").hide();
+			$("#myInviteFriends").hide();
+			$(".noInvite").show();
+		}
+	}
+	function requestMyInviteList() {
+		ajax("/share/myinvite", null, function(data) {
+			addMyInvite(data.list);
+		}, function(msg) {
+			alert(msg);
+		});
+	}
+
+	function addMyInvite(myInviteList) {
+		var myInviteHtml;
+		for ( var index in myInviteList) {
+			myInviteHtml += "<li class='rankItem'><span>"
+					+ index
+					+ "</span><div class='rankImg'><img src='"
+					+ myInviteList[index].userImageUrl
+					+ "'></div><p class='rankTele'>"
+					+ myInviteList[index].userName
+					+ "</p><div class='rankIns'><h4>"
+					+ myInviteList[index].inviteTime
+					+ "</h4><p>邀请成功</p></div></li>"
+		}
+		$("#myInviteFriends").append(myInviteHtml);
+	}
+
+	function redirectRule() {
+		var hurl = "/h5/share/shareRule.html";
+		alert("跳转到规则页面：" + hurl);
+		cordova.exec(corSuccess, corFail, "Share", "redirectRule", [ hurl ]);
+	}
+</script>
+</html>

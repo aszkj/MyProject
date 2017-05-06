@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.FirstOrderCustomerRecMapper">
+	<resultMap id="BaseResultMap" type="FirstOrderCustomerRec">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="BUYERCUSTOMERID" property="buyerCustomerId" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="FIRSTORDERTYPE" property="firstOrderType" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, BUYERCUSTOMERID, SALEORDERNO, FIRSTORDERTYPE, CREATETIME,CREATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="FirstOrderCustomerRec">
+		insert into T_FIRST_ORDER_CUSTOMER_REC
+		(BUYERCUSTOMERID, SALEORDERNO, FIRSTORDERTYPE,
+		CREATETIME,CREATEUSERID)
+		values
+		(#{buyerCustomerId,jdbcType=VARCHAR}, #{saleOrderNo,jdbcType=VARCHAR},
+		#{firstOrderType,jdbcType=BIGINT},
+		#{createTime,jdbcType=BIGINT},
+		#{createUserId,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="loadBySaleOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_FIRST_ORDER_CUSTOMER_REC
+		where SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+	</select>
+	<select id="loadByBuyerCustomerIdAndFirstOrderType" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_FIRST_ORDER_CUSTOMER_REC
+		where BUYERCUSTOMERID = #{buyerCustomerId,jdbcType=VARCHAR}
+		and FIRSTORDERTYPE =
+		#{firstOrderType,jdbcType=VARCHAR}
+	</select>
+	<select id="loadByDeviceIdAndFirstOrderType" resultMap="BaseResultMap">
+		select F.ID,F.BUYERCUSTOMERID,F.SALEORDERNO,F.FIRSTORDERTYPE,F.CREATETIME,F.CREATEUSERID
+		from T_FIRST_ORDER_CUSTOMER_REC F left join T_SALE_ORDER S on F.SALEORDERNO = S.SALEORDERNO
+		where S.DEVICEID = #{deviceId,jdbcType=VARCHAR}
+		and F.FIRSTORDERTYPE =
+		#{firstOrderType,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByBuyerCustomerIdAndFirstOrderType">
+		delete from T_FIRST_ORDER_CUSTOMER_REC
+		where BUYERCUSTOMERID = #{buyerCustomerId,jdbcType=VARCHAR}
+		and
+		FIRSTORDERTYPE =
+		#{firstOrderType,jdbcType=VARCHAR}
+	</delete>
+</mapper>

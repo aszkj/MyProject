@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ThemeMapper">
+	<resultMap id="BaseResultMap" type="Theme">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="THEMENAME" property="themeName" jdbcType="VARCHAR" />
+		<result column="TYPECODE" property="typeCode" jdbcType="VARCHAR" />
+		<result column="THEMEIMAGEURL" property="themeImageUrl" jdbcType="VARCHAR" />
+		<result column="SLOGANIMAGEURL" property="sloganImageUrl" jdbcType="VARCHAR" />
+		<result column="BASECOLOR" property="baseColor" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, THEMENAME, TYPECODE, THEMEIMAGEURL, SLOGANIMAGEURL, 
+		BASECOLOR, CREATEUSERID, CREATETIME, MODIFYUSERID, MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="Theme">
+		insert into P_THEME (THEMENAME, TYPECODE, THEMEIMAGEURL,
+		SLOGANIMAGEURL, BASECOLOR, CREATEUSERID, CREATETIME
+		)
+		values (#{themeName,jdbcType=VARCHAR}, #{typeCode,jdbcType=VARCHAR}, 
+		#{themeImageUrl,jdbcType=VARCHAR}, #{sloganImageUrl,jdbcType=VARCHAR},
+		#{baseColor,jdbcType=VARCHAR}, #{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<update id="updateByIdSelective" parameterType="Theme">
+		update P_THEME
+		<set>
+			<if test="themeName != null">
+				THEMENAME = #{themeName,jdbcType=VARCHAR},
+			</if>
+			<if test="typeCode != null">
+				TYPECODE = #{typeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="themeImageUrl != null">
+				THEMEIMAGEURL = #{themeImageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="sloganImageUrl != null">
+				SLOGANIMAGEURL = #{sloganImageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="baseColor != null">
+				BASECOLOR = #{baseColor,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+			MODIFYTIME = CURRENT_TIME
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_THEME
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByTypeCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_THEME
+		where TYPECODE = #{typeCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findThemes" resultMap="BaseResultMap" parameterType="ThemeQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_THEME
+		<where>
+			<if test="themeName != null">
+				THEMENAME like
+				CONCAT('%',#{themeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="typeCode != null">
+				and TYPECODE = #{typeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by CREATETIME desc
+	</select>
+	<select id="listThemes" resultMap="BaseResultMap" parameterType="ThemeQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_THEME
+		<where>
+			<if test="themeName != null">
+				THEMENAME like
+				CONCAT('%',#{themeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="typeCode != null">
+				and TYPECODE = #{typeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

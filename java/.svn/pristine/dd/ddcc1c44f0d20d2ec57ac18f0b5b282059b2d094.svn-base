@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/checkLogin.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+				+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--用户信息-->
+		<div class="userInfo"></div>
+	</header>
+	<section>
+		<!--升级会员和加盟合伙人-->
+		<div class="vBox">
+			<div class="vipBox isNor" onclick="window.location.href='../buyer/market.html'">
+				<p>升级为VIP用户</p>
+			</div>
+			<div class="applyPartner" onclick="window.location.href='../buyer/partner.html'">
+				<p>申请加盟合伙人</p>
+			</div>
+		</div>
+		<!--订单-->
+		<div class="myOrder bg">
+			<div class="myOrderTit bg" onclick="window.location.href='/cart/pay/order.html'">
+				<p>我的订单</p>
+			</div>
+			<div class="orderItemWrap bg">
+				<div class="orderItem" onclick="window.location.href='/cart/pay/order.html?tabs='+1">
+					<img src="../static-resource/images/my/daifukuan.png">
+					<p>待付款</p>
+				</div>
+				<div class="orderItem">
+					<img src="../static-resource/images/my/daishouhuo.png" onclick="window.location.href='/cart/pay/order.html?tabs='+2">
+					<p>待收货</p>
+				</div>
+				<div class="orderItem">
+					<img src="../static-resource/images/my/daipingjia.png" onclick="window.location.href='/cart/pay/order.html?tabs='+3">
+					<p>待评价</p>
+				</div>
+				<div class="orderItem">
+					<img src="../static-resource/images/my/tuikuan.png" onclick="window.location.href='/cart/pay/allOrder.html'">
+					<p>退款</p>
+				</div>
+			</div>
+		</div>
+		<div class="bord"></div>
+		<!--钱包-->
+		<div class="myOrder bg">
+			<div class="myOrderTit bg" onclick="window.location.href='/wallet/myWallet.html'">
+				<p>我的钱包</p>
+			</div>
+			<div class="orderItemWrap bg">
+				<div class="orderItem" onclick="window.location.href='/wallet/myWallet.html'">
+					<img src="../static-resource/images/my/yue.png">
+					<p>余额</p>
+				</div>
+				<div class="orderItem">
+					<img src="../static-resource/images/my/limi.png" onclick="window.location.href='/wallet/myWallet.html'">
+					<p>里米</p>
+				</div>
+				<div class="orderItem">
+					<img src="../static-resource/images/my/youhuiquan.png" onclick="window.location.href='/wallet/myWallet.html?tickettype='+1">
+					<p>优惠券</p>
+				</div>
+				<div class="orderItem">
+					<img src="../static-resource/images/my/diyongquan.png" onclick="window.location.href='/wallet/myWallet.html?tickettype='+2">
+					<p>抵用券</p>
+				</div>
+			</div>
+		</div>
+		<div class="bord"></div>
+		<!--其他-->
+		<div class="myBotWrap bg">
+			<div class="otherItem collectionLink" onclick="window.location.href='/collection/collection.html'">
+				<p>商品收藏</p>
+			</div>
+			<div class="otherItem shareLink" onclick="window.location.href='../share/shareForGift.html'">
+				<p>分享有礼</p>
+			</div>
+			<div class="otherItem limiStoreLink" onclick="noContent()">
+				<p>里米商城</p>
+			</div>
+			<div class="otherItem fansLink" onclick="noContent()">
+				<p>粉丝专区</p>
+			</div>
+		</div>
+	</section>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<footer>
+		<!--底部tab-->
+		<div class="tabPadDiv"></div>
+		<div class="footer-tab">
+			<div class="tab1" onclick="window.location.href='../index.html'">
+				<img src="../static-resource/images/index1.png">
+				<p>首页</p>
+			</div>
+			<div class="tab1" onclick="window.location.href='../cateBrand/cateBrand.html'">
+				<img src="../static-resource/images/cate1.png">
+				<p>分类</p>
+			</div>
+			<div class="tab1 cart-btn" onclick="window.location.href='../cart/cart.html'">
+				<input class="cart-pro-number  cartNumInTab" id="cartProNumber" readonly="readonly" value="" /> <img src="../static-resource/images/cart1.png">
+				<p>购物车</p>
+			</div>
+			<div class="tab1 current" onclick="window.location.href='javascript:void(0);'">
+				<img src="../static-resource/images/my2.png">
+				<p>我的</p>
+			</div>
+		</div>
+	</footer>
+	<script type="text/javascript">
+		var userInfo = getSessionStorage(localStorageUserInfoKey);
+		$(function() {
+			getUserInfo();
+			showCartNum();
+		});
+		/*用户信息*/
+		function getUserInfo() {
+			$("#userInfoTmpl").tmpl(userInfo).appendTo(".userInfo");
+		}
+		function noContent() {
+			alert("此功能还在开发中，尚未开放");
+		}
+		/*点击添加图片*/
+		function addComImg(node){
+			var path = $(node).val();
+			if(!path){}else{
+				var fd = new FormData();
+				fd.append("file", $(node)[0].files[0]);
+				$.ajax({
+					url : TERMINAL_URL + '/upload/userimage',
+					type : 'POST',
+					data : fd,
+					dataType : 'json',
+					cache : false,
+					contentType : false,
+					processData : false, // 不可缺
+					beforeSend : function() {
+					},
+					success : function(data) {
+						var resultStr = new Base64().decode(data.result);
+						var result = eval('(' + resultStr + ')');
+						if (result.msgCode == 1) {
+							var path = result.entity;
+							$("#userImgBox").attr("src",path);
+							var param = new Object();
+							param.userImageUrl=path;
+							ajax("/user/modifyuserinfo", param, function(data) {
+								userInfo.userImageUrl=data.userImageUrl;
+								saveUserInfo(userInfo);
+							}, function(msg) {
+								alert(msg);
+							}, true);
+						} else {
+						}
+					},
+					error : function() {
+						alert("图片上传失败，请重新上传");
+					}
+				});
+			}
+		}
+	</script>
+	<script id="userInfoTmpl" type="text/x-jquery-tmpl">
+       <div class="logout toset" onclick="window.location.href='set.html'"></div>
+       <div id="toMessage" onclick="window.location.href='/message/usermessage.html'"></div>
+       <div class="userImg">
+           <img src="${userImageUrl}" onerror="setErrorDefaultImg(this)" id="userImgBox">
+           <input class="changeUserImgBtn" type="file" accept="image/*" name="upload" onchange="addComImg(this)">
+           <div class="${memberType == 1 ? 'vipMember' : 'norMember'}"></div>
+       </div>
+       <div class="userText">
+       <h3 class="telNum">${nickName ? nickName : userName}</h3>
+       {{if memberType==1}}
+       <h5 class="term">有效期至${vipExpireDate}</h5>
+       {{/if}}
+       {{if memberType==0}}
+       <h5 class="term" style="height:.22rem;"></h5>
+       {{/if}}
+       </div>
+</script>
+</body>
+</html>

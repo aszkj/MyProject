@@ -1,0 +1,264 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<!--[endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+var selectedProductDatas = {};
+var vouPackId = getUrlParam("vouPackId2");
+var batchNo = getUrlParam("batchNo");
+function loadCouponsInfo() {
+	var pattern = /\d+/;
+	if (pattern.test(parseInt(vouPackId)) && batchNo != null && batchNo != '') {
+		ajax({
+			waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+vouPackId+'/'+batchNo+'/getVoucherGrantRecord',
+			async : false,
+			dataType : 'json',//非必须.默认text
+			error : function() {
+			}, //非必须
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				if(data.entity == null || data.entity.length == 0){
+					showBox('提示信息','数据有误','alert');
+					return;
+				}
+				$("#vouPackName").text(data.entity.vouPackName);
+				var rangeLimitHtml = '';
+				if(data.entity.orderAmountLimit != null && data.entity.orderAmountLimit != ""){
+					rangeLimitHtml += '<div>';
+					rangeLimitHtml += '<span>订单金额限制：</span>';
+					rangeLimitHtml += '<div><span>订单金额：'+data.entity.orderAmountLimit+'元</span></div>';
+					rangeLimitHtml += '</div>';
+				}
+				if(data.entity.productClassLimit != null && data.entity.productClassLimit != ""){
+					rangeLimitHtml += '<div>';
+					rangeLimitHtml += '<span>商品分类限制：'+data.entity.orderAmountLimit+'</span>';
+					rangeLimitHtml += '<div>';
+					rangeLimitHtml += '<span>已选分类：</span>';
+					rangeLimitHtml += '<span>';
+					$.each(data.entity.productClassNames,function(i,item){
+						rangeLimitHtml += item+'&nbsp;&nbsp;';
+						if((i+1)%5==0){
+							rangeLimitHtml += '<br>';
+						}
+					});
+					rangeLimitHtml += '</span>';
+					rangeLimitHtml += '</div>';
+					rangeLimitHtml += '</div>';
+				}
+				if(data.entity.businessRuleLimit != null && data.entity.businessRuleLimit != ""){
+					rangeLimitHtml += '<div>';
+					rangeLimitHtml += '<span>业务限制：'+data.entity.orderAmountLimit+'</span>';
+					$.each(data.entity.businessRuleLimitMaps,function(i,item){
+						rangeLimitHtml += '<div>';
+						rangeLimitHtml +='<span>'+item.name+'</span>';
+						if(item.code=="VOUCHERBUSINESSRULELIMIT_SPECIAL_PRODUCT_NO_USE"){
+							rangeLimitHtml +='<div>';
+							rangeLimitHtml +='<span>已选产品：</span>';
+							rangeLimitHtml +='<table>';
+							$.each(data.entity.products,function(j,jtem){
+								rangeLimitHtml +='<tr><td>'+jtem.barCode+'</td><td>'+jtem.productName+'</td></tr>';
+							});
+							rangeLimitHtml +='</table>';
+							rangeLimitHtml +='</div>';
+						}
+						rangeLimitHtml += '</div>';
+					});
+					rangeLimitHtml += '</div>';
+				}
+				if(rangeLimitHtml == ""){
+					rangeLimitHtml += '<div>';
+					rangeLimitHtml += '<span>全场</span>';
+					rangeLimitHtml += '</div>';
+				}
+				$("#rangeLimiDiv").html(rangeLimitHtml);
+				$("#validStartTime").text(data.entity.validStartTime);
+				$("#validEndTime").text(data.entity.validEndTime);
+				$("#grantRangeName").text(data.entity.grantRangeName);
+				var userInfoHtml='<dl><dt>';
+				if(data.entity.grantRange=="VOUCHERGRANTRANGE_BATCH"){
+					userInfoHtml += '用户类型：';
+				}else if(data.entity.grantRange=="VOUCHERGRANTRANGE_SINGLE"){
+					userInfoHtml += '用户登录账号：';
+				}
+				userInfoHtml +='</dt><dd><span class="">'+data.entity.userType+'</span></dd></dl>';
+				$("#userInfo").html(userInfoHtml);
+				$("#grantWayName").text(data.entity.grantWayName);
+				$("#rule").text(data.entity.rule);
+				
+				 /*$("#useRangeCodeName").text(data.entity.useRangeCodeName);
+				var useRangehtml = "";
+				$.each(data.entity.useRangeNames,function(i,item){
+					useRangehtml += '<span>'+item+'</span>';
+					if((i+1)%5 == 0){
+						useRangehtml += '<br>';
+					}
+				});
+				$("#useRangehtml").html(useRangehtml);
+				$("#validTypeName").text(data.entity.validTypeName);
+				var validTimeHtml = "";
+				var timestr = null;
+				$.each(data.entity.validTimes,function(i,item){
+					validTimeHtml += '<div class="selectdatediv">';
+					validTimeHtml += '<span>&nbsp;&nbsp;第'+(i+1)+'阶段:&nbsp;&nbsp;</span>';
+					if(data.entity.validType == "CUSTOMTYPE"){
+						timestr = item.split(",");
+						validTimeHtml += '<span>'+ timestr[0] +'&nbsp;&nbsp;至&nbsp;&nbsp;'+ timestr[1] +'</span>';
+					}else if(data.entity.validType == "SYSTEMTYPE"){
+						validTimeHtml += '<span>周期:&nbsp;&nbsp;'+ item +'&nbsp;&nbsp;天&nbsp;&nbsp;</span>';
+					}
+					validTimeHtml += '</div>';
+				});
+				$("#dateDiv").html(validTimeHtml);
+				$("#grantRangeName").text(data.entity.grantRangeName);
+				var userInfoHtml='<dl><dt>';
+				if(data.entity.grantRange=="COUPONSGRANTRANGE_BATCH"){
+					userInfoHtml += '用户类型';
+				}else if(data.entity.grantRange=="COUPONSGRANTRANGE_SINGLE"){
+					userInfoHtml += '用户登录账号';
+				}
+				userInfoHtml +='</dt><dd><span class="">'+data.entity.userType+'</span></dd></dl>';
+				$("#userInfo").html(userInfoHtml);
+				$("#grantWayName").text(data.entity.grantWayName);
+				$("#rule").text(data.entity.rule); */
+			}//非必须
+		});
+	}
+}
+
+function comebackList() {
+	var urlParam=window.location.search;
+	locationHref('/voucher/voucher-grantRecord.html'+urlParam);
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId", "/include/header.html");
+	loadHtml("left_menu_content", "/include/leftmenu.html");
+	loadHtml("footerId", "/include/footer.html");
+	loadCouponsInfo();
+});
+
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 促销管理 &gt; 发放记录&gt; <span>查看发放记录</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">查看发放记录</div>
+					<div class="complaint_main">
+					<form method="post" class="user_form" id="dataForm">
+						<dl>
+							<dt>
+								优惠券包名称：
+							</dt>
+							<dd>
+								<span id="vouPackName" class=""></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt>
+								使用范围：
+							</dt>
+							<dd>
+								<div id="rangeLimiDiv"></div>
+								<!-- <span id="useRangeCodeName" class=""></span>
+   								<span class="disn"><span id= "useRangehtml" style="border: 1px dashed;display:block" class="disn"></span></span> -->
+							</dd>
+						</dl>
+						<dl>
+							<dt>
+								有效期：
+							</dt>
+							<dd>
+								<span id="validStartTime" class=""></span>
+								&nbsp;&nbsp;至&nbsp;&nbsp;
+								<span id="validEndTime" class=""></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt>
+								发放范围：
+							</dt>
+							<dd>
+								<span id="grantRangeName" class=""></span>
+							</dd>
+						</dl>
+						<div id="userInfo"></div>
+						<dl>
+							<dt>
+								发放方式：
+							</dt>
+							<dd>
+								<span id="grantWayName" class=""></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt>
+								规则说明：
+							</dt>
+							<dd>
+								<span id="rule"></span>&nbsp;&nbsp;
+							</dd>
+						</dl>
+						<br/>
+						<dl>
+							<dt></dt>
+							<dd>
+								<p class="main_search_btn">
+									<input type="button" id="goBack" class="btn_gray" value="返回" onclick="javascript:comebackList();">
+								</p>
+							</dd>
+						</dl>
+					</form>	
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

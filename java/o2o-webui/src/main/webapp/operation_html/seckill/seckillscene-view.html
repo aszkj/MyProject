@@ -1,0 +1,174 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/lang/zh_CN.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var sceneId = getUrlParam("sceneId") || "";
+	function loadDetail(sceneId) {
+		var url = OPERATION_SYSTEM_IDENTITY + '/seckillscene/detail/' + sceneId;
+		$
+				.ajax({
+					type : 'post',
+					url : TERMINAL_URL + url,
+					contentType : 'application/json',
+					dataType : 'json',
+					cache : false,
+					success : function(data) {
+						//响应返回的业务处理  
+						var scene = data.entity;
+						if (data.msgCode == 1) {
+							$("#sceneName").html(scene.sceneName);
+							$("#strStartTime").html(
+									scene.startTime.substring(0,
+											scene.startTime.lastIndexOf(":")));
+							$("#repeatType").html(scene.repeatTypeName);
+							$("#updateTime").html(scene.updateTime);
+							$("#createTime").html(scene.createTime);
+							$("#createUserName").html(scene.createUserName);
+							var secKillProducts = scene.secKillProductDtos
+									|| [];
+							if (secKillProducts.length > 0) {
+								$("#relateProductDiv").show();
+								var html = '';
+								for (var i = 0, j = secKillProducts.length; i < j; i++) {
+									html += '<tr><td>';
+									html += (i+1);
+									html += '</td><td>'
+									html += secKillProducts[i].productName;
+									html += '</td><td>';
+									html += secKillProducts[i].barCode;
+									html += '</td><td>';
+									html += secKillProducts[i].secKillTime / 60;
+									html += '</td><td>';
+									html += toCenti(
+											secKillProducts[i].secKillProductPrice,
+											2);
+									html += '</td><td>';
+									html += secKillProducts[i].remainCount;
+									html += '</td><td>';
+									html += secKillProducts[i].secKillCount;
+									html += '</td><td>';
+									html += secKillProducts[i].limitOrderCount;
+									html += '</td><td>';
+									html += secKillProducts[i].statusCodeName;
+									html += '</td></tr>';
+								}
+								$("#tbody").html(html);
+							}
+						}
+					}
+				});
+	}
+	function comeback() {
+		var urlParam = window.location.search;
+		locationHref('/seckill/seckillscene-index.html' + urlParam);
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		loadDetail(sceneId);
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 秒杀管理 &gt; <span id="breadName">查看场次</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<div
+							style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px; margin-bottom: 5px;">
+							<span>场次信息</span>
+						</div>
+						<table cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td height="30" align="left">场次名称：<span id="sceneName"></span></td>
+								<td align="left">开始时间：<span id="strStartTime"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">重复开启时间：<span id="repeatType"></span></td>
+								<td align="left">最后操作时间：<span id="updateTime"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">创建时间：<span id="createTime"></span></td>
+								<td align="left">创建人：<span id="createUserName"></span></td>
+							</tr>
+						</table>
+						<div class="order_index disn" id="relateProductDiv">
+							<div
+								style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px; margin-bottom: 5px;">
+								<span>已关联秒杀商品</span>
+							</div>
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<th width="40"></th>
+										<th width="80">商品名称</th>
+										<th width="80">商品编码</th>
+										<th width="100">抢购时间(分)</th>
+										<th width="100">秒杀价</th>
+										<th width="60">活动库存</th>
+										<th width="80">秒中数量</th>
+										<th width="80">限购数量</th>
+										<th width="80">是否失效</th>
+									</tr>
+								</thead>
+								<tbody id="tbody"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

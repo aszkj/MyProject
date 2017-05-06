@@ -1,0 +1,420 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/lang/zh_CN.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<style>
+	#prompt {
+		color: #E84244;
+	}
+	table.box_main{
+		position:absolute;
+		left:50%;
+		margin-left:-175px;
+		top:100px;
+	}
+</style>
+<script type="text/javascript">
+var method = getUrlParam("method");
+var tempId = getUrlParam("tempId");
+function setMainpic(){
+	$(document).on('click','.mainpic',function(){
+		var tempa="#appPicMain"+$(this).val();
+		$('.js-mainPicv').val(0);
+		$(tempa).val(1);
+	})
+}
+function showUploadBox(index,type){
+	$('#uploadImgIndex').val(index);
+	$('#uploadImgType').val(type);
+	showBox('上传图片','uploadBox');
+}
+function hasProductImg(type){
+	if($('.'+type+'img img').length>0){
+	   $('#'+type+'UploadImgTxt').html('&nbsp;').attr('class', 'success');			 
+	}
+	else{
+		$('#'+type+'UploadImgTxt').html('请上传图片！').attr('class', 'error');
+	}
+}
+function uploadSubmit(){
+	var index=parseInt($('#uploadImgIndex').val());
+	var type = $('#uploadImgType').val();
+	var file=$.trim($("#uploadFile").val());
+	if(index<=0)return;
+	if(file==''){
+		//showBox('提示!','上传的图片不能为空!','alert');
+		alert('上传的图片不能为空!');
+		return;
+	}
+	
+	$('#uploadBtn').attr('disabled','');
+	ajax({
+		uploadForm:'uploadForm',
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/uploadFileTemp',
+		dataType:'json',//非必须.默认text
+		async:false,
+		error:function(){
+			$('#uploadnote').html(data.msg);
+			return;
+		}, //非必须
+		success:function(data){
+			checkJsonRight(data);
+			if(data.msgCode!=1){
+				$('#uploadnote').html(data.msg);
+				return;
+			}
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var html=[];
+			var picpath = data.entity;
+			html.push('<span class="img"><a href="javascript:void(0)" onclick="showProductImg(\''+UPLOAD_FILE_TEMP_URL+picpath+'\')"><img src="');
+			html.push((UPLOAD_FILE_TEMP_URL+picpath).replace('.jpg','.jpg'));
+			html.push('" alt="" /></a></span><p><input  class="mainpic" type="radio" name="'+type+'IsMainPic" id="'+type+'IsMainPic');
+			html.push(index);
+			html.push('" value="');
+			html.push(index);
+			html.push('" ');
+			if(index==1||$('.product_release_img input:checked').length<=0) {html.push(' checked="checked"')};
+			html.push(' /><label for="mainpic');
+			html.push(index);
+			html.push('">主图</label><a href="javascript:;" class="ablue" onclick="delUploadImg('+index+',\''+type+'\')">删除</a></p>');
+			$('#'+type+'PicPath'+index).val(picpath);
+			$('#'+type+'PicSort'+index).val(index);
+			$('#'+type+'UploadLi'+index).html(html.join(''));
+			//刚上传的给一个需要增加的标示
+			$('#'+type+'ImageFlag'+index).val('IMAGEFLAG_YES');
+			mainpicY(type);
+			hasProductImg(type);
+			$('#uploadnote').html(data.msg);
+			$('#uploadBtn').attr('disabled','disabled');
+			setTimeout(function(){
+				closeBox();
+			},1000);
+		}//非必须
+	});
+}
+function mainpicY(type){
+	var mainpic=$('.'+type+'img input:checked').attr('id');
+	var index = mainpic.slice(-1);
+	$("#"+type+"IsMainPic").val(index);
+}
+function showProductImg(path){
+	showBox("查看产品图片","<img src='"+path+"' alt='' height='400' />");
+}
+/*删除图片*/
+function delUploadImg(index,type){
+	 showBox('系统提示','您确定删除该产品图片吗？',"confirm",function(){
+		$('#'+type+'UploadLi'+index).html('<a class="img" onclick="showUploadBox('+index+',\''+type+'\')">点击上传</a>');
+	 	if($("#"+type+'ImageFlag'+index).val()=='IMAGEFLAG_YES'){
+			var tempPicPath = $("#"+type+'PicPath'+index).val();
+			ajax({
+				url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/deleteFileTemp?tempPicPath=' + tempPicPath,
+				type:'post',//非必须.默认get
+				dataType:'json',//非必须.默认text
+				error:function(data){
+				}, //非必须
+				success:function(data){
+					$("#"+type+'PicPath'+index).val('');
+				}//非必须
+			});
+			hasProductImg(type);
+	 	}
+	 });
+}
+
+function dataEditSubmit(){
+	if(method != 'edit'){
+		$('#promptMessage').text('参数有误，请返回重试!');
+		return;
+	}
+	var url = '';
+	if(method == 'edit'){
+		url = OPERATION_SYSTEM_IDENTITY +"/"+ decodeURIComponent(getUrlParam("tempId"))+ '/updateProductTemp';
+	}
+	if(!validateData()){
+		return;
+	}
+	htmlDateFormat($("#content").val(),UPLOAD_FILE_URL);
+	$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+	$('#promptMessage').text('正在保存...');
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		url:TERMINAL_URL+url,
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		error : function(){
+			if(method == 'edit' || method == 'add'){
+				$('#promptMessage').text('保存数据失败，请稍后再试');
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+			}
+		},
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$('#promptMessage').text('保存成功');
+				window.setTimeout(function(){
+					 parent.location.reload();
+				},1000);
+			}else{
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+				$('#promptMessage').text(data.msg);
+			}
+		}
+	}); 
+}
+var editor1;
+KindEditor.ready(function(K) {
+	editor1 = K.create('#content', {
+		uploadJson : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/uploadContentFileTemp',
+		items : [
+		'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
+		'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+		'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+		'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+		'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+		'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 
+		'flash', 'media', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
+		'anchor', 'link', 'unlink', '|', 'about'
+		],
+		afterCreate : function() { 
+			this.sync(); 
+		}, 
+		afterBlur:function(){ 
+			this.sync();
+		}           
+	});
+});
+function htmlDateFormat(htmldate,urlName){
+	var arrays = new Array();
+	var picstr='';
+	var obj=htmldate;
+	$('#hidedv').html(obj);
+	$('#hidedv').find('img').each(function(){
+		var tempurl=$(this).attr('src');
+		var urlObj=new RegExp("http://.*?/");
+		var reset=tempurl.match(urlObj);
+		if(reset==(urlName+'/')){
+			var urlObjx=new RegExp("local/");
+			var urlhtml=tempurl.replace(urlObjx,'');
+			$(this).attr('src',urlhtml);
+			var urlObjs=new RegExp("http://.*?/");
+			var newurl=urlhtml.replace(urlObjs,'');
+			picstr+= '/'+newurl+',';
+		}
+	})
+	$("#addContentImageUrls").val(picstr.substring(0, picstr.length-1));
+	$("#contentString").val($('#hidedv').html());
+}
+var validate = (function(){
+	return {
+		validateAppUploadImg : function(){
+			if($('.appimg img').length<=0){
+				$('#appUploadImgTxt').html('请上传产品图片！').attr('class', 'error');
+				return false;
+			}
+			$('#appUploadImgTxt').html('').attr('class', 'right');
+			return true;
+		},
+		validateAppMainImg : function() {
+			var flag = false;
+			var list = $('input[name=appIsMainPic]')
+				appUploadImgTxt = $('#appUploadImgTxt');;
+			if(list) {
+				$.each(list, function(i, obj) {
+					if(obj.checked) {
+						flag = true;
+						return;
+					}
+				});
+			}
+			if(flag) {
+				appUploadImgTxt.html('');
+			} else {
+				appUploadImgTxt.html('请选择主图').attr('class', 'error');
+			}
+			
+			return flag;
+		},
+	}				
+})();
+function validateData(){
+	if(!validate.validateAppUploadImg()){
+		return false;
+	}
+	if(!validate.validateAppMainImg()){
+		return false;
+	}
+	return true;
+}
+function closeme(){
+	$(".box-mask").remove();
+}
+function showProductImg(path) {
+	var temphtml="<div class='box-mask'><div style='width:300px; height:auto;margin:0 auto;overflow:hidden;text-align:center;position:relative'><i class='mask_close' onclick='closeme();'>x</i><img src='"+path+"' style='max-width:100%; max-height:auto;' /></div></div>";
+	$('body').append(temphtml);
+}
+
+
+//买点只能输入28字，兼容ie9
+function checklength(obj){
+	if (obj.value.length > 125) {
+	obj.value = obj.value.substr(0, 125);
+	}
+}
+
+$(document).ready(function(e) {
+	setMainpic();
+	if(method == 'edit'){
+		$("#breadName").html('产品图片编辑');
+		$("#pageTitle").html('产品图片编辑');
+	}
+});
+
+</script>
+</head>
+
+<body id="bodyId">
+<div class="complaint_main">
+	<form method="post" class="user_form" id="dataForm">
+		<input type="hidden" id="id" name="id" />
+		<input type="hidden" id="deleteImageUrls" name="deleteImageUrls" />
+		<input type="hidden" id="loadContentImageUrls" name="loadContentImageUrls" />
+		<input type="hidden" id="addContentImageUrls" name="addContentImageUrls" />
+		<input type="hidden" id="contentString" name="contentString" />
+		<dl>
+			<dt><em class="cred">*</em>产品图片：</dt>
+			<dd>
+				<span fieldset="firstAppImageProfileDto">
+					<input type="hidden" id="appPicPath1" name="appPicPath"  />
+					<input type="hidden" id="appPicSort1" name="appPicSort" /> 
+					<input type="hidden" id="appPicId1" name="appPicId" />
+					<input type="hidden" id="appPicOrder1" name="appPicOrder" />
+					<input type="hidden" id="appImageFlag1" name="appImageFlag" />
+					<input type="hidden" id="appPicMain1" name="appPicMain" class="js-mainPicv"/>
+				</span>
+				<span fieldset="secondAppImageProfileDto">
+					<input type="hidden" id="appPicId2" name="appPicId" />
+					<input type="hidden" id="appPicPath2" name="appPicPath" />
+					<input type="hidden" id="appPicOrder2" name="appPicOrder" />
+					<input type="hidden" id="appPicSort2" name="appPicSort" />
+					<input type="hidden" id="appImageFlag2" name="appImageFlag" />
+					<input type="hidden" id="appPicMain2" name="appPicMain" class="js-mainPicv"/>
+				</span>
+				<span fieldset="thirdAppImageProfileDto">
+					<input type="hidden" id="appPicId3" name="appPicId" />
+					<input type="hidden" id="appPicPath3" name="appPicPath"  />
+					<input type="hidden" id="appPicOrder3" name="appPicOrder" />
+					<input type="hidden" id="appPicSort3" name="appPicSort" />
+					<input type="hidden" id="appImageFlag3" name="appImageFlag" />
+					<input type="hidden" id="appPicMain3" name="appPicMain" class="js-mainPicv"/>
+				</span>
+				<span fieldset="fouthAppImageProfileDto">
+					<input type="hidden" id="appPicId4" name="appPicId" />
+					<input type="hidden" id="appPicPath4" name="appPicPath" />
+					<input type="hidden" id="appPicOrder4" name="appPicOrder" />
+					<input type="hidden" id="appPicSort4" name="appPicSort" />
+					<input type="hidden" id="appImageFlag4" name="appImageFlag" />
+					<input type="hidden" id="appPicMain4" name="appPicMain" class="js-mainPicv"/>
+				</span>
+				<span fieldset="fiveAppImageProfileDto">
+					<input type="hidden" id="appPicId5" name="appPicId" />
+					<input type="hidden" id="appPicPath5" name="appPicPath" />
+					<input type="hidden" id="appPicOrder5" name="appPicOrder" />
+					<input type="hidden" id="appPicSort5" name="appPicSort" />
+					<input type="hidden" id="appImageFlag5" name="appImageFlag" />
+					<input type="hidden" id="appPicMain5" name="appPicMain" class="js-mainPicv"/>
+				</span>
+				<span fieldset="sixAppImageProfileDto">
+					<input type="hidden" id="appPicId6" name="appPicId" />
+					<input type="hidden" id="appPicPath6" name="appPicPath" />
+					<input type="hidden" id="appPicOrder6" name="appPicOrder" />
+					<input type="hidden" id="appPicSort6" name="appPicSort" />
+					<input type="hidden" id="appImageFlag6" name="appImageFlag" />
+					<input type="hidden" id="appPicMain6" name="appPicMain" class="js-mainPicv"/>
+				</span> 
+				<ul class="product_release_img appimg">
+					<li id="appUploadLi1" class="pr"><a onclick="showUploadBox(1,'app')" class="img">点击上传</a></li>
+					<li id="appUploadLi2" class="pr"><a onclick="showUploadBox(2,'app')" class="img">点击上传</a></li>
+					<li id="appUploadLi3" class="pr"><a onclick="showUploadBox(3,'app')" class="img">点击上传</a></li>
+					<li id="appUploadLi4" class="pr"><a onclick="showUploadBox(4,'app')" class="img">点击上传</a></li>
+					<li id="appUploadLi5" class="pr"><a onclick="showUploadBox(5,'app')" class="img">点击上传</a></li>
+					<li id="appUploadLi6" class="pr"><a onclick="showUploadBox(6,'app')" class="img">点击上传</a></li>
+				</ul>
+				<div class="product_release_imgnote agray">
+					<em>温馨提示：</em>
+					<p>最多上传6张图片，每张图片大小≤3M，第1张为前台默认主图！ <span id="appUploadImgTxt">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>推荐上传800*600像素图片</p>
+				</div>
+			</dd>
+		</dl>
+		<dl>
+			<dt></em>产品介绍：</dt>
+			<dd>
+				<span fieldset="productProfileDto">
+					<textarea id="content" name="content" style="width:650px;height:300px;visibility:hidden"></textarea>
+				<span>
+				<span id="contentMsg"></span>
+			</dd>
+		</dl>
+		<dl>
+			<dt></dt>
+			<dd>
+				<p class="main_search_btn">
+					<input type="button" class="btn_sure" value="保存" id="submit" onClick="dataEditSubmit(method)">
+					<input type="reset" id="reset" class="btn_gray" value="重置">
+					<input type="button" value="取 消" class="btn_gray" onclick="history.go(0)" />
+					<span id="promptMessage" class="cred"></span>
+				</p>
+			</dd>
+		</dl>
+	</form>
+</div>
+<div id="uploadBox" class="hide">
+  <form id="uploadForm" onsubmit="uploadSubmit();return false;">
+	  <div class="uploadbox">
+	      <p><input id="uploadImgIndex" type="hidden" />
+		  <input id="uploadImgRow" type="hidden" />
+		  <input id="uploadImgType" type="hidden" />
+	      <input id="uploadFile" name="file" type="file"/> <span id="uploadnote" class="cred"></span></p>
+	      <div class="uploadbox_btn">
+	        <input type="submit"  value="确定" class="btn_sure" id="uploadBtn"/>
+	        <input type="reset" onclick="closeBox()"  value="取消"  class="btn_gray" />
+	      </div>
+	  </div>          
+  </form>
+</div>
+<div id="hidedv" style="display:none"></div>
+</body>
+</html>

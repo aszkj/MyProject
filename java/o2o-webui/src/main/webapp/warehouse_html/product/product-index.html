@@ -1,0 +1,628 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var param = {
+		currentPage : 1,
+		pageSize : 10,
+		pageCount : 0,
+		totalCount : 0
+	};
+	function updatePageInfo() {
+		if (param['totalCount'] < 1) {
+			$(".main_pagination").hide();
+		} else {
+			$(".main_pagination").show()
+		}
+		var html = [];
+		var i = 1;
+		var j = 5;
+		if (param['pageCount'] >= 5) {
+			i = (param['currentPage'] + 2) <= param['pageCount'] ? ((param['currentPage'] - 2 >= 1) ? (param['currentPage'] - 2)
+					: 1)
+					: (param['pageCount'] - 4);
+			j = i + 4;
+		} else {
+			j = param['pageCount'];
+		}
+		if (param['currentPage'] == 1) {
+			html.push('<span class="page_prev">&lt;&lt; 上一页</span>');
+		} else {
+			html
+					.push('<a onclick="goPage('
+							+ (param['currentPage'] - 1)
+							+ ')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');
+		}
+		for (; i <= j; i++) {
+			if (i == param['currentPage']) {
+				html.push('<a href="javascript:void(0);" class="bg_on">');
+				html.push(i);
+				html.push('</a>');
+			} else {
+				html.push('<a onclick="goPage(');
+				html.push(i);
+				html.push(');" href="javascript:void(0);" >');
+				html.push(i);
+				html.push('</a>');
+			}
+		}
+		if (param['currentPage'] == param['pageCount']) {
+			html.push('<span class="page_next">下一页 &gt;&gt;</span>');
+		} else {
+			html
+					.push('<a onclick="goPage('
+							+ (param['currentPage'] + 1)
+							+ ')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');
+		}
+		$("#pageItem").html(html.join(''));
+		$("#pageCount").html(param['pageCount']);
+		$("#totalCount").html(param['totalCount']);
+	}
+	function goPage(pageNo) {
+		var pattern = /\d+/;
+		if (!pattern.test(parseInt(pageNo)))
+			return;
+		if (parseInt(pageNo) < 1) {
+			if (param['currentPage'] != 1) {
+				showBox('提示信息', '您输入的页码超出正常范围', 'alert');
+			} else {
+				showBox('提示信息', '当前已经是第一页', 'alert');
+			}
+			return;
+		}
+		if (pageNo > param['pageCount']) {
+			if (param['currentPage'] != param['pageCount']) {
+				showBox('提示信息', '您输入的页码超出正常范围', 'alert');
+			} else {
+				showBox('提示信息', '当前已经是最后一页', 'alert');
+			}
+			return;
+		}
+		dataSubmit(pageNo);
+	}
+	function dataSubmit(pageNo, businessType) {
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(pageNo))) {
+			param.currentPage = pageNo;
+		}
+		$('#start').val(param.currentPage);
+		$('#pageSize').val(param.pageSize);
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					contentType : 'application/json',
+					data : formJsonStr,
+					dataType : 'json',
+					error : function() {
+						showBox('提示信息', '提交数据失败，请稍后再试', 'alert');
+					},
+					url : TERMINAL_URL + WAREHOUSE_SYSTEM_IDENTITY
+							+ '/saleproduct/list',
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							//特殊处理 尖括号
+							var temp = JSON.stringify(data);
+							temp = encodeString(temp);
+							data = JSON.parse(temp);
+
+							var html = '';
+							var dataList = data.entity.resultList || [];
+							var id = getUrlParam('id');
+							if (null != dataList && dataList.length > 0) {
+								for (var i = 0, j = dataList.length; i < j; i++) {
+									html += '<tr';
+									if (id == dataList[i].id) {
+										html += ' name="selrow" bgcolor="#c8e3f8"';
+									}
+									html += '><td>';
+									html += '<input type="checkbox" class="pid" class="tab_check" value="'+dataList[i].id+'"/>';
+									html += '</td><td>';
+									html += ((param.currentPage - 1)
+											* (param.pageSize) + i + 1);
+									html += '</td><td>';
+									html += dataList[i].barCode;
+									html += '</td><td>';
+									html += dataList[i].saleProductName;
+									html += '</td><td>';
+									html += dataList[i].saleProductProfileDto.saleProductSpec;
+									html += '</td><td>';
+									html += dataList[i].productClassName;
+									html += '</td><td>';
+									html += toCenti(dataList[i].retailPrice, 2);
+									html += '</td><td>';
+									html += dataList[i].saleProductProfileDto.saleStatusName;
+									html += '</td><td>';
+									html += dataList[i].remainCount;
+									html += '</td><td>';
+									if (dataList[i].saleProductProfileDto.saleStatus == 'SALEPRODUCTSALESTATUS_ONSALE') { //显示下架
+										html += '<permission code="FUNCTION_SALEON_WAREHOUSE_SALEPRODUCT_MANAGEMENT">';
+										html += '<a href="javascript:saleOff('
+												+ dataList[i].id
+												+ ')" class="ablue">下架</a></br>';
+										html += '</permission>';
+									} else if (dataList[i].saleProductProfileDto.saleStatus == 'SALEPRODUCTSALESTATUS_OFFSALE') { //显示上架
+										html += '<permission code="FUNCTION_SALEOFF_WAREHOUSE_SALEPRODUCT_MANAGEMENT">';
+										html += '<a href="javascript:saleOff('
+												+ dataList[i].id
+												+ ')" class="ablue">下架</a></br>';
+										html += '</permission>';
+									}
+									html += '<permission code="FUNCTION_MODIFYSORT_WAREHOUSE_SALEPRODUCT_MANAGEMENT">';
+									html += '<a href="javascript:modifySort('
+											+ dataList[i].id
+											+ ')" class="ablue">修改显示顺序</a></br>';
+									html += '</permission>';
+									html += '</td></tr>';
+								}
+							} else {
+								html += '<tr><td colspan="10">暂无数据</td></tr>';
+							}
+							$("#tbody").html(html);
+							param.currentPage = data.entity.currentPage;
+							param.pageCount = data.entity.pageCount;
+							param.totalCount = data.entity.recordCount;
+							updatePageInfo();
+							disposeFunctionPermissions();
+						} else {
+							showBox('提示信息', data.msg, 'alert');
+						}
+					}
+				});
+		$('#checkall').prop('checked', false);
+	}
+	function selAll(o, idname) {
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var checked = o.checked;
+		ids.each(function() {
+			if (!checked) {
+				$(this).prop("checked", false);
+			} else {
+				$(this).prop("checked", true);
+			}
+		});
+	}
+	function modifySort(saleProductId) {
+		showBox('修改商品顺序',
+				'/product/saleproduct-modifysort.html?width=450&height=150&method=modify&id='
+						+ saleProductId);
+	}
+	function unselAll() {
+		$('body').on('click', '.pid', function() {
+			if (checkUnSel('pid')) {
+				$('#checkall').prop("checked", true);
+			} else {
+				$('#checkall').prop("checked", false);
+			}
+		})
+	}
+	function checkUnSel(idname) {
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var c = 0;
+		var l = ids.length;
+		ids.each(function() {
+			var checked = $(this).prop("checked");
+			if (checked) {
+				c++;
+			}
+		});
+		return c == l;
+	}
+	function checkSel(idname) {
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var c = 0;
+		var l = ids.length;
+		ids.each(function() {
+			var checked = $(this).prop("checked");
+			if (!checked) {
+				c++;
+			}
+		});
+		return c == l;
+	}
+	function saleOn(saleProductId) {
+		if ((saleProductId || "").length <= 0) {
+			shoBox('提示信息', '未选中要上架的商品', 'alert');
+			return;
+		}
+		updateSaleStatus(saleProductId, 'SALEPRODUCTSALESTATUS_ONSALE',
+				'确认上架此商品吗?');
+	}
+	function saleOff(saleProductId) {
+		if ((saleProductId || "").length <= 0) {
+			shoBox('提示信息', '未选中要下架的商品', 'alert');
+			return;
+		}
+		updateSaleStatus(saleProductId, 'SALEPRODUCTSALESTATUS_OFFSALE',
+				'确认下架此商品吗?');
+	}
+	/**
+	 * 批量上架
+	 */
+	function batchOnSale(idname) {
+		if (checkSel(idname)) {
+			showBox('提示!', "请先选择要批量上架的产品！", 'alert');
+			return;
+		}
+		showBox('确认信息', "确认要批量上架产品吗？", 'confirm', function() {
+			var ids = $("input[type='checkbox'][class='" + idname + "']");
+			var param = "";
+			ids.each(function() {
+				if ($(this).prop("checked")) {
+					param += $(this).val() + ",";
+				}
+			});
+			param = param.substring(0, param.length - 1);
+			ajax({
+				url : TERMINAL_URL + WAREHOUSE_SYSTEM_IDENTITY
+						+ '/saleproduct/' + param + '/updatebatchonsale',
+				method : 'get',
+				dataType : 'json',
+				success : function(data) {
+					if (data.msgCode == 3) {
+						loginError(data.msg);
+					} else if (data.msgCode == 2) {
+						showBox('提示', data.msg, 'alert')
+					} else if (data.msgCode == 1) {
+						dataSubmit();
+					}
+
+				}
+			});
+		});
+	}
+	/**
+	 * 批量下架
+	 */
+	function batchOffSale(idname) {
+		if (checkSel(idname)) {
+			showBox('提示!', "请先选择要批量下架的产品！", 'alert');
+			return;
+		}
+		showBox('确认信息', "确认要批量下架的产品吗？", 'confirm', function() {
+			var ids = $("input[type='checkbox'][class='" + idname + "']");
+			var param = "";
+			ids.each(function() {
+				if ($(this).prop("checked")) {
+					param += $(this).val() + ",";
+				}
+			});
+			param = param.substring(0, param.length - 1);
+			ajax({
+				url : TERMINAL_URL + WAREHOUSE_SYSTEM_IDENTITY
+						+ '/saleproduct/' + param + '/updatebatchoffsale',
+				method : 'get',
+				dataType : 'json',
+				success : function(data) {
+					if (data.msgCode == 3) {
+						loginError(data.msg);
+					} else if (data.msgCode == 2) {
+						showBox('提示', data.msg, 'alert')
+					} else if (data.msgCode == 1) {
+						dataSubmit();
+					}
+
+				}
+			});
+		})
+	}
+	function updateSaleStatus(id, type, msg) {
+		var msg = msg || " 确认要进行此操作吗?";
+		var param = id + ',' + type;
+		showBox('确认信息', msg, 'confirm', function() {
+			ajax({
+				url : TERMINAL_URL + WAREHOUSE_SYSTEM_IDENTITY
+						+ '/saleproduct/' + param + '/updatesalestatus',
+				type : 'post',
+				dataType : 'json',
+				async : true,
+				cache : false,
+				timeout : 30000,
+				error : function() {
+				},
+				success : function(data) {
+					if (data.msgCode != 1) {
+						showBox('提示！', '操作失败！', 'alert');
+						return;
+					}
+					showBox('提示！', '操作成功！', 'alert', function() {
+						dataSubmit();
+					});
+				}
+			});
+		});
+	}
+	//上下架类型 
+	function listSaleStatus(val) {
+		var systemDictType = 'SALEPRODUCTSALESTATUS';
+		ajax({
+			url : TERMINAL_URL + WAREHOUSE_SYSTEM_IDENTITY + '/'
+					+ systemDictType + '/getSystemDictInfoList',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						if (val == mapList[i].id) {
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						} else {
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						}
+					}
+				}
+				$('#saleStatus').html(html);
+			}
+		});
+	}
+	function getStoreInfo() {
+		ajax({
+			url : TERMINAL_URL + WAREHOUSE_SYSTEM_IDENTITY + '/store/getinfo',
+			type : 'post',
+			dataType : 'json',
+			async : false,
+			success : function(data) {
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var store = data.entity;
+				$('#storeCode').html(store.storeCode || "");
+				$('#storeName').html(store.storeName || "");
+				$('#contact').html(store.contact || "");
+				$('#mobile').html(store.mobile || "");
+				$('#storeAddress').html(store.fullAddress || "");
+			}
+		});
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		loadSubClass("TOP_LEVEL_CLASS");
+		listSaleStatus();
+		dataSubmit();
+		unselAll();
+		getStoreInfo();
+	});
+	
+	/* 加载商品分类 */
+	function loadSubClass(productClassCode){
+		$.ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+productClassCode+'/getAllNextProductClassByUpCode', 
+			type:'post',
+			dataType:'json',
+			success:function(data){
+				if(data.msgCode != 1) return;
+				//特殊处理 尖括号
+				data = JSON.parse(encodeString(JSON.stringify(data)));
+				if(null != data.entity && data.entity.length > 0){
+					initProductClassSelect(data.entity);
+				}
+			}
+		});
+	}
+	function initProductClassSelect(listProductClass){
+		var	html = '<select class="select grid-15" onchange=changeClassSelect(this)>';
+		  	html += '<option value="">--请选择--</option>';
+			for(var i=0;i<listProductClass.length;i++){
+				html += '<option value="'+listProductClass[i].classCode+'">';
+				html += listProductClass[i].className;
+				html +='</option>'
+			}
+		html += '<select/>';
+		$("#productClassDiv").append(html);
+	}
+
+	function changeClassSelect(ele){
+		var productClass = $(ele);
+		productClass.nextAll().each(function(){
+			$(this).remove();
+		});
+		if(productClass.val()!= ""){
+			$("#productClassCode").val(productClass.val());
+			loadSubClass($.trim($("#productClassCode").val()));
+		}else{
+			var parentClassCode = productClass.prev();
+			if(parentClassCode != null){
+				//如果选择了请选择就默认选择此节点上一个节点的值
+				$("#productClassCode").val(productClass.prev().val());
+			}else{
+				$("#productClassCode").val("TOP_LEVEL_CLASS");
+			}
+		}
+	}
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 微仓管理中心 &gt; <span>微仓管理</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">微仓管理</div>
+					<div id="selectedStoreDiv">
+						<table cellpadding="0" cellspacing="0" width="100%"
+							style="margin: 5px 5px;">
+							<tr>
+								<td height="30" align="left">微仓编码：<span id="storeCode"></span></td>
+								<td align="left">微仓名称：<span id="storeName"></span></td>
+							</tr>
+							<tr>
+								<td align="left">微仓联系人：<span id="contact"></span></td>
+								<td align="left">微仓手机号：<span id="mobile"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">微仓地址：<span id="storeAddress"></span></td>
+							</tr>
+						</table>
+					</div>
+					<div class="complaint_main">
+						<form method="get" id="dataForm">
+							<input type="hidden" id="strRoleIds" name="strRoleIds" /> <input
+								type="hidden" id="userId" name="userId" />
+							<div class="main_search">
+								<dl>
+									<dt>商品名称:</dt>
+									<dt>
+										<input type="text" class="txt grid-12" id="saleProductName"
+											name="saleProductName" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>商品条形码：</dt>
+									<dd>
+										<input type="text" class="txt grid-12" id="barCode"
+											name="barCode" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>产品分类：</dt>
+									<dd>
+										<input type="hidden" id="productClassCode" name="productClassCode">
+										<div id="productClassDiv">
+											<!-- <select class="select grid-15" id="productClass" name="productClassCode">
+												<option value="" selected>--请选择产品分类--</option>
+											</select> -->
+										</div>
+									</dd>
+								</dl>
+								<dl>
+									<dt>是否上架：</dt>
+									<dd>
+										<select class="select grid-12" id="saleStatus"
+											name="saleStatus"></select>
+									</dd>
+								</dl>
+								<input type="hidden" id="start" name="start" /> <input
+									type="hidden" id="pageSize" name="pageSize" />
+								<p class="main_search_btn">
+									<permission
+										code="FUNCTION_SEARCH_WAREHOUSE_SALEPRODUCCT_INVENTORY_MANAGEMENT">
+									<input type="button" value="搜索" class="btn_sure"
+										id="saleProductInventorySearch" onClick="dataSubmit(1)" /> </permission>
+								</p>
+							</div>
+							<!--搜索结束-->
+						</form>
+						<div class="order_index">
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<th width="40"></th>
+										<th width="40">序号</th>
+										<th width="80">商品条形码</th>
+										<th width="80">商品名称</th>
+										<th width="100">商品规格</th>
+										<th width="60">商品分类</th>
+										<th width="80">零售价(元)</th>
+										<th width="80">是否上架</th>
+										<th width="100">剩余库存</th>
+										<th width="100">操作</th>
+									</tr>
+								</thead>
+								<tbody id="tbody"></tbody>
+							</table>
+						</div>
+						<dl class="main_pagination">
+							<input type="checkbox" class="tab_check" id='checkall'
+								onclick="javascript:selAll(this,'pid');" />
+							<label for="" onclick="javascript:$('#checkall').click();">全选</label>
+							<permission
+								code="FUNCTION_SALEONBATCH_WAREHOUSE_SALEPRODUCT_MANAGEMENT">
+							<input type="button" style="cursor: pointer;" id="btnOnSale"
+								onclick="javascript:batchOnSale('pid');" title="" value="批量上架"
+								class="btn_sure" /> </permission>
+							<permission
+								code="FUNCTION_SALEOFFBATCH_WAREHOUSE_SALEPRODUCT_MANAGEMENT">
+							<input type="button" style="cursor: pointer;" id="btnOffSale"
+								onclick="javascript:batchOffSale('pid');" title="" value="批量下架"
+								class="btn_sure" /> </permission>
+							<dd class="pagination">
+								<span id="pageItem"> <span class="page_prev">&lt;&lt;
+										上一页</span> <a class="bg_on" href="javascript:void(0);">1</a> <a
+									href="javascript:void(0);" onClick="goPage(2);">2</a> <a
+									class="page_next" href="javascript:void(0);"
+									onClick="goPage(2)">下一页 &gt;&gt;</a>
+								</span> <span class="page_no">共<span id="totalCount">0</span>条
+								</span> <span class="page_no">共<span id="pageCount">2</span>页 到第
+									<input type="text"
+									onKeyUp="this.value=this.value.replace(/^0+|\D/g,'')"
+									class="page_txt" id="pageObj">页 <input type="button"
+									onClick="goPage($.trim($('#pageObj').val()));" class="page_btn"
+									value="确定"></span>
+							</dd>
+						</dl>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

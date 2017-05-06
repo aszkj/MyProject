@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一里递运营中心</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.btn_sure,.btn_gray{padding:6px 15px;border-radius:3px;display:inline-block;font-size:12px;color:#fff;cursor:pointer}
+.btn_sure{border:1px solid #63ADEE;background-color:#63ADEE}
+.btn_gray{border:1px solid #666;background-color:#666}
+</style>
+<script type="text/javascript">
+  var advertisementTypeCode=$.trim(getUrlParam('advertisementTypeCode'));
+  var floorId=$.trim(getUrlParam('floorId'));
+  var g_boxId = $.trim(getUrlParam("boxId"));
+$(function(){
+	getAdvertisementTypeList();
+	initSelectAdvertisementType();
+});
+function initSelectAdvertisementType(){
+	if(null != advertisementTypeCode && '' != advertisementTypeCode){
+		$('#selectAdvertisementType'+advertisementTypeCode).attr('checked',true);
+		showSelectAdvertisementTypeList();
+	}
+}
+/*关闭弹框*/
+function close_box(){
+	if(g_boxId!=''&&parent&&parent.closeBox)parent.closeBox(g_boxId);
+}
+function getAdvertisementTypeList(){
+	var st=[];
+	var html='';
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + floorId  + '/listAllOptionalAdvertisementType',
+		type:'post',
+		dataType:'json',
+		cache:false,
+		async:false,
+		data:'',
+		success:function(data){
+			st=data.entity;			
+		}
+	});			
+	for(var i=0,length=st.length;i<length;i++){
+		html +=" <div align='left' style='width:260px;height:20px' ><input onclick='showSelectAdvertisementTypeList(this)' id='selectAdvertisementType"+st[i].id +"' value='"+st[i].id+"' type='checkbox' />";
+		html += " <label style='margin-left:2px;' for='selectAdvertisementType'"+st[i].id+"'> "+st[i].name+ "</label></div> ";
+	}
+	$('#advertisementTypeListBox').html(html);
+}
+function showSelectAdvertisementTypeList(obj){
+	var st=$('#advertisementTypeListBox input');
+	var st1=$('#advertisementTypeListBox label');
+	var html='';
+	for(var i=0,length=st.length;i<length;i++){
+		if(st[i].checked){
+			html+= " <div align='left' style='width:260px;height:20px' ><input value='"+st[i].value+"' type='hidden' />";
+			html+= " <label>"+st1[i].innerHTML+"</label></div>";	
+		}else{
+			if(undefined == obj){
+				st[i].disabled = true;
+			}else{
+				if(obj.checked){
+					st[i].disabled = true;
+				}else{
+					st[i].disabled = false;
+				}
+			}
+		}	
+	}	
+	$('#selectAdvertisementTypeListBox').html(html);
+}
+function selectAdvertisementTypeSubmit(){
+	var st=$('#selectAdvertisementTypeListBox input');
+	var result="";
+	if(st.length == 1){
+		result = st[0].value;
+	}
+	ajax({
+		type : 'post',
+		contentType : 'application/json',
+		dataType : 'json',
+		error : function() {
+			$('#promptMessage').text('保存数据失败，请稍后再试');
+			$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + floorId + '-' + result + '/saveFloorAdvertisementTypeRelations',
+		beforeSubmit : function() {
+		},
+		success : function(data) {
+			//响应返回的业务处理  
+			if (data.msgCode == 1) {
+				$('#promptMessage').text('保存成功');
+				setTimeout(function(){
+				    if(parent){ 
+				    	 if(floorId!=null&&floorId!=''){
+				    		 parent.sid = floorId;
+				    	 }
+				    	parent.dataSubmit();
+				    }
+					close_box();
+				},1000);
+			} else {
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+				$('#promptMessage').text(data.msg);
+			}
+		}
+	}); 
+}
+function closeBox(){
+	close_box();
+}
+</script>
+</head>
+<body style="padding:10px;">
+<form name="form1" method="post" id="form1" onsubmit="selectAdvertisementTypeSubmit();return false">
+<table border="1" bordercolor="#CCCCCC" style="border-collapse:collapse;width:660px;">
+	<tr>
+		<td style="height:20px" align="center" valign="middle">可选择广告类型</td>
+		<td style="height:20px" align="center" valign="middle">已选择广告类型</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+			<div id="advertisementTypeListBox" style="height:300px;width:330px;overflow:auto;"></div>
+		</td>
+		<td align="center" valign="top">
+			<div id="selectAdvertisementTypeListBox" style="height:300px;width:330px;overflow:auto"></div>
+		</td>
+	</tr>
+</table>
+<div align="center" style="padding:2px">
+	<input type="submit" id="submit" value="提交" style="width:auto;display:inline;align:center" class="btn_sure"/>　　　　
+	<input type="reset" value="取消" onclick="closeBox()" style="width:auto;display:inline;align:center" class="btn_gray"/>
+	</br>
+	<span id="promptMessage" class="cred"></span> 
+</div>
+    </form>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.workorder_save_button_new {
+	padding: 8px 100px
+}
+</style>
+<script type="text/javascript">
+	var GLOBAL_PARAM = {
+		countWordsFlag : true,
+		g_boxId : $.trim(getUrlParam("boxId")),
+		type : $.trim(getUrlParam("type")),
+		systemDictId : $.trim(getUrlParam("systemDictId"))
+	};
+
+	function checkDictCode(value) {
+		if ("" != $.trim(value)) {
+			ajax({
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+						+ GLOBAL_PARAM.systemDictId + '-' + value
+						+ '/checkDictCodeIsExist',
+				type : 'post',
+				dataType : 'json',
+				error : function() {
+				},
+				success : function(data) {
+					if (data.msgCode == 1) {
+						if (!data.entity) {
+							$('#dictCodeErr').text('编码已经存在');
+						}
+					} else {
+						$('#dictCodeErr').text('验证系统字典编码出现系统异常');
+					}
+				}
+			});
+		}
+	}
+
+	function getSystemDict() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ GLOBAL_PARAM.systemDictId + '/loadSystemDictById',
+			type : 'post',
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				var object = data.entity;
+				$('#id').val(object.id);
+				$('#dictName').val(object.dictName);
+				$('#dictCode').val(object.dictCode);
+				$('#dictCode').attr('disabled', 'true');
+				$('#dictType').val(object.dictType);
+				$('#typeName').val(object.typeName);
+				$('#dictStatus').val(object.dictStatus);
+				$('#dictDesc').val(object.dictDesc);
+			}
+		});
+	}
+
+	/*保存*/
+	function saveDict() {
+		var url;
+		var flag = true;
+		if (GLOBAL_PARAM.systemDictId != null
+				&& GLOBAL_PARAM.systemDictId != '') {
+			url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/updateSystemDict';
+			$('#id').val(GLOBAL_PARAM.systemDictId);
+		} else {
+			url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/saveSystemDict';
+		}
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		var dictType = $('#dictType').val();
+		var typeName = $('#typeName').val();
+		var dictCode = $('#dictCode').val();
+		var dictName = $('#dictName').val();
+		if (dictType == null || dictType == '') {
+			$('#prompt').text('字典类型编码为空');
+			flag = false;
+		}
+		if (typeName == null || typeName == '') {
+			$('#prompt').text('字典类型名称为空');
+			flag = false;
+		}
+		if (dictCode == null || dictCode == '') {
+			$('#dictCodeErr').text('专题类型编码为空');
+			flag = false;
+		}
+		var fdStart = dictCode.indexOf(dictType+"_");
+		if(fdStart!=0 || (dictCode.length==(dictType.length+1))){
+			$('#dictCodeErr').text('专题类型编码不符合规则');
+			flag = false;
+		}else{
+			var typeCode = dictCode.replace(dictType+"_","");
+			var reg = new RegExp("[\A-Z\]");
+			for(var i = 0;i < typeCode.length; i++){
+				var tes = reg.test(typeCode.charAt(i));
+				if(!tes){
+					flag = tes;
+					$('#dictCodeErr').text('请全部使用大写字母');
+					break;
+				}
+			}
+		}
+		
+		if (dictName == null || dictName == '') {
+			$('#dictNameErr').text('专题类型名称为空');
+			flag = false;
+		}
+		if (!flag) {
+			$('#prompt').text('请将信息填写完整再提交.');
+			return false;
+		} else {
+			$('#prompt').text('');
+		}
+		var dictTypeErrText = $('#dictTypeErr').text();
+		var typeNameErrText = $('#typeNameErr').text();
+		var dictCodeErrText = $('#dictCodeErr').text();
+		var dictNameErrText = $('#dictNameErr').text();
+		if (dictTypeErrText != '' || typeNameErrText != ''
+				|| dictCodeErrText != '' || dictNameErrText != '') {
+			return false;
+		}
+		$.ajax({
+			type : 'post',
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			url : url,
+			error : function() {
+				alert("提交数据失败，请稍后再试")
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					if ('系统字典编码已经存在' == data.msg) {
+						$('#dictCodeErr').text(data.msg);
+					} else {
+						$('#prompt').text(data.msg);
+					}
+					return;
+				}
+				$('#prompt').html('操作成功.');
+				setTimeout(function() {
+					if (parent) {
+						parent.$('#sId').val(GLOBAL_PARAM.systemDictId);
+						parent.dataSubmit();
+					}
+					close_box();
+				}, 1000);
+			}
+		});
+	}
+
+	/*关闭弹框*/
+	function close_box() {
+		if (GLOBAL_PARAM.g_boxId != '' && parent && parent.closeBox) {
+			if (GLOBAL_PARAM.type == 1) {
+				parent.$('#sId').val(GLOBAL_PARAM.systemDictId);
+				parent.dataSubmit();
+			}
+			parent.closeBox(GLOBAL_PARAM.g_boxId);
+		}
+	}
+	function showErr(errorType) {
+		if (errorType == 'dictCode') {
+			$('#dictCodeErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+		if (errorType == 'dictName') {
+			$('#dictNameErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+	}
+	function countwords(id) {
+		var inputLength = $("#" + id).val().length;
+		var maxCount = 50;
+		if (inputLength == 0) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + maxCount + "个字");
+		} else if (inputLength > 0 && inputLength <= maxCount) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + (maxCount - inputLength) + "个字");
+		} else if (inputLength > maxCount) {
+			GLOBAL_PARAM.countWordsFlag = false;
+			$("#" + id + "Err").html(
+					"<strong class='cred'>已经超过" + (inputLength - maxCount)
+							+ "个字</strong>");
+		}
+	}
+
+	$(document).ready(
+			function(e) {
+				if (GLOBAL_PARAM.systemDictId != ''
+						&& GLOBAL_PARAM.systemDictId != null) {
+					getSystemDict();
+				}
+				if (GLOBAL_PARAM.type == 1) {
+					$('#dictCode').attr('disabled', 'true');
+					$('#dictName').attr('disabled', 'true');
+					$('#dictStatus').attr('disabled', 'true');
+					$('#dictDesc').attr('disabled', 'true');
+					$('#saveButton').hide();
+					$('#resetButton').val('关闭');
+				} else {
+					$('#dictType').removeAttr('disabled');
+					$('#typeName').removeAttr('disabled');
+					$('#dictCode').removeAttr('disabled');
+					$('#dictName').removeAttr('disabled');
+					$('#dictStatus').removeAttr('disabled');
+					$('#dictDesc').removeAttr('disabled');
+					if(GLOBAL_PARAM.type == 3){//新增专题类型时固定一些特定参数
+						$('#dictType').val("SALEZONETYPE");//
+						$('#typeName').val("销售专区类型");//
+						$('#dictCode').val("SALEZONETYPE_");
+						$('#dictCodeRule').css("display", "block");
+					}
+					$('#saveButton').show();
+					$('#resetButton').val('取消');
+
+				}
+			});
+</script>
+</head>
+
+<body>
+	<div class="workorder_mng">
+		<div class="workorder_leave">
+			<form method="post" id="dataForm">
+				<input type="hidden" class="txt" id="id" name="id" /> <input
+					type="hidden" class="txt" id="dictType" name="dictType" /> <input
+					type="hidden" class="txt" id="typeName" name="typeName" />
+				<dl>
+					<dt>
+						<span class="cred">*</span>专题类型编码：
+					</dt>
+					<dd>
+						<input type="text" class="txt grid-40" id="dictCode"
+							name="dictCode" onmousedown="showErr('dictCode')"
+							onblur="checkDictCode(this.value)" />&nbsp;&nbsp; <span
+							id="dictCodeErr" class="cred"></span>
+						<p id="dictCodeRule" style="display: none;">
+							<span class="gray"> 专题类型编码=SALEZONETYPE_自定义大写字符串组合 </span>
+						</p>
+					</dd>
+				</dl>
+				<dl>
+					<dt>
+						<span class="cred">*</span>专题类型名称：
+					</dt>
+					<dd>
+						<input type="text" class="txt grid-40" id="dictName"
+							name="dictName" onmousedown="showErr('dictName')" />&nbsp;&nbsp;
+						<span id="dictNameErr" class="cred"></span>
+					</dd>
+				</dl>
+				<dl>
+					<dt>
+						<span class="cred">*</span>专题类型状态：
+					</dt>
+					<dd>
+						<select class="select grid-41" id="dictStatus" name="dictStatus">
+							<option value="SYSDICTSTATUS_ON">有效</option>
+							<option value="SYSDICTSTATUS_OFF">无效</option>
+						</select>
+					</dd>
+				</dl>
+				<dl>
+					<dt>专题类型描述：</dt>
+					<dd>
+						<textarea type="text" id="dictDesc" name="dictDesc"
+							class="txt grid-40" rows="3" onkeyup="countwords('dictDesc')"></textarea>
+					</dd>
+					<span id="auditNoteErr" class="gray" style="padding: 1px 100px">可以输入50个字</span>
+				</dl>
+			</form>
+			<p class="workorder_save_button_new">
+				<input id="saveButton" type="button" onclick="saveDict()"
+					class="btn_sure" value="提交" /> <input id="resetButton"
+					type="button" onclick="close_box()" class="btn_gray" value="取消" />
+				<span id="prompt" class="cred"></span>
+			</p>
+		</div>
+</body>
+</html>

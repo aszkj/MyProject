@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.StoreSubsidyRecordMapper">
+	<resultMap id="BaseResultMap" type="StoreSubsidyRecord">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="CASHSUBSIDY" property="cashSubsidy" jdbcType="BIGINT" />
+		<result column="PRICESUBSIDY" property="priceSubsidy" jdbcType="BIGINT" />
+		<result column="COUPONSUBSIDY" property="couponSubsidy" jdbcType="BIGINT" />
+		<result column="LOGISTICSSUBSIDY" property="logisticsSubsidy" jdbcType="BIGINT" />
+		<result column="TRANSWITHDRAWSTATUS" property="transWithdrawStatus" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="StoreSubsidyRecordInfoResultMap" type="StoreSubsidyRecordInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="CASHSUBSIDY" property="cashSubsidy" jdbcType="BIGINT" />
+		<result column="PRICESUBSIDY" property="priceSubsidy" jdbcType="BIGINT" />
+		<result column="COUPONSUBSIDY" property="couponSubsidy" jdbcType="BIGINT" />
+		<result column="LOGISTICSSUBSIDY" property="logisticsSubsidy" jdbcType="BIGINT" />
+		<result column="TRANSWITHDRAWSTATUS" property="transWithdrawStatus" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="StoreSubsidyCountInfoResultMap" type="StoreSubsidyCountInfo">
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="CASHSUBSIDY" property="cashSubsidy" jdbcType="BIGINT" />
+		<result column="PRICESUBSIDY" property="priceSubsidy" jdbcType="BIGINT" />
+		<result column="COUPONSUBSIDY" property="couponSubsidy" jdbcType="BIGINT" />
+		<result column="LOGISTICSSUBSIDY" property="logisticsSubsidy" jdbcType="BIGINT" />
+		<result column="SUBSIDYORDERNUM" property="subsidyOrderNum" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<insert id="save" parameterType="StoreSubsidyRecord" useGeneratedKeys="true" keyProperty="id">
+		insert into U_STORE_SUBSIDY_RECORD
+		(STOREID, SALEORDERNO,CASHSUBSIDY,PRICESUBSIDY,COUPONSUBSIDY,LOGISTICSSUBSIDY,
+		TRANSWITHDRAWSTATUS,CREATEUSERID,CREATETIME,MODIFYUSERID,MODIFYTIME,REMARK)
+		values
+		(#{storeId,jdbcType=INTEGER},
+		#{saleOrderNo,jdbcType=VARCHAR},#{cashSubsidy,jdbcType=BIGINT},
+		#{priceSubsidy,jdbcType=BIGINT},#{couponSubsidy,jdbcType=BIGINT},
+		#{logisticsSubsidy,jdbcType=BIGINT},#{transWithdrawStatus,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},#{createTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=INTEGER},#{modifyTime,jdbcType=TIMESTAMP},
+		#{remark,jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="findStoreSubsidyCountInfos" resultMap="StoreSubsidyCountInfoResultMap" parameterType="StoreSubsidyRecordQuery">
+		SELECT A.STOREID,C.STORECODE,B.CUSTOMERNAME AS STORENAME,SUM(A.CASHSUBSIDY) AS CASHSUBSIDY,SUM(A.PRICESUBSIDY) AS PRICESUBSIDY,
+		SUM(A.COUPONSUBSIDY) AS COUPONSUBSIDY,SUM(A.LOGISTICSSUBSIDY) AS LOGISTICSSUBSIDY,COUNT(A.SALEORDERNO) AS SUBSIDYORDERNUM
+		FROM U_STORE_SUBSIDY_RECORD A
+		LEFT JOIN U_CUSTOMER B ON A.STOREID = B.ID
+		LEFT JOIN U_STORE_PROFILE C ON A.STOREID = C.STOREID
+		<where>
+			1=1
+			<if test="storeId != null">
+				and A.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeCode != null">
+				and C.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+		GROUP BY A.STOREID
+	</select>
+	
+	<select id="listDataForExportStoreSubsidyRecord" resultMap="StoreSubsidyRecordInfoResultMap">
+		select A.ID, A.STOREID,B.CUSTOMERNAME AS STORENAME,C.STORECODE,A.SALEORDERNO,A.CASHSUBSIDY,A.PRICESUBSIDY,
+		A.COUPONSUBSIDY,A.LOGISTICSSUBSIDY,A.TRANSWITHDRAWSTATUS,A.CREATETIME,A.REMARK from U_STORE_SUBSIDY_RECORD A
+		LEFT JOIN U_CUSTOMER B ON A.STOREID = B.ID
+		LEFT JOIN U_STORE_PROFILE C ON A.STOREID = C.STOREID
+		<where>
+			1=1
+			<if test="storeSubsidyRecordQuery.storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeSubsidyRecordQuery.storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeSubsidyRecordQuery.storeCode != null">
+				and C.STORECODE = #{storeSubsidyRecordQuery.storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeSubsidyRecordQuery.saleOrderNo">
+				and A.SALEORDERNO = #{storeSubsidyRecordQuery.saleOrderNo, jdbcType=VARCHAR}
+			</if>
+			<if test="storeSubsidyRecordQuery.startCreateTime != null">
+				and A.CREATETIME &gt;= #{storeSubsidyRecordQuery.startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="storeSubsidyRecordQuery.endCreateTime != null">
+				and A.CREATETIME &lt;= #{storeSubsidyRecordQuery.endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="storeSubsidyRecordQuery.order != null">
+				order by ${storeSubsidyRecordQuery.order}
+				<if test="storeSubsidyRecordQuery.sort != null">
+					${storeSubsidyRecordQuery.sort}
+				</if>
+			</if>
+		</where>
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCountsForExportStoreSubsidyRecord" parameterType="StoreSubsidyRecordQuery" resultType="java.lang.Long">
+		select COUNT(*) from U_STORE_SUBSIDY_RECORD A
+		LEFT JOIN U_CUSTOMER B ON A.STOREID = B.ID
+		LEFT JOIN U_STORE_PROFILE C ON A.STOREID = C.STOREID
+		<where>
+			1=1
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeCode != null">
+				and C.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderNo">
+				and A.SALEORDERNO = #{saleOrderNo, jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+			
+	<select id="findStoreSubsidyRecords" resultMap="StoreSubsidyRecordInfoResultMap" parameterType="StoreSubsidyRecordQuery">
+		select A.ID, A.STOREID,B.CUSTOMERNAME AS STORENAME,C.STORECODE,A.SALEORDERNO,A.CASHSUBSIDY,A.PRICESUBSIDY,
+		A.COUPONSUBSIDY,A.LOGISTICSSUBSIDY,A.TRANSWITHDRAWSTATUS,A.CREATETIME,A.REMARK from U_STORE_SUBSIDY_RECORD A
+		LEFT JOIN U_CUSTOMER B ON A.STOREID = B.ID
+		LEFT JOIN U_STORE_PROFILE C ON A.STOREID = C.STOREID
+		<where>
+			1=1
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeCode != null">
+				and C.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderNo">
+				and A.SALEORDERNO = #{saleOrderNo, jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<resultMap id="AllSubsidyInfoMap" type="AllSubsidyInfo">
+		<result column="CASHSUBSIDY" property="cashSubsidy" jdbcType="BIGINT" />
+		<result column="PRICESUBSIDY" property="priceSubsidy" jdbcType="BIGINT" />
+		<result column="COUPONSUBSIDY" property="couponSubsidy" jdbcType="BIGINT" />
+		<result column="LOGISTICSSUBSIDY" property="logisticsSubsidy" jdbcType="BIGINT" />
+	</resultMap>
+	
+	<select id="statisticsAllSubsidyInfo" resultMap="AllSubsidyInfoMap">
+		SELECT SUM(CASHSUBSIDY) AS CASHSUBSIDY,SUM(COUPONSUBSIDY) AS COUPONSUBSIDY,
+		SUM(PRICESUBSIDY) AS PRICESUBSIDY,SUM(LOGISTICSSUBSIDY) AS LOGISTICSSUBSIDY
+		FROM U_STORE_SUBSIDY_RECORD
+		<where>
+				1=1
+			<if test="saleOrderNos !=null">
+				AND SALEORDERNO IN 
+				<foreach item="item" index="index" collection="saleOrderNos" 
+                   open="(" separator="," close=")">
+                 	 #{item}
+              	</foreach>
+			</if>
+		</where>
+	</select>
+
+</mapper>

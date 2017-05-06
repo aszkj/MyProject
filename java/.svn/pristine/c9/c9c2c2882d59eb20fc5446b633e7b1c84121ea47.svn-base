@@ -1,0 +1,293 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<!-- <link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />  -->
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/plugin/ligerUI/js/ligerui.all.js"></script>
+<script type="text/javascript" src="/static-resource/plugin/operamasks-ui-2.1/js/om-core.js"></script>
+<script type="text/javascript" src="/static-resource/plugin/operamasks-ui-2.1/js/om-tree.js"></script>
+<script type="text/javascript" src="/static-resource/plugin/operamasks-ui-2.1/js/om-menu.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/plugin/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" />
+<link type="text/css"href= "/static-resource/plugin/operamasks-ui-2.1/themes/default/om-all.css" rel="stylesheet" /> 
+<script type="text/javascript">
+var data = 
+[{
+	"text": "YLD产品分类",
+	"id":-1,
+	"isLoaded" : "0",
+	"hasChildren":true,
+	"classCode" : "TOP_LEVEL_CLASS",
+	"classLevel" : "PRODUCTCLASSSLEVEL_TOP",
+	"statusCode" : "PRODUCTCLASSSTATUS_ON",
+	"isCanDelete": false
+}];
+
+var contextClassMenu = 
+[
+{id:"1",label:"新增", type: 1, disabled:true},
+{id:"2",label:"修改", type: 2, disabled:true},
+{id:"3",label:"查看", type: 3, disabled:true},
+{id:"4",label:"删除", type: 4, seperator:true, disabled:true},
+{id:"5",label:"冻结", type: 5, disabled:true},
+{id:"6",label:"启用", type: 6, disabled:true}
+];
+
+var nodeObject = null;
+$(function(){
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html"); 
+	$('#mytree').click(function() {
+		$('#contextMenu').omMenu('hide');
+	});
+	createTree();
+	createContextMenu();
+});
+
+function configContextMenu(node) {
+	disableAllContextMenu();
+	if (null != node.classCode && node.classCode == "TOP_LEVEL_CLASS") {
+		$('#contextMenu').omMenu('enableItem', 1);
+	} else{
+		if(node.statusCode == "PRODUCTCLASSSTATUS_ON" && node.isCanDelete == true) {
+			$('#contextMenu').omMenu('enableItem', 1);//新增
+		}
+		if(node.statusCode == "PRODUCTCLASSSTATUS_ON"){
+			$('#contextMenu').omMenu('enableItem', 2);//修改
+		}
+		if(node.statusCode == "PRODUCTCLASSSTATUS_ON"){
+			$('#contextMenu').omMenu('enableItem', 3);//查看
+		}
+		if(node.statusCode == "PRODUCTCLASSSTATUS_OFF"){
+			$('#contextMenu').omMenu('enableItem', 4);//删除
+		}
+		if(node.statusCode == "PRODUCTCLASSSTATUS_ON" && node.isCanDelete == true && node.hasChildren == false){
+			$('#contextMenu').omMenu('enableItem', 5);//冻结
+		}
+		if(node.statusCode == "PRODUCTCLASSSTATUS_OFF"){
+			$('#contextMenu').omMenu('enableItem', 6);//启用
+		}
+	}
+}
+
+function disableAllContextMenu() {
+	$('#contextMenu').omMenu('disableItem', 1);
+	$('#contextMenu').omMenu('disableItem', 2);
+	$('#contextMenu').omMenu('disableItem', 3);
+	$('#contextMenu').omMenu('disableItem', 4);
+	$('#contextMenu').omMenu('disableItem', 5);
+	$('#contextMenu').omMenu('disableItem', 6);
+}
+
+function createTree() {
+	$("#mytree").omTree({
+		dataSource : data,
+		simpleDataModel: true,
+		onBeforeExpand : function(node){
+			if(node.isLoaded == "0"){
+				var url = "/" +node.classCode+ "/getAllNextTreeNode";
+				$.ajax({
+					url:  TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + url,
+					type: 'post',
+					dataType: 'json',
+					cache: false,
+					success: function(data){
+						if(data.msgCode==3){
+							loginError(data.msg);
+						}else if(data.msgCode==2){
+							showBox('提示',data.msg,'alert')
+						}else if(data.msgCode==1){
+							//特殊处理 尖括号
+							var temp = JSON.stringify(data);
+							temp = encodeString(temp);
+							data = JSON.parse(temp);
+							$("#mytree").omTree("insert", data.entity, node);
+							node.isLoaded = 1; //已经加载
+						}
+					}
+				});
+			}
+			return true;
+		},
+		//nodeData(为当前选择的节点对象)
+		
+		onSelect: function(nodeData){
+		},
+		onRightClick: function(nodeData, event){
+			nodeObject = nodeData;
+			configContextMenu(nodeData)
+			$('#contextMenu').omMenu('show', event.originalEvent);
+			
+		},
+		 onClick: function(nodeData, event){
+		 }
+	});
+	disposeFunctionPermissions();
+}
+
+function createContextMenu() {
+	$('#contextMenu').omMenu({
+		contextMenu : true,
+		dataSource : contextClassMenu,
+		onSelect:function(item,event){
+			switch(item.type) {
+				case 1 :
+					createProClass();
+					break;
+				case 2:
+					editProClass();
+					break;
+				case 3:
+					viewProClass();
+					break;
+				case 4:
+					deleteProClass();
+					break;
+				case 5:
+					freezeProClass();
+					break;
+				case 6:
+					enableProClass();
+					break;
+				default :
+					return;
+			} 
+		}
+	});
+	
+	$('#tbtn').click(function() {
+		$('#contextMenu').omMenu('show', this);
+	})
+}
+function createProClass() {
+	showBox('新增产品分类','productclass-edit.html?width=700&height=700&method=add&classCode='+nodeObject.classCode+ '&classLevel='+nodeObject.classLevel);
+}
+function editProClass() {
+	showBox('修改产品分类','productclass-edit.html?width=700&height=700&method=edit&classCode='+nodeObject.classCode+ '&classLevel=' + nodeObject.classLevel);
+}
+function viewProClass() {
+	showBox('查看产品分类','productclass-edit.html?width=700&height=700&method=view&classCode='+nodeObject.classCode+ '&classLevel=' + nodeObject.classLevel);
+}
+function deleteProClass() {
+	showBox('确认信息',"是否删除产品分类？",'confirm',function(){
+		ajax({
+			url:  TERMINAL_URL+OPERATION_SYSTEM_IDENTITY + "/" + nodeObject.id + "/deleteProductClass",
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					refresh();
+				}
+			   
+			}
+		});
+	})
+}
+function freezeProClass() {
+	showBox('确认信息',"是否冻结产品分类？",'confirm',function(){
+		ajax({
+			url:  TERMINAL_URL+OPERATION_SYSTEM_IDENTITY + "/" + nodeObject.classCode + "/freezeProductClass",
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					refresh();
+				}
+			   
+			}
+		});
+	})
+}
+function enableProClass() {
+	showBox('确认信息',"是否启用产品基本分类？",'confirm',function(){
+		ajax({
+			url:  TERMINAL_URL+OPERATION_SYSTEM_IDENTITY + "/" +  nodeObject.classCode + "/enableProductClass",
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					refresh();
+				}
+			   
+			}
+		});
+	})
+}
+
+function refresh() {
+	data = 
+		[{
+			"text": "YLD产品分类",
+			"id":-1,
+			"isLoaded" : "0",
+			"hasChildren":true,
+			"classCode" : "TOP_LEVEL_CLASS",
+			"classLevel" : "PRODUCTCLASSSLEVEL_TOP",
+			"statusCode" : "PRODUCTCLASSSTATUS_ON",
+			"isCanDelete": false
+		}];
+	createTree();
+}
+
+</script>
+</head>
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; <a href="/">产品管理</a> &gt; <span>产品分类管理</span></div>
+<div class="main">
+<div class="clearfix">
+<div class="content_box">
+<div class="content">
+	<div class="page_title">产品分类管理</div>
+	<div style="padding:10px;width:90%;height:100%; position:relative;">
+		<permission code="FUNCTION_VIEW_PRODUCT_CLASS_TREE_MANAGEMENT">
+			<ul id="mytree" ></ul>
+		</permission>
+		<permission code="FUNCTION_VIEW_PRODUCT_CLASS_LEFT_MNEU_MANAGEMENT">
+			<div id="contextMenu"></div>
+		</permission>
+	</div>
+	</div></div>
+	<div class="menu">
+		<div class="aside">
+			<h2 class="aside_title">一里递运营中心</h2>
+			<div id="left_menu_content"></div>
+		</div>
+	</div>
+</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

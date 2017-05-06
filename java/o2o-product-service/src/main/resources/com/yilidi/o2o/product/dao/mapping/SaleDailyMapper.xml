@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleDailyMapper">
+	<resultMap id="BaseResultMap" type="SaleDaily">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="WAREHOUSEID" property="warehouseId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSNAME" property="productClassName" jdbcType="VARCHAR" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode" jdbcType="VARCHAR" />
+		<result column="BRANDNAME" property="brandName" jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="SALECOUNT" property="saleCount" jdbcType="INTEGER" />
+		<result column="AMOUNT" property="amount" jdbcType="BIGINT" />
+		<result column="SALEDATE" property="saleDate" jdbcType="DATE" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,WAREHOUSEID, STOREID, SALEPRODUCTID, PRODUCTCLASSNAME,PRODUCTCLASSCODE, BRANDNAME,BRANDCODE, PRODUCTNAME, SALECOUNT,
+		AMOUNT, SALEDATE
+	</sql>
+
+	<insert id="save" parameterType="SaleDaily" useGeneratedKeys="true" keyProperty="id">
+		insert into P_SALE_DAILY (
+		WAREHOUSEID,
+		STOREID,
+		SALEPRODUCTID, PRODUCTCLASSNAME,PRODUCTCLASSCODE, BRANDNAME,BRANDCODE,
+		PRODUCTNAME, SALECOUNT, AMOUNT, SALEDATE)
+		values (
+		#{warehouseId,jdbcType=INTEGER},
+		#{storeId,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER},
+		#{productClassName,jdbcType=VARCHAR},
+		#{productClassCode,jdbcType=VARCHAR},
+		#{brandName,jdbcType=VARCHAR},
+		#{brandCode,jdbcType=VARCHAR},
+		#{productName,jdbcType=VARCHAR},
+		#{saleCount,jdbcType=INTEGER}, #{amount,jdbcType=BIGINT},
+		#{saleDate,jdbcType=DATE})
+	</insert>
+
+	<delete id="deleteByWareHouseIdAndStoreIdAndSaleProductIdAndSaleDate">
+		delete from P_SALE_DAILY
+		where
+		WAREHOUSEID =
+		#{wareHouseId,jdbcType=INTEGER}
+		and STOREID =
+		#{storeId,jdbcType=INTEGER}
+		and SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER}
+		and SALEDATE =
+		#{saleDate,jdbcType=DATE}
+	</delete>
+</mapper>

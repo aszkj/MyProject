@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.StockInItemMapper">
+	<resultMap id="BaseResultMap" type="StockIn">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOCKINID" property="stockInId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="QUANTITY" property="quantity" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, STOCKINID, SALEPRODUCTID, QUANTITY
+	</sql>
+
+	<insert id="save" parameterType="StockInItem" useGeneratedKeys="true" keyProperty="id">
+		insert into T_STOCKIN_ITEM (
+		STOCKINID, SALEPRODUCTID, QUANTITY
+		)
+		values (
+		#{stockInId,jdbcType=INTEGER}, #{saleProductId,jdbcType=INTEGER},
+		#{quantity,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<select id="list" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKIN_ITEM
+		<where>
+			<if test="stockinId != null">
+				STOCKINID = #{stockInId, jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+</mapper>

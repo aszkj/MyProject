@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.PermissionHistoryMapper">
+	<resultMap id="BaseResultMap" type="PermissionHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PERMISSIONID" property="permissionId" jdbcType="INTEGER" />
+		<result column="PARENTID" property="parentId" jdbcType="INTEGER" />
+		<result column="PERMISSIONNAME" property="permissionName" jdbcType="VARCHAR" />
+		<result column="PARENTNAME" property="parentName" jdbcType="VARCHAR" />
+		<result column="PERMISSIONTYPE" property="permissionType" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="PERMISSIONCODE" property="permissionCode" jdbcType="VARCHAR" />
+		<result column="PERMISSIONLEVEL" property="permissionLevel" jdbcType="VARCHAR" />
+		<result column="SORT" property="sort" jdbcType="INTEGER" />
+		<result column="PERMISSIONURL" property="permissionUrl" jdbcType="VARCHAR" />
+		<result column="PERMISSIONSTATUS" property="permissionStatus" jdbcType="VARCHAR" />
+		<result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+		<result column="PERMISSIONDESC" property="permissionDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PERMISSIONID, PARENTID, PERMISSIONNAME, PARENTNAME, PERMISSIONTYPE, CUSTOMERTYPE, 
+		PERMISSIONCODE, PERMISSIONLEVEL, SORT, PERMISSIONURL, PERMISSIONSTATUS, OPERATEUSERID, 
+		OPERATETIME, OPERATETYPE, PERMISSIONDESC
+	</sql>
+
+	<insert id="save" parameterType="PermissionHistory">
+		insert into S_PERMISSION_HISTORY (
+			PERMISSIONID, PARENTID,
+			PERMISSIONNAME, PARENTNAME, PERMISSIONTYPE,
+			CUSTOMERTYPE, PERMISSIONCODE, PERMISSIONLEVEL, SORT,
+			PERMISSIONURL, PERMISSIONSTATUS,
+			OPERATEUSERID,OPERATETIME, OPERATETYPE, PERMISSIONDESC
+		)
+		values 
+		(
+			#{permissionId,jdbcType=INTEGER},
+			#{parentId,jdbcType=INTEGER},
+			#{permissionName,jdbcType=VARCHAR}, 
+			#{parentName,jdbcType=VARCHAR},
+			#{permissionType,jdbcType=VARCHAR},
+			#{customerType,jdbcType=VARCHAR},
+			#{permissionCode,jdbcType=VARCHAR},
+			#{permissionLevel,jdbcType=VARCHAR},
+			#{sort,jdbcType=INTEGER},
+			#{permissionUrl,jdbcType=VARCHAR}, 
+			#{permissionStatus,jdbcType=VARCHAR},
+			#{operateUserId,jdbcType=INTEGER}, 
+			#{operateTime,jdbcType=TIMESTAMP},
+			#{operateType,jdbcType=VARCHAR},
+			#{permissionDesc,jdbcType=VARCHAR}
+		)
+	</insert>
+
+
+	<select id="list" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_PERMISSION_HISTORY
+	</select>
+
+	<select id="listByPermissionId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_PERMISSION_HISTORY
+		where PERMISSIONID = #{permissionId, jdbcType=VARCHAR}
+	</select>
+
+	<select id="listByPermissionName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from S_PERMISSION_HISTORY
+		where PERMISSIONNAME = #{permissionName, jdbcType=VARCHAR}
+	</select>
+
+</mapper>

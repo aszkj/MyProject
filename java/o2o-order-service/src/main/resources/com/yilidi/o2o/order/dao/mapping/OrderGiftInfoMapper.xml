@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.OrderGiftInfoMapper">
+	<resultMap id="BaseResultMap" type="OrderGiftInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="GIFTID" property="giftId" jdbcType="INTEGER" />
+		<result column="GIFTTYPE" property="giftType" jdbcType="VARCHAR" />
+		<result column="GIFTCOUNT" property="giftCount" jdbcType="INTEGER" />
+		<result column="ACTIVITYTYPE" property="activityType" jdbcType="VARCHAR" />
+		<result column="ORDERNO" property="orderNo" jdbcType="VARCHAR" />
+		<result column="ORDERGIFTSTATUS" property="orderGiftStatus"
+			jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, GIFTID, GIFTTYPE, ACTIVITYTYPE,
+		ORDERNO,GIFTCOUNT,ORDERGIFTSTATUS,CREATEUSERID,
+		CREATETIME,MODIFYUSERID,MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="OrderGiftInfo">
+		insert into
+		T_ORDER_GIFT_INFO
+		(GIFTID, GIFTTYPE, ACTIVITYTYPE,
+		ORDERNO,GIFTCOUNT，ORDERGIFTSTATUS,
+		CREATEUSERID, CREATETIME,MODIFYUSERID,MODIFYTIME)
+		values
+		(#{giftId,jdbcType=INTEGER},
+		#{giftType,jdbcType=VARCHAR},
+		#{activityType,jdbcType=VARCHAR},
+		#{orderNo,jdbcType=VARCHAR},
+		#{giftCount,jdbcType=INTEGER},
+		#{orderGiftStatus,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=INTEGER},
+		#{modifyTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<select id="listBySaleOrderNo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_ORDER_GIFT_INFO
+		<where>
+			<if test="saleOrderNo != null">
+				and ORDERNO=#{saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="giftType != null">
+				and GIFTTYPE=#{giftType,jdbcType=VARCHAR}
+			</if>
+			<if test="orderGiftStatus != null">
+				and ORDERGIFTSTATUS=#{orderGiftStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="activityType != null">
+				and ACTIVITYTYPE=#{activityType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<update id="updateStatusForSendedByOrderNo">
+		update T_ORDER_GIFT_INFO
+		set
+		ORDERGIFTSTATUS =
+		#{sendedStatus,jdbcType=VARCHAR},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where ORDERNO=
+		#{saleOrderNo,jdbcType=VARCHAR} and ORDERGIFTSTATUS
+		#{unSendStatus,jdbcType=VARCHAR} =
+		ORDEREDCOUNT
+	</update>
+
+</mapper>

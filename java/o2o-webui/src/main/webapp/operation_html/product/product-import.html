@@ -1,0 +1,432 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(TURN_PAGE_PARAMS['currentPage'] != 1){
+			showBox('提示!',"您输入的页码超出正常范围！",'alert');
+		} else { 
+			showBox('提示!',"当前已经是第一页！",'alert');
+		}
+		return;
+	}
+	if(pageNo>TURN_PAGE_PARAMS['pageCount']){
+		if(TURN_PAGE_PARAMS['currentPage'] != TURN_PAGE_PARAMS['pageCount']){
+			showBox('提示!',"您输入的页码超出正常范围！",'alert');
+		} else {
+			showBox('提示!',"当前已经是最后一页！",'alert');
+		}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+function dataSubmit(pageNo) {
+	$("#tbody").html("");
+	TURN_PAGE_PARAMS.currentPage = pageNo ? pageNo : 1;
+	$('#currentPagesize').val(TURN_PAGE_PARAMS.pageSize);
+	$('#start').val(TURN_PAGE_PARAMS.currentPage);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType : 'application/json',
+		data : formJsonStr,
+		dataType : 'json',
+		cache : false,
+		url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listProductTemps',
+		beforeSubmit : function() {
+		},
+		error:function(){
+			return;
+		}, //非必须
+		success : function(data) {
+			//响应返回的业务处理  
+			if (data.msgCode == 1) {
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				if( null != data.entity){
+					var dataList = data.entity.resultList;
+					if (null != dataList && dataList.length > 0) {
+						for (var i = 0, j = dataList.length; i < j; i++) {
+							var productTemp = dataList[i];
+							html += '<tr><td>';
+							html += productTemp.displayOrder ? productTemp.displayOrder : '---';
+							html += '</td><td>';
+							if (productTemp.productName) {
+								html += productTemp.productName;
+							} else {
+								html += '---';
+							}
+							html += '</td><td>';
+							html += productTemp.barCode;
+							html += '</td><td>';
+							html += productTemp.className;
+							html += '</td><td>';
+							if (productTemp.productSpec) {
+								html += productTemp.productSpec;
+							} else {
+								html += '---';
+							}
+							html += '</td><td>';
+							html += productTemp.costPrice ? toCenti(productTemp.costPrice) : '---';
+							html += '</td><td>';
+							html += toCenti(productTemp.retailPrice);
+							html += '</td><td>';
+							html += toCenti(productTemp.promotionalPrice);
+							html += '</td><td>';
+							html += productTemp.commissionPrice ? toCenti(productTemp.commissionPrice) : '---';
+							html += '</td><td>';
+							html += productTemp.vipCommissionPrice ? toCenti(productTemp.vipCommissionPrice) : '---';
+							html += '</td><td>';
+							if(productTemp.saleStatus == 'PRODUCTSALESTATUS_INIT'){
+								html += '<span class="cred">';
+							}
+							html += productTemp.saleStatusName;
+							if(productTemp.saleStatus == 'PRODUCTSALESTATUS_INIT'){
+								html += '</span>';
+							}
+							html += '</td><td>';
+							html += '<a href="javascript:void(0)" class="mlr5 ablue" onclick="javascript:addProductPic('+productTemp.tempId+')">上传图片</a>';
+							html += '</td></tr>';
+						}
+					} else {
+						html += '<tr><td colspan="12">暂无数据</td></tr>';
+					}
+					$("#tbody").html(html);
+					TURN_PAGE_PARAMS.currentPage = data.entity.currentPage;
+					TURN_PAGE_PARAMS.totalCount = data.entity.recordCount;
+					TURN_PAGE_PARAMS.pageCount = Math.ceil(data.entity.recordCount/data.entity.pageSize);
+					updateFlipLabel();
+				}
+
+			} else {
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+
+function addProductPic(tempId) {
+	showBox('新增产品图片和详情','/product/producttemp-edit.html?width=1000&height=1200&method=edit&&tempId='+tempId);
+}
+function uploadSubmit(){
+	$('#uploadBtn').removeClass().addClass('btn_disabled')[0].disabled = true;
+	$("#promptImportMessage").show();
+	$("#promptImportMessage").html("正在导入产品.......");
+	ajax({
+		uploadForm:'uploadForm',
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + "/uploadToTempForProduct",
+		dataType:'json',//非必须.默认text
+		async:false,
+		error:function(){
+			 $('#uploadBtn').removeClass().addClass('btn_sure')[0].disabled = false;
+			 $("#promptImportMessage").hide();
+		}, //非必须
+		success:function(data){
+			if(data.msgCode != 1){
+				 if(data.entity != null){
+					 var list = data.entity;
+					 var html = "";
+					 for(var o in list){  
+					        html += "<p style='white-space:nowrap;'>"+list[o]+"</p>";
+					 }
+					 $('#uploadBtn').removeClass().addClass('btn_sure')[0].disabled = false;
+					 $("#promptImportMessage").show();
+					 $("#promptImportMessage").html(html);
+				 }else{
+					 $('#uploadBtn').removeClass().addClass('btn_sure')[0].disabled = false;
+					 showBox('提示!',data.msg,'alert');
+				 }
+			 }else{
+				 $('#uploadBtn').removeClass().addClass('btn_sure')[0].disabled = false;
+				 $("#promptImportMessage").show();
+				 $('#promptImportMessage').text('操作成功');
+					setTimeout(function(){
+						dataSubmit();
+						$('.txta').val('');
+					},1000);
+			 }
+		}//非必须
+	});
+}
+
+function dataEditSubmit(){
+	showBox('确认信息',"确认添加所有导入的产品到标准库吗？",'confirm',function(){    
+		//var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$('#dataSubmit').removeClass().addClass('btn_disabled')[0].disabled = true;
+	 	$("#promptAddMessage").show();
+	 	$("#promptAddMessage").text("正在添加所有导入的产品到标准库.......");
+		$.ajax({
+			type : 'post',
+			dataType : 'json',
+			cache : false,
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY  +'/addAllTempProductToStandard', 
+			success:function(data){
+				if(data.msgCode != 1){
+					 showBox('提示!',data.msg,'alert');
+					 $('#dataSubmit').removeClass().addClass('btn_sure')[0].disabled = false;
+			 }else{
+				 dataSubmit();
+				 if(data.entity != null){
+					 var list = data.entity;
+					 var html = "";
+					 for(var o in list){  
+					        html += "<p style='white-space:nowrap;'>"+list[o]+"</p>";
+					 }
+					 $('#dataSubmit').removeClass().addClass('btn_sure')[0].disabled = false;
+					 $("#promptAddMessage").show();
+					 $("#promptAddMessage").html(html);
+				 }else{
+					 $('#dataSubmit').removeClass().addClass('btn_sure')[0].disabled = false;
+					 $("#promptAddMessage").show();
+					 $("#promptAddMessage").text('操作成功');
+					 $('.txta').val('');
+					 setTimeout(function(){
+						 $("#promptAddMessage").hide();
+						},2000);
+				 }
+			 }
+			}
+		});
+	})
+}
+function change(e){
+    var src=e.target || window.event.srcElement;
+    var filepath=src.value;
+    var filename=filepath.substring(filepath.lastIndexOf('\\')+1);
+    $('.txta').val(filename);
+}
+$(document).ready(function() {
+	$("#promptAddMessage").hide();
+	$("#promptImportMessage").hide();
+	loadHtml("headerId", "/include/header.html");
+	loadHtml("left_menu_content", "/include/leftmenu.html");
+	loadHtml("footerId", "/include/footer.html");
+	loadSubClass("TOP_LEVEL_CLASS");
+	dataSubmit();
+	$('.txta').val('');
+	$("#product_template").attr("href",DOWNLOAD_FILE_URL+DOWNLOAD_REPORT_TEMPLATE_RELATIVE_PATH+"/product_template.xlsx");
+});
+
+/* 加载商品分类 */
+function loadSubClass(productClassCode){
+	$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+productClassCode+'/getAllNextProductClassByUpCode', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			data = JSON.parse(encodeString(JSON.stringify(data)));
+			if(null != data.entity && data.entity.length > 0){
+				initProductClassSelect(data.entity);
+			}
+		}
+	});
+}
+function initProductClassSelect(listProductClass){
+	var	html = '<select class="select grid-15" onchange=changeClassSelect(this)>';
+	  	html += '<option value="">--请选择--</option>';
+		for(var i=0;i<listProductClass.length;i++){
+			html += '<option value="'+listProductClass[i].classCode+'">';
+			html += listProductClass[i].className;
+			html +='</option>'
+		}
+	html += '<select/>';
+	$("#productClassDiv").append(html);
+}
+
+function changeClassSelect(ele){
+	var productClass = $(ele);
+	productClass.nextAll().each(function(){
+		$(this).remove();
+	});
+	if(productClass.val()!= ""){
+		$("#productClassCode").val(productClass.val());
+		loadSubClass($.trim($("#productClassCode").val()));
+	}else{
+		var parentClassCode = productClass.prev();
+		if(parentClassCode != null){
+			//如果选择了请选择就默认选择此节点上一个节点的值
+			$("#productClassCode").val(productClass.prev().val());
+		}else{
+			$("#productClassCode").val("TOP_LEVEL_CLASS");
+		}
+	}
+}
+</script>
+<style type="text/css">
+html,body {
+	background: #fff;
+}
+</style>
+</head>
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 产品管理 &gt;<span>产品批量导入</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">产品批量导入</div>
+					<!--搜索条件-->
+					<div class="complaint_main">
+						<div class="box_m search_form">
+							<p style="height:30px;line-height:30px">
+								<span style="padding-left: 20px;">点击下载模板：</span> <a class="blue"
+									style="color:blue" id="product_template">产品导入模板.xls</a>
+							</p>
+							<form id="uploadForm" enctype="multipart/form-data"
+								onsubmit="uploadSubmit();return false;">
+								<div class="box-dva" style="background:#fff;">
+									<input type="text" class="txta">
+									<p class="box-upa">
+										<input id="uploadFile" class="filea" name="file" type="file"
+											onchange="change(event);" /> <span class="btn_sure">选择文件</span>
+									</p>
+									<div>
+										<input type="submit" value="确定" class="btn_sure" id="uploadBtn" />
+									</div>
+									<br>
+									<div id="promptImportMessage" class="cred" style="display:block;height:500px;overflow-y:auto;width:800px;"></div>
+								</div>
+							</form>	
+						</div>
+					</div>
+					<form method="get" id="dataForm">
+						<input type="hidden" id="currentPagesize" name="pageSize" value="" />
+						<input type="hidden" id="start" name="start" value="" />
+						<div class="main_search">
+							<dl>
+								<dt>产品名称：</dt>
+								<dd><input type="text" class="txt grid-15" id="productName" name="productName" /></dd>
+							</dl>
+							<dl>
+								<dt>产品条形码：</dt>
+								<dd><input type="text" class="txt grid-15" id="barCode" name="barCode" /></dd>
+							</dl>
+							<dl>
+								<dt>产品分类：</dt>
+								<dd>
+									<input type="hidden" id="productClassCode" name="productClassCode">
+									<div id="productClassDiv">
+										<!-- <select class="select grid-15" id="productClass" name="productClassCode">
+											<option value="" selected>--请选择产品分类--</option>
+										</select> -->
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>是否上架：</dt>
+								<dd>
+									<select class="select grid-10" id="saleStatus" name="saleStatus" >
+										<option value="">请选择</option>
+										<option value="PRODUCTSALESTATUS_INIT">未上架</option>
+										<option value="PRODUCTSALESTATUS_ONSALE">已上架</option>
+										<option value="PRODUCTSALESTATUS_OFFSALE">已下架</option>
+									</select>
+								</dd>
+							</dl>
+						<p class="main_search_btn">
+							<input type="button" value="查询" class="btn_sure" id="productSearch" onClick="dataSubmit()" /> 
+						</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<!--搜索条件结束-->
+					<div class="order_index">
+						<table class="simple_table" cellpadding="0" cellspacing="0"
+							width="100%">
+							<thead>
+								<tr>
+									<th width="60">显示顺序</th>
+									<th width="120">产品名称</th>
+									<th width="130">产品条形码</th>
+									<th width="100">产品分类</th>
+									<th width="100">产品规格</th>
+									<th width="100">采购价（元）</th>
+									<th width="100">普通会员售价（元）</th>
+									<th width="100">VIP会员售价（元）</th>
+									<th width="100">普通会员返款（元）</th>
+									<th width="100">VIP会员返款（元）</th>
+									<th width="70">是否上架</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody">
+							</tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+							<dd class="pagination">
+								<span id="pageItem">
+									<span class="page_prev">&lt;&lt; 上一页</span>
+									<a class="bg_on" href="javascript:void(0);">1</a>
+									<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+									<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+								</span>
+								<span class="page_no">共<span id="totalCount">0</span>条</span>
+								<span class="page_no">共<span id="pageCount">2</span>页 到第
+								<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+								<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+							</dd>
+					</dl>
+					<dl>
+							<dt></dt>
+							<dd>
+								<p class="main_search_btn">
+									<input type="button" id="dataSubmit" class="btn_sure" value="添加" onClick="javascript:dataEditSubmit()">
+									<input type="button" id="goBack" class="btn_gray" value="返回" onclick="javascript:history.go(-1);">
+								</p>
+							</dd>
+					</dl>
+					<div id="promptAddMessage" class="cred" style="display:block;height:500px;overflow-y:auto;width:700px;"></div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

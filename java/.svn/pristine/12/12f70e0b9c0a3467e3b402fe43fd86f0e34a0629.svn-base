@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.RoleMapper">
+	<resultMap id="BaseResultMap" type="Role">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="ROLENAME" property="roleName" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="ROLEDESC" property="roleDesc" jdbcType="VARCHAR" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSER" property="modifyUser" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, ROLENAME, CUSTOMERTYPE, ROLEDESC, CUSTOMERID,
+		 CREATEUSERID,CREATETIME, MODIFYUSER, MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="Role" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into S_ROLE (ROLENAME, CUSTOMERTYPE,
+		ROLEDESC, CUSTOMERID,
+		CREATEUSERID,CREATETIME, MODIFYUSER, MODIFYTIME
+		)
+		values (#{roleName,jdbcType=VARCHAR},
+		#{customerType,jdbcType=VARCHAR},
+		#{roleDesc,jdbcType=VARCHAR},
+		#{customerId,jdbcType=INTEGER},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}, 
+		#{modifyUser,jdbcType=INTEGER}, 
+		#{modifyTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from S_ROLE
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateByIdSelective" parameterType="Role">
+		update S_ROLE
+		<set>
+			<if test="roleName != null">
+				ROLENAME = #{roleName,jdbcType=VARCHAR},
+			</if>
+			<if test="customerType != null">
+				CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR},
+			</if>
+			<if test="roleDesc != null">
+				ROLEDESC = #{roleDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="customerId != null">
+				CUSTOMERID = #{,jdbcType=INTEGER},
+			</if>
+			<if test="modifyUser != null">
+				MODIFYUSER = #{modifyUser,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateById" parameterType="Role">
+		update S_ROLE
+		set 
+		ROLENAME = #{roleName,jdbcType=VARCHAR},
+		CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR},
+		ROLEDESC = #{roleDesc,jdbcType=VARCHAR},
+		CUSTOMERID = #{customerId,jdbcType=INTEGER},
+		MODIFYUSER = #{modifyUser,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where 
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_ROLE
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="listRoles" resultMap="BaseResultMap" parameterType="Role">
+		select
+		<include refid="Base_Column_List" />
+		from S_ROLE
+		<where>
+			<if test="roleName != null">
+				and ROLENAME like CONCAT('%',#{roleName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="customerType != null">
+				and CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+			</if>
+			<if test="roleDesc != null">
+				and ROLEDESC like CONCAT('%',#{roleDesc,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="customerId != null">
+				and CUSTOMERID = #{,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+	<select id="listByCustomerType" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from S_ROLE
+		where CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findRoles" resultMap="BaseResultMap" parameterType="RoleQuery">
+		select
+		<include refid="Base_Column_List" />
+		from S_ROLE
+		<where>
+			<if test="roleName != null">
+				and ROLENAME like CONCAT('%',#{roleName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="customerType != null">
+				and CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+			</if>
+			<if test="roleDesc != null">
+				and ROLEDESC like CONCAT('%',#{roleDesc,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="customerId != null">
+				and CUSTOMERID = #{,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+	<select id="loadRoleByNameAndCustomerType" resultMap="BaseResultMap" >
+		select
+		<include refid="Base_Column_List" />
+		from S_ROLE
+		<where>
+			<if test="roleName != null">
+				and ROLENAME =#{roleName,jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				and CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

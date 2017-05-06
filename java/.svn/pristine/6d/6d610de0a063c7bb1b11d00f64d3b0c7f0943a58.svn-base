@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>一里递</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<link rel="stylesheet" href="../static-resource/css/iscroll.css" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript" src="../static-resource/js/main.js"></script>
+<script type="text/javascript" src="../static-resource/js/module.js"></script>
+<script type="text/javascript" src="../static-resource/js/jquery.tmpl.js"></script>
+<script type="text/javascript" src="../static-resource/js/local-data-storage.js"></script>
+<script type="text/javascript" src="../static-resource/js/index.js"></script>
+<script type="text/javascript" src="../static-resource/js/jquery.fly.min.js"></script>
+<script type="text/javascript" src="../static-resource/js/jquery.pin.js"></script>
+<script type="text/javascript" src="../static-resource/js/iscroll.js"></script>
+</head>
+<body>
+	<header id="topBigTit">
+		<!--顶部搜索栏-->
+		<div class="top-big-tit-allCate" style="position: fixed;top:0;left: 0;z-index: 19931112;">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<div id="inputBoxTop">
+				<input class="top-mid-con" id="searchInput" type="search" placeholder="请输入需要搜索的关键字" onclick="toSearchProducts()">
+			</div>
+		</div>
+	</header>
+	<section>
+		<div class="allCate">
+			<!--左侧分类栏-->
+			<div class="leftCate opt" id="leftCateBox">
+				<ul class="cateKeywords">
+				</ul>
+			</div>
+			<!--右侧商品列表栏-->
+			<div class="rightPro" id="rightProBox">
+				<div class="sortBox">
+					<div class="sortCon">
+						<a href="#" id="priceHigh" class="sortDefault  sortByPrice" data-sort="2" data-order="1">价格高到低</a> <a href="#" id="priceLow" class="sortDefault hide sortByPrice"
+							data-sort="1" data-order="1">价格低到高</a>
+					</div>
+					<div class="sortCon">
+						<a href="#" class="sortDefault sortBySale" id="saleHigh" data-sort="2" data-order="2">销量高到低</a> <a href="#" class="sortDefault hide sortBySale" id="saleLow" data-sort="1"
+							data-order="2">销量低到高</a>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div id="wrapper" style="top:1.78rem;">
+					<div id="scroller">
+						<div id="pullDown">
+							<span class="pullDownIcon"></span><span class="pullDownLabel">下拉刷新...</span>
+						</div>
+						<div class="rightProList" id="rightProList"></div>
+						<div id="pullUp" class="hide">
+							<span class="pullUpIcon"></span><span class="pullUpLabel">上拉刷新...</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<footer>
+		<!--悬浮购物车-->
+		<div class="bot-cart-wrap">
+			<div class="bot-cart-btn" id="end" onclick="window.location.href='../cart/cart.html'">
+				<input class="cart-pro-number" id="cartProNumber" value="" readonly="readonly" />
+			</div>
+		</div>
+	</footer>
+	<!--获取商品类型列表-->
+	<script type="text/javascript">
+		var classCode = getUrlParam("code");
+		var pageNum = 0;
+		var pageSize = 12;
+		var totalPages = 0;
+		$(function() {
+			cateKeywordsTmpl();
+			showCartNum();
+		});
+		//数据渲染
+		function cateKeywordsTmpl() {
+			var params = new Object();
+			params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+			params.parentClassCode = 'TOP_CLASS';
+			ajax("/product/getproducttype", params, function(data) {
+				$("#cateKeywordsTmpl").tmpl(data).appendTo(".cateKeywords");
+				if (!data)
+					return;
+				if (!classCode)
+					classCode = data[0].classCode;
+				$(".cateKeywords li a").click(function() {
+					checkCateItem($(this).attr("data-classcode"));
+				});
+				checkCateItem(classCode);
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		function rightProductsTmpl(pageNumTemp) {
+			var params = new Object();
+			params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+			params.classCode = classCode;
+			params.pageNum = pageNumTemp;
+			params.pageSize = pageSize;
+			params.orderBy = getOrderBy();
+			params.sortBy = getSortBy();
+			ajax("/product/searchproducts", params, function(data) {
+				totalPages = data.totalPages;
+				pageNum = data.pageNum;
+				if (data.pageNum <= 1) {
+					$(".rightProList").html("");
+					if (myScroll) {
+						myScroll.scrollTo(0, 0);
+						myScroll.maxScrollY = 0;
+					}
+				}
+				loadable = pageNum < totalPages;
+				calculateProductCart(data.list);
+				$("#rightProductsTmpl").tmpl(data.list).appendTo(
+						".rightProList");
+				if (myScroll)
+					myScroll.refresh();
+			}, function(data) {
+				if (myScroll)
+					myScroll.refresh();
+				alert(data);
+			}, true);
+		}
+		function pullDownAction() {
+			rightProductsTmpl(1);
+		}
+		function pullUpAction() {
+			pageNum++;
+			rightProductsTmpl(pageNum);
+		}
+		function checkCateItem(classCodeTemp) {
+			var checkClassCode = $(".cateKeywords li a.cateActive").attr(
+					"data-classcode");
+			if (checkClassCode == classCodeTemp)
+				return;
+			$(".cateKeywords li a.cateActive").removeClass("cateActive");
+			$(".cateKeywords li a").each(function() {
+				if ($(this).attr("data-classcode") == classCodeTemp) {
+					$(this).addClass("cateActive");
+					classCode = classCodeTemp;
+					pageNum = 1;
+					rightProductsTmpl(pageNum);
+				}
+			});
+		}
+		function getAddToCartPosition(obj, e) {
+			var x = $(e).offset().left;
+			var y = $(e).offset().top;
+			var start = new Array();
+			start.push(x);
+			start.push(y);
+			validCartToAdd(obj, addCartSuccess, start, e);
+		}
+		function addCartSuccess(productInfo, startLocation, doc) {
+			addOperation(doc, productInfo);
+			showCartNum();
+			var offset = $("#end").offset();
+			var img = $(doc).parent().parent().parent().find('img').attr('src');
+			var x = startLocation[0];
+			var y = startLocation[1];
+			var flyer = $('<img class="u-flyer" src="'+img+'">');
+			flyer.fly({
+				start : {
+					left : x,
+					top : y
+				},
+				end : {
+					left : offset.left + 10,
+					top : offset.top + 10,
+					width : 0,
+					height : 0
+				}
+			});
+		}
+		function getOrderBy() {
+			var order = $(".sortCon a.sortAct:not(.hide)").attr("data-order");
+			if (!order) {
+				order = 1;
+			}
+			return order;
+		}
+		function getSortBy() {
+			var sort = $(".sortCon a.sortAct:not(.hide)").attr("data-sort");
+			if (!sort) {
+				sort = 2;
+			}
+			return sort;
+		}
+		function getCateClass(item) {
+			return item == 0 ? "cateActive" : "";
+		}
+		//跳转到搜索商品页面
+		function toSearchProducts() {
+			window.location.href = "../search/search.html";
+		}
+	</script>
+	<!--商品类型模板-->
+	<script id="cateKeywordsTmpl" type="text/x-jquery-tmpl">
+    <li><a href="javascript:void(0);" class="cateTab ${getCateClass($index)}" data-classcode="${classCode}">${className}</a></li>
+</script>
+	<!--右边商品模板-->
+	<script id="rightProductsTmpl" type="text/x-jquery-tmpl">
+         <div class="right-pro-item">
+            <div class="right-pro-img"  onclick="window.location.href='../pro-detail/pro-detail.html?saleProductId=${saleProductId}'">
+                <img src="${saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+            </div>
+            <div class="pro-det"  onclick="window.location.href='../pro-detail/pro-detail.html?saleProductId=${saleProductId}'">
+                <p class="floor-pro-name">
+                    ${saleProductName}
+                </p>
+                <p class="floor-pro-size">
+                    ${saleProductSpec}
+                </p>
+                <p class="floor-pro-normal-price ">
+                    普通￥<span>${toCenti(retailPrice,2)}</span>
+                </p>
+                <p class="floor-pro-vip-price">
+                    VIP￥<span>${toCenti(promotionalPrice,2)}</span>
+                </p>
+            </div>
+            <div class="countBox">
+                <div class="count">
+                	<div class="reduce ${getShowClass(saleProductId)}" name="" type="button" onclick="getReduceToCart(this,${JSON.stringify($data)})"></div>
+                	<input class="pro-number ${getShowClass(saleProductId)}" name="" readonly="readonly" type="text" value="${getCartNum(saleProductId)}"/>
+                	<div class="add ${getBtnClass(saleProductId,stockNum)}" name="" type="button" onclick="getAddToCartPosition(${JSON.stringify($data)},this)"></div>
+            	</div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+</script>
+	<!--商品排序加载-->
+	<script type="text/javascript">
+		$(function() {
+			$(".sortCon .sortByPrice").click(function() {
+				$(".sortCon .sortByPrice").toggleClass("hide");
+				$(".sortCon .sortByPrice").addClass("sortAct");
+				$(".sortCon .sortBySale").removeClass("sortAct");
+				$(".rightProList").html("");
+				pageNum = 1;
+				rightProductsTmpl(pageNum);
+			});
+			$(".sortCon a.sortBySale").click(function() {
+				$(".sortCon .sortBySale").toggleClass("hide");
+				$(".sortCon .sortBySale").addClass("sortAct");
+				$(".sortCon .sortByPrice").removeClass("sortAct");
+				$(".rightProList").html("");
+				pageNum = 1;
+				rightProductsTmpl(pageNum);
+			});
+			//分类和商品列表盒子高度固定占一屏设置
+			var height = document.documentElement.clientHeight
+					- document.getElementById("topBigTit").offsetHeight;
+
+			var height = document.documentElement.clientHeight
+					- document.getElementById("topBigTit").style.height;
+			var leftCateBox = document.getElementById("leftCateBox");
+			var rightProBox = document.getElementById("rightProBox");
+			leftCateBox.style.height = height + 'px';
+			rightProBox.style.height = height + 'px';
+		});
+	</script>
+</body>
+</html>

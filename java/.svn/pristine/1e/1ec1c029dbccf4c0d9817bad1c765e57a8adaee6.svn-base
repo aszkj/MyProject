@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.ProductImeiLogMapper">
+	<resultMap id="BaseResultMap" type="ProductImeiLog">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PROVIDERID" property="providerId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+	    <result column="PRODUCTCLASSCODE" property="productClassCode" jdbcType="VARCHAR" />
+	    <result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+	    <result column="MODELCODE" property="modelCode" jdbcType="VARCHAR" />
+		<result column="IMEINO" property="imeiNo" jdbcType="VARCHAR" />
+		<result column="IMEISTATUSCODE" property="imeiStatuscCode" jdbcType="VARCHAR" />
+		<result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+		<result column="STOCKINITEMID" property="stockInItemId" jdbcType="INTEGER" />
+		<result column="STOCKOUTITEMID" property="stockOutItemId" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PROVIDERID, SALEPRODUCTID, PRODUCTCLASSCODE, BRANDCODE, MODELCODE, 
+		IMEINO, IMEISTATUSCODE, OPERATEUSERID, OPERATETIME, OPERATETYPE,
+		STOCKINITEMID, STOCKOUTITEMID, SALEORDERNO
+	</sql>
+
+	<insert id="save" parameterType="ProductImeiLog">
+		insert into T_PRODUCT_IMEI_LOG (
+		ID, PROVIDERID, SALEPRODUCTID, PRODUCTCLASSCODE, BRANDCODE, MODELCODE, 
+		IMEINO, IMEISTATUSCODE, OPERATEUSERID, OPERATETIME, OPERATETYPE,
+		STOCKINITEMID, STOCKOUTITEMID, SALEORDERNO)
+		values (#{id,jdbcType=INTEGER}, #{providerId,jdbcType=INTEGER}, #{saleProductId,jdbcType=INTEGER},
+		#{productClassCode,jdbcType=VARCHAR}, #{brandCode,jdbcType=VARCHAR}, #{modelCode,jdbcType=VARCHAR},
+		#{imeiNo,jdbcType=VARCHAR}, #{imeiStatuscCode,jdbcType=VARCHAR},
+		#{operateUserId,jdbcType=INTEGER}, #{operateTime,jdbcType=TIMESTAMP}, #{operateType,jdbcType=VARCHAR},
+		#{stockInItemId,jdbcType=INTEGER}, #{stockOutItemId,jdbcType=INTEGER}, #{saleOrderNo,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="listByImeiNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_PRODUCT_IMEI_LOG
+		where IMEINO = #{imeiNo,jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

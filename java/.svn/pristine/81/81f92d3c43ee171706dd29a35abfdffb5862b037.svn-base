@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ThemeColumnMapper">
+	<resultMap id="BaseResultMap" type="ThemeColumn">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="THEMECOLUMNNAME" property="themeColumnName" jdbcType="VARCHAR" />
+		<result column="SLOGANIMAGEURL" property="sloganImageUrl" jdbcType="VARCHAR" />
+		<result column="SORT" property="sort" jdbcType="INTEGER" />
+		<result column="QUANTITY" property="quantity" jdbcType="INTEGER" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />		
+		<result column="THEMEID" property="themeId" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, THEMECOLUMNNAME, SLOGANIMAGEURL, SORT, QUANTITY, STATUSCODE, THEMEID, CREATEUSERID, CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="ThemeColumn">
+		insert into P_THEME_COLUMN (THEMECOLUMNNAME, SLOGANIMAGEURL, SORT, QUANTITY, STATUSCODE, THEMEID, CREATEUSERID, CREATETIME)
+		values (#{themeColumnName,jdbcType=VARCHAR}, #{sloganImageUrl,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER},#{quantity,jdbcType=INTEGER},
+		#{statusCode,jdbcType=VARCHAR}, #{themeId,jdbcType=INTEGER}, #{createUserId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from P_THEME_COLUMN
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<delete id="deleteByThemeId" parameterType="java.lang.Integer">
+		delete from P_THEME_COLUMN
+		where THEMEID = #{themeId,jdbcType=INTEGER}
+	</delete>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_THEME_COLUMN
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listByThemeId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_THEME_COLUMN
+		where THEMEID = #{themeId,jdbcType=INTEGER}
+		order by SORT
+	</select>
+
+</mapper>

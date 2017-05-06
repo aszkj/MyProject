@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.StockOutMapper">
+	<resultMap id="BaseResultMap" type="StockOut">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STOCKOUTCOUNT" property="stockOutCount" jdbcType="INTEGER" />
+		<result column="STOCKOUTTYPE" property="stockOutType" jdbcType="VARCHAR" />
+		<result column="SENDORDERID" property="sendOrderId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, STOREID, STOCKOUTCOUNT, STOCKOUTTYPE, SENDORDERID, CREATETIME, CREATEUSERID, NOTE
+	</sql>
+
+	<insert id="save" parameterType="StockOut" useGeneratedKeys="true" keyProperty="id">
+		insert into T_STOCKOUT (
+		STOREID, STOCKOUTCOUNT, STOCKOUTTYPE, SENDORDERID,
+		CREATETIME, CREATEUSERID, NOTE
+		)
+		values (
+		#{storeId,jdbcType=INTEGER},
+		#{stockOutCount,jdbcType=INTEGER},
+		#{stockOutType,jdbcType=VARCHAR}, #{sendOrderId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}, #{note,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKOUT
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="findStockOuts" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKOUT
+		<where>
+			<if test="sendOrderId != null">
+				and STOREID = #{storeId,jdbcType=VARCHAR}
+			</if>
+			<if test="stockOutType != null">
+				and STOCKOUTTYPE = #{stockOutType,jdbcType=VARCHAR}
+			</if>
+			<if test="startDate != null">
+				and CREATETIME &gt; #{startDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endDate != null">
+				and CREATETIME &lt; #{endDate,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+
+</mapper>

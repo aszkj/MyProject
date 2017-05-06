@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+        document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body>
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p>天天疯抢</p>
+    </div>
+</header>
+<!--顶部场次切换tab栏-->
+<div class="secTop">
+        <ul id="secTab">
+        </ul>
+    <div class="clearfix"></div>
+</div>
+<!--秒杀商品列表-->
+<div class="secProList">
+    <div class="secActTit">
+        <span class="secActTitBg"></span>
+        <p class="secTitIns"></p>
+        <p class="timeCount" id="clockbox"><span class="hour"></span>:<span class="minute"></span>:<span class="second"></span></p>
+        <p class="timeCount" id="clockboxNotStart"><span class="hour"></span>:<span class="minute"></span>:<span class="second"></span></p>
+        <span id="timeIns" style="float: right;"></span>
+        <div class="clearfix"></div>
+    </div>
+    <div class="secProWrap">
+        <div id="secProBox">
+        </div>
+        <div class="not-find-box hide" id="secNotFind">
+            <img src="../static-resource/images/search/notfind.png">
+            <p>暂无秒杀商品</p>
+        </div>
+    </div>
+</div>
+<footer>
+    <!--悬浮购物车-->
+    <div class="bot-cart-wrap">
+        <div class="bot-cart-btn"  onclick="window.location.href='../cart/cart.html'">
+            <div class="forcartimg" id="end"></div>
+            <input class="cart-pro-number" id="cartProNumber" readonly="readonly" value="" />
+        </div>
+    </div>
+</footer>
+<!--loading-->
+<section id="pageloading" class="hide">
+    <img src="/static-resource/images/loading.png">
+</section>
+</body>
+<script type="text/javascript">
+    $(function() {
+        secInfoListTmpl();
+        showCartNum();
+    });
+    /*顶部秒杀场次信息渲染*/
+    function secInfoListTmpl() {
+        var params = new Object();
+        params.storeId=getSessionStorage(sessionStorageStoreKey).storeId;
+        ajax("/activity/seckillinfolist", params, function(data) {
+            var liWidth=100/data.length;
+            $("#secInfoListTmpl").tmpl(data).appendTo("#secTab");
+            $("#secTab li").width(liWidth+'%');
+            $(".secTitIns").html("限时限量疯抢中");
+            $("#timeIns").html("仅剩");
+            $("#clockboxNotStart").hide();
+            $("#clockbox").show();
+            var thisData=JSON.parse($(".secActive").attr("data-this"));
+            countDown(thisData.endTime,"#clockbox",thisData.systemTime);
+            var actId=$(".secActive").attr("data-actid");
+            secProductTmpl(actId);
+        }, function(msg) {
+            alert(msg);
+        });
+    }
+    /*点击切换秒杀场次显示*/
+    function showSecProduct(statusName,actId,e,data){
+        $(".secTop li").removeClass("secActive");
+        $(".secTop li").children(".arrowSecBg").removeClass("show").addClass("hide");
+        $(e).addClass("secActive");
+        $(e).children(".arrowSecBg").addClass("show");
+        secBtn();
+       if(statusName=='已开始'){
+            $(".secTitIns").html("本轮秒杀已结束");
+            $("#timeIns").hide();
+           $("#clockbox").hide();
+           $("#clockboxNotStart").hide();
+        }
+        if(statusName=='疯抢中'){
+            $(".secTitIns").html("限时限量疯抢中");
+            $("#timeIns").show();
+            $("#timeIns").html("仅剩");
+            $("#clockboxNotStart").hide();
+            $("#clockbox").show();
+        }
+        if(statusName=='即将开抢'){
+            $(".secTitIns").html("即将开始");
+            $("#timeIns").show();
+            $("#timeIns").html("距开始");
+            $("#clockboxNotStart").hide();
+            $("#clockbox").show();
+            if(data.$index==3){
+                $("#clockbox").hide();
+                $("#clockboxNotStart").show();
+                countDown(data.beginTime,"#clockboxNotStart",data.systemTime);
+            }
+        }
+        $("#secProBox").html("");
+        secProductTmpl(actId);
+    }
+    /*秒杀商品渲染*/
+    function secProductTmpl(actId){
+        var params = new Object();
+        params.actId=actId;
+        params.storeId=getSessionStorage(sessionStorageStoreKey).storeId;
+        ajax("/activity/seckillproducts", params, function(data) {
+            if(data.length<=0){
+                $(".not-find-box").removeClass("hide");
+            }else{
+                $(".not-find-box").addClass("hide");
+                $("#secProductTmpl").tmpl(data).appendTo("#secProBox");
+                percentBar();
+                secBtn();
+            }
+        }, function(msg) {
+            alert(msg);
+        });
+    }
+    /*进度条长度显示*/
+    function percentBar(){
+        $(".percentBar").each(function(){
+            var stockNum=$(this).attr("data-stocknum");
+            var seckillTotalCount=$(this).attr("data-seckillTotalCount");
+            var barWidth=(stockNum/seckillTotalCount)*100;
+            $(this).width(barWidth+'%');
+        });
+    }
+    //抢购按钮状态控制
+    function secBtn(){
+        $(".secBtn").each(function(){
+            var stockNum=$(this).attr("data-stocknum");
+            var statusName=$(".secActive").attr("data-statusName");
+            if(statusName=="即将开抢"){
+                $(this).addClass("secNotStart");
+                $(this).html("即将开抢");
+            }
+           else if(stockNum<=0){
+                $(this).addClass("secNoPro");
+                $(this).html("抢光了");
+            }
+        })
+    }
+    //倒计时函数
+    function countDown(endTime,id,systemTime){
+        var hour_elem = $(id).find('.hour');
+        var minute_elem = $(id).find('.minute');
+        var second_elem = $(id).find('.second');
+        var end_time = new Date(Date.parse(endTime.replace(/-/g,"/"))).getTime(),//月份是实际月份-1
+                sys_second = (end_time-new Date(Date.parse(systemTime.replace(/-/g,"/"))).getTime())/1000;
+        var timer = setInterval(function(){
+            if (sys_second > 1) {
+                sys_second -= 1;
+                var hour = Math.floor(sys_second / 3600);
+                var minute = Math.floor((sys_second / 60) % 60);
+                var second = Math.floor(sys_second % 60);
+                if(hour>99)
+                    hour=99;
+                $(hour_elem).text(hour<10?"0"+hour:hour);//计算小时
+                $(minute_elem).text(minute<10?"0"+minute:minute);//计算分钟
+                $(second_elem).text(second<10?"0"+second:second);//计算秒杀
+            } else {
+                clearInterval(timer);
+            }
+        }, 1000);
+    }
+    //点击+加入购物车
+    function getAddToCartPosition(obj, e) {
+        var start = new Array();
+        //加入购物车前的判断
+        if($(e).hasClass("secNotStart")){
+            return;
+        }
+        validCartToAdd(obj, addCartSuccess, start, e);
+    }
+    function addCartSuccess(productInfo, startLocation, doc) {
+        //购物车小红圆点
+        addOperationInSecKill(doc, productInfo);
+        showCartNum();
+        /*//商品加入购物车动画
+        var cart = $('#end');
+        var imgtodrag = $(doc).parent().parent().children().find('img');
+        if (imgtodrag) {
+            var imgclone = imgtodrag.clone()
+                    .offset({
+                        top: imgtodrag.offset().top,
+                        left: imgtodrag.offset().left
+                    })
+                    .css({
+                        'opacity': '0.5',
+                        'position': 'absolute',
+                        'height': '3.32rem',
+                        'width': '3.32rem',
+                        'z-index': '19941112'
+                    })
+                    .appendTo($('body'))
+                    .animate({
+                        'top': cart.offset().top + 10,
+                        'left': cart.offset().left + 10,
+                        'width': 75,
+                        'height': 75
+                    }, 800, 'easeInCubic');
+
+            imgclone.animate({
+                'width': 0,
+                'height': 0
+            }, function () {
+                $(this).detach()
+            });
+        }*/
+    }
+    //弹出手机键盘时悬浮购物车处理
+    $('#phone').bind('focus',function(){
+        $('.bot-cart-wrap').css('position','static');
+    }).bind('blur',function(){
+        $('.bot-cart-wrap').css('position','fixed');
+
+    });
+</script>
+<script id="secInfoListTmpl" type="text/x-jquery-tmpl">
+    <li class="${statusName=='疯抢中' ? 'secActive' : ''}" data-actid="${actId}" data-statusName="${statusName}"data-this="${JSON.stringify($data)}" onclick="showSecProduct('${statusName}',${actId},this,${JSON.stringify($data)})"><div><p>${actName}</p><p class="statusName">${statusName}</p></div><div class="arrowSecBg ${statusName=='疯抢中' ? 'show' : 'hide'}"></div> </li>
+</script>
+<script id="secProductTmpl" type="text/x-jquery-tmpl">
+    <div class="secPro">
+            <div class="secProImg" onclick="window.location.href='../pro-detail/pro-detail.html?saleProductId=${saleProductId}'">
+                <img src="${saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+            </div>
+            <div class="secProDes">
+                <p class="secProName">${saleProductName}</p>
+                <p class="secProSize">${saleProductSpec}</p>
+                <p class="secProStock"><span>限量${seckillShowTotalCount}件</span><span class="hide">抢光了，请明日再来</span></p>
+                <div class="stockBar"><div class="percentBar" data-stocknum="${stockNum}" data-seckillTotalCount="${seckillTotalCount}"></div></div>
+                <p class="secProPrice">￥${toCenti(seckillPrice,2)}</p>
+                <div class="secBtn" data-stocknum="${stockNum}" onclick="getAddToCartPosition(${JSON.stringify($data)},this)">马上抢</div>
+            </div>
+        </div>
+        <div class="bord"></div>
+</script>
+</html>

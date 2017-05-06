@@ -1,0 +1,518 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/font.css"
+	rel="stylesheet" />
+	<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<style>
+.workorder_save_button_new {
+	padding: 10px 100px
+}
+
+.workorder_leave_new {
+	padding: 10px 50px
+}
+</style>
+<script type="text/javascript">
+	var GLOBAL_PARAM = {
+		g_boxId : $.trim(getUrlParam("boxId")),
+		id : $.trim(getUrlParam("id"))
+	};
+
+	var method = getUrlParam("method");
+
+	function getStoreEvaluationDetail() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ GLOBAL_PARAM.id + '/loadStoreEvaluationDetail',
+			type : 'get',
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				var object = data.entity;
+				$('#createTime').val(object.createTime);
+				$('#storeCode').val(object.storeCode);
+				$('#storeName').val(object.storeName);
+				$('#anonymityEvaluate').val(object.anonymityEvaluate);
+				$('#systemEvaluate').val(object.systemEvaluate);
+				$('#userName').val(object.userName);
+				$('#storeUserName').val(object.storeUserName);
+				$('#content').val(object.content);
+				$('#showStatus').val(object.showStatus);
+				// 商品描述
+				/* var coincideScore = object.coincideStar;
+				var coincideScoreHtml = '';
+				for (var i = 0; i < coincideScore; i++) {
+					coincideScoreHtml += '<span class="icon-font star-orange">&#xe600;</span>';
+				}
+				for (var j = 0; j < 5 - coincideScore; j++) {
+					coincideScoreHtml += '<span class="icon-font star-grey">&#xe600;</span>';
+				}
+				$('#coincideStarVal').html(coincideScoreHtml); */
+				// 物流配送速度
+				var sendScore = object.sendStar;
+				var sendScoreHtml = '';
+				for (var i = 0; i < sendScore; i++) {
+					sendScoreHtml += '<span class="icon-font star-orange">&#xe600;</span>';
+				}
+				for (var j = 0; j < 5 - sendScore; j++) {
+					sendScoreHtml += '<span class="icon-font star-grey">&#xe600;</span>';
+				}
+				$('#sendStarVal').html(sendScoreHtml);
+				// 商家服务态度				
+				var attitudeScore = object.attitudeStar;
+				var attitudeScoreHtml = '';
+				for (var i = 0; i < attitudeScore; i++) {
+					attitudeScoreHtml += '<span class="icon-font star-orange">&#xe600;</span>';
+				}
+				for (var j = 0; j < 5 - attitudeScore; j++) {
+					attitudeScoreHtml += '<span class="icon-font star-grey">&#xe600;</span>';
+				}
+				$('#attitudeStarVal').html(attitudeScoreHtml);
+				if (method == 'view') {
+					removeButton();
+					$("#createTime").attr("readonly", "readonly");
+					$("#storeName").attr("readonly", "readonly");
+					$("#anonymityEvaluate").attr("disabled", "disabled");
+					$("#systemEvaluate").attr("disabled", "disabled");
+					$("#userName").attr("readonly", "readonly");
+					$("#content").attr("readonly", "readonly");
+					$("#showStatus").attr("disabled", "disabled");
+				}
+			}
+		});
+	}
+
+	/*评论星初始化*/
+	function starScore(count) {
+		var coincideHtml = '';
+		var sendHtml = '';
+		var attitudeHtml = '';
+		for (var i = 0; i < count; i++) {
+			/* coincideHtml += '<span class="icon-font star-orange" id='
+					+ 'coincideStar_' + i
+					+ ' onclick="setStar(this)">&#xe600;</span>'; */
+			sendHtml += '<span class="icon-font star-orange" id=' + 'sendStar_'
+					+ i + ' onclick="setStar(this)">&#xe600;</span>';
+			attitudeHtml += '<span class="icon-font star-orange" id='
+					+ 'attitudeStar_' + i
+					+ ' onclick="setStar(this)">&#xe600;</span>';
+		}
+		/* $('#coincideStarVal').html(coincideHtml); */
+		$('#sendStarVal').html(sendHtml);
+		$('#attitudeStarVal').html(attitudeHtml);
+		$('#coincideStar').val(count);
+		$('#sendStar').val(count);
+		$('#attitudeStar').val(count);
+	}
+	/*评论星设置*/
+	function setStar(obj) {
+		var starId = obj.id;
+		var className = starId.split("_")[0];
+		var num = starId.split("_")[1];
+		var starHtml = '';
+		for (var i = 0; i <= num; i++) {
+			starHtml += '<span class="icon-font star-orange" id=' + className
+					+ '_' + i + ' onclick="setStar(this)">&#xe600;</span>';//title="'+(i+1)+'分"
+		}
+		for (var j = num * 1 + 1; j < 5; j++) {
+			starHtml += '<span class="icon-font star-grey" id=' + className
+					+ '_' + j + ' onclick="setStar(this)">&#xe600;</span>';
+		}
+		$('#' + className + 'Val').html(starHtml);
+		$('#' + className).val(num * 1 + 1);
+		//alert(className+":"+$('#'+className).val());
+	}
+
+	function removeButton() {
+		$("#submit").remove();
+	}
+	function resetSubmit() {
+		if (method == 'add') {
+			//reset();
+			starScore(5);
+		}
+	}
+
+	function comeback() {
+		var urlParam = window.location.search;
+		locationHref('/user/store-evaluation-index.html' + urlParam);
+	}
+	
+	//根据店铺名称获取店铺code
+	function getStoreInfo(value) {
+		if (method != 'add' || "" == $.trim(value)) {
+			return;
+		}
+		if("" != $.trim(value)){
+			ajax({
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + $.trim(value)
+						+ '/getStoreInfoByStoreName',
+				type : 'get',
+				dataType : 'json',
+				error : function() {
+				},
+				success : function(data) {
+					if (data.msgCode == 1) {
+						if(data.entity){
+							$('#storeCode').val(data.entity);
+							$('#storeNameMsg').html('').attr('class', 'right');
+						}else{
+							$('#storeNameMsg').html(value+'店铺不存在').attr('class', 'error');
+						}
+					}else{
+						$('#storeNameMsg').text('出现系统异常');
+					}
+				}
+			});
+		}
+	}
+	//根据用户名称获取userId
+	function getUserInfo(value) {
+		if (method != 'add' || "" == $.trim(value)) {
+			return;
+		}
+		if("" != $.trim(value)){
+			ajax({
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + $.trim(value)
+						+ '/getBuyerUserByUserName',
+				type : 'get',
+				dataType : 'json',
+				error : function() {
+				},
+				success : function(data) {
+					if (data.msgCode == 1) {
+						if(data.entity){
+							$('#userId').val(data.entity*1);
+							$('#userNameMsg').html('').attr('class', 'right');
+						}else{
+							$('#userNameMsg').html(value+'用户存在').attr('class', 'error');
+							
+						}
+					}else{
+						$('#userNameMsg').text('校验用户 出现系统异常');
+					}
+				}
+			});
+		}
+	}
+
+	function dataSubmit() {
+		if (method != 'add') {
+			$('#prompt').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url = OPERATION_SYSTEM_IDENTITY + '/saveStoreEvaluation';
+		}
+		/*if (!validateData()) {
+			return;
+		}*/
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#prompt').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					url : TERMINAL_URL + url,
+					contentType : 'application/json',
+					data : formJsonStr,
+					dataType : 'json',
+					cache : false,
+					error : function() {
+						if (method == 'edit' || method == 'add') {
+							$('#prompt').text('保存数据失败，请稍后再试');
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+						}
+					},
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#prompt').text('保存成功');
+							/* window.setTimeout(function() {
+								parent.location.reload();//close_box();
+													}, 1000); */
+						} else {
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							$('#prompt').text(data.msg);
+						}
+					}
+				});
+	}
+
+	var validate = (function() {
+		return {
+			validateBrandName : function() {
+				var brandName = $.trim($('#brandName').val());
+				$brandNameMsg = $('#brandNameMsg');
+				if (!brandName) {
+					$brandNameMsg.html('请填写品牌名称！').attr('class', 'error');
+					return false;
+				}
+				if (strlen(brandName) > 60) {
+					$brandNameMsg.html('品牌名称太长了！').attr('class', 'error');
+					return false;
+				}
+				if (!nameIsExist) {
+					$brandNameMsg.html('品牌名称已存在！').attr('class', 'error');
+					return false;
+				}
+				;
+				$brandNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateBrandDesc : function() {
+				var brandDesc = $.trim($('#brandDesc').val());
+				$brandDescMsg = $('#brandDescMsg');
+				if (strlen(brandDesc) > 100) {
+					$brandDescMsg.html('品牌描述太长了！').attr('class', 'error');
+					return false;
+				}
+				$brandDescMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validatedisplayOrder : function() {
+				var displayOrder = $.trim($('#displayOrder').val());
+				$displayOrderMsg = $('#displayOrderMsg');
+				if (!displayOrder) {
+					$displayOrderMsg.html('请填写品牌顺序！').attr('class', 'error');
+					return false;
+				}
+				var legalNum = /^[0-9]*[1-9][0-9]*$/;
+				if (!legalNum.test(displayOrder)) {
+					$displayOrderMsg.html('组内排序必须为大于0的整数！').attr('class',
+							'error');
+					return false;
+				}
+				$displayOrderMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateBrandImageUrl : function() {
+				var brandImageUrl = $.trim($('#imageUrl').val()), $brandImageUrlMsg = $('#imageUrlMsg');
+				if (!brandImageUrl) {
+					$brandImageUrlMsg.html('请上传图片！').attr('class', 'error');
+					return false;
+				}
+				$brandImageUrlMsg.html('').attr('class', 'right');
+				return true;
+			},
+		}
+	})();
+	
+	function validateData() {
+		if (!validate.validatedisplayOrder()) {
+			return false;
+		}
+		if (!validate.validateBrandDesc()) {
+			return false;
+		}
+		if (!validate.validateBrandImageUrl()) {
+			return false;
+		}
+		if (!validate.validateBrandName()) {
+			return false;
+		}
+		return true;
+	}
+
+	function setMainpic() {
+		$(document).on('click', '.mainpic', function() {
+			var tempa = "#appPicMain" + $(this).val();
+			$('.js-mainPicv').val(0);
+			$(tempa).val(1);
+		})
+	}
+	
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#createTime').datetimepicker({
+			maxDateTime : new Date(),
+			hour: new Date().getHours(),
+			minute: new Date().getMinutes(),
+			second: new Date().getSeconds()
+		});
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		//loadSubClass();
+		setMainpic();
+		if (method == "view") {
+			$("#breadName").html('店铺评论查看');
+			$("#pageTitle").html('店铺评论查看');
+			getStoreEvaluationDetail();
+		}
+		if (method == "add") {
+			loadTimeInput();
+			$("#breadName").html('店铺评论添加');
+			$("#pageTitle").html('店铺评论添加');
+			$("#reset").show();
+			starScore(5);
+		}
+	});
+</script>
+</head>
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 评论管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" id="dataForm" class="user_form" >
+							<input type="hidden" id="coincideStar" name="coincideStar" /> <input
+								type="hidden" id="sendStar" name="sendStar" /> <input
+								type="hidden" id="attitudeStar" name="attitudeStar" />
+								<input type="hidden" id="userId" name="userId" /> 
+							<dl>
+								<dt><em class="cred">*</em>评论时间：</dt>
+								<dd>
+									<input type="text" class="txt grid-30" id="createTime"
+							name="createTime" /> 
+								</dd>
+							</dl>
+							<dl>
+								<dt>门店登入账号：</dt>
+								<dd>
+									<input type="text" class="txt grid-30" id="storeUserName"
+										name="storeUserName" readonly="readonly" />
+								</dd>
+							</dl>
+							<dl>
+								<dt><em class="cred">*</em>门店名称：</dt>
+								<dd>
+									<input type="text" class="txt grid-30" id="storeName"
+										name="storeName" onblur="getStoreInfo(this.value)"/><span id="storeNameMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt><em class="cred">*</em>是否匿名评价：</dt>
+								<dd>
+									<select class="select grid-10" id="anonymityEvaluate"
+										name="anonymityEvaluate">
+										<option value="STOREEVALUATIONANONYMITYEVAL_YES"
+											selected="selected">是</option>
+										<option value="STOREEVALUATIONANONYMITYEVAL_NO">否</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<dt><em class="cred">*</em>是否系统评价：</dt>
+								<dd>
+									<select class="select grid-10" id="systemEvaluate"
+										name="systemEvaluate">
+										<option value="STOREEVALUATIONSYSTEMEVAL_YES"
+											selected="selected">是</option>
+										<option value="STOREEVALUATIONSYSTEMEVAL_NO">否</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<dt><em class="cred">*</em>评论用户：</dt>
+								<dd>
+									<input type="text" class="txt grid-30" id="userName"
+										name="userName" onblur="getUserInfo(this.value)"/><span id="userNameMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt><em class="cred">*</em>评论内容：</dt>
+								<dd>
+									<textarea type="text" id="content" name="content"
+										class="txt grid-30" rows="3"></textarea><span id="contentMsg"></span>
+								</dd>
+							</dl>
+							<!--<dl>
+								<dt><em class="cred">*</em>商品描述相符：</dt>
+								<dd>
+									<span id="coincideStarVal"></span>
+								</dd>
+							</dl>-->
+							<dl>
+								<dt><em class="cred">*</em>物流配送速度：</dt>
+								<dd>
+									<span id="sendStarVal"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt><em class="cred">*</em>商家服务态度：</dt>
+								<dd>
+									<span id="attitudeStarVal"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt><em class="cred">*</em>显示状态：</dt>
+								<dd>
+									<select class="select grid-10" id="showStatus"
+										name="showStatus">
+										<option value="STOREEVALUATIONSTATUS_YES" selected="selected">是</option>
+										<option value="STOREEVALUATIONSTATUS_NO">否</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<p>
+									<input type="submit" value="保 存" id="submit" class="btn_sure"
+										onclick="dataSubmit()" /> <input type="reset"
+										style="display: none" id="reset" class="btn_gray" value="重置"
+										onClick="resetSubmit()"> <input
+										type="button" value="返 回" class="btn_gray"
+										onclick="comeback()" /> <span id="prompt" class="cred"></span>
+								</p>
+							</dl>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+	<div id="hidedv" style="display: none"></div>
+</body>
+</html>

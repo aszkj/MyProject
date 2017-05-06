@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleProductImageHistoryMapper">
+	<resultMap id="BaseResultMap" type="SaleProductImageHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTIMAGEID" property="saleProductImageId"
+			jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId"
+			jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="MASTERFLAG" property="masterFlag" jdbcType="VARCHAR" />
+		<result column="IMAGEURL1" property="imageUrl1" jdbcType="VARCHAR" />
+		<result column="IMAGEURL2" property="imageUrl2" jdbcType="VARCHAR" />
+		<result column="IMAGEURL3" property="imageUrl3" jdbcType="VARCHAR" />
+		<result column="IMAGEORDER" property="imageOrder" jdbcType="INTEGER" />
+		<result column="OPERATEUSERID" property="operateUserId"
+			jdbcType="INTEGER" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEPRODUCTIMAGEID, SALEPRODUCTID, CHANNELCODE,
+		MASTERFLAG, IMAGEURL1,
+		IMAGEURL2 , IMAGEURL3, IMAGEORDER,
+		OPERATEUSERID,OPERATETIME,OPERATETYPE
+	</sql>
+	<select id="loadSaleProductImageHistoryById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_IMAGE_HISTORY
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<insert id="saveSaleProductImageHistory" parameterType="SaleProductImageHistory"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_SALE_PRODUCT_IMAGE_HISTORY (ID, SALEPRODUCTIMAGEID, SALEPRODUCTID,
+		CHANNELCODE,
+		MASTERFLAG, IMAGEURL1,IMAGEURL2, IMAGEURL3,IMAGEORDER,
+		OPERATEUSERID,OPERATETIME,OPERATETYPE )
+		values
+		(#{id,jdbcType=INTEGER},
+		#{saleProductImageId,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER},
+		#{channelCode,jdbcType=VARCHAR}
+		,#{masterFlag,jdbcType=VARCHAR},
+		#{imageUrl1,jdbcType=VARCHAR},
+		#{imageUrl2,jdbcType=VARCHAR},
+		#{imageUrl3,jdbcType=VARCHAR},
+		#{imageOrder,jdbcType=INTEGER},
+		#{operateUserId,jdbcType=INTEGER},
+		#{operateTime,jdbcType=TIMESTAMP}, 
+		#{operateType,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="listSaleProductImageHistorysBySaleProductIdAndChannelCode"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_IMAGE_HISTORY
+		where 
+		SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+		and 
+		CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+	</select>
+</mapper>

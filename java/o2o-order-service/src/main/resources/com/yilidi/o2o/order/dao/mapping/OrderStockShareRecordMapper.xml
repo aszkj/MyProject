@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.OrderStockShareRecordMapper">
+	<resultMap id="BaseResultMap" type="OrderStockShareRecord">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="WAREHOUSEID" property="warehouseId" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, STOREID, WAREHOUSEID, CREATEUSERID,
+		CREATETIME
+	</sql>
+	<insert id="save" parameterType="OrderStockShareRecord" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_ORDER_STOCKSHARE_RECORD (SALEORDERNO, STOREID, WAREHOUSEID, CREATEUSERID,
+		CREATETIME)
+		values
+		(#{saleOrderNo,jdbcType=VARCHAR}, #{storeId,jdbcType=INTEGER},
+		#{warehouseId,jdbcType=INTEGER},
+		#{createUserId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.AreaDictMapper">
+	<resultMap id="BaseResultMap" type="AreaDict">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="AREANAME" property="areaName" jdbcType="VARCHAR" />
+		<result column="AREATYPE" property="areaType" jdbcType="VARCHAR" />
+		<result column="PARENTCODE" property="parentCode" jdbcType="VARCHAR" />
+		<result column="AREACODE" property="areaCode" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, AREANAME, AREATYPE, PARENTCODE, AREACODE, CREATEUSERID,
+		CREATETIME,
+		MODIFYUSERID, MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="AreaDict" useGeneratedKeys="true" keyProperty="id">
+		insert into S_AREA_DICT (
+		AREANAME, 
+		AREATYPE, 
+		PARENTCODE, 
+		AREACODE, 
+		CREATEUSERID,
+		CREATETIME)
+		values (
+		#{areaName,jdbcType=VARCHAR},
+		#{areaType,jdbcType=VARCHAR},
+		#{parentCode,jdbcType=VARCHAR},
+		#{areaCode,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<update id="updateById" parameterType="AreaDict">
+		update S_AREA_DICT
+		<set>
+			<if test="areaName != null">
+				AREANAME = #{areaName,jdbcType=VARCHAR},
+			</if>
+			<if test="areaType != null">
+				AREATYPE = #{areaType,jdbcType=VARCHAR},
+			</if>
+			<if test="parentCode != null">
+				PARENTCODE = #{parentCode,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateByAreaCode" parameterType="AreaDict">
+		update S_AREA_DICT
+		<set>
+			<if test="areaName != null">
+				AREANAME = #{areaName,jdbcType=VARCHAR},
+			</if>
+			<if test="areaType != null">
+				AREATYPE = #{areaType,jdbcType=VARCHAR},
+			</if>
+			<if test="parentCode != null">
+				PARENTCODE = #{parentCode,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where AREACODE = #{areaCode,jdbcType=VARCHAR}
+	</update>
+
+	<select id="listByAreaType" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from S_AREA_DICT
+		where AREATYPE = #{areaType,jdbcType=VARCHAR}
+	</select>
+
+	<select id="listByParentCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from S_AREA_DICT
+		where PARENTCODE = #{parentCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="listByAreaCodes" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from S_AREA_DICT
+		where AREACODE in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="loadByAreaCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from S_AREA_DICT
+		where AREACODE = #{areaCode,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

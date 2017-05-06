@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.StockOutItemMapper">
+	<resultMap id="BaseResultMap" type="StockOutItem">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOCKOUTID" property="stockOutId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="QUANTITY" property="quantity" jdbcType="INTEGER" />
+		<result column="SENDORDERITEMID" property="sendOrderItemId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, STOCKOUTID, SALEPRODUCTID, QUANTITY, SENDORDERITEMID
+	</sql>
+
+	<insert id="save" parameterType="StockOutItem" useGeneratedKeys="true" keyProperty="id">
+		insert into T_STOCKOUT_ITEM (
+		STOCKOUTID, SALEPRODUCTID, QUANTITY, SENDORDERITEMID
+		)
+		values (
+		#{stockOutId,jdbcType=INTEGER}, #{saleProductId,jdbcType=INTEGER}, #{quantity,jdbcType=INTEGER},
+		#{sendOrderItemId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<select id="listByStockOutId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKOUT_ITEM
+		where STOCKOUTID = #{stockOutId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

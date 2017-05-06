@@ -1,0 +1,293 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet"  />
+<script type="text/javascript">
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+var sid = null;
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()}
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){showBox('提示信息','您输入的页码超出正常范围','alert');}
+		else{ showBox('提示信息','当前已经是第一页','alert');}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){showBox('提示信息','您输入的页码超出正常范围','alert');}
+		else{showBox('提示信息','当前已经是最后一页','alert');}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+function dataSubmit(pageNo,businessType){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			showBox('提示信息','提交数据失败，请稍后再试','alert');
+		},
+		url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/findRecommendOrderInfos',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				var id = getUrlParam('id');
+				if(null != dataList && dataList.length > 0){
+				for(var i=0,j=dataList.length;i<j;i++){
+					html += '<tr><td>';
+					html += ((param.currentPage-1)*(param.pageSize)+i+1);
+					html += '</td><td>';
+					html += dataList[i].recommendRealName;
+					html += '</td><td>';
+					html += dataList[i].recommendMobile;
+					html += '</td><td>';
+					html += dataList[i].invitationCode;
+					html += '</td><td>';
+					html += dataList[i].buyerMobile;
+					html += '</td><td>';
+					html += dataList[i].buyerRegisterTime;
+					html += '</td><td>';
+					html += dataList[i].saleOrderNo;
+					html += '</td><td>';
+					html += toCenti(dataList[i].saleOrderAmount, 2);
+					html += '</td><td>';
+					html += dataList[i].saleOrderStatusName;
+					html += '</td></tr>';
+					}
+				}else {
+					html += '<tr><td colspan="9">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	}); 
+}
+
+/*导出报表开始*/
+function exportRecommendOrderInfos(){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/exportRecommendOrderInfos',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$("#recommend_down").attr("href",DOWNLOAD_FILE_TEMP_URL+data.entity.reportFilePath);
+				$("#recommend_down").show();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+
+/*加载时间控件*/
+function loadTimeInput(){
+	$('#startRegisterTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endRegisterTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	dataSubmit();
+	loadTimeInput();
+});
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 报表管理 &gt; <span>推广佣金结算报表</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">推广佣金结算报表</div>
+				<div class="complaint_main">
+					<form method="get" id="dataForm">
+						<div class="main_search">
+							<dl>
+								<dt>推广人：</dt>
+								<dd><input type="text" class="txt grid-12" id="recommendRealName" name="recommendRealName" /></dd>
+							</dl>
+							<dl>
+								<dt>推荐码：</dt>
+								<dd><input type="text" class="txt grid-12" id="invitationCode" name="invitationCode" /></dd>
+							</dl>
+							<dl>
+								<dt>订单编号：</dt>
+								<dd><input type="text" class="txt grid-13" id="saleOrderNo" name="saleOrderNo" /></dd>
+							</dl>
+							<dl>
+								<dt>订单状态：</dt>
+								<dd>
+									<select class="select grid-10" id="saleOrderStatus" name="saleOrderStatus">
+										<option value="">--请选择--</option>
+										<option value="SALEORDERSTATUS_FORSEND">待发货</option>
+										<option value="SALEORDERSTATUS_FORRECEIVE">待收货</option>
+										<option value="SALEORDERSTATUS_FINISHED">交易成功</option>
+										<option value="SALEORDERSTATUS_APPRAISE">已评价</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+			                      <dt>注册时间：</dt>
+			                      <dd><input type="text" class="txt grid-9" id="startRegisterTime" name="startRegisterTime" /></dd>
+			                      <dt class="mlr5">至</dt>
+			                      <dd><input type="text" class="txt grid-9" id="endRegisterTime" name="endRegisterTime" /></dd>
+		                   	</dl>
+							<input type="hidden"  id="start" name="start" />
+							<input type="hidden"  id="pageSize" name="pageSize" />	
+							<p class="main_search_btn">
+							<permission code="FUNCTION_SEARCH_RECOMMEND_EXPORT">
+								<input type="button" value="查询" class="btn_sure" id="storeSearch" onClick="dataSubmit(1)" /> 
+							</permission>
+							<input type="reset" id="reset" class="btn_gray" value="重置" />
+							<permission code="FUNCTION_EXPORT_RECOMMEND_EXPORT">
+								<input type="button" value="导出" class="btn_sure" onClick="javascript:exportRecommendOrderInfos();" />
+								<a hidden id="recommend_down" style="COLOR:red; TEXT-DECORATION:underline"><span style="color:red">点击下载</span></a>
+							</permission>
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="40">序号</th>
+									<th width="90">推广人</th>
+									<th width="160">手机号码</th>
+									<th width="70">推荐码</th>
+									<th width="70">用户手机号</th>
+									<th width="120">注册时间</th>
+									<th width="180">订单编号</th>
+									<th width="100">订单金额(元)</th>
+									<th width="60">订单状态</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onClick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onClick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onKeyUp="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onClick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+				+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header id="topBigTit">
+		<!--顶部搜索栏-->
+		<div class="top-big-tit top-big-tit-input yellowTop" id="noBackBtnTop">
+			<div id="inputBoxTop">
+				<form onsubmit="findProBrand();return false;">
+					<input class="top-mid-con" id="searchInput" type="search" placeholder="">
+				</form>
+			</div>
+			<div class="top-right-con" onclick="">
+				<span class="cancelBtn" onclick="history.back()">取消</span>
+			</div>
+		</div>
+	</header>
+	<div id="searchTabBox">
+		<ul>
+			<li><a href="javascript:void(0)" class="searchTab actsTab proTab" onclick="showPro()">商品</a></li>
+			<li><a href="javascript:void(0)" class="searchTab braTab" onclick="showBrand()">品牌</a></li>
+		</ul>
+	</div>
+<div class="tabCon">
+	<div class="content" id="tabProduct">
+		<!--搜索出来的相关商品-->
+		<div class="findResults">
+			<div class="contentWrap" style="position:absolute;top:1.8rem;left:0;">
+					<div class="floor-pro floor-pro-index-bg"></div>
+					<div class="clearfix"></div>
+				<div id="pullUp" class="hide">
+					<span class="loading"><span class="pullUpIcon"></span></span>
+					<span class="pullUpLabel">上拉加载更多...</span>
+				</div>
+			</div>
+		</div>
+	</div>
+		<div class="bord"></div>
+	<div class="content" id="tabBrand">
+		<!--搜索出来的相关品牌-->
+		<div class="findBrands">
+			<div class="contentWrapBrand">
+					<div class="brandBox">
+						<div class="not-find-box hide" id="notFindBrand">
+							<img src="../static-resource/images/search/notfind.png">
+							<p>没有找到相关的品牌</p>
+						</div>
+					</div>
+					<div class="clearfix"></div>
+				<div id="pullUpBrand" class="hide">
+					<span class="loading"><span class="pullUpIcon"></span></span>
+					<span class="pullUpLabel">上拉加载更多...</span>
+				</div>
+			</div>
+		</div>
+		<div class="bord"></div>
+	</div>
+</div>
+	<div class="noMoreContent hide">
+		<p>没有更多内容了，别拉啦!</p>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<footer>
+		<!--悬浮购物车-->
+		<div class="bot-cart-wrap">
+			<div class="bot-cart-btn"  onclick="window.location.href='../cart/cart.html'">
+				<div class="forcartimg" id="end"></div>
+				<input class="cart-pro-number" id="cartProNumber" readonly="readonly" value="" />
+			</div>
+		</div>
+	</footer>
+</body>
+<script type="text/javascript">
+	//判断左右商品盒子的样式属性
+	function getClass(item) {
+		return item % 2 == 0 ? "floor-pro-iteml" : "";
+	}
+	function showPro(){
+		$(".braTab").removeClass("actsTab");
+		$(".proTab").addClass("actsTab");
+		$("#tabBrand").hide();
+		$("#tabProduct").show();
+		$(".bot-cart-wrap").show();
+		window.scrollTo(0, 0);
+	}
+	function showBrand(){
+		$(".proTab").removeClass("actsTab");
+		$(".braTab").addClass("actsTab");
+		$("#tabProduct").hide();
+		$("#tabBrand").show();
+		$(".bot-cart-wrap").hide();
+		window.scrollTo(0, 0);
+	}
+	var pageNum = 0;
+	var pageSize = 12;
+	var totalPages = 0;
+	$(function() {
+		var keywords = decodeURIComponent(getUrlParam("keywords"));
+		if(getSessionStorage(sessionStorageKeywordsKey)){
+		    keywords=getSessionStorage(sessionStorageKeywordsKey);
+		}
+		$("#searchInput").val(keywords);
+		searchProductsTmpl(keywords,1);
+		showCartNum();
+		brandTmpl(keywords,1);
+		removeSessionStorage(sessionStorageShowBrandKey);
+	});
+	/*分页加载*/
+	$(window).scroll(function(){
+		if($(".contentWrap").height()-$(window).scrollTop()+$("#searchTabBox").height()+$(".bord").height()+$(".top-big-tit").height()<=document.documentElement.clientHeight){
+			$("#pullUp").removeClass("hide");
+			keywords=$("#searchInput").val();
+			pageNum++;
+			searchProductsTmpl(keywords,pageNum);
+		}
+		if($(".braTab").hasClass("actsTab")){
+			if($(".contentWrapBrand").height()-$(window).scrollTop()+$("#searchTabBox").height()+$(".bord").height()+$(".top-big-tit").height()<=document.documentElement.clientHeight){
+				$("#pullUpBrand").removeClass("hide");
+				keywords=$("#searchInput").val();
+				pageNum++;
+				brandTmpl(keywords,pageNum);
+			}
+		}
+	});
+	function findProBrand(){
+		var keywords=$("#searchInput").val();
+		if (!keywords || keywords.trim() == "") {
+			alert("关键字不能空");
+			return false;
+		}
+		keywords = keywords.trim();
+		searchProductsTmpl(keywords,1);
+		brandTmpl(keywords,1);
+	}
+	function searchProductsTmpl(keywords,pageNumTemp) {
+		addProductHisStorage(keywords);
+		var params = new Object();
+		params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		params.keywords = keywords;
+		params.pageNum = pageNumTemp;
+		params.pageSize = pageSize;
+		ajax("/product/searchproducts", params, function(data) {
+			totalPages = data.totalPages;
+			pageNum = data.pageNum;
+			if (pageNum <= 1) {
+				$(".floor-pro").html("");
+			}
+			loadable = pageNum <=totalPages;
+			if(totalPages==0){
+				$("#searchProductsTmpl").tmpl(data).appendTo(".floor-pro");
+			}
+			calculateProductCart(data.list);
+			if(loadable)
+			$("#searchProductsTmpl").tmpl(data).appendTo(".floor-pro");
+			$("#pullUp").addClass("hide");
+			//拉到最后一页时候提示
+			if(pageNum!=1&&!loadable){
+				$(".noMoreContent").removeClass("hide");
+				setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+			}
+		}, function(data) {
+			alert(data);
+		}, true);
+	}
+	function brandTmpl(keywords,pageNumTemp) {
+		addProductHisStorage(keywords);
+		var params = new Object();
+		params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		params.keywords = keywords;
+		params.pageNum = pageNumTemp;
+		params.pageSize = 28;
+		ajax("/brand/searchbykeywords", params, function(data) {
+			totalPages = data.totalPages;
+			pageNum = data.pageNum;
+			if (pageNum <= 1) {
+				$(".brandBox").html("");
+			}
+			loadableBrand = pageNum <= totalPages;
+			if(totalPages==0){
+				$("#hotBrandTmpl").tmpl(data).appendTo(".brandBox");
+			}
+			if(loadableBrand)
+			$("#hotBrandTmpl").tmpl(data).appendTo(".brandBox");
+			$("#pullUpBrand").addClass("hide");
+			//拉到最后一页时候提示
+			if(pageNum!=1&&!loadableBrand){
+				$(".noMoreContent").removeClass("hide");
+				setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+			}
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	function toBrandProducts(brandCode, brandName) {
+		var keywords=$("#searchInput").val();
+		setSessionStorage(sessionStorageKeywordsKey,keywords);
+		setSessionStorage(sessionStorageShowBrandKey,1);
+		window.location.href = '/cateBrand/brandProducts.html?brandCode=' + brandCode
+				+ "&brandName=" + brandName;
+	}
+	function toProDetail(saleProductId){
+		var keywords=$("#searchInput").val();
+		setSessionStorage(sessionStorageKeywordsKey,keywords);
+		window.location.href = '/pro-detail/pro-detail.html?saleProductId='+saleProductId
+	}
+	//点击+加入购物车
+	function getAddToCartPosition(obj, e) {
+		//获取商品图片位置
+		var x = $(e).offset().left;
+		var y = $(e).offset().top;
+		var start = new Array();
+		start.push(x);
+		start.push(y);
+		//加入购物车前的判断
+		validCartToAdd(obj, addCartSuccess, start, e);
+	}
+	//点击-减少一件商品
+	function getReduceToCart(doc, productInfo) {
+		if (reduceOperation(doc, productInfo)) {
+			showCartNum();
+		}
+	}
+	function addCartSuccess(productInfo, startLocation, doc) {
+		//购物车小红圆点
+		addOperation(doc, productInfo);
+		showCartNum();
+	}
+	//弹出手机键盘时悬浮购物车处理
+	$('#phone').bind('focus',function(){
+		$('.bot-cart-wrap').css('position','static');
+	}).bind('blur',function(){
+		$('.bot-cart-wrap').css('position','fixed');
+
+	});
+</script>
+<script id="searchProductsTmpl" type="text/x-jquery-tmpl">
+    {{if (list && list.length > 0) }}
+        {{each(i,v) list}}
+         <div class="floor-pro-item ${getClass(i)}">
+            <div class="floor-pro-img"  onclick="toProDetail('${v.saleProductId}')">
+                <img src="${v.saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+            </div>
+            <div class="pro-det"   onclick="toProDetail('${v.saleProductId}')">
+                <p class="floor-pro-name">
+                    ${v.saleProductName}
+                </p>
+                <p class="floor-pro-size">
+                    ${v.saleProductSpec}
+                </p>
+                <p class="floor-pro-normal-price ">
+                    普通￥<span>${toCenti(v.retailPrice,2)}</span>
+                </p>
+                <p class="floor-pro-vip-price">
+                    VIP￥<span>${toCenti(v.promotionalPrice,2)}</span>
+                </p>
+            </div>
+             <div class="countBox">
+                <div class="count">
+                    <div class="reduce ${getShowClass(saleProductId)}" name="" type="button" onclick="getReduceToCart(this,${JSON.stringify(v)})"></div>
+                    <input class="pro-number ${getShowClass(saleProductId)}" name="" readonly="readonly" type="text" value="${getCartNum(saleProductId)}"/>
+                    <div class="add ${getBtnClass(saleProductId,stockNum)}" name="" type="button" onclick="getAddToCartPosition(${JSON.stringify(v)},this)"></div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+        {{else}}
+            <div class="not-find-box">
+            <img src="../static-resource/images/search/notfind.png">
+            <p>没有找到相关的商品</p>
+           </div>
+        {{/if}}
+</script>
+<script id="hotBrandTmpl" type="text/x-jquery-tmpl">
+	{{if (list && list.length > 0) }}
+        {{each(i,v) list}}
+       <div class="brand" onclick="toBrandProducts('${v.brandCode}','${v.brandName}')">
+       <img src="${v.brandLogoImageUrl}" onerror="setErrorLongDefaultImg(this)">
+       <p>${v.brandName}</p>
+       </div>
+       {{/each}}
+        {{else}}
+            <div class="not-find-box">
+            <img src="../static-resource/images/search/notfind.png">
+            <p>没有找到相关的品牌</p>
+           </div>
+    {{/if}}
+</script>
+</html>

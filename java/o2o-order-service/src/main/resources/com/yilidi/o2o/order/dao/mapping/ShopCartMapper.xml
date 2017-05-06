@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.ShopCartMapper">
+	<resultMap id="BaseResultMap" type="ShopCart">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="ACTIVITYID" property="activityId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="QUANTITY" property="quantity" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="SESSIONID" property="sessionId" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, USERID,STOREID,ACTIVITYID, SALEPRODUCTID, QUANTITY, CREATETIME,
+		MODIFYTIME, SESSIONID
+	</sql>
+
+	<insert id="save" parameterType="ShopCart">
+		insert into T_SHOP_CART (
+		USERID,STOREID,ACTIVITYID, SALEPRODUCTID,
+		QUANTITY,
+		CREATETIME,
+		MODIFYTIME,
+		SESSIONID)
+		values (
+		#{userId,jdbcType=INTEGER},#{storeId,jdbcType=INTEGER},
+		#{activityId,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER},
+		#{quantity,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},#{modifyTime,jdbcType=TIMESTAMP},
+		#{sessionId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="saveBatch" parameterType="java.util.List">
+		INSERT INTO T_SHOP_CART(
+		USERID,STOREID,ACTIVITYID,SALEPRODUCTID,
+		QUANTITY,CREATETIME,MODIFYTIME,SESSIONID
+		) VALUES
+		<foreach collection="shopCartList" item="item" index="index" separator=",">
+			(
+			#{item.userId,jdbcType=INTEGER},#{item.storeId,jdbcType=INTEGER},
+			#{item.activityId,jdbcType=INTEGER},
+			#{item.saleProductId,jdbcType=INTEGER},
+			#{item.quantity,jdbcType=INTEGER},
+			#{item.createTime,jdbcType=TIMESTAMP},#{item.modifyTime,jdbcType=TIMESTAMP},
+			#{item.sessionId,jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from T_SHOP_CART
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	<delete id="deleteByUserIdAndProductIds">
+		delete
+		from T_SHOP_CART
+		where USERID =
+		#{userId,jdbcType=INTEGER}
+		<if test="saleProductIds != null">
+			AND SALEPRODUCTID IN
+			<foreach item="item" index="index" collection="saleProductIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</delete>
+
+	<delete id="deleteByUserId" parameterType="java.lang.Integer">
+		delete from
+		T_SHOP_CART
+		where USERID = #{userId,jdbcType=INTEGER}
+	</delete>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_SHOP_CART
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadShopCart" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_SHOP_CART
+		where USERID = #{userId,jdbcType=INTEGER}
+		AND STOREID =
+		#{storeId}
+		AND SALEPRODUCTID = #{saleProductId}
+	</select>
+
+	<select id="listUserShopCart" resultMap="BaseResultMap" parameterType="ShopCartQuery">
+		select
+		<include refid="Base_Column_List" />
+		from T_SHOP_CART
+		<where>
+			<if test="id != null"> AND ID = #{id} </if>
+			<if test="userId != null"> AND USERID = #{userId} </if>
+			<if test="storeId != null"> AND STOREID = #{storeId} </if>
+			<if test="activityId != null"> AND ACTIVITYID = #{activityId} </if>
+			<if test="saleProductId != null"> AND SALEPRODUCTID = #{saleProductId} </if>
+		</where>
+	</select>
+	<select id="listUserShopCartBySaleProductIds" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_SHOP_CART
+		<where>
+			<if test="userId != null"> AND USERID = #{userId} </if>
+			<if test="storeId != null"> AND STOREID = #{storeId} </if>
+			<if test="saleProductIdList != null">
+				and SALEPRODUCTID IN
+				<foreach item="item" index="index" collection="saleProductIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<update id="updateUserShopCartNumber" statementType="PREPARED" parameterType="ShopCart">
+		UPDATE T_SHOP_CART
+		set
+		QUANTITY= #{quantity}
+		<if test="modifyTime != null">,MODIFYTIME = #{modifyTime}</if>
+		<where>
+			<if test="id != null">AND ID = #{id}</if>
+			<if test="userId != null">AND USERID = #{userId}</if>
+			<if test="saleProductId != null">AND SALEPRODUCTID = #{saleProductId}</if>
+			<if test="storeId != null">AND STOREID = #{storeId}</if>
+			<if test="activityId != null">AND ACTIVITYID = #{activityId}</if>
+		</where>
+	</update>
+</mapper>

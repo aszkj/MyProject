@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>一里递</title>
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+        document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+    <!--顶部标题-->
+     <div class="top-big-tit">
+      <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p>商品收藏</p>
+         <div class="top-right-con" onclick="editCollectionProduct()">
+             <span style="font-size: .3rem;">编辑</span>
+        </div>
+     </div>
+</header>
+<section class="paddingSection">
+    <div class="contentWrap">
+        <div id="collectProBox">
+        </div>
+        <div id="pullUp" class="hide">
+                <span class="loading">
+                    <span class="pullUpIcon"></span>
+                </span>
+            <span class="pullUpLabel">上拉加载更多...</span>
+        </div>
+    </div>
+</section>
+<div class="noMoreContent hide">
+    <p>没有更多内容了，别拉啦!</p>
+</div>
+<section>
+    <div id="settlementDiv" class="hide">
+        <div style="height: 1rem;"></div>
+        <div class="cartBot foot" id="foot">
+            <div class="allCheck cartCheckBox">
+                <input type="checkbox"  name="cartCheck" id="cartCheckAll" class="check-all check"><label for="cartCheck"></label><span>全选</span>
+            </div>
+            <div class="deleBtn deleteNo" onclick="delCollectProducts();">
+                <p>
+                    删除
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="not-find-box hide">
+    <img src="../static-resource/images/collection/nocollect.png">
+    <p>您还没有收藏过商品</p>
+</div>
+<footer>
+    <!--悬浮购物车-->
+    <div class="bot-cart-wrap hide">
+        <div class="bot-cart-btn cart-btn" onclick="window.location.href='../cart/cart.html'">
+            <div class="forcartimg" id="end"></div>
+            <input class="cart-pro-number" id="cartProNumber" readonly="readonly" value="" />
+        </div>
+    </div>
+</footer>
+</body>
+<script type="text/javascript">
+    var pageNum=0;
+    var pageSize=12;
+    var totalPages = 0;
+    $(function(){
+        getCollectProducts();
+        showCartNum();
+    });
+    function getCollectProducts(pageNumTemp) {
+        var param = new Object();
+        param.pageNum=pageNumTemp;
+        param.pageSize=pageSize;
+        param.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+        ajax("/product/saleproductcollections", param, function (data) {
+            totalPages = data.totalPages;
+            pageNum = data.pageNum;
+            loadable = pageNum <= totalPages;
+            console.log(data);
+            if(totalPages==0){
+                $("#saleProductListTmpl").tmpl(data).appendTo("#collectProBox");
+                $(".top-right-con").hide();
+            }else{
+                $(".top-right-con").show();
+            }
+            if(loadable)
+            $("#saleProductListTmpl").tmpl(data).appendTo("#collectProBox");
+            $("#pullUp").addClass("hide");
+            bindClick();
+            //拉到最后一页时候提示
+            if(pageNum!=1&&!loadable){
+                $(".noMoreContent").removeClass("hide");
+                setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+            }
+        }, function (data) {
+            alert(data);
+        }, true);
+    }
+    /*分页加载*/
+    $(window).scroll(function(){
+        if($(".contentWrap").height()-$(window).scrollTop()<=document.documentElement.clientHeight){
+            $("#pullUp").removeClass("hide");
+            pageNum++;
+            getCollectProducts(pageNum);
+        }
+    });
+    function reduceFromCart(doc, productInfo){
+        var productCartNum = getCartNum(productInfo.saleProductId);
+        if (productCartNum <= 0) {
+            delSaleProductItem(productInfo.saleProductId);
+        } else if (productCartNum == 1) {
+            delCartGoods(productInfo.saleProductId);
+        } else {
+            reduceOperation(doc, productInfo);
+        }
+        setSettlementValues();
+    }
+    function getAddToCartPosition(obj, e) {
+        validCartToAdd(obj, addCartSuccess,e);
+        $(".bot-cart-wrap").show();
+    }
+    function addCartSuccess(productInfo,doc) {
+        addOperation(doc, productInfo);
+        showCartNum();
+    }
+    var editClick=false;
+    function editCollectionProduct(){
+        editClick=!editClick;
+        if(editClick){
+            $(".top-right-con").children("span").html("完成");
+            $(".cartCheckBox").show();
+            $(".cartProImg").css("margin-left","0");
+            $(".buhuo").css("margin-left","0");
+            $(".bot-cart-wrap").hide();
+            $(".countBox").hide();
+            $(".noStock").css({"width":"90%","margin-left":"10%"});
+            $("#settlementDiv").show();
+        }
+        else{
+            $(".top-right-con").children("span").html("编辑");
+            $(".cartCheckBox").hide();
+            $(".cartProImg").css("margin-left",".2rem");
+            $(".buhuo").css("margin-left",".2rem");
+            $(".bot-cart-wrap").show();
+            $(".countBox").show();
+            $(".noStock").css({"width":"100%","margin-left":"0"});
+            $("#settlementDiv").hide();
+        }
+    }
+    var productIdArr = [];
+    function findDeleteCollectProducts(){
+        productIdArr = [];
+        $("div.cartProItem").find("input[type='checkbox']:checked").each(function(){
+            productIdArr.push($(this).attr("data-productId"));
+        });
+        if(productIdArr.length>0){
+            $(".deleBtn").removeClass("deleteNo");
+        }else{
+            $(".deleBtn").addClass("deleteNo");
+        }
+    }
+    function delCollectProducts() {
+        if (confirm("确定要删除该商品么?")) {
+            removeCollectionByIdArray(productIdArr)
+        }
+    }
+    function delCollectProductItem(productId) {
+        var itemId = "saleProductItem_index_" + productId;
+        $("#" + itemId).remove();
+    }
+    function removeCollectionByIdArray() {
+       var proItemCount=$(".cartProItem").size();
+        var param = new Object();
+        param.productIds = productIdArr.join(",");
+        ajax("/product/cancelwithcollected", param, function(data) {
+            console.log(data);
+            if (isArrayFunc(productIdArr)) {
+                for ( var i=0;i<productIdArr.length;i++) {
+                    delCollectProductItem(productIdArr[i]);
+                }
+                if(productIdArr.length==proItemCount){
+                    $("#settlementDiv").hide();
+                    $(".top-right-con").children("span").html("编辑");
+                    $(".not-find-box").show();
+                    $(".top-right-con").hide();
+                }
+            }
+        }, function(msg) {
+            alert(msg);
+        });
+        return true;
+    }
+    function toProDetail(data){
+        if(data.productStatus!=3)
+            window.location.href="/pro-detail/pro-detail.html?saleProductId="+data.saleProductId;
+    }
+    function bindClick() {
+        $("#cartCheckAll").click(
+                function() {
+                    var isChecked = $(this).is(':checked');
+                    $("div.cartProItem").find("input[type='checkbox']").each(function(){
+                        this.checked = isChecked;
+                    });
+                    findDeleteCollectProducts();
+                });
+        $("div.cartProItem").find("input[type='checkbox']").click(function(){
+            if($("div.cartProItem").find("input[type='checkbox']:checked").length == $("div.cartProItem").find("input[type='checkbox']").length){
+                $("#cartCheckAll")[0].checked=true;
+            }else{
+                $("#cartCheckAll")[0].checked=false;
+            }
+            findDeleteCollectProducts();
+        });
+    }
+</script>
+<script id="saleProductListTmpl" type="text/x-jquery-tmpl">
+{{if (list && list.length > 0)}}
+    {{each(i,v) list}}
+        <div class="cartProItem bg collectionItem" id="saleProductItem_index_${v.productId}">
+            <div class="cartCheckBox hide">
+                <input type="checkbox" name="cartCheck" data-productId="${v.productId}" id="cartCheck_${v.productId}"><label for="cartCheck"></label>
+            </div>
+            <div class="cartProImg" onclick="toProDetail(${JSON.stringify(v)})">
+                <img src="${v.saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+            </div>
+            <div class="pro-det" onclick="toProDetail(${JSON.stringify(v)})">
+                <p class="floor-pro-name">
+                    ${v.saleProductName}
+                </p>
+                <p class="floor-pro-vip-price">
+                    ￥<span>${toCenti(v.orderPrice,2)}</span>
+                </p>
+            </div>
+            {{if v.productStatus!=0&&v.productStatus!=3&&v.stockNum!=0}}
+             <div class="countBox">
+                <div class="count">
+                    <div class="reduce ${getShowClass(v.saleProductId)}" name="" type="button" onclick="getReduceToCart(this,${JSON.stringify(v)})"></div>
+                    <input class="pro-number ${getShowClass(v.saleProductId)}" name="" readonly="readonly" type="text" value="${getCartNum(v.saleProductId)}"/>
+                    <div class="add ${getBtnClass(v.saleProductId,v.stockNum)}" name="" type="button" onclick="getAddToCartPosition(${JSON.stringify(v)},this)"></div>
+                </div>
+            </div>
+            {{/if}}
+            <div class="clearfix"></div>
+            {{if v.productStatus==0||v.productStatus==3||v.stockNum==0}}
+		    <div class="semiTrans noStock" onclick="toProDetail(${JSON.stringify(v)})"><!--半透明遮罩-->
+                <div class="buhuo">
+                {{if v.stockNum==0}}
+                    <p>补货中</p>
+                {{/if}}
+                {{if v.productStatus==3}}
+                    <p>已过期</p>
+                {{/if}}
+                {{if v.productStatus==0}}
+                    <p>已下架</p>
+                {{/if}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    {{/each}}
+        {{else}}
+         <div class="not-find-box">
+            <img src="../static-resource/images/collection/nocollect.png">
+            <p>您还没有收藏过商品</p>
+         </div>
+{{/if}}
+</script>
+</html>

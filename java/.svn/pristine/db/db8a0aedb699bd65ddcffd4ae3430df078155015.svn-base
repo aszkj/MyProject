@@ -1,0 +1,355 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/font.css"
+	rel="stylesheet" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<style>
+.workorder_save_button_new {
+	padding: 10px 100px
+}
+
+.workorder_leave_new {
+	padding: 10px 50px
+}
+
+.td {
+width:100px;
+}
+
+</style>
+<script type="text/javascript">
+	var GLOBAL_PARAM = {
+		g_boxId : $.trim(getUrlParam("boxId")),
+		id : $.trim(getUrlParam("id"))
+	};
+	var method = getUrlParam("method");
+	function getSaleProductEvaluationDetail() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ GLOBAL_PARAM.id + '/loadSaleProductEvaluationDetail',
+			type : 'get',
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				var object = data.entity;
+				$('#createTime').text(object.createTime);
+				$('#storeCode').text(object.storeCode);
+				$('#storeName').text(object.storeName);
+				$('#saleProductName').text(object.saleProductName);
+				$('#barCode').text(object.barCode);
+				$('#saleOrderNo').text(object.saleOrderNo);
+				$('#anonymityEvaluate').val(object.anonymityEvaluate);
+				$('#systemEvaluate').val(object.systemEvaluate);
+				$('#uploadPhotoFlag').val(object.uploadPhotoFlag);
+				$('#userName').text(object.userName);
+				if(null!=object.content){
+					$('#content').text(object.content);
+				}else{
+					$('#content').text('');
+				}
+				
+				$('#showStatus').val(object.showStatus);
+				
+				/*var html = [];
+				 var saleProductEvaluationUrl = object.photoUrl;
+				var saleProductEvaluationFullUrl = object.photoFullUrl[0]; */
+				var appItem = 1;
+				if(null != object.saleProductEvaluationImageProfileDtos){
+				for (var i = 0, j = object.saleProductEvaluationImageProfileDtos.length; i < j; i++) {
+						var productImage = object.saleProductEvaluationImageProfileDtos[i];
+						$("#appPicPath" + appItem).val(productImage.appPicPath);
+						//刚加载出来的的给一个需要不增加的标示
+						$("#appImageFlag" + appItem).val('IMAGEFLAG_NO');
+						var html = '<span class="img"><a onclick="showEvaluationImg(\''
+								+ productImage.appFullPicPath
+								+ '\')" href="javascript:void(0)"><img alt="" src="'
+								+ (productImage.appFullPicPath)
+								+ '"></a></span>';
+						if (method == 'add' || method == 'edit') {
+							html += '<a onclick="delUploadImg('
+									+ appItem
+									+ ',\'app\')" class="ablue" href="javascript:;">删除</a></p>';
+						}
+						$("#appUploadLi" + appItem).html(html);
+						//修改的时候将图片id和图片顺序带过去
+						if (method == 'edit') {
+							$("#appPicId" + appItem).val("appPicId" + appItem);
+						}
+						appItem++;
+					}
+				} else {
+					if (method == 'view') {
+						$("#productImageShow").hide();
+					}
+				}
+				if (method == 'view') {
+					viewimg();
+					removeButton();
+					$("#content").attr("readonly", "readonly");
+					$("#showStatus").attr("disabled", "disabled");
+					$("#anonymityEvaluate").attr("disabled", "disabled");
+					$("#systemEvaluate").attr("disabled", "disabled");
+					$("#uploadPhotoFlag").attr("disabled", "disabled");
+				}
+				// 商品描述
+				var productScore = object.productStar;
+				var productScoreHtml = '';
+				for (var i = 0; i < productScore; i++) {
+					productScoreHtml += '<span class="icon-font star-orange">&#xe600;</span>';
+				}
+				for (var j = 0; j < 5 - productScore; j++) {
+					productScoreHtml += '<span class="icon-font star-grey">&#xe600;</span>';
+				}
+				$('#productScore').html(productScoreHtml);
+			}
+		});
+	}
+
+	/*查看大图*/
+	function showEvaluationImg(path) {
+		showBox("查看晒图图片",
+				"<img src='"+path+"' alt='' width='400' height='300' />");
+	}
+	function viewimg() {
+		$('.appimg li').each(function() {
+			if (!$(this).children('span').hasClass('img')) {
+				$(this).remove();
+			}
+		})
+	}
+	function removeButton() {
+		$("#submit").remove();
+		$("#reset").remove();
+	}
+	/*返回*/
+	function comeback() {
+		var urlParam = window.location.search;
+		locationHref('/user/saleproduct-evaluation-index.html' + urlParam);
+	}
+
+	function setMainpic() {
+		$(document).on('click', '.mainpic', function() {
+			var tempa = "#appPicMain" + $(this).val();
+			$('.js-mainPicv').val(0);
+			$(tempa).val(1);
+		})
+	}
+
+	function showUploadBox() {
+		$('#uploadImgType').val();
+		if ($('#uploadBtn').attr('disabled') == 'disabled') {
+			$('#uploadBtn').attr('disabled', false);
+		}
+		$('#uploadnote').html('');
+		showBox('上传图片', 'uploadBox');
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		setMainpic();
+		if (method == "view") {
+			$("#breadName").html('商品评论查看');
+			$("#pageTitle").html('商品评论查看');
+			if (GLOBAL_PARAM.id != '' && GLOBAL_PARAM.id != null) {
+				getSaleProductEvaluationDetail();
+			}
+		}
+	});
+</script>
+</head>
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 评论管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" id="dataForm" class="user_form">
+								<table cellpadding="0" cellspacing="0" width="100%"
+									style="margin: 10px 10px 10px 95px;">
+									<col style="width: 20%" />
+									<col style="width: 20%" />
+									<col style="width: 60%" />
+									<tr>
+										<td height="30" align="left">评论账号：<span  id="userName"></span></td>
+										<td align="left">评论时间：<span  id="createTime"></span></td>
+										<td align="left">订单号：<span  id="saleOrderNo"></span></td>
+									</tr>
+									<tr>
+										<td height="30" align="left">门店名称：<span id="storeName"></span></td>
+										<td align="left">门店编码：<span id="storeCode"></span></td>
+									</tr>
+									<tr>
+										<td height="30" align="left">商品名称：<span id="saleProductName"></span></td>
+										<td align="left">商品编码：<span id="barCode"></span></td>
+									</tr>
+								</table>
+							<dl>
+								<dt>是否匿名评价：</dt>
+								<dd>
+									<select class="select grid-10" id="anonymityEvaluate"
+										name="anonymityEvaluate">
+										<option value="STOREEVALUATIONANONYMITYEVAL_YES">是</option>
+										<option value="STOREEVALUATIONANONYMITYEVAL_NO">否</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<dt>是否系统评价：</dt>
+								<dd>
+									<select class="select grid-10" id="systemEvaluate"
+										name="systemEvaluate">
+										<option value="STOREEVALUATIONSYSTEMEVAL_YES">是</option>
+										<option value="STOREEVALUATIONSYSTEMEVAL_NO">否</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<dt>是否上传图片：</dt>
+								<dd>
+									<select class="select grid-10" id="uploadPhotoFlag"
+										name="uploadPhotoFlag">
+										<option value="SALEPRODUCTEVALUATIONPHOTOFLAG_YES">是</option>
+										<option value="SALEPRODUCTEVALUATIONPHOTOFLAG_NO">否</option>
+									</select>
+								</dd>
+							</dl>
+							<dl id="productImageShow">
+								<dt>商品晒图：</dt>
+								<dd>
+									<span fieldset="firstAppImageProfileDto"> <input
+										type="hidden" id="appPicPath1" name="appPicPath" /> <input
+										type="hidden" id="appImageFlag1" name="appImageFlag" /> 
+									</span> <span fieldset="secondAppImageProfileDto"> <input
+										type="hidden" id="appPicPath2" name="appPicPath" /> <input
+										type="hidden" id="appImageFlag2" name="appImageFlag" /> 
+									</span> <span fieldset="thirdAppImageProfileDto"> <input
+										type="hidden" id="appPicPath3" name="appPicPath" /> <input
+										type="hidden" id="appImageFlag3" name="appImageFlag" />
+									</span> <span fieldset="fouthAppImageProfileDto"> <input
+										type="hidden" id="appPicPath4" name="appPicPath" /> <input
+										type="hidden" id="appImageFlag4" name="appImageFlag" />
+									</span> <span fieldset="fiveAppImageProfileDto"> <input
+										type="hidden" id="appPicPath5" name="appPicPath" /> <input
+										type="hidden" id="appImageFlag5" name="appImageFlag" />
+									</span> 
+									<ul class="product_release_img appimg">
+										<li id="appUploadLi1" class="pr"><a
+											onclick="showUploadBox(1,'app')" class="img">点击上传</a></li>
+										<li id="appUploadLi2" class="pr"><a
+											onclick="showUploadBox(2,'app')" class="img">点击上传</a></li>
+										<li id="appUploadLi3" class="pr"><a
+											onclick="showUploadBox(3,'app')" class="img">点击上传</a></li>
+										<li id="appUploadLi4" class="pr"><a
+											onclick="showUploadBox(4,'app')" class="img">点击上传</a></li>
+										<li id="appUploadLi5" class="pr"><a
+											onclick="showUploadBox(5,'app')" class="img">点击上传</a></li>
+									</ul>
+									<span id="picMessage" class="cred"></span>
+									<div class="product_release_imgnote agray">
+										<em>温馨提示：</em>
+										<p>
+											最多上传5张图片，每张图片大小≤3M！ <span id="appUploadImgTxt">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>推荐上传800*600像素图片
+										</p>
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>评论内容：</dt>
+								<dd>
+									<textarea type="text" id="content" name="content"
+										class="txt grid-30" rows="3" readonly="readonly"></textarea>
+								</dd>
+							</dl>
+							<dl>
+								<dt>商品描述：</dt>
+								<dd>
+									<span id="productScore"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>显示状态：</dt>
+								<dd>
+									<select class="select grid-10" id="showStatus"
+										name="showStatus">
+										<option value="STOREEVALUATIONSTATUS_YES">是</option>
+										<option value="STOREEVALUATIONSTATUS_NO">否</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<p>
+									<input type="button" value="返 回" class="btn_gray"
+										onclick="comeback()" /> <span id="prompt" class="cred"></span>
+								</p>
+							</dl>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+	<div id="uploadBox" class="hide">
+		<form id="uploadForm" onsubmit="uploadSubmit();return false;">
+			<div class="uploadbox">
+				<p>
+					<input id="uploadImgIndex" type="hidden" /> <input
+						id="uploadImgRow" type="hidden" /> <input id="uploadImgType"
+						type="hidden" /> <input id="uploadFile" name="file" type="file" />
+					<span id="uploadnote" class="cred"></span>
+				</p>
+				<div class="uploadbox_btn">
+					<input type="submit" value="确定" class="btn_sure" id="uploadBtn" />
+					<input type="reset" onclick="closeBox()" value="取消"
+						class="btn_gray" />
+				</div>
+			</div>
+		</form>
+	</div>
+	<div id="hidedv" style="display: none"></div>
+</body>
+</html>

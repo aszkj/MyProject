@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<style>
+.workorder_save_button_new {
+	padding: 8px 100px
+}
+.workorder_leave_new {
+	padding: 10px 25px
+}
+</style>
+<script type="text/javascript">
+	var GLOBAL_PARAM = {
+		countWordsFlag : true,
+		g_boxId : $.trim(getUrlParam("boxId")),
+		userId : $.trim(getUrlParam("userId"))
+	};
+	function getUser() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ GLOBAL_PARAM.userId + '/loadBuyerUserById',
+			type : 'get',
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				var object = data.entity;
+				$('#userName').val(object.userName);
+				$('#telPhone').val(object.phone);
+				$('#email').val(object.email);
+				listBuyerLevelCode(object.buyerLevelCode);
+				$('#createTime').val(object.createTime);
+				$('#vipCreateTime').val(object.vipCreateTime);
+				$('#vipExpireDate').val(object.vipExpireDate);
+				listRegisterPlatform(object.registerPlatform);
+				$('#statusCode').val(object.statusCode);
+			}
+		});
+	}
+	
+	function listRegisterPlatform(val){
+		//注册渠道类型
+		var systemDictType = 'CHANNELTYPE';
+		ajax({
+			    url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+				type:'post',
+				async:false,
+				dataType:'json',
+				error:function(){return;}, 
+				success:function(data){
+					if(data.msgCode!=1){
+						return;
+					}
+					var registerPlatformMapList = data.entity;
+					var registerPlatformMapHtml = [];
+					if(registerPlatformMapList != null && registerPlatformMapList.length >0){
+						registerPlatformMapHtml.push('<option value="">--请选择--</option>');
+						for(var i=0,length=registerPlatformMapList.length;i<length;i++){
+								registerPlatformMapHtml.push('<option value="'+registerPlatformMapList[i].id);
+								registerPlatformMapHtml.push('" name="'+registerPlatformMapList[i].name+'">'+registerPlatformMapList[i].name+'</option>');
+						}
+					}
+					$('#registerPlatform').html(registerPlatformMapHtml.join(''));
+					 if(GLOBAL_PARAM.userId!=''&&GLOBAL_PARAM.userId!=null){
+						 $('#registerPlatform').val(val);
+					 }
+				}
+		});
+	}
+	
+	function listBuyerLevelCode(val){
+		//用户级别类型
+		var systemDictType = 'BUYERLEVEL';
+		ajax({
+			    url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+				type:'post',
+				async:false,
+				dataType:'json',
+				error:function(){return;}, 
+				success:function(data){
+					if(data.msgCode!=1){
+						return;
+					}
+					var buyerLevelCodeMapList = data.entity;
+					var buyerLevelCodeMapHtml = [];
+					if(buyerLevelCodeMapList != null && buyerLevelCodeMapList.length >0){
+						buyerLevelCodeMapHtml.push('<option value="">--请选择--</option>');
+						for(var i=0,length=buyerLevelCodeMapList.length;i<length;i++){
+								buyerLevelCodeMapHtml.push('<option value="'+buyerLevelCodeMapList[i].id);
+								buyerLevelCodeMapHtml.push('" name="'+buyerLevelCodeMapList[i].name+'">'+buyerLevelCodeMapList[i].name+'</option>');
+						}
+					}
+					$('#buyerLevelCode').html(buyerLevelCodeMapHtml.join(''));
+					 if(GLOBAL_PARAM.userId!=''&&GLOBAL_PARAM.userId!=null){
+						 $('#buyerLevelCode').val(val);
+					 }
+				}
+		});
+	}
+	
+	$(document).ready(function(e) {
+		if(GLOBAL_PARAM.userId!=''&&GLOBAL_PARAM.userId!=null){
+	      	getUser();
+	    }
+	});
+</script>
+</head>
+
+<body>
+<div class="workorder_mng">
+   <div class="workorder_leave_new">
+   <form method="post" id="dataForm">
+    <input type="hidden" class="txt" id="id" name="id"/>
+    <dl>
+       <dt>用户名称：</dt>
+	   <dd><input type="text" class="txt grid-30" id="userName" name="userName" disabled="disabled"/></dd>
+    </dl>
+	<dl>
+	   	<dt>电话号码：</dt>
+	   	<dd><input type="text" class="txt grid-30" id="telPhone" name="telPhone" disabled="disabled"/></dd>
+   </dl>
+   <dl>
+     	<dt>用户邮箱：</dt>
+	   	<dd><input type="text" class="txt grid-30" id="email" name="email" disabled="disabled"/></dd>
+   </dl>
+   <dl>
+     	<dt>用户类型：</dt>
+	   	<dd>
+		   	<select class="select grid-31" id="buyerLevelCode" name="buyerLevelCode" disabled="disabled"></select>
+	   	</dd>
+   </dl>
+   <dl>
+     	<dt>创建时间：</dt>
+	   	<dd><input type="text" class="txt grid-30" id="createTime" name="createTime" disabled="disabled"/></dd>
+   </dl>
+   <dl>
+     	<dt>会员开通时间：</dt>
+	   	<dd><input type="text" class="txt grid-30" id="vipCreateTime" name="vipCreateTime" disabled="disabled"/></dd>
+   </dl>
+   <dl>
+     	<dt>会员到期时间：</dt>
+	   	<dd><input type="text" class="txt grid-30" id="vipExpireDate" name="vipExpireDate" disabled="disabled"/></dd>
+   </dl>
+   <dl>
+     <dt>注册平台：</dt>
+	   	<dd>
+			<!-- <select class="select grid-31" id="registerPlatform" name="registerPlatform" disabled="disabled">
+				<option value="CHANNELTYPE_ANDROID">Android</option>
+				<option value="CHANNELTYPE_ISO">ISO</option>
+				<option value="CHANNELTYPE_WEIXIN">微信</option>
+				<option value="CHANNELTYPE_WEB">PC端</option>
+    	    </select> -->
+    	    <select class="select grid-31" id="registerPlatform" name="registerPlatform" disabled="disabled"></select>
+	   	</dd>
+   </dl>
+   <dl>
+	<dt>是否有效：</dt>
+	   	<dd>
+		   	<select class="select grid-31" id="statusCode" name="statusCode" disabled="disabled">
+				<option value="USERSTATUS_ON">有效</option>
+				<option value="USERSTATUS_OFF">失效</option>
+    	    </select>
+	   	</dd>
+   </dl>
+   </form>
+  </div>
+ </div>
+</body>
+</html>

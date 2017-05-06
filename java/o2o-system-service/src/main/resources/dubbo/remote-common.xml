@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+ 
+    <dubbo:application name="${dubbo.system.application.name}"  />
+ 
+    <dubbo:registry protocol="${dubbo.registry.protocol}" address="${dubbo.registry.address}" client="${dubbo.registry.client}" file="${dubbo.registry.system.cachefile}" />
+    
+    <!-- 将远程服务调用重试次数设为0，超时设为3分钟，不重试。如果重试的话，后台业务处理时间过长导致超时，就会引起前台发出多次请求，导致数据的不一致。 -->
+    <dubbo:provider retries="0" timeout="180000" />
+ 
+	<!-- dubbo协议适用于小数据量，高并发的场景， 长连接-->
+    <dubbo:protocol name="${dubbo.protocol.name}" id="dubbo"  port="${dubbo.protocol.system.port}" />
+
+     <!-- hessian协议适用于大数据量，传输文件等的场景， 短连接-->
+    <dubbo:protocol name="${hessian.protocol.name}"  id="hessian"  server="${hessian.protocol.system.server}"  port="${hessian.protocol.system.port}" contextpath="${hessian.protocol.system.contextpath}" />
+ 
+</beans>

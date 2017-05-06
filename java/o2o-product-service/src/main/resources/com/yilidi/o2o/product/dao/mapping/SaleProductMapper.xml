@@ -1,0 +1,1695 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleProductMapper">
+	<resultMap id="BaseResultMap" type="SaleProduct">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORETYPE" property="storeType" jdbcType="VARCHAR" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode"
+			jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTNAME" property="saleProductName"
+			jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="MARKETTIME" property="marketTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITSTATUSCODE" property="auditStatusCode"
+			jdbcType="VARCHAR" />
+		<result column="ENABLEDFLAG" property="enabledFlag" jdbcType="VARCHAR" />
+		<result column="AUDITUSERID" property="auditUserId" jdbcType="INTEGER" />
+		<result column="AUDITTIME" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITNOTE" property="auditNote" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="PEROPERCOUNT" property="perOperCount" jdbcType="INTEGER" />
+		<result column="REMAINCOUNT" property="remainCount" jdbcType="INTEGER" />
+	</resultMap>
+
+	<resultMap id="SaleProductRelatedInfoResultMap" type="SaleProductRelatedInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORETYPE" property="storeType" jdbcType="VARCHAR" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode"
+			jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTNAME" property="saleProductName"
+			jdbcType="VARCHAR" />
+		<result column="ENABLEDFLAG" property="enabledFlag" jdbcType="VARCHAR" />
+		<result column="AUDITSTATUSCODE" property="auditStatusCode"
+			jdbcType="VARCHAR" />
+		<result column="CLASSNAME" property="className" jdbcType="VARCHAR" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<!-- 商品价格 -->
+		<result column="PROMOTIONALPRICE" property="promotionalPrice"
+			jdbcType="BIGINT" />
+		<result column="RETAILPRICE" property="retailPrice" jdbcType="BIGINT" />
+		<result column="COMMISSIONPRICE" property="commissionPrice"
+			jdbcType="BIGINT" />
+		<!-- 商品附加信息 -->
+		<result column="PRODUCTOWNER" property="productOwner" jdbcType="VARCHAR" />
+		<result column="HOTSALEFLAG" property="hotSaleFlag" jdbcType="VARCHAR" />
+		<result column="SALESTATUS" property="saleStatus" jdbcType="VARCHAR" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTSPEC" property="saleProductSpec"
+			jdbcType="LONGVARCHAR" />
+		<result column="SALEPRODUCTSOURCE" property="saleProductSource"
+			jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="REMAINCOUNT" property="remainCount" jdbcType="INTEGER" />
+		<result column="SALECOUNT" property="saleCount" jdbcType="INTEGER" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="BRANDNAME" property="brandName" jdbcType="VARCHAR" />
+
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="PEROPERCOUNT" property="perOperCount" jdbcType="INTEGER" />
+		<result column="REMAINCOUNT" property="remainCount" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, STOREID, STORETYPE, PRODUCTID, PRODUCTCLASSCODE,
+		BRANDCODE,
+		SALEPRODUCTNAME,
+		MARKETTIME, AUDITSTATUSCODE,
+		ENABLEDFLAG,
+		AUDITUSERID,
+		AUDITTIME, AUDITNOTE, CREATEUSERID,
+		CREATETIME,MODIFYUSERID,MODIFYTIME,BARCODE,PEROPERCOUNT,REMAINCOUNT
+	</sql>
+
+	<insert id="saveSaleProduct" parameterType="SaleProduct"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_SALE_PRODUCT (
+		STOREID, STORETYPE, PRODUCTID,
+		PRODUCTCLASSCODE, BRANDCODE,
+		SALEPRODUCTNAME,
+		MARKETTIME, AUDITSTATUSCODE,
+		ENABLEDFLAG,
+		AUDITUSERID,
+		AUDITTIME,
+		AUDITNOTE, CREATEUSERID, CREATETIME,
+		BARCODE,PEROPERCOUNT)
+		values
+		(#{storeId,jdbcType=INTEGER},
+		#{storeType,jdbcType=VARCHAR},
+		#{productId,jdbcType=INTEGER},
+		#{productClassCode,jdbcType=VARCHAR},
+		#{brandCode,jdbcType=VARCHAR},
+		#{saleProductName,jdbcType=VARCHAR},
+		#{marketTime,jdbcType=TIMESTAMP},
+		#{auditStatusCode,jdbcType=VARCHAR},
+		#{enabledFlag,jdbcType=VARCHAR},
+		#{auditUserId,jdbcType=INTEGER},
+		#{auditTime,jdbcType=TIMESTAMP},
+		#{auditNote,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{barCode,jdbcType=VARCHAR},
+		#{perOperCount,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<delete id="deleteSaleProductById" parameterType="java.lang.Integer">
+		delete from
+		P_SALE_PRODUCT
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateSaleProductBasicInfoById" parameterType="SaleProduct">
+		update P_SALE_PRODUCT
+		set
+		SALEPRODUCTNAME =
+		#{saleProductName,jdbcType=VARCHAR},
+		PRODUCTCLASSCODE =
+		#{productClassCode,jdbcType=VARCHAR},
+		PEROPERCOUNT =
+		#{perOperCount,jdbcType=INTEGER},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP},
+		BRANDCODE =
+		#{brandCode,jdbcType=TIMESTAMP}
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateSaleProductAuditStatusCodeById">
+		update P_SALE_PRODUCT
+		set
+		AUDITSTATUSCODE =
+		#{auditStatusCode,jdbcType=VARCHAR},
+		AUDITUSERID =
+		#{auditUserId,jdbcType=INTEGER},
+		AUDITTIME
+		=#{auditTime,jdbcType=TIMESTAMP},
+		AUDITNOTE =
+		#{auditNote,jdbcType=VARCHAR}
+		where
+		ID =
+		#{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateProductClassById">
+		update
+		P_SALE_PRODUCT
+		set
+		PRODUCTCLASSCODE =
+		#{productClassCode,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=VARCHAR},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=VARCHAR}
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateEnabledFlagById">
+		update
+		P_SALE_PRODUCT
+		set
+		ENABLEDFLAG =
+		#{enabledFlag,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=VARCHAR},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=VARCHAR}
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateRemainCountById">
+		update
+		P_SALE_PRODUCT
+		set
+		REMAINCOUNT = REMAINCOUNT +
+		#{delta,jdbcType=INTEGER},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id,jdbcType=INTEGER} and
+		REMAINCOUNT + #{delta,jdbcType=INTEGER} >= 0
+	</update>
+	<select id="loadSaleProductBasicInfoById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+			<if test="enabledFlag != null">
+				and ENABLEDFLAG =
+				#{enabledFlag,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<select id="loadByIdAndEnabledFlag" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+			<if test="enabledFlag != null">and ENABLEDFLAG=#{enabledFlag,jdbcType=VARCHAR}</if>
+		</where>
+	</select>
+	<select id="loadByProductIdAndStoreIdEnabledFlag" resultMap="BaseResultMap">
+		select
+		PS.ID, PS.STOREID, PS.PRODUCTID, PS.PRODUCTCLASSCODE,
+		PS.BRANDCODE,
+		PS.SALEPRODUCTNAME,
+		PS.MARKETTIME,
+		PS.AUDITSTATUSCODE,
+		PS.ENABLEDFLAG,
+		PS.AUDITUSERID,
+		PS.AUDITTIME, PS.AUDITNOTE,
+		PS.CREATEUSERID,
+		PS.CREATETIME,PS.MODIFYUSERID,PS.MODIFYTIME,PS.BARCODE,PS.PEROPERCOUNT
+		from P_SALE_PRODUCT PS left join
+		P_SALE_PRODUCT_PROFILE PSP ON PS.ID =
+		PSP.SALEPRODUCTID
+		<where>
+			PS.PRODUCTID = #{productId,jdbcType=INTEGER}
+			AND PS.STOREID =
+			#{storeId,jdbcType=INTEGER}
+			<if test="enabledFlag != null">and PS.ENABLEDFLAG=#{enabledFlag,jdbcType=VARCHAR}</if>
+			<if test="saleStatus != null">and PSP.SALESTATUS=#{saleStatus,jdbcType=VARCHAR}</if>
+		</where>
+	</select>
+	<select id="listSaleProductBasicInfoByStoreId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			<if test="storeId != null">
+				and STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="enabledFlag != null">
+				and ENABLEDFLAG = #{enabledFlag,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY ID ASC
+	</select>
+
+	<select id="loadSaleProductBasicInfoByIdAndChannelCode"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+			and
+			CHANNELCODE =
+			#{channelCode,jdbcType=VARCHAR}
+		</where>
+	</select>
+
+	<select id="loadSaleProductBasicInfoByStoreIdAndProductId"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			<if test="storeId != null">
+				and STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="productId != null">
+				and PRODUCTID = #{productId,jdbcType=INTEGER}
+			</if>
+			<if test="enabledFlag != null">
+				and ENABLEDFLAG = #{enabledFlag,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="loadSaleProductBasicInfoByStoreIdAndId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			<if test="storeId != null">
+				and STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="id != null">
+				and id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="enabledFlag != null">
+				and ENABLEDFLAG = #{enabledFlag,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="loadSaleProductBasicInfoByStoreIdAndBarCode"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		where
+		STOREID = #{storeId,jdbcType=INTEGER}
+		and
+		BARCODE = #{barCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadSaleProductBasicInfoByBarCodeAndStoreId"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		where
+		STOREID = #{storeId,jdbcType=INTEGER}
+		and
+		BARCODE = #{barCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="listSaleProductByStoreId" resultMap="BaseResultMap"
+		parameterType="SaleProduct">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			STOREID = #{storeId,jdbcType=INTEGER}
+			<if test="auditStatusCode != null">
+				and AUDITSTATUSCODE = #{auditStatusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				and ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="listSaleProductBasicInfos" resultMap="BaseResultMap"
+		parameterType="SaleProductQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			1=1
+			<if test="id != null">
+				and ID = #{id, jdbcType=INTEGER}
+			</if>
+			<if test="storeId != null">
+				and STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="productId != null">
+				and PRODUCTID = #{productId, jdbcType=INTEGER}
+			</if>
+			<if test="productClassCode != null">
+				and PRODUCTCLASSCODE = #{productClassCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null">
+				and BRANDCODE = #{brandCode, jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductName != null">
+				and SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="marketTime != null">
+				and MARKETTIME = #{marketTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="auditStatusCode != null">
+				and AUDITSTATUSCODE = #{auditStatusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				and ENABLEDFLAG = #{enabledFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="auditUserId != null">
+				and AUDITUSERID = #{auditUserId,jdbcType=INTEGER}
+			</if>
+			<if test="startAuditTime != null">
+				and AUDITTIME &gt; = #{startAuditTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and AUDITTIME &lt; = #{endAuditTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="auditNote != null">
+				and AUDITNOTE like
+				CONCAT('%',#{auditNote,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="createUserId != null">
+				and CREATEUSERID = #{createUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startCreateTime != null">
+				and CREATETIME &gt;= #{startCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt; =#{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="modifyUserId != null">
+				and MODIFYUSERID = #{modifyUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startModifyTime != null">
+				and MODIFYTIME &gt;= #{startModifyTime, jdbcType=VARCHAR}
+			</if>
+			<if test="endModifyTime != null">
+				and MODIFYTIME &lt; = #{endModifyTime, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="loadSaleProductRelatedInfoByIdAndChannelCode"
+		resultMap="SaleProductRelatedInfoResultMap">
+		select
+		SP.ID as ID ,SP.STOREID as
+		STOREID,SP.STORETYPE AS
+		STORETYPE,SP.PRODUCTID as
+		PRODUCTID,SP.PRODUCTCLASSCODE as
+		PRODUCTCLASSCODE,
+		SP.BRANDCODE as
+		BRANDCODE,SP.SALEPRODUCTNAME as
+		SALEPRODUCTNAME,SP.BARCODE as
+		BARCODE,SP.MARKETTIME as MARKETTIME,
+		SP.AUDITSTATUSCODE as
+		AUDITSTATUSCODE,SP.ENABLEDFLAG as
+		ENABLEDFLAG,
+		SP.AUDITUSERID as
+		AUDITUSERID,SP.AUDITTIME as AUDITTIME,SP.AUDITNOTE as
+		AUDITNOTE,
+		PP.PROMOTIONALPRICE as
+		PROMOTIONALPRICE,PP.RETAILPRICE as
+		RETAILPRICE,PP.CHANNELCODE as
+		CHANNELCODE,PP.COMMISSIONPRICE as
+		COMMISSIONPRICE,
+		PD.CONTENT as
+		CONTENT,PD.PRODUCTOWNER as
+		PRODUCTOWNER,PD.SELLPOINT as
+		SELLPOINT,PD.HOTSALEFLAG as
+		HOTSALEFLAG,PD.SALESTATUS
+		as
+		SALESTATUS,PD.SALEPRODUCTSPEC as
+		SALEPRODUCTSPEC, SP.PEROPERCOUNT as
+		PEROPERCOUNT
+		from P_SALE_PRODUCT SP
+		left join
+		P_SALE_PRODUCT_PRICE PP on PP.SALEPRODUCTID = SP.ID
+		left join
+		P_SALE_PRODUCT_PROFILE PD on (PD.SALEPRODUCTID = SP.ID
+		and
+		PP.CHANNELCODE = PD.CHANNELCODE)
+		where
+		SP.ID = #{id,
+		jdbcType=INTEGER}
+		and
+		PP.CHANNELCODE = #{channelCode, jdbcType=VARCHAR}
+	</select>
+
+	<select id="listSaleProductsByBasicInfo" resultMap="BaseResultMap"
+		parameterType="SaleProductQuery">
+		select
+		SP.ID as ID ,
+		SP.STOREID as STOREID,
+		SP.PRODUCTID as PRODUCTID,
+		SP.PRODUCTCLASSCODE as PRODUCTCLASSCODE,
+		SP.BRANDCODE as
+		BRANDCODE,
+		SP.SALEPRODUCTNAME as SALEPRODUCTNAME,
+		SP.BARCODE as BARCODE,
+		SP.MARKETTIME as MARKETTIME,
+		SP.AUDITSTATUSCODE as
+		AUDITSTATUSCODE,
+		SP.ENABLEDFLAG as ENABLEDFLAG,
+		SP.AUDITUSERID as AUDITUSERID,
+		SP.AUDITTIME as AUDITTIME,
+		SP.AUDITNOTE as
+		AUDITNOTE,
+		SP.CREATEUSERID as
+		CREATEUSERID,
+		SP.CREATETIME as CREATETIME,
+		SP.MODIFYUSERID as
+		MODIFYUSERID,
+		SP.MODIFYTIME as
+		MODIFYTIME, SP.PEROPERCOUNT as
+		PEROPERCOUNT
+		from P_SALE_PRODUCT SP
+		left
+		join
+		P_SALE_PRODUCT_PRICE PP on
+		PP.SALEPRODUCTID =
+		SP.ID
+		left join
+		P_SALE_PRODUCT_PROFILE PD on
+		(PD.SALEPRODUCTID = SP.ID
+		and
+		PP.CHANNELCODE = PD.CHANNELCODE)
+		<where>
+			1=1
+			<if test="id != null">
+				and SP.ID = #{id, jdbcType=INTEGER}
+			</if>
+			<if test="storeId != null">
+				and SP.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="productId != null">
+				and SP.PRODUCTID = #{productId, jdbcType=INTEGER}
+			</if>
+			<if test="productClassCode != null">
+				and SP.PRODUCTCLASSCODE = #{productClassCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null">
+				and SP.BRANDCODE = #{brandCode, jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductName != null">
+				and SP.SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and SP.BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="marketTime != null">
+				and SP.MARKETTIME = #{marketTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="auditStatusCode != null">
+				and SP.AUDITSTATUSCODE =
+				#{auditStatusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				and SP.ENABLEDFLAG = #{enabledFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="auditUserId != null">
+				and SP.AUDITUSERID = #{auditUserId,jdbcType=INTEGER}
+			</if>
+			<if test="startAuditTime != null">
+				and SP.AUDITTIME &gt; = #{startAuditTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and SP.AUDITTIME &lt; = #{endAuditTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="auditNote != null">
+				and SP.AUDITNOTE like
+				CONCAT('%',#{auditNote,jdbcType=VARCHAR},'%')
+			</if>
+			<!-- 商品价格信息 -->
+			<if test="promotionalMinPrice != null">
+				and PP.PROMOTIONALPRICE &gt;=
+				#{promotionalMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="promotionalMaxPrice != null">
+				and PP.PROMOTIONALPRICE &lt;=
+				#{promotionalMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="retailMaxPrice != null">
+				and PP.RETAILPRICE &gt;=
+				#{retailMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="retailMinPrice != null">
+				and PP.RETAILPRICE &lt;=
+				#{retailMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="channelCode != null">
+				and PP.CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+			<!-- 商品附属信息 -->
+			<if test="content != null">
+				and PD.CONTENT like
+				CONCAT('%',#{content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="sellPoint != null">
+				and PD.SELLPOINT like
+				CONCAT('%',#{sellPoint,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="hotSaleFlag != null">
+				and PD.HOTSALEFLAG = #{hotSaleFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and PD.SALESTATUS = #{saleStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductSpec != null">
+				and PD.SALEPRODUCTSPEC like
+				CONCAT('%',#{saleProductSpec,jdbcType=VARCHAR},'%')
+			</if>
+
+			<if test="createUserId != null">
+				and SP.CREATEUSERID = #{createUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startCreateTime != null">
+				and SP.CREATETIME &gt;= #{startCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and SP.CREATETIME &lt;= #{endCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="modifyUserId != null">
+				and SP.MODIFYUSERID = #{modifyUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startModifyTime != null">
+				and SP.MODIFYTIME &gt;= #{startModifyTime,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="endModifyTime != null">
+				and SP.MODIFYTIME &lt;= #{endModifyTime,
+				jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="findSaleProductRelatedInfos" resultMap="SaleProductRelatedInfoResultMap"
+		parameterType="SaleProductQuery">
+		select
+		SP.ID as ID ,
+		SP.STOREID as STOREID,
+		SP.STORETYPE AS STORETYPE,
+		SP.PRODUCTID as PRODUCTID,
+		SP.BARCODE as BARCODE,
+		SP.PRODUCTCLASSCODE as
+		PRODUCTCLASSCODE,
+		SP.SALEPRODUCTNAME as SALEPRODUCTNAME,
+		SP.ENABLEDFLAG
+		as ENABLEDFLAG,
+		SP.AUDITSTATUSCODE as AUDITSTATUSCODE,
+		PD.SALEPRODUCTSOURCE as
+		SALEPRODUCTSOURCE,
+		PC.CLASSNAME as CLASSNAME,
+		PP.CHANNELCODE as
+		CHANNELCODE,
+		PP.PROMOTIONALPRICE as
+		PROMOTIONALPRICE,
+		PP.RETAILPRICE as
+		RETAILPRICE,
+		PD.PRODUCTOWNER as PRODUCTOWNER,
+		PD.HOTSALEFLAG as
+		HOTSALEFLAG,
+		PD.SALESTATUS as
+		SALESTATUS,
+		PD.DISPLAYORDER as
+		DISPLAYORDER,
+		PD.SALEPRODUCTSPEC as
+		SALEPRODUCTSPEC,
+		SP.CREATEUSERID as
+		CREATEUSERID,
+		SP.CREATETIME as CREATETIME,
+		SP.MODIFYUSERID as
+		MODIFYUSERID,
+		SP.MODIFYTIME as
+		MODIFYTIME,
+		SP.PEROPERCOUNT as PEROPERCOUNT
+		from P_SALE_PRODUCT SP
+		left
+		join
+		P_PRODUCT_CLASS PC on PC.CLASSCODE =
+		SP.PRODUCTCLASSCODE
+		left join
+		P_SALE_PRODUCT_PRICE PP on
+		PP.SALEPRODUCTID = SP.ID
+		left join
+		P_SALE_PRODUCT_PROFILE PD on
+		(PD.SALEPRODUCTID = SP.ID
+		and
+		PP.CHANNELCODE = PD.CHANNELCODE)
+		left join P_PRODUCT_BRAND PB on
+		PB.BRANDCODE = SP.BRANDCODE
+		<where>
+			1=1
+			<if test="id != null">
+				and SP.ID = #{id, jdbcType=INTEGER}
+			</if>
+			<if test="storeId != null">
+				and SP.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="productId != null">
+				and SP.PRODUCTID = #{productId, jdbcType=INTEGER}
+			</if>
+			<if test="classCodes != null">
+				and SP.PRODUCTCLASSCODE in
+				<foreach item="item" index="index" collection="classCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="brandCode != null">
+				and SP.BRANDCODE = #{brandCode, jdbcType=VARCHAR}
+			</if>
+			<if test="brandName != null">
+				and PB.BRANDNAME like
+				CONCAT('%',#{brandName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="saleProductName != null">
+				and SP.SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and SP.BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="marketTime != null">
+				and SP.MARKETTIME = #{marketTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="auditStatusCode != null">
+				and SP.AUDITSTATUSCODE =
+				#{auditStatusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				and SP.ENABLEDFLAG = #{enabledFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="auditUserId != null">
+				and SP.AUDITUSERID = #{auditUserId,jdbcType=INTEGER}
+			</if>
+			<if test="startAuditTime != null">
+				and SP.AUDITTIME &gt; = #{startAuditTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and SP.AUDITTIME &lt; = #{endAuditTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="auditNote != null">
+				and SP.AUDITNOTE like
+				CONCAT('%',#{auditNote,jdbcType=VARCHAR},'%')
+			</if>
+			<!-- 商品价格信息 -->
+			<if test="promotionalMinPrice != null">
+				and PP.PROMOTIONALPRICE &gt;=
+				#{promotionalMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="promotionalMaxPrice != null">
+				and PP.PROMOTIONALPRICE &lt;=
+				#{promotionalMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="retailMaxPrice != null">
+				and PP.RETAILPRICE &gt;=
+				#{retailMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="retailMinPrice != null">
+				and PP.RETAILPRICE &lt;=
+				#{retailMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="channelCode != null">
+				and PP.CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+			<!-- 商品附属信息 -->
+			<if test="content != null">
+				and PD.CONTENT like
+				CONCAT('%',#{content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="sellPoint != null">
+				and PD.SELLPOINT like
+				CONCAT('%',#{sellPoint,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="hotSaleFlag != null">
+				and PD.HOTSALEFLAG = #{hotSaleFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and PD.SALESTATUS = #{saleStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductSpec != null">
+				and PD.SALEPRODUCTSPEC like
+				CONCAT('%',#{saleProductSpec,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="saleProductSource != null">
+				and PD.SALEPRODUCTSOURCE =
+				#{saleProductSource,jdbcType=VARCHAR}
+			</if>
+			<if test="displayOrder != null">
+				and PD.DISPLAYORDER = #{displayOrder,jdbcType=INTEGER}
+			</if>
+			<if test="createUserId != null">
+				and SP.CREATEUSERID = #{createUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startCreateTime != null">
+				and SP.CREATETIME &gt;= #{startCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and SP.CREATETIME &lt;= #{endCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="modifyUserId != null">
+				and SP.MODIFYUSERID = #{modifyUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startModifyTime != null">
+				and SP.MODIFYTIME &gt;= #{startModifyTime,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="endModifyTime != null">
+				and SP.MODIFYTIME &lt;= #{endModifyTime,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="keywords != null">
+				and SP.SALEPRODUCTNAME like
+				CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="getCountsForExportSaleProduct" parameterType="SaleProductQuery"
+		resultType="long">
+		select COUNT(*)
+		from P_SALE_PRODUCT SP
+		left join P_PRODUCT_CLASS PC on
+		PC.CLASSCODE = SP.PRODUCTCLASSCODE
+		left join
+		P_SALE_PRODUCT_PRICE PP on
+		PP.SALEPRODUCTID = SP.ID
+		left join P_SALE_PRODUCT_PROFILE PD on
+		(PD.SALEPRODUCTID = SP.ID
+		and
+		PP.CHANNELCODE = PD.CHANNELCODE)
+		<where>
+			1=1
+			<if test="id != null">
+				and SP.ID = #{id, jdbcType=INTEGER}
+			</if>
+			<if test="storeId != null">
+				and SP.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="productId != null">
+				and SP.PRODUCTID = #{productId, jdbcType=INTEGER}
+			</if>
+			<if test="productClassCode != null">
+				and SP.PRODUCTCLASSCODE = #{productClassCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null">
+				and SP.BRANDCODE = #{brandCode, jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductName != null">
+				and SP.SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and SP.BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="marketTime != null">
+				and SP.MARKETTIME = #{marketTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="auditStatusCode != null">
+				and SP.AUDITSTATUSCODE =
+				#{auditStatusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				and SP.ENABLEDFLAG = #{enabledFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="auditUserId != null">
+				and SP.AUDITUSERID = #{auditUserId,jdbcType=INTEGER}
+			</if>
+			<if test="startAuditTime != null">
+				and SP.AUDITTIME &gt; = #{startAuditTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and SP.AUDITTIME &lt; = #{endAuditTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="auditNote != null">
+				and SP.AUDITNOTE like
+				CONCAT('%',#{auditNote,jdbcType=VARCHAR},'%')
+			</if>
+			<!-- 商品价格信息 -->
+			<if test="promotionalMinPrice != null">
+				and PP.PROMOTIONALPRICE &gt;=
+				#{promotionalMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="promotionalMaxPrice != null">
+				and PP.PROMOTIONALPRICE &lt;=
+				#{promotionalMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="retailMaxPrice != null">
+				and PP.RETAILPRICE &gt;=
+				#{retailMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="retailMinPrice != null">
+				and PP.RETAILPRICE &lt;=
+				#{retailMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="channelCode != null">
+				and PP.CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+			<!-- 商品附属信息 -->
+			<if test="content != null">
+				and PD.CONTENT like
+				CONCAT('%',#{content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="sellPoint != null">
+				and PD.SELLPOINT like
+				CONCAT('%',#{sellPoint,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="hotSaleFlag != null">
+				and PD.HOTSALEFLAG = #{hotSaleFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and PD.SALESTATUS = #{saleStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductSpec != null">
+				and PD.SALEPRODUCTSPEC like
+				CONCAT('%',#{saleProductSpec,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="saleProductSource != null">
+				and PD.SALEPRODUCTSOURCE =
+				#{saleProductSource,jdbcType=VARCHAR}
+			</if>
+			<if test="displayOrder != null">
+				and PD.DISPLAYORDER = #{displayOrder,jdbcType=INTEGER}
+			</if>
+			<if test="createUserId != null">
+				and SP.CREATEUSERID = #{createUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startCreateTime != null">
+				and SP.CREATETIME &gt;= #{startCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and SP.CREATETIME &lt;= #{endCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="modifyUserId != null">
+				and SP.MODIFYUSERID = #{modifyUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startModifyTime != null">
+				and SP.MODIFYTIME &gt;= #{startModifyTime,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="endModifyTime != null">
+				and SP.MODIFYTIME &lt;= #{endModifyTime,
+				jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="listDataForExportSaleProduct" resultMap="SaleProductRelatedInfoResultMap">
+		select
+		SP.ID as ID ,
+		SP.STOREID as STOREID,
+		SP.STORETYPE AS STORETYPE,
+		SP.PRODUCTID as PRODUCTID,
+		SP.BARCODE as BARCODE,
+		SP.PRODUCTCLASSCODE as
+		PRODUCTCLASSCODE,
+		SP.SALEPRODUCTNAME as SALEPRODUCTNAME,
+		SP.ENABLEDFLAG
+		as ENABLEDFLAG,
+		SP.AUDITSTATUSCODE as AUDITSTATUSCODE,
+		PD.SALEPRODUCTSOURCE as
+		SALEPRODUCTSOURCE,
+		PC.CLASSNAME as CLASSNAME,
+		PP.CHANNELCODE as
+		CHANNELCODE,
+		PP.PROMOTIONALPRICE as
+		PROMOTIONALPRICE,
+		PP.RETAILPRICE as
+		RETAILPRICE,
+		PD.PRODUCTOWNER as PRODUCTOWNER,
+		PD.HOTSALEFLAG as
+		HOTSALEFLAG,
+		PD.SALESTATUS as
+		SALESTATUS,
+		PD.DISPLAYORDER as
+		DISPLAYORDER,
+		PD.SALEPRODUCTSPEC as
+		SALEPRODUCTSPEC,
+		SP.CREATEUSERID as
+		CREATEUSERID,
+		SP.CREATETIME as CREATETIME,
+		SP.MODIFYUSERID as
+		MODIFYUSERID,
+		SP.MODIFYTIME as
+		MODIFYTIME,
+		SP.PEROPERCOUNT as PEROPERCOUNT
+		from P_SALE_PRODUCT SP
+		left
+		join
+		P_PRODUCT_CLASS PC on PC.CLASSCODE =
+		SP.PRODUCTCLASSCODE
+		left join
+		P_SALE_PRODUCT_PRICE PP on
+		PP.SALEPRODUCTID = SP.ID
+		left join
+		P_SALE_PRODUCT_PROFILE PD on
+		(PD.SALEPRODUCTID = SP.ID
+		and
+		PP.CHANNELCODE = PD.CHANNELCODE)
+		<where>
+			1=1
+			<if test="saleProductQuery.id != null">
+				and SP.ID = #{saleProductQuery.id, jdbcType=INTEGER}
+			</if>
+			<if test="saleProductQuery.storeId != null">
+				and SP.STOREID = #{saleProductQuery.storeId,
+				jdbcType=INTEGER}
+			</if>
+			<if test="saleProductQuery.productId != null">
+				and SP.PRODUCTID = #{saleProductQuery.productId,
+				jdbcType=INTEGER}
+			</if>
+			<if test="saleProductQuery.productClassCode != null">
+				and SP.PRODUCTCLASSCODE =
+				#{saleProductQuery.productClassCode, jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.brandCode != null">
+				and SP.BRANDCODE = #{saleProductQuery.brandCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.saleProductName != null">
+				and SP.SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductQuery.saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="saleProductQuery.barCode != null">
+				and SP.BARCODE = #{saleProductQuery.barCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.marketTime != null">
+				and SP.MARKETTIME =
+				#{saleProductQuery.marketTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="saleProductQuery.auditStatusCode != null">
+				and SP.AUDITSTATUSCODE =
+				#{saleProductQuery.auditStatusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.enabledFlag != null">
+				and SP.ENABLEDFLAG =
+				#{saleProductQuery.enabledFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.auditUserId != null">
+				and SP.AUDITUSERID =
+				#{saleProductQuery.auditUserId,jdbcType=INTEGER}
+			</if>
+			<if test="saleProductQuery.startAuditTime != null">
+				and SP.AUDITTIME &gt; =
+				#{saleProductQuery.startAuditTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="saleProductQuery.endAuditTime != null">
+				and SP.AUDITTIME &lt; = #{saleProductQuery.endAuditTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="saleProductQuery.auditNote != null">
+				and SP.AUDITNOTE like
+				CONCAT('%',#{saleProductQuery.auditNote,jdbcType=VARCHAR},'%')
+			</if>
+			<!-- 商品价格信息 -->
+			<if test="saleProductQuery.promotionalMinPrice != null">
+				and PP.PROMOTIONALPRICE &gt;=
+				#{saleProductQuery.promotionalMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="saleProductQuery.promotionalMaxPrice != null">
+				and PP.PROMOTIONALPRICE &lt;=
+				#{saleProductQuery.promotionalMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="saleProductQuery.retailMaxPrice != null">
+				and PP.RETAILPRICE &gt;=
+				#{saleProductQuery.retailMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="saleProductQuery.retailMinPrice != null">
+				and PP.RETAILPRICE &lt;=
+				#{saleProductQuery.retailMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="saleProductQuery.channelCode != null">
+				and PP.CHANNELCODE =
+				#{saleProductQuery.channelCode,jdbcType=VARCHAR}
+			</if>
+			<!-- 商品附属信息 -->
+			<if test="saleProductQuery.content != null">
+				and PD.CONTENT like
+				CONCAT('%',#{saleProductQuery.content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="saleProductQuery.sellPoint != null">
+				and PD.SELLPOINT like
+				CONCAT('%',#{saleProductQuery.sellPoint,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="saleProductQuery.hotSaleFlag != null">
+				and PD.HOTSALEFLAG =
+				#{saleProductQuery.hotSaleFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.saleStatus != null">
+				and PD.SALESTATUS =
+				#{saleProductQuery.saleStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.saleProductSpec != null">
+				and PD.SALEPRODUCTSPEC like
+				CONCAT('%',#{saleProductQuery.saleProductSpec,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="saleProductQuery.saleProductSource != null">
+				and PD.SALEPRODUCTSOURCE =
+				#{saleProductQuery.saleProductSource,jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.displayOrder != null">
+				and PD.DISPLAYORDER =
+				#{saleProductQuery.displayOrder,jdbcType=INTEGER}
+			</if>
+			<if test="saleProductQuery.createUserId != null">
+				and SP.CREATEUSERID = #{saleProductQuery.createUserId,
+				jdbcType=INTEGER}
+			</if>
+			<if test="saleProductQuery.startCreateTime != null">
+				and SP.CREATETIME &gt;=
+				#{saleProductQuery.startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="saleProductQuery.endCreateTime != null">
+				and SP.CREATETIME &lt;= #{saleProductQuery.endCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="saleProductQuery.modifyUserId != null">
+				and SP.MODIFYUSERID = #{saleProductQuery.modifyUserId,
+				jdbcType=INTEGER}
+			</if>
+			<if test="saleProductQuery.startModifyTime != null">
+				and SP.MODIFYTIME &gt;=
+				#{saleProductQuery.startModifyTime, jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.endModifyTime != null">
+				and SP.MODIFYTIME &lt;= #{saleProductQuery.endModifyTime,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductQuery.order != null">
+				order by ${saleProductQuery.order}
+				<if test="saleProductQuery.sort != null">
+					${saleProductQuery.sort}
+				</if>
+			</if>
+		</where>
+		limit #{startLineNum},#{pageSize}
+	</select>
+
+	<select id="getSaleProductBarCode" resultType="java.lang.String"
+		parameterType="java.lang.Integer">
+		select
+		BARCODE
+		from P_SALE_PRODUCT
+		<where>
+			1=1
+			<if test="storeId != null">
+				and STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+		</where>
+		group by ID
+	</select>
+
+	<select id="listSaleProductBasicInfosByClassCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			1=1
+			<if test="classCodeList != null">
+				and PRODUCTCLASSCODE IN
+				<foreach item="item" index="index" collection="classCodeList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="enabledFlag != null">
+				and ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="listSaleProductBasicInfosByClassCodeAndStoreType"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			1=1
+			<if test="classCodeList != null">
+				and PRODUCTCLASSCODE IN
+				<foreach item="item" index="index" collection="classCodeList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="storeType != null">
+				and STORETYPE = #{storeType, jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				and ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="findSaleProducts" resultMap="SaleProductRelatedInfoResultMap"
+		parameterType="SaleProductQuery">
+		select
+		PS.ID, PS.STOREID, PS.STORETYPE AS
+		STORETYPE,PS.PRODUCTID,PS.PRODUCTCLASSCODE, PS.BRANDCODE,
+		PS.SALEPRODUCTNAME,PS.AUDITSTATUSCODE,PS.ENABLEDFLAG, PS.CREATEUSERID,
+		PS.CREATETIME,PS.MODIFYUSERID,PS.MODIFYTIME,PS.BARCODE,PS.PEROPERCOUNT,PIS.DISPLAYORDER
+		AS DISPLAYORDER
+		<if test='order == "SALECOUNT"'>
+			,(select SUM(SD.SALECOUNT) FROM P_SALE_DAILY SD WHERE
+			PS.ID=SD.SALEPRODUCTID ) AS SALECOUNT
+		</if>
+		<if test='order == "RETAILPRICE"'>
+			,(SELECT PSP.RETAILPRICE FROM P_SALE_PRODUCT_PRICE PSP
+			WHERE PS.ID
+			=PSP.SALEPRODUCTID ) AS RETAILPRICE
+		</if>
+		from
+		P_SALE_PRODUCT PS
+		left join
+		P_SALE_PRODUCT_PROFILE
+		PIS on
+		PS.ID =
+		PIS.SALEPRODUCTID
+		<where>
+			<if test="storeId != null">
+				and PS.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeIds != null">
+				and PS.STOREID IN
+				<foreach item="item" index="index" collection="storeIds"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="classCodes != null">
+				and PS.PRODUCTCLASSCODE IN
+				<foreach item="item" index="index" collection="classCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="saleProductName != null">
+				and PS.SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="keywords != null">
+				and PS.SALEPRODUCTNAME like
+				CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="enabledFlag != null">
+				and PS.ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="barCode != null">
+				and PS.BARCODE = #{barCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="storeType != null">
+				and PS.STORETYPE = #{storeType,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and PIS.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="findSaleProductsForSeller" resultMap="SaleProductRelatedInfoResultMap"
+		parameterType="SaleProductQuery">
+		select
+		PS.ID, PS.STOREID,PS.STORETYPE AS STORETYPE,
+		PS.PRODUCTID,PS.PRODUCTCLASSCODE, PS.BRANDCODE,
+		PS.SALEPRODUCTNAME,PS.AUDITSTATUSCODE,PS.ENABLEDFLAG, PS.CREATEUSERID,
+		PS.CREATETIME,PS.MODIFYUSERID,PS.MODIFYTIME,PS.BARCODE,PS.PEROPERCOUNT,PS.REMAINCOUNT,
+		(select SUM(SD.SALECOUNT) FROM
+		P_SALE_DAILY SD WHERE
+		PS.ID
+		=SD.SALEPRODUCTID ) AS
+		SALECOUNT
+		from
+		P_SALE_PRODUCT PS
+		left join
+		P_SALE_PRODUCT_PROFILE
+		PSP on
+		PS.ID =
+		PSP.SALEPRODUCTID
+		<where>
+			<if test="storeId != null">
+				and PS.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="productClassCode != null">
+				and PS.PRODUCTCLASSCODE = #{productClassCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="productClassCodes != null">
+				and PS.PRODUCTCLASSCODE IN
+				<foreach item="item" index="index" collection="productClassCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="saleProductName != null">
+				and PS.SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="brandCode != null">
+				and PS.BRANDCODE =#{brandCode,jdbcType=VARCHAR}
+			</if>
+			<if test="barCode != null">
+				and PS.BARCODE =#{barCode,jdbcType=VARCHAR}
+			</if>
+			<if test="keywords != null">
+				and PS.SALEPRODUCTNAME like
+				CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="saleStatus != null">
+				and PSP.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				and PS.ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="auditStatusCode != null">
+				and PS.AUDITSTATUSCODE = #{auditStatusCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="order != null">
+				order by ${order}
+				<if test="sort != null">
+					${sort}
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<select id="listSaleProductsByStoreIdAndBarCodes" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		where
+		STOREID = #{storeId,jdbcType=INTEGER}
+		and
+		BARCODE in
+		<foreach item="item" index="index" collection="barCodes" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="getCountsForExportSaleProductInventory" resultType="long"
+		parameterType="SaleProductQuery">
+		select
+		count(1)
+		from
+		P_SALE_PRODUCT
+		<where>
+			<if test="storeId != null">
+				and STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeIds != null">
+				and STOREID IN
+				<foreach item="item" index="index" collection="storeIds"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="productClassCode != null">
+				and PRODUCTCLASSCODE = #{productClassCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="productClassCodes != null">
+				and PRODUCTCLASSCODE IN
+				<foreach item="item" index="index" collection="productClassCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="saleProductName != null">
+				and SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="keywords != null">
+				and SALEPRODUCTNAME like
+				CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="enabledFlag != null">
+				and PS.ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="barCode != null">
+				and BARCODE = #{barCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="storeType != null">
+				and STORETYPE = #{storeType,
+				jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="listSaleProductsForSellerFlitting" resultMap="SaleProductRelatedInfoResultMap"
+		parameterType="SaleProductQuery">
+		select
+		PS.ID, PS.STOREID,PS.STORETYPE AS STORETYPE,
+		PS.PRODUCTID,PS.PRODUCTCLASSCODE, PS.BRANDCODE,
+		PS.SALEPRODUCTNAME,PS.AUDITSTATUSCODE,PS.ENABLEDFLAG, PS.CREATEUSERID,
+		PS.CREATETIME,PS.MODIFYUSERID,PS.MODIFYTIME,PS.BARCODE,PS.PEROPERCOUNT,PS.REMAINCOUNT
+		(select SUM(SD.SALECOUNT) FROM
+		P_SALE_DAILY SD WHERE
+		PS.STOREID =
+		SD.STOREID and PS.ID =SD.SALEPRODUCTID ) AS
+		SALECOUNT
+		from
+		P_SALE_PRODUCT PS
+		left join
+		P_SALE_PRODUCT_PROFILE
+		PSP on
+		PS.ID =
+		PSP.SALEPRODUCTID
+		<where>
+			<if test="storeId != null">
+				and PS.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="productClassCode != null">
+				and PS.PRODUCTCLASSCODE = #{productClassCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="productClassCodes != null">
+				and PS.PRODUCTCLASSCODE IN
+				<foreach item="item" index="index" collection="productClassCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="saleProductName != null">
+				and PS.SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and PS.BARCODE =#{barCode,jdbcType=VARCHAR}
+			</if>
+			<if test="keywords != null">
+				and PS.SALEPRODUCTNAME like
+				CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="saleStatus != null">
+				and PSP.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				and PS.ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="auditStatusCode != null">
+				and PS.AUDITSTATUSCODE = #{auditStatusCode,
+				jdbcType=VARCHAR}
+			</if>
+			order by PSP.DISPLAYORDER asc
+		</where>
+	</select>
+	<select id="listSaleProducts" resultMap="SaleProductRelatedInfoResultMap"
+		parameterType="SaleProductQuery">
+		select
+		PS.ID, PS.STOREID, PS.STORETYPE AS
+		STORETYPE,PS.PRODUCTID,PS.PRODUCTCLASSCODE, PS.BRANDCODE,
+		PS.SALEPRODUCTNAME,PS.AUDITSTATUSCODE,PS.ENABLEDFLAG, PS.CREATEUSERID,
+		PS.CREATETIME,PS.MODIFYUSERID,PS.MODIFYTIME,PS.BARCODE,PS.PEROPERCOUNT,PIS.DISPLAYORDER
+		AS DISPLAYORDER
+		<if test='order == "SALECOUNT"'>
+			,(select SUM(SD.SALECOUNT) FROM P_SALE_DAILY SD WHERE
+			PS.ID=SD.SALEPRODUCTID ) AS
+			SALECOUNT
+		</if>
+		<if test='order == "RETAILPRICE"'>
+			,(SELECT PSP.RETAILPRICE FROM P_SALE_PRODUCT_PRICE PSP
+			WHERE PS.ID=PSP.SALEPRODUCTID ) AS RETAILPRICE
+		</if>
+		from P_SALE_PRODUCT PS
+		left join P_SALE_PRODUCT_PROFILE PIS on PS.ID =
+		PIS.SALEPRODUCTID
+		left join P_PRODUCT_CLASS PPC on
+		PS.PRODUCTCLASSCODE =
+		PPC.CLASSCODE
+		<where>
+			<if test="storeId != null">
+				and PS.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeIds != null">
+				and PS.STOREID IN
+				<foreach item="item" index="index" collection="storeIds"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="classCodes != null">
+				and PS.PRODUCTCLASSCODE IN
+				<foreach item="item" index="index" collection="classCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="brandCode != null">
+				and PS.BRANDCODE = #{brandCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductName != null">
+				and PS.SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="keywords != null">
+				and (PS.SALEPRODUCTNAME like
+				CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+				<if test="brandCodes != null">
+					or PS.BRANDCODE IN
+					<foreach item="item" index="index" collection="brandCodes"
+						open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+				)
+			</if>
+			<if test="enabledFlag != null">
+				and PS.ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="barCode != null">
+				and PS.BARCODE = #{barCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="storeType != null">
+				and PS.STORETYPE = #{storeType,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and PIS.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="display != null">
+				and PPC.DISPLAY = #{display, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	<select id="listSaleProductBrandCodesByStoreId" resultType="java.lang.String"
+		parameterType="SaleProductQuery">
+		select
+		PS.BRANDCODE
+		from
+		P_SALE_PRODUCT PS
+		left join
+		P_SALE_PRODUCT_PROFILE
+		PIS on
+		PS.ID = PIS.SALEPRODUCTID
+		left join
+		P_PRODUCT_CLASS PPC
+		on
+		PS.PRODUCTCLASSCODE = PPC.CLASSCODE
+		<where>
+			<if test="storeId != null">
+				and STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeIds != null">
+				and STOREID IN
+				<foreach item="item" index="index" collection="storeIds"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="productClassCode != null">
+				and PRODUCTCLASSCODE = #{productClassCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="productClassCodes != null">
+				and PRODUCTCLASSCODE IN
+				<foreach item="item" index="index" collection="productClassCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="brandCode != null">
+				and PS.BRANDCODE = #{brandCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductName != null">
+				and SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="keywords != null">
+				and (SALEPRODUCTNAME like
+				CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+				<if test="brandCodes != null">
+					or PS.BRANDCODE IN
+					<foreach item="item" index="index" collection="brandCodes"
+						open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+				)
+			</if>
+			<if test="enabledFlag != null">
+				and PS.ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="barCode != null">
+				and BARCODE = #{barCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="storeType != null">
+				and STORETYPE = #{storeType,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and PIS.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="display != null">
+				and PPC.DISPLAY = #{display, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	<select id="listStoreIdsByProductId" resultType="java.lang.Integer"
+		parameterType="SaleProductQuery">
+		select
+		PS.STOREID
+		from
+		P_SALE_PRODUCT PS
+		left join
+		P_SALE_PRODUCT_PROFILE
+		PIS on
+		PS.ID =
+		PIS.SALEPRODUCTID
+		left join P_PRODUCT_CLASS PPC
+		on
+		PS.PRODUCTCLASSCODE =
+		PPC.CLASSCODE
+		<where>
+			<if test="productId != null">
+				and PS.PRODUCTID = #{productId, jdbcType=INTEGER}
+			</if>
+			<if test="enabledFlag != null">
+				and PS.ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and PIS.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="display != null">
+				and PPC.DISPLAY = #{display, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	<select id="loadByStoreIdAndProductId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			PRODUCTID = #{productId,jdbcType=INTEGER}
+			and
+			STOREID =
+			#{storeId,jdbcType=INTEGER}
+		</where>
+	</select>
+</mapper>

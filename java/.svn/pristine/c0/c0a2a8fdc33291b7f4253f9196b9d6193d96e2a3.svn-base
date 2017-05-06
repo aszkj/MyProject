@@ -1,0 +1,584 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()} 
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页")}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+/*查询退款申请信息开始*/
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listWithdrawApply',
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr><td>';
+						if(dataList[i].statusCode=='WITHDRAWAPPLYAUDITSTATUS_NOT_YET'){  //未审核
+							html += '<input type="checkbox" class="applyId" class="tab_check" value="'+dataList[i].applyId+'">';
+						}else{
+							html += '<input type="checkbox" class="tab_check" disabled checked/>';
+						}
+						html += '</td><td>';
+						html += dataList[i].storeCode;
+						html += '</td><td>';
+						html += dataList[i].customerName;
+						html += '</td><td>';
+						html += dataList[i].cityCode;
+						html += '-';
+						html += dataList[i].countyCode;
+						html += '</td><td>';
+						html += toCenti(dataList[i].currentBalance,2);
+						html += '</td><td>';
+						html += toCenti(dataList[i].amount,2);
+						html += '</td><td>';
+						html += dataList[i].applyTime == null?'--': dataList[i].applyTime;
+						html += '</td><td>';
+						html += dataList[i].auditTime == null?'--': dataList[i].auditTime;
+						html += '</td><td>';
+						html += dataList[i].transferTime == null?'--': dataList[i].transferTime;
+						html += '</td><td>';
+						html += dataList[i].statusName==null?'--':dataList[i].statusName;
+						html += '</td><td>';
+						if(dataList[i].statusCode=='WITHDRAWAPPLYAUDITSTATUS_NOT_YET'){  //未审核
+						 html += '<permission code="FUNCTION_AUDIT_SELLER_WITHDRAW">';
+						 html += '<a href="javascript:auditWithdrawapply('+dataList[i].applyId+',1)" class="ablue">审核</a> '
+						 html += '</permission>';
+						}else if(dataList[i].statusCode=='WITHDRAWAPPLYAUDITSTATUS_PASSED'){ //审核通过
+							html += '<permission code="FUNCTION_TRANSFER_SELLER_WITHDRAW">';
+							html += '<a href="javascript:transferWithdrawapply('+dataList[i].applyId+',2)" class="ablue">转账</a> '
+							html += '</permission>';
+						}
+						html += '&nbsp;&nbsp;';
+						html += '<permission code="FUNCTION_DETAIL_SELLER_WITHDRAW">';
+						html += '<a href="javascript:detailWithdrawapply('+dataList[i].applyId+',3)" class="ablue">查看</a> '
+						html += '</permission>';
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="11">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	});
+	$('#checkall').prop('checked',false);
+}
+
+function detailWithdrawapply(id,flag){
+	var message = '查看提现申请';
+	showBox(message,'/user/withdrawapply-mng.html?width=600&height=600&applyId='+id+'&flag='+flag);
+}
+
+function auditWithdrawapply(id,flag){
+	var message = '审核提现申请';
+	showBox(message,'/user/withdrawapply-mng.html?width=600&height=600&applyId='+id+'&flag='+flag);
+}
+function transferWithdrawapply(id,flag){
+	showBox('提示！','确认进行转账操作？','confirm',function(){
+		ajax({
+			url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + '/' + id + '/updateForWithdrawTransferStatus',
+			type:'post',
+			dataType: 'json',
+			error: function(){},
+			success: function(data){
+			  if(data.msgCode != 1){ return; }
+			  showBox('系统提示',data.msg,'alert',function(){
+			  	dataSubmit();
+			  });
+			}
+		});
+	});
+}
+
+/*加载时间控件*/
+function loadTimeInput(){
+	$('#startApplyTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endApplyTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#startAuditTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endAuditTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#startTransferTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endTransferTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+}
+
+function exportWithdrawApply(){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/exportWithdrawApply',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$("#download_link").attr("href", DOWNLOAD_FILE_TEMP_URL + data.entity.reportFilePath);
+				$("#download_link").show();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+
+function selAll(o,idname){
+	var ids = $("input[type='checkbox'][class='"+idname+"']");
+	var checked = o.checked;
+	ids.each(function(){			
+		if(!checked){
+			$(this).prop("checked",false);
+		}else{
+			$(this).prop("checked",true);
+		}
+	});
+}
+function unselAll(){
+	$('body').on('click','.id',function(){
+		if(checkUnSel('id')){
+			$('#checkall').prop("checked",true);
+		}else{
+			$('#checkall').prop("checked",false);
+		}
+	})
+}
+function checkUnSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+function checkSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (!checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+
+/**
+ * 批量审核不通过提现申请状态
+ */
+function batchAuditNotPassWithdrawApplyStatus(idname) {
+	if (checkSel(idname)) {
+		showBox('提示!',"请先选择要批量审核不通过的用户！",'alert');
+		return;
+	}		
+	showBox('确认信息',"确认要批量审核不通过用户吗？",'confirm',function(){
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1);
+		ajax({
+			url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + '/' + param + '/batchAuditNotPassWithdrawApplyStatus',
+			type:'post',
+			dataType: 'json',
+			error: function(){},
+			success: function(data){
+			  if(data.msgCode != 1){ return; }
+			  showBox('系统提示',data.msg,'alert',function(){
+			  	dataSubmit();
+			  });
+			}
+		});
+	})
+}
+
+/**
+ * 批量审核通过提现申请状态
+ */
+function batchAuditPassWithdrawApplyStatus(idname) {
+	if (checkSel(idname)) {
+		showBox('提示!',"请先选择要批量审核通过的用户！",'alert');
+		return;
+	}		
+	showBox('确认信息',"确认要批量审核通过用户吗？",'confirm',function(){
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1);
+		ajax({
+			url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + '/' + param + '/batchAuditPassWithdrawApplyStatus',
+			type:'post',
+			dataType: 'json',
+			error: function(){},
+			success: function(data){
+			  if(data.msgCode != 1){ return; }
+			  showBox('系统提示',data.msg,'alert',function(){
+			  	dataSubmit();
+			  });
+			}
+		});
+	})
+}
+
+/*加载广东省下面的地市菜单*/
+function loadCity() {
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/440000/getAreaDictsByParentCode', 
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var listCity = data.entity;
+			var html = '';
+			html += '<option value="">--请选择--</option>';
+			for (var i = 0; i < listCity.length; i++) {
+				var city = listCity[i];
+				html += '<option value="' + city.id + '">' + city.text + '</option>';
+			}
+			$("#cityCode").html(html);
+		}
+	});
+}
+
+/*加载县区菜单*/
+function loadCounty(val,childval){
+	$("#countyCode").html("");
+	$("#countyCode").html('<option value="">--请选择--</option>'); 
+	$.ajax({
+		url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/'+val+'/getAreaDictsByParentCode', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var html = '';
+			var county = data.entity;
+			html='<option value="">--请选择--</option>';
+			if(null != county && county.length > 0){
+				var len = county.length;
+				for(var i=0;i<len;i++){
+					var countyTemp = county[i];
+					if(childval==countyTemp.id){
+						html += '<option selected value="'+countyTemp.id+'">';
+						html += countyTemp.text;
+						html +='</option>'
+					}else{
+						html += '<option value="'+countyTemp.id+'">';
+						html += countyTemp.text;
+						html +='</option>'
+					}
+				}
+			}
+			$("#countyCode").html(html);
+		}
+	});
+}
+
+function getstatusCodeList(){
+var systemDictType = 'WITHDRAWAPPLYAUDITSTATUS';  //提现申请状态类型
+$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+		type:'post',
+		async:false,
+		dataType:'json',
+		error:function(){return;}, 
+		success:getstatusCodeListSuccess
+	});
+}
+
+function getstatusCodeListSuccess(data){
+	if(data.msgCode!=1){
+		return;
+	}
+	var statusCodeMapList = data.entity;
+	var statusCodeMapHtml = [];
+	if(statusCodeMapList != null && statusCodeMapList.length >0){
+		statusCodeMapHtml.push('<option value="">--请选择--</option>');
+		for(var i=0,length=statusCodeMapList.length;i<length;i++){
+				statusCodeMapHtml.push('<option value="'+statusCodeMapList[i].id);
+				statusCodeMapHtml.push('" name="'+statusCodeMapList[i].name+'">'+statusCodeMapList[i].name+'</option>');
+		}
+	}
+	$('#statusCode').html(statusCodeMapHtml.join(''));
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	getstatusCodeList();
+	loadTimeInput();
+	loadCity();
+	dataSubmit(1);
+	unselAll();
+	$('#checkall').prop('checked',false);
+});
+</script>
+</head>
+<body id="bodyId">
+<!--头部-->
+<div id="headerId"></div>
+<!--头部结束-->
+<div class="bread"><a href="/">首页</a> &gt; 财务管理 &gt;  <span> 提现管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">提现管理</div>
+				<div class="complaint_main">
+		            	<form method="get" id="dataForm">
+		               	   <div class="main_search">
+		               	   	   <dl>
+			                      <dt>地市：</dt>
+			                      <dd>
+			                      	<select class="select grid-10" id="cityCode" name="cityCode" onChange="loadCounty(this.value)">
+										<option value="" selected>--请选择--</option>
+									</select>
+									<select class="select grid-10" id="countyCode" name="countyCode">
+										<option value="" selected>--请选择--</option>
+									</select>
+			                      </dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>门店编码：</dt>
+			                      <dd><input type="text" class="txt grid-10" id="storeCode" name="storeCode" /></dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>门店名称：</dt>
+			                      <dd><input type="text" class="txt grid-10" id="customerName" name="customerName" /></dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>提现状态：</dt>
+			                      <dd>
+			                      	<!-- <select class="select" id="statusCode">
+			                      		<option value="">--全部--</option>
+			                      		<option value="WITHDRAWAPPLYAUDITSTATUS_NOT_YET">待审核</option>
+			                      		<option value="WITHDRAWAPPLYAUDITSTATUS_PASSED">审核通过</option>
+			                      		<option value="WITHDRAWAPPLYAUDITSTATUS_NOT_PASSED">审核不通过</option>
+			                      		<option value="WITHDRAWAPPLYAUDITSTATUS_DRAW_PASSED">提现成功</option>
+			                      	</select> -->
+			                      	<select class="select" id="statusCode" name="statusCode"></select>
+			                      </dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>提现金额范围：</dt>
+			                      <dd><input type="text" class="txt grid-6" id="minAmount" name="minAmount" /> ~ 
+			                          <input type="text" class="txt grid-6" id="maxAmount" name="maxAmount" />
+			                      </dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>提现申请时间：</dt>
+			                      <dd><input type="text" class="txt grid-8" id="startApplyTime" name="startApplyTime" /></dd>
+			                      <dt class="mlr5">至</dt>
+			                      <dd><input type="text" class="txt grid-8" id="endApplyTime" name="endApplyTime" /></dd>
+		                   	   </dl>
+		                   	   <dl>
+			                      <dt>提现审核时间：</dt>
+			                      <dd><input type="text" class="txt grid-8" id="startAuditTime" name="startAuditTime" /></dd>
+			                      <dt class="mlr5">至</dt>
+			                      <dd><input type="text" class="txt grid-8" id="endAuditTime" name="endAuditTime" /></dd>
+		                   	   </dl>
+			                    <dl>
+			                      <dt>提现转账时间：</dt>
+			                      <dd><input type="text" class="txt grid-8" id="startTransferTime" name="startTransferTime" /></dd>
+			                      <dt class="mlr5">至</dt>
+			                      <dd><input type="text" class="txt grid-8" id="endTransferTime" name="endTransferTime" /></dd>
+		                   	   </dl>
+			                   <p class="main_search_btn">
+			                   	 <permission code="FUNCTION_SEARCH_SELLER_WITHDRAW">
+			                   	 	<input type="button" value="查询" class="btn_sure" onClick="javascript:dataSubmit();" />
+			                   	 </permission>
+			                   	 <permission code="FUNCTION_EXPORT_SELLER_WITHDRAW">
+			                     	<input type="button" value="导出" class="btn_sure" onClick="javascript:exportWithdrawApply();" />
+			                     </permission>
+			                     <a hidden id="download_link" style="color:red;text-decoration: underline;"><span style="color:red">点击下载</span></a>
+			                     <input type="hidden"  id="start" name="start" />
+								 <input type="hidden"  id="pageSize" name="pageSize" />
+			                   </p>
+		              	   </div>
+		              	   </form>
+			               <div class="order_index">
+		                   <table cellpadding="0" cellspacing="0" width="100%" class="simple_table">
+		                       <thead>
+		                          <tr>
+		                          	 <th width="10"></th>
+		                          	 <th width="60">门店编号</th>
+		                             <th width="80">门店名称</th>
+		                             <th width="50">所在地区</th>
+		                             <th width="50">可提现金额(元)</th>
+		                             <th width="50">提现金额(元)</th>
+		                             <th width="50">提现申请时间</th>
+		                             <th width="50">提现审核时间</th>
+		                             <th width="50">确定转账时间</th>
+		                             <th width="50">提现状态</th>
+		                             <th width="60">操作</th>
+		                          </tr>
+		                       </thead>
+		                       <tbody id="tbody">
+		                       </tbody> 
+		                   </table>
+		                  <div id="orderContent"></div> 
+		               	</div><!-- 显示财务管理->提现管理 结束-->
+		               	  
+						<dl class="main_pagination">
+						<permission code="FUNCTION_AUDIT_SELLER_WITHDRAW">
+							<input type="checkbox" class="tab_check"  id='checkall'onclick="javascript:selAll(this,'applyId');" />
+							<label for="">全选</label>
+							<input type="button" style="cursor:pointer;" onclick="javascript:batchAuditPassWithdrawApplyStatus('applyId');" title="" value="审核通过" class="btn_sure"/>
+							<input type="button" style="cursor:pointer;" onclick="javascript:batchAuditNotPassWithdrawApplyStatus('applyId');" title="" value="审核不通过" class="btn_gray"/>
+						</permission>
+						 <dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span> 
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>		               	  
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

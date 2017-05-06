@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.AuditProductMapper">
+	<resultMap id="BaseResultMap" type="AuditProduct">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="BATCHNO" property="batchNo" jdbcType="VARCHAR" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode" jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="RETAILPRICE" property="retailPrice" jdbcType="BIGINT" />
+		<result column="PROMOTIONALPRICE" property="promotionalPrice" jdbcType="BIGINT" />
+		<result column="COSTPRICE" property="costPrice" jdbcType="BIGINT" />
+		<result column="COMMISSIONPRICE" property="commissionPrice" jdbcType="BIGINT" />
+		<result column="VIPCOMMISSIONPRICE" property="vipCommissionPrice" jdbcType="BIGINT" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="PRODUCTSPEC" property="productSpec" jdbcType="LONGVARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="LONGVARCHAR" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="SUBMITTIME" property="submitTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITSTATUS" property="auditStatus" jdbcType="VARCHAR" />
+		<result column="INITAUDITUSERID" property="initAuditUserId" jdbcType="INTEGER" />
+		<result column="INITAUDITTIME" property="initAuditTime" jdbcType="TIMESTAMP" />
+		<result column="INITAUDITREJECTREASON" property="initAuditRejectReason" jdbcType="VARCHAR" />
+		<result column="FINALAUDITUSERID" property="finalAuditUserId" jdbcType="INTEGER" />	
+		<result column="FINALAUDITTIME" property="finalAuditTime" jdbcType="TIMESTAMP" />
+		<result column="FINALAUDITREJECTREASON" property="finalAuditRejectReason" jdbcType="VARCHAR" />
+		<result column="DATARESOURCE" property="dataResource" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, BATCHNO, PRODUCTNAME, BARCODE, PRODUCTCLASSCODE, BRANDCODE, RETAILPRICE, PROMOTIONALPRICE,COSTPRICE,COMMISSIONPRICE,VIPCOMMISSIONPRICE,
+		 DISPLAYORDER, PRODUCTSPEC, CONTENT, CHANNELCODE, SUBMITTIME, AUDITSTATUS, INITAUDITUSERID, INITAUDITTIME, INITAUDITREJECTREASON, FINALAUDITUSERID,
+		 FINALAUDITTIME, FINALAUDITREJECTREASON, DATARESOURCE,CREATETIME, CREATEUSERID, MODIFYTIME, MODIFYUSERID
+	</sql>
+
+	<insert id="save" parameterType="AuditProduct" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_AUDIT_PRODUCT (
+		BATCHNO, PRODUCTNAME, BARCODE, PRODUCTCLASSCODE, BRANDCODE, RETAILPRICE, PROMOTIONALPRICE,COSTPRICE,COMMISSIONPRICE,VIPCOMMISSIONPRICE,   
+		DISPLAYORDER, PRODUCTSPEC, CONTENT, CHANNELCODE, AUDITSTATUS, DATARESOURCE,CREATETIME, CREATEUSERID
+		)
+		values (
+		#{batchNo,jdbcType=VARCHAR},
+		#{productName,jdbcType=VARCHAR},
+		#{barCode,jdbcType=VARCHAR},
+		#{productClassCode,jdbcType=VARCHAR}, 
+		#{brandCode,jdbcType=VARCHAR},
+		#{retailPrice,jdbcType=BIGINT},
+		#{promotionalPrice,jdbcType=BIGINT},
+		#{costPrice,jdbcType=BIGINT},
+		#{commissionPrice,jdbcType=BIGINT},
+		#{vipCommissionPrice,jdbcType=BIGINT},
+		#{displayOrder,jdbcType=INTEGER}, 
+		#{productSpec,jdbcType=VARCHAR},
+		#{content,jdbcType=LONGVARCHAR},
+		#{channelCode,jdbcType=VARCHAR},
+		#{auditStatus,jdbcType=VARCHAR},
+		#{dataResource,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}
+		)
+	</insert>
+	
+	<update id="updateAuditProductBasicInfoById" parameterType="AuditProduct">
+		update P_AUDIT_PRODUCT
+		set
+		PRODUCTNAME = #{productName,jdbcType=VARCHAR},
+		BARCODE = #{barCode,jdbcType=VARCHAR},
+		PRODUCTCLASSCODE = #{productClassCode,jdbcType=VARCHAR},
+		BRANDCODE = #{brandCode,jdbcType=VARCHAR},
+		RETAILPRICE = #{retailPrice,jdbcType=BIGINT},
+		PROMOTIONALPRICE = #{promotionalPrice,jdbcType=BIGINT},
+		COSTPRICE = #{costPrice,jdbcType=BIGINT},
+		COMMISSIONPRICE = #{commissionPrice,jdbcType=BIGINT},
+		VIPCOMMISSIONPRICE = #{vipCommissionPrice,jdbcType=BIGINT},
+		DISPLAYORDER = #{displayOrder,jdbcType=INTEGER},
+		PRODUCTSPEC = #{productSpec,jdbcType=VARCHAR},
+		CONTENT = #{content,jdbcType=LONGVARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateAuditStatusBySubmit">
+		update P_AUDIT_PRODUCT
+		set
+		SUBMITTIME = #{submitTime,jdbcType=TIMESTAMP},
+		AUDITSTATUS = #{auditStatus,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}		
+		and AUDITSTATUS IN
+		<foreach item="item" index="index" collection="preAuditStatusList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<update id="updateAuditStatusByInitAudit">
+		update P_AUDIT_PRODUCT
+		set
+		AUDITSTATUS = #{auditStatus,jdbcType=VARCHAR},
+		INITAUDITUSERID = #{initAuditUserId,jdbcType=INTEGER},
+		INITAUDITTIME = #{initAuditTime,jdbcType=TIMESTAMP},
+		INITAUDITREJECTREASON = #{initAuditRejectReason,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}
+		and AUDITSTATUS = #{preAuditStatus,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateAuditStatusByFinalAudit">
+		update P_AUDIT_PRODUCT
+		set
+		AUDITSTATUS = #{auditStatus,jdbcType=VARCHAR},
+		FINALAUDITUSERID = #{finalAuditUserId,jdbcType=INTEGER},
+		FINALAUDITTIME = #{finalAuditTime,jdbcType=TIMESTAMP},
+		FINALAUDITREJECTREASON = #{finalAuditRejectReason,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}
+		and AUDITSTATUS = #{preAuditStatus,jdbcType=VARCHAR}
+	</update>
+
+	<delete id="deleteById">
+		delete from P_AUDIT_PRODUCT
+		where ID = #{id, jdbcType=INTEGER}
+		and AUDITSTATUS IN
+		<foreach item="item" index="index" collection="auditStatusList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<delete id="deleteByBatchNo">
+		delete from P_AUDIT_PRODUCT
+		where BATCHNO = #{batchNo,jdbcType=VARCHAR}
+	</delete>
+
+	<select id="loadById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT
+		where ID = #{id, jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByBarCodeAndChannelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT
+		where BARCODE = #{barCode, jdbcType=VARCHAR}
+		and CHANNELCODE = #{channelCode, jdbcType=VARCHAR}
+	</select>
+
+	<select id="findAuditProducts" resultMap="BaseResultMap" parameterType="AuditProductQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT
+		<where>
+			<if test="batchNo != null">
+				BATCHNO = #{batchNo,jdbcType=VARCHAR}
+			</if>
+			<if test="productName != null">
+				and PRODUCTNAME like
+				CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="classCodes != null">
+				and PRODUCTCLASSCODE in 
+				<foreach item="item" index="index" collection="classCodes" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="brandCode != null">
+				and BRANDCODE = #{brandCode, jdbcType=VARCHAR}
+			</if>
+			<if test="brandCodeList != null">
+				and BRANDCODE IN
+				<foreach item="item" index="index" collection="brandCodeList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="initAuditStatusList != null">
+				and AUDITSTATUS IN
+				<foreach item="item" index="index" collection="initAuditStatusList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="finalAuditStatusList != null">
+				and AUDITSTATUS IN
+				<foreach item="item" index="index" collection="finalAuditStatusList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="dataResource != null and dataResource != ''">
+				and DATARESOURCE = #{dataResource,jdbcType=VARCHAR}
+			</if>
+			<if test="auditStatus != null">
+				and AUDITSTATUS = #{auditStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="channelCode != null">
+				and CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<select id="listByBatchNo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT
+		<where>
+			BATCHNO = #{batchNo,jdbcType=VARCHAR}
+		</where>
+	</select>
+
+	<select id="getAuditProductBarCode" resultType="java.lang.String">
+		select BARCODE from P_AUDIT_PRODUCT
+	</select>
+
+</mapper>

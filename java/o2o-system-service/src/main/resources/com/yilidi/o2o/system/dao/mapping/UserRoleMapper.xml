@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.UserRoleMapper">
+	<resultMap id="BaseResultMap" type="UserRole">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="ROLEID" property="roleId" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, USERID, ROLEID, CREATEUSERID, CREATETIME
+	</sql>
+	
+	<insert id="save" parameterType="UserRole" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into S_USER_ROLE (USERID, ROLEID,
+		CREATEUSERID, CREATETIME)
+		values (#{userId,jdbcType=INTEGER},
+		#{roleId,jdbcType=INTEGER},
+		#{createUserId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+	</insert>
+	
+	<delete id="deleteByRoleId" parameterType="java.lang.Integer">
+		delete from S_USER_ROLE
+		where ROLEID = #{roleId,jdbcType = INTEGER}
+	</delete>
+
+	<delete id="deleteByUserId" parameterType="java.lang.Integer">
+		delete from S_USER_ROLE
+		where USERID = #{userId, jdbcType = INTEGER}
+	</delete>
+
+	<select id="listByRoleId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_USER_ROLE
+		where ROLEID = #{roleId,jdbcType=INTEGER}
+		order by CREATETIME desc
+	</select>
+
+	<select id="listByUserId" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from S_USER_ROLE
+		where USERID = #{userId, jdbcType = INTEGER}
+		order by CREATETIME desc
+	</select>
+
+</mapper>

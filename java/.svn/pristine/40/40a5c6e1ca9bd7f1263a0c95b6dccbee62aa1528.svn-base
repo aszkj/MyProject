@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.FloorProductMapper">
+	<resultMap id="BaseResultMap" type="FloorProduct">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="FLOORID" property="floorId" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="SORT" property="sort" jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="ProductRelatedInfoResultMap" type="ProductRelatedInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode"
+			jdbcType="VARCHAR" />
+		<result column="CLASSNAME" property="className" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<!-- 商品价格 -->
+		<result column="PROMOTIONALPRICE" property="promotionalPrice"
+			jdbcType="BIGINT" />
+		<result column="RETAILPRICE" property="retailPrice" jdbcType="BIGINT" />
+		<result column="COSTPRICE" property="costPrice" jdbcType="BIGINT" />
+		<result column="COMMISSIONPRICE" property="commissionPrice"
+			jdbcType="BIGINT" />
+		<result column="VIPCOMMISSIONPRICE" property="vipCommissionPrice"
+			jdbcType="BIGINT" />
+		<!-- 商品附属信息 -->
+		<result column="HOTSALEFLAG" property="hotSaleFlag" jdbcType="VARCHAR" />
+		<result column="SALESTATUS" property="saleStatus" jdbcType="VARCHAR" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="PRODUCTSPEC" property="productSpec" jdbcType="LONGVARCHAR" />
+
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, FLOORID, PRODUCTID, SORT, CHANNELCODE, CREATEUSERID,
+		CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="FloorProduct">
+		insert into P_FLOOR_PRODUCT (ID,
+		FLOORID, PRODUCTID,
+		SORT, CHANNELCODE, CREATEUSERID, CREATETIME)
+		values
+		(#{id,jdbcType=INTEGER}, #{floorId,jdbcType=INTEGER},
+		#{productId,jdbcType=INTEGER},
+		#{sort,jdbcType=INTEGER},#{channelCode,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from
+		P_FLOOR_PRODUCT
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteByFloorId" parameterType="java.lang.Integer">
+		delete from
+		P_FLOOR_PRODUCT
+		where FLOORID = #{floorId,jdbcType=INTEGER}
+	</delete>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_FLOOR_PRODUCT
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listByFloorId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_FLOOR_PRODUCT
+		where FLOORID = #{floorId,jdbcType=INTEGER}
+		order
+		by SORT
+	</select>
+
+	<select id="listProductInfosByFloorId" resultMap="ProductRelatedInfoResultMap"
+		parameterType="FloorProductInfo">
+		select
+		P.ID as ID ,P.PRODUCTNAME as PRODUCTNAME,P.BARCODE as BARCODE,
+		P.PRODUCTCLASSCODE as PRODUCTCLASSCODE,
+		PC.CLASSNAME as CLASSNAME,
+		P.STATUSCODE as STATUSCODE,
+		PP.CHANNELCODE as CHANNELCODE,
+		PP.PROMOTIONALPRICE as PROMOTIONALPRICE,
+		PD.SALESTATUS as SALESTATUS,
+		PF.SORT as DISPLAYORDER,
+		PD.PRODUCTSPEC as PRODUCTSPEC
+		from
+		P_FLOOR_PRODUCT PF
+		left join P_PRODUCT P on PF.PRODUCTID = P.ID
+		left
+		join P_PRODUCT_CLASS PC on PC.CLASSCODE = P.PRODUCTCLASSCODE
+		left join
+		P_PRODUCT_PRICE PP on PP.PRODUCTID = P.ID
+		left join P_PRODUCT_PROFILE
+		PD on (PD.PRODUCTID = P.ID and PP.CHANNELCODE = PD.CHANNELCODE)
+		<where>
+			1=1
+			<if test="floorId != null">
+				and PF.FLOORID = #{floorId,jdbcType=INTEGER}
+			</if>
+			<if test="productName != null">
+				and P.PRODUCTNAME like
+				CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and P.BARCODE like
+				CONCAT('%',#{barCode,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="classCodes != null">
+				and P.PRODUCTCLASSCODE in
+				<foreach collection="classCodes" index="index" item="item"
+					open="(" separator="," close=")">
+					#{item,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			<if test="saleStatus != null">
+				and PD.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by PF.SORT
+	</select>
+
+</mapper>

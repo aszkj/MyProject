@@ -1,0 +1,115 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<script type="text/javascript">
+var method = getUrlParam("method");
+var id = $.trim(getUrlParam("id"));
+var g_boxId = $.trim(getUrlParam("boxId"));
+
+function close_box(){
+	if(g_boxId!=''&&parent&&parent.closeBox)parent.closeBox(g_boxId);
+}
+
+function closeBox(){
+	close_box();
+}
+
+function auditNoPass(){
+		var url = "";
+		var param = "";
+		if(method == 'init'){
+			url = "/doInitAuditNoPass";
+			var initAuditRejectReason = $("#initAuditRejectReason").val();
+			if(null == initAuditRejectReason || '' == initAuditRejectReason){
+				param = id;
+			}else{
+				param = id + "-" + initAuditRejectReason;
+			}
+		}
+		if(method == 'final'){
+			url = "/doFinalAuditNoPass";
+			var finalAuditRejectReason = $("#finalAuditRejectReason").val();
+			if(null == finalAuditRejectReason || '' == finalAuditRejectReason){
+				param = id;
+			}else{
+				param = id + "-" + finalAuditRejectReason;
+			}
+		}
+   		ajax({
+			url:  TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ param + url,
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					$('#promptMessage').text('审核成功');
+					window.setTimeout(function(){
+						parent.comeback();
+						closeBox();
+					},1000);
+				}
+			}
+		}); 
+}
+
+$(document).ready(function(e) {
+	if (method == 'init'){
+		$("#breadName").html('产品初审');
+		$("#pageTitle").html('产品初审');
+		var html = '';
+		html +='<textarea id="initAuditRejectReason" name="initAuditRejectReason" style="width:400px;height:100px" maxlength="512"></textarea>';
+		$("#reason").html(html);
+	}
+	if (method == 'final'){
+		$("#breadName").html('产品终审');
+		$("#pageTitle").html('产品终审');
+		var html = '';
+		html +='<textarea id="finalAuditRejectReason" name="finalAuditRejectReason" style="width:400px;height:100px" maxlength="512"></textarea>';
+		$("#reason").html(html);
+	}
+});
+
+</script>
+</head>
+<body id="bodyId">		
+<div class="page_title" id="pageTitle"></div>				
+<table style="border-collapse:collapse;">
+	<tr>
+		<td>驳回原因：</td>
+		<td id="reason"></td>
+	</tr>
+</table>
+<div align="center" style="padding:2px">
+	<input type="button" id="submit" value="提交" onclick="auditNoPass()" style="width:auto;display:inline;align:center" class="btn_sure" />　　　　
+	<input type="reset" value="取消" onclick="closeBox()" style="width:auto;display:inline;align:center" class="btn_gray"/>
+	</br>
+	<span id="promptMessage" class="cred"></span> 
+</div>
+</body>
+</html>

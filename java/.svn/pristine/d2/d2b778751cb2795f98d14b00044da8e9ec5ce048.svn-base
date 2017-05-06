@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p>修改昵称</p>
+        <div class="top-right-con" onclick="changeUserNickName()">
+            <span style="font-size: .3rem;color:#ff7e00;">确定</span>
+        </div>
+    </div>
+</header>
+<section class="bg setItemWrap">
+    <div class="bord"></div>
+    <div class="setItem userNickNameItem">
+        <input value="" type="text" id="userNickNameItem" onkeyup="showClearBtn()">
+        <div id="clearNickName" onClick="clearNickName();">
+            <img src="../static-resource/images/register/clean.png">
+        </div>
+    </div>
+</section>
+<footer>
+    <p class="changeNickNameTip">4-20个字符，可由中英文、数字、“_”、“-”组成</p>
+</footer>
+</body>
+<script type="text/javascript">
+    var userInfo = getSessionStorage(localStorageUserInfoKey);
+    $(function(){
+        $("#userNickNameItem").val(userInfo.nickName);
+    });
+    /*清除昵称*/
+    function clearNickName(){
+        document.getElementById("userNickNameItem").value = '';
+        $("#clearNickName").css("display","none");
+    }
+    /*清除按钮出现隐藏控制*/
+    function showClearBtn(){
+        if(document.getElementById("userNickNameItem").value.length > 0){
+            document.getElementById("clearNickName").style.display = 'block';
+        }else{
+            document.getElementById("clearNickName").style.display = 'none';
+        }
+    }
+    /*修改昵称*/
+    function changeUserNickName(){
+            var params = new Object();
+            params.nickName = $("#userNickNameItem").val();
+           if(checkNickName(params.nickName))
+            ajax("/user/modifyuserinfo", params, function(data) {
+                userInfo.nickName= params.nickName;
+                saveUserInfo(userInfo);
+                window.location.href="personalProfile.html";
+            }, function(msg) {
+                alert(msg);
+            }, true);
+        else{
+            alert("请按规则修改昵称");
+           }
+    }
+</script>
+</html>

@@ -1,0 +1,367 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var flittingOrderNo = getUrlParam("flittingOrderNo") || "";
+	function detail() {
+		ajax({
+			//waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/flittingorderdetail/' + flittingOrderNo,
+			data : '',
+			dataType : 'json',//非必须.默认text
+			error : function() {
+			}, //非必须
+			success : function(data) {
+				if (data.msgCode == 1) {
+					var flittingOrder = data.entity.flittingOrderDto;
+					$("#flittingOrderNo").html(flittingOrder.flittingOrderNo);
+					$("#orderStatus").html(flittingOrder.orderStatusName);
+					$("#createUserName").html(flittingOrder.createUserName);
+					$("#createTime").html(flittingOrder.createTime);
+					$("#srcStoreName").html(flittingOrder.srcStoreName);
+					$("#destStoreName").html(flittingOrder.destStoreName);
+					$("#checkTime").html(
+							flittingOrder.checkTime == null ? ""
+									: flittingOrder.checkTime);
+					$("#checkUserName").html(
+							flittingOrder.checkUserName == null ? ""
+									: flittingOrder.checkUserName);
+					$("#flittingCount").html(flittingOrder.flittingCount);
+					$("#auditTime").html(
+							flittingOrder.auditTime == null ? ""
+									: flittingOrder.auditTime);
+					$("#auditUserName").html(
+							flittingOrder.auditUserName == null ? ""
+									: flittingOrder.auditUserName);
+					$("#flittingCount").html(flittingOrder.flittingCount);
+					$("#realFlittingCount").html(
+							flittingOrder.realFlittingCount);
+					$("#auditRejectReason").html(
+							flittingOrder.auditRejectReason);
+					var flittingOrderItems = flittingOrder.flittingOrderItemDtoList
+							|| [];
+					var flittingOrderRejects = data.entity.flittingOrderRejectDtoList
+							|| [];
+					var flittingOrderItemHistoryList = flittingOrderRejects.length > 0 ? flittingOrderRejects[0].flittingOrderItemHistoryDtoList
+							: [];
+					var flittingOrderItemHistoryMap = {};
+					for (var j = 0; j < flittingOrderItemHistoryList.length; j++) {
+						flittingOrderItemHistoryMap[flittingOrderItemHistoryList[j].flittingOrderItemId] = flittingOrderItemHistoryList[j];
+					}
+					if (flittingOrderItems.length > 0) {
+						var html = '';
+						for (var i = 0; i < flittingOrderItems.length; i++) {
+							html += '<tr><td>';
+							html += i + 1;
+							html += '</td><td>'
+							html += flittingOrderItems[i].barCode;
+							html += '</td><td>';
+							html += flittingOrderItems[i].productName;
+							html += '</td><td>';
+							html += flittingOrderItems[i].specifications;
+							html += '</td><td>';
+							html += flittingOrderItems[i].quantity;
+							html += '</td><td>';
+							var rejectQuantity = flittingOrderItems[i].rejectQuantity || 0;
+							var receiveQuantity = flittingOrderItems[i].receiveQuantity || 0;
+							var costPrice = flittingOrderItems[i].costPrice;
+							receiveQuantity = receiveQuantity == null ? 0
+									: receiveQuantity;
+							rejectQuantity = rejectQuantity == null ? 0
+									: rejectQuantity;
+							costPrice = costPrice == null ? 0 : costPrice;
+							//var flag = flittingOrderItemHistoryMap[flittingOrderItems[i].id]
+							//	&& rejectQuantity > 0 ? true : false;
+							//var receiveQuantityInput = flittingOrderItems[i].receiveQuantity;
+							//if (flag) {
+							var receiveQuantityInput = '<input type="number" id="' + flittingOrderItems[i].id + '" name="receiveQuantity" onpaste="return false" value="' + flittingOrderItems[i].receiveQuantity + '"><span class="cred prompt"></span>';
+							//}
+							html += receiveQuantityInput;
+							html += '</td><td>';
+							html += rejectQuantity;
+							html += '</td></tr>';
+						}
+						$("#tbody").html(html);
+					}
+					//修改记录
+					for (var i = 0; i < flittingOrderRejects.length; i++) {
+						var flittingOrderItemHistorys = flittingOrderRejects[i].flittingOrderItemHistoryDtoList
+								|| [];
+						var html = '';
+						if (flittingOrderItemHistorys.length > 0) {
+							for (var j = 0; j < flittingOrderItemHistorys.length; j++) {
+								var flittingOrderItemHistory = flittingOrderItemHistorys[j];
+								var flittingOrderItem = flittingOrderItemHistory.flittingOrderItemDto;
+								var flittingCount = flittingOrderItem.quantity || 0;
+								var rejectQuantity = flittingOrderItemHistory.rejectQuantity || 0;
+								var receiveQuantity = flittingOrderItemHistory.receiveQuantity || 0;
+								html += '<tr><td>';
+								html += j + 1;
+								html += '</td><td>'
+								html += flittingOrderItem.barCode;
+								html += '</td><td>';
+								html += flittingOrderItem.productName;
+								html += '</td><td>';
+								html += flittingOrderItem.specifications;
+								html += '</td><td>';
+								html += flittingCount;
+								html += '</td><td>';
+								html += receiveQuantity;
+								html += '</td><td>';
+								html += rejectQuantity;
+								html += '</td></tr>';
+							}
+						} else {
+							html = "<tr><td colspan='7'>没有修改记录</td></tr>";
+						}
+						$("#firstModifyTbody").html(html);
+					}
+				} else {
+					showBox('提示信息', data.msg, 'alert');
+				}
+			}//非必须
+		});
+	}
+	function comeback() {
+		locationHref('/flittingorder/flittingorder-index.html');
+	}
+	function ulitmatemodify() {
+		var flittingOrderItems = "";
+		var splitStr1 = "x", splitStr2 = "_";
+		var flag = true;
+		$("input", "#tbody").each(
+				function() {
+					if(!validateRecieveQuantityInput($(this))){
+						flag = false;
+					};
+					flittingOrderItems += $(this).attr("id") + splitStr1
+							+ $(this).val() + splitStr2;
+				});
+		if(!flag){
+			return;
+		}
+		if (flittingOrderNo.length <= 0) {
+			showBox('提示信息', '调拨单号不能为空', 'alert');
+			return;
+		}
+		if (flittingOrderItems.length <= 0) {
+			showBox('提示信息', '请填写更改的商品明细数量', 'alert');
+			return;
+		}
+		ajax({
+			type : 'post',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/flittingorder/ulitmatemodify',
+			data : {
+				flittingOrderNo : flittingOrderNo,
+				flittingOrderItems : flittingOrderItems
+			},
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode == 1) {
+					showBox('提示信息', data.msg, 'alert');
+					setTimeout(
+							function() {
+								locationHref('/flittingorder/flittingorder-index.html');
+							}, 1000);
+				} else {
+					showBox('提示信息', "审核失败", 'alert');
+				}
+			}
+		});
+	}
+	function validateRecieveQuantityInput(jInputE) {
+		var realQuantity = parseInt(jInputE.parent().prev("td").text());
+		var receiveQuantity = jInputE.val() || "";
+		var spanEle = jInputE.next("span");
+		if (receiveQuantity == "") {
+			spanEle.html("请输入实际调入数量");
+			setTimeout(function() {
+				spanEle.html("");
+			}, 3000);
+			return false;
+		}
+		var reg = /^[1-9]\d*|0$/;
+		if (!reg.test(receiveQuantity)) {
+			spanEle.html("请输入数字");
+			setTimeout(function() {
+				spanEle.html("");
+			}, 3000);
+			return false;
+		}
+		if (receiveQuantity > realQuantity) {
+			spanEle.html("数量不能大于原始调拨数量");
+			setTimeout(function() {
+				spanEle.html("");
+			}, 3000);
+			return false;
+		}
+		return true;
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		detail();
+	});
+	$(document).on("change", "#tbody input[name=receiveQuantity]", function() {
+		var realQuantity = parseInt($(this).parent().prev("td").text());
+		var receiveQuantity = $(this).val() || "";
+		if (validateRecieveQuantityInput($(this))) {
+			var rejectQuantity = realQuantity - receiveQuantity;
+			$(this).parent().next("td").text(rejectQuantity);
+		}
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 调拨管理 &gt; <span>调拨单列表</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">终极修改</div>
+					<div class="complaint_main">
+						<div
+							style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px; margin-bottom: 5px;">
+							<span>调拨单信息</span>
+						</div>
+						<table cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td height="30" align="left">调拨单号：<span
+									id="flittingOrderNo"></span></td>
+								<td align="left">调拨状态：<span id="orderStatus"></span></td>
+								<td align="left">申请人：<span id="createUserName"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">申请时间：<span id="createTime"></span></td>
+								<td align="left">调出仓库：<span id="srcStoreName"></span></td>
+								<td align="left">调入仓库：<span id="destStoreName"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">验货时间：<span id="checkTime"></span></td>
+								<td align="left">验货人：<span id="checkUserName"></span></td>
+								<td align="left">原始调拨总数：<span id="flittingCount"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">微仓审核时间：<span id="auditTime"></span></td>
+								<td align="left">微仓审核人：<span id="auditUserName"></span></td>
+								<td align="left">实际调拨总数：<span id="realFlittingCount"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">最后修改时间：<span
+									id="ulitmateModifyTime"></span></td>
+								<td align="left">修改人：<span id="ulitmateModifyUserName"></span></td>
+								<td align="left"></span></td>
+							</tr>
+						</table>
+						<div class="order_index">
+							<div
+								style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px; margin-bottom: 5px;">
+								<span>商品明细</span>
+							</div>
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<th width="40" style="background-color: #63ADEE;">序号</th>
+										<th width="80" style="background-color: #63ADEE;">条形码</th>
+										<th width="80" style="background-color: #63ADEE;">商品名称</th>
+										<th width="100" style="background-color: #63ADEE;">商品规格</th>
+										<th width="80" style="background-color: #63ADEE;">原始调拨数量/个</th>
+										<th width="120" style="background-color: #63ADEE;">实际调入数量/个</th>
+										<th width="80" style="background-color: #63ADEE;">退回数量/个</th>
+									</tr>
+								</thead>
+								<tbody id="tbody"></tbody>
+							</table>
+						</div>
+						<div class="order_index">
+							<div
+								style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px; margin-bottom: 5px;">
+								<span>争议说明</span>
+							</div>
+							<div style="height: 50px; border-bottom: 1px solid #e3e4e4;">
+								<span id="auditRejectReason"></span>
+							</div>
+						</div>
+						<div class="order_index">
+							<div
+								style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px; margin-bottom: 5px;">
+								<span>第一次修改记录</span>
+							</div>
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<th width="40" style="background-color: #63ADEE;">序号</th>
+										<th width="80" style="background-color: #63ADEE;">条形码</th>
+										<th width="80" style="background-color: #63ADEE;">商品名称</th>
+										<th width="100" style="background-color: #63ADEE;">商品规格</th>
+										<th width="80" style="background-color: #63ADEE;">原始调拨数量/个</th>
+										<th width="120" style="background-color: #63ADEE;">实际调入数量/个</th>
+										<th width="80" style="background-color: #63ADEE;">退回数量/个</th>
+									</tr>
+								</thead>
+								<tbody id="firstModifyTbody"></tbody>
+							</table>
+						</div>
+						<div style="margin: 10px 10px; text-align: center;">
+							<input type="button" onclick="javascript:comeback();"
+								class="btn_gray" value="取消" />&nbsp;&nbsp; <input type="button"
+								onclick="javascript:ulitmatemodify();" class="btn_sure"
+								value="保存" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

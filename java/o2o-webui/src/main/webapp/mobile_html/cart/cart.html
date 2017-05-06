@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/checkLogin.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+				+ Math.random() + "'><\/script>");
+</script>
+<script src="http://api.map.baidu.com/api?v=2.0&ak=SI4AOIBz771trCVjGV0XRzlr" type="text/javascript"></script>
+</head>
+<body style="background-color: #eeeeee;" class="catbox">
+	<header>
+		<!--顶部标题-->
+		<div class="top-big-tit">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<p>购物车</p>
+		</div>
+	</header>
+	<!--购物车无商品-->
+	<div class="noProInCart hide">
+		<img src="../static-resource/images/cart/noc.png">
+		<p>去看看心仪的商品吧~</p>
+		<button class="shopBtn" onclick="window.location.href='../index.html'">继续购物</button>
+	</div>
+	<div class="proInCart" style="padding-top: .9rem;">
+		<!--配送方式-->
+		<div class="deliveryChoice">
+			<div class="deliveryChoiceTit">
+				<p>配送方式</p>
+			</div>
+			<div class="choiceBox">
+				<a class="homeDelivery active" data-value="1" onclick="showDeli()"> <span>送</span>
+					<h5>送货上门</h5>
+					<p>
+						(满<i class="deliveryFeeSpan"></i>元免<i class="reduceDeliFee"></i>元配送费哦~)
+					</p>
+				</a> <a class="storeDelivery" data-value="2" onclick="showTake()"> <span>提</span>
+					<h5>门店自提</h5>
+					<p>顺道拿一下呗~</p>
+				</a>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+		<!--地址-->
+		<div class="deliBox" id="addressDetailDiv">
+			<div class="deliveryAddress">
+				<div class="noAddress hide"
+					 onclick="window.location.href='../address/address.html'">
+					<p class="receiverName">添加收货地址</p>
+					<p style="color: #999;">为保障您享受的活动权益，请正确填写收货地址</p>
+				</div>
+			</div>
+			<div class="storeMsg"></div>
+		</div>
+		<!--商品列表-->
+		<div class="cartProList" id="storeInfoDiv"></div>
+		<!--底部结算栏-->
+		<div id="settlementDiv">
+			<div style="height: 1rem;"></div>
+			<div class="cartBot foot" id="foot">
+				<div class="allCheck cartCheckBox">
+					<input type="checkbox" checked name="cartCheck" id="cartCheckAll" class="check-all check"><label for="cartCheck"></label><span>全选</span>
+				</div>
+				<div class="caleBtn" onclick="goSettle(this);">
+					<p>
+						结算(<span id="cartCountSpan">0</span>)
+					</p>
+				</div>
+				<div class="cost">
+					<h4>
+						总价：￥<span class="total" id="priceTotal">0</span>
+					</h4>
+					<p class="deliveryFee">
+						满<span class="deliveryFeeSpan"></span>元免<i class="reduceDeliFee"></i>元运费
+					</p>
+					<p class="storeFee">门店自提免运费</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var longitude=0;
+	var latitude=0;
+	$(function() {
+		BDlocation();
+		cartDataList();
+		showCartNum();
+	});
+	function cartDataList() {
+		var params = new Object();
+		if(getSessionStorage(sessionStorageCommunityKey))
+			params.communityId = getSessionStorage(sessionStorageCommunityKey).communityId;
+		if(getSessionStorage(sessionStorageStoreKey))
+		params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		params.cartInfo = getCartParam();
+		setTimeout(function() {
+		ajax("/cart/confirmcart", params, function(data) {
+			if(!data||!data.shopCartList[0]){
+				hasCartGoods();
+				return;
+			}
+			setCartInfo(data.shopCartList[0].saleProductList);
+			$("#saleProductDetailTmpl").tmpl(data).appendTo("#storeInfoDiv");
+			bindClick();
+			$("#storeMsgTmpl").tmpl(data).appendTo(".storeMsg");
+			var addressOfCart = getSessionStorage(sessionStorageAddressOfCartKey);
+			if(addressOfCart)
+				addressOfCart.address = addressOfCart.community.communityName+addressOfCart.addressDetail;
+			if(addressOfCart||data.consigneeAddress){
+				$("#addressDetailTmpl").tmpl(!addressOfCart?data.consigneeAddress:addressOfCart).appendTo(".deliveryAddress");
+				$(".noAddress").addClass("hide");
+			}
+			if(!(data.consigneeAddress)&&!addressOfCart){
+				$(".noAddress").removeClass("hide");
+			}
+			setSettlementValues();
+		},function(msg){alert(msg);},true);
+	}, 300);
+	}
+	function hasCartGoods() {
+		var cartNumTotal = getCartCount();
+		showCartNum();
+		if (cartNumTotal <= 0) {
+			$("div.noProInCart").show();
+			$("div.proInCart").hide();
+			return false;
+		}
+		return true;
+	}
+	function setSettlementValues() {
+		if (hasCartGoods()) {
+			var saleProductIdArr = [];
+			$("div.cartProItem").find("input[type='checkbox']:checked").each(function(){
+				saleProductIdArr.push($(this).attr("data-productId"));
+			});
+			var cartNumTotal = 0;
+			var cartPriceTotal = 0.00;
+			var storeInfo = getSessionStorage(sessionStorageStoreKey);
+			var deliveryFee =parseInt(toCenti(storeInfo.deduceTransCostAmount));
+			if(saleProductIdArr.length > 0){
+				cartNumTotal = getCartCountBySelected(saleProductIdArr);
+				cartPriceTotal = toCenti(getCartPriceBySelected(saleProductIdArr), 2);
+				$("#cartCountSpan").parent().parent().removeClass("caleBtnNo");
+			}else{
+				$("#cartCountSpan").parent().parent().addClass("caleBtnNo");
+			}
+			$("#cartCountSpan").text(cartNumTotal);
+			$("#priceTotal").text(cartPriceTotal);
+			$(".deliveryFeeSpan").text(deliveryFee);
+			$(".reduceDeliFee").html(deliveryFee);
+		}
+	}
+	function delCartGoods(saleProductId) {
+		if (confirm("确定要删除该商品么?")) {
+			if (removeCartByIdArray(saleProductId))
+				delSaleProductItem(saleProductId);
+			setSettlementValues();
+		}
+	}
+	function delSaleProductItem(saleProductId) {
+		var itemId = "saleProductItem_index_" + saleProductId;
+		$("#" + itemId).remove();
+	}
+	function goSettle(e){
+		if($(e).hasClass("caleBtnNo")){
+			return;
+		}
+		var saleProductIdArr = [];
+		$("div.cartProItem").find("input[type='checkbox']:checked").each(function(){
+			saleProductIdArr.push($(this).attr("data-productId"));
+		});
+		if (saleProductIdArr.length <= 0) {
+			alert("请选择购买商品");
+			return;
+		}
+		var addressId = $("div.deliveryMsg").attr("data-addressid");
+		var deliveryModeCode = $("div.choiceBox a.active").attr("data-value");
+		if(!addressId && deliveryModeCode == 1){
+			alert("请选择收货地址");
+			return;
+		}
+		var params = new Object();
+		params.deliveryModeCode= deliveryModeCode;
+		params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		params.addressId = addressId;
+		params.longitude = longitude;
+		params.latitude = latitude;
+		params.cartInfo = getCartParam(saleProductIdArr);
+		ajax("/cart/settlementorder", params, function(data) {
+			if(!data){
+				alert("系统出现异常，请稍后重试");
+				return;
+			}
+			data.cartInfo = saleProductIdArr;
+			setSessionStorage(sessionStorageSettlementKey, data);
+			window.location.href="pay/orderSettlement.html";
+		}, function(msg) {
+			alert(msg);
+		},true);
+	}
+	function BDlocation(params) {
+		var geolocation = new BMap.Geolocation();
+		geolocation.getCurrentPosition(function(r) {
+			if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+				longitude=r.point.lng;
+				latitude=r.point.lat;
+			} else {
+				alert('failed' + this.getStatus());
+			}
+		}, {
+			enableHighAccuracy : true
+		});
+	}
+	function addCartSuccess(productInfo, startLocation, doc) {
+		addOperation(doc,productInfo);
+		setSettlementValues();
+	}
+	function reduceFromCart(doc, productInfo){
+		var productCartNum = getCartNum(productInfo.saleProductId);
+		if (productCartNum <= 0) {
+			delSaleProductItem(productInfo.saleProductId);
+		} else if (productCartNum == 1) {
+			delCartGoods(productInfo.saleProductId);
+		} else {
+			reduceOperation(doc, productInfo);
+		}
+		setSettlementValues();
+	}
+	function bindClick() {
+		$("#cartCheckAll").click(
+				function() {
+					var isChecked = $(this).is(':checked');
+					$("div.cartProItem").find("input[type='checkbox']").each(function(){
+						this.checked = isChecked;
+					});
+					setSettlementValues();
+				});
+		$("div.cartProItem").find("input[type='checkbox']").click(function(){
+			if($("div.cartProItem").find("input[type='checkbox']:checked").length == $("div.cartProItem").find("input[type='checkbox']").length){
+				$("#cartCheckAll")[0].checked=true;
+			}else{
+				$("#cartCheckAll")[0].checked=false;
+			}
+			setSettlementValues();
+		});
+	}
+	//快递配送
+	function showDeli() {
+		if(getSessionStorage(sessionStorageCommunityKey)){
+			$(".deliveryAddress").css("display", "block");
+			$(".storeMsg").css("display", "none");
+			$(".deliveryFee").css("display", "block");
+			$(".storeFee").css("display", "none");
+			$(".homeDelivery").addClass("active");
+			$(".storeDelivery").removeClass("active");
+			$(".takeTime").css("display", "none");
+			$(".deliTime").css("display", "block");
+		}
+	};
+	//门店自提
+	function ziti(){
+		$(".deliveryAddress").css("display", "none");
+		$(".storeMsg").css("display", "block");
+		$(".deliveryFee").css("display", "none");
+		$(".storeFee").css("display", "block");
+		$(".storeDelivery").addClass("active");
+		$(".homeDelivery").removeClass("active");
+		$(".deliTime").css("display", "none");
+		$(".takeTime").css("display", "block");
+	}
+	function showTake() {
+		if(getSessionStorage(sessionStorageCommunityKey)){
+			ziti();
+		}
+	}
+	$(function(){
+		if(getSessionStorage(sessionStorageCommunityKey)==null){
+			ziti();
+		}
+	})
+</script>
+<script id="addressDetailTmpl" type="text/x-jquery-tmpl">
+				<div class="deliveryMsg cartDeliveryMsg" data-addressid="${addressId}" onclick="window.location.href='../address/address.html'">
+					<span class="receiverName">${consigneeName}</span>
+					<span class="teleNum">${phoneNo}</span>
+					<p class="reAddress">${address}</p>
+				</div>
+</script>
+<script id="storeMsgTmpl" type="text/x-jquery-tmpl">
+				<p class="storeName">自提门店：${shopCartList[0].storeName}</p>
+				<p class="openTime">营业时间：${shopCartList[0].businessHoursBegin}-${shopCartList[0].businessHoursEnd}</p>
+				<p class="storeAddress">自提地址：${shopCartList[0].addressDetail}</p>
+</script>
+<script id="storeDetailTmpl" type="text/x-jquery-tmpl">
+{{each(i,v) ($data.shopCartList ? $data.shopCartList : [])}}
+	<div class="storeName">
+            <p>${storeName}</p>
+        </div>
+        <div class="deliTime">
+            <p>收货时间<span>${deliveryTimeNote}</span></p>
+        </div>
+        <div class="takeTime">
+            <p>自提时间<span>${pickUpTimeNote}</span></p>
+        </div>
+</script>
+<script id="saleProductDetailTmpl" type="text/x-jquery-tmpl">
+{{each(i,v) ($data.shopCartList ? $data.shopCartList : [])}}
+	<div class="storeName">
+            <p>${v.storeName}</p>
+        </div>
+        <div class="deliTime">
+            <p>收货时间<span>${v.deliveryTimeNote}</span></p>
+        </div>
+        <div class="takeTime">
+            <p>自提时间<span>${v.pickUpTimeNote}</span></p>
+        </div>
+		<div id="saleProductListDiv">
+{{if v.saleProductList}}
+	{{tmpl(v.saleProductList) $("#saleProductListTmpl").template()}}
+{{/if}}
+	</div>
+{{/each}}
+</script>
+<script id="saleProductListTmpl" type="text/x-jquery-tmpl">
+        <div class="cartProItem bg" id="saleProductItem_index_${saleProductId}">
+            <div class="cartCheckBox">
+                <input type="checkbox" checked name="cartCheck" data-productId="${saleProductId}" id="cartCheck_${saleProductId}"><label for="cartCheck" class="${stockNum<= 0? 'hide' : 'show'}"></label>
+            </div>
+            <div class="cartProImg">
+                <img src="${saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+            </div>
+            <div class="pro-det">
+                <p class="floor-pro-name">
+                    ${saleProductName}
+                </p>
+                <p class="floor-pro-size">
+                    ${saleProductSpec}
+                </p>
+                <p class="floor-pro-vip-price">
+                    ￥<span>${toCenti(orderPrice,2)}</span>
+                </p>
+                <div class="countBox">
+                <div class="count">
+                    <div class="reduce ${getShowClass(saleProductId)}" name="" type="button" onclick="reduceFromCart(this,${JSON.stringify($data)})"></div>
+                    <input class="pro-number ${getShowClass(saleProductId)}" name="" readonly="readonly" type="text" value="${getCartNum(saleProductId)}"/>
+                    <div class="add ${getBtnClass(saleProductId,stockNum)}" name="" type="button" onclick="validCartToAdd(${JSON.stringify($data)},addCartSuccess,'',this)"></div>
+                </div>
+            </div>
+            </div>
+            <div class="cartDelBtn" onclick="delCartGoods(${saleProductId})"><img src="../static-resource/images/search/del.png" ></div>
+            <div class="clearfix"></div>
+		{{if stockNum <= 0}}
+		<div class="semiTrans noStock"><!--半透明遮罩-->
+                <div class="unCheck">
+                    <img src="../static-resource/images/cart/un.png">
+                </div>
+                <div class="buhuo">
+                    <p>补货中</p>
+                </div>
+            </div>
+		{{/if}}
+        </div>
+</script>
+</html>

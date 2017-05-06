@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.SaleDailyMapper">
+	<resultMap id="BaseResultMap" type="SaleDaily">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode" jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="SALECOUNT" property="saleCount" jdbcType="INTEGER" />
+		<result column="AMOUNT" property="amount" jdbcType="BIGINT" />
+		<result column="SALEDATE" property="saleDate" jdbcType="DATE" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, STOREID, SALEPRODUCTID, PRODUCTCLASSCODE, BRANDCODE, PRODUCTNAME, SALECOUNT,
+		AMOUNT, SALEDATE
+	</sql>
+
+	<insert id="save" parameterType="SaleDaily">
+		insert into T_SALE_DAILY (
+		STOREID, SALEPRODUCTID, PRODUCTCLASSCODE, BRANDCODE,
+		PRODUCTNAME, SALECOUNT, AMOUNT, SALEDATE)
+		values (
+		#{storeId,jdbcType=INTEGER}, #{saleProductId,jdbcType=INTEGER},
+		#{productClassCode,jdbcType=VARCHAR},
+		#{brandCode,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR},
+		#{saleCount,jdbcType=INTEGER}, #{amount,jdbcType=BIGINT},
+		#{saleDate,jdbcType=DATE})
+	</insert>
+
+	<delete id="deleteBySaleOrderNo" parameterType="java.lang.String">
+		delete from T_SALE_DAILY
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+	</delete>
+
+	<select id="listSaleTrend" resultType="SaleReport" parameterType="SaleReportQuery">
+		select SD.AMOUNT AS TOTALAMOUNT , SD.SALECOUNT AS TOTALQUANTITY,
+		SD.SALEDATE
+		from T_SALE_DAILY SD
+		<where>
+			<if test="storeId != null">
+				STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="productClassCode != null">
+				and PRODUCTCLASSCODE = #{productClassCode, jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null">
+				and BRANDCODE = #{brandCode, jdbcType=VARCHAR}
+			</if>
+			<if test="productName != null">
+				and PRODUCTNAME = #{productName, jdbcType=VARCHAR}
+			</if>
+			<if test="startDate != null">
+				and SALEDATE &gt; #{startDate, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endDate != null">
+				and SALEDATE &lt;= #{endDate, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		GROUP BY SD.SALEDATE
+
+	</select>
+
+	<select id="listSaleDistribution" resultType="SaleReport">
+		select SD.AMOUNT AS TOTALAMOUNT , SD.SALECOUNT AS TOTALQUANTITY
+		<choose>
+			<when test="reportBy == 'PROVIDER'">
+				, SD.STOREID AS REPORTBY
+			</when>
+			<when test="reportBy == 'BRAND'">
+				, SD.BRANDCODE AS REPORTBY
+			</when>
+			<when test="reportBy == 'PRODUCTNAME'">
+				, SD.PRODUCTNAME AS REPORTBY
+			</when>
+			<otherwise>
+				, SD.STOREID AS REPORTBY
+			</otherwise>
+		</choose>
+		from T_SALE_DAILY SD
+		<where>
+			<if test="productClassCode != null">
+				PRODUCTCLASSCODE = #{productClassCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeId != null">
+				STOREID = #{storeId, jdbcType=VARCHAR}
+			</if>
+			<if test="startDate != null">
+				and SD.SALEDATE &gt; #{startDate, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endDate != null">
+				and SD.SALEDATE &lt;= #{endDate, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		GROUP BY 
+		<choose>
+			<when test="reportBy == 'STORE'">
+				SD.STOREID
+			</when>
+			<when test="reportBy == 'BRAND'">
+				SD.BRANDCODE
+			</when>
+			<when test="reportBy == 'PRODUCTNAME'">
+				SD.PRODUCTNAME
+			</when>
+			<otherwise>
+				SD.STOREID
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

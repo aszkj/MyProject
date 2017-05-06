@@ -1,0 +1,359 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var param ={
+		currentPage:1,
+		pageSize:10,
+		pageCount:0,
+		totalCount:0
+};
+
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()} 
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页")}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+	
+/*查询所有补贴商品开始*/
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listProductSubsifySetting',
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr><td>';
+						html += '<input type="checkbox"  class="id" class="tab_check" value="'+dataList[i].id+'"/>';
+						html += '</td><td>';
+						html += dataList[i].storeCode;
+						html += '</td><td>';
+						html += dataList[i].storeName;
+						html += '</td><td>';
+						html += dataList[i].barCode;
+						html += '</td><td>';
+						html += dataList[i].saleProductName;
+						html += '</td><td>';
+						html += '<permission code="FUNCTION_DELETE_SELLER_SUBSIDY_SETTING">';
+						html += '<a href="javascript:void(0)" onclick="javascript:deleteSubsifyProduct('+dataList[i].id+')" class="mlr5 ablue">删除</a>'
+						html += '</permission>';
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="6">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	}); 
+}
+
+function selectProduct(){
+	showBox('选择产品','/user/saleproduct-select-index.html?width=700&height=450');
+}
+
+/**
+ * 删除补贴商品设置
+ */
+function deleteSubsifyProduct(id){
+	showBox('提示！','确认删除该补贴商品吗？','confirm',function(){
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY  +'/'+ id +'/deleteSubsifyProduct',
+			type: 'post',
+			dataType: 'json',
+			async: true,
+			cache: false,
+			timeout: 30000,
+			error: function(){},
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					dataSubmit();
+				}
+			}
+		});
+	});
+}
+
+/**
+ * 批量删除补贴商品设置
+ */
+function batchDeleteSubsifyProduct(idname){
+	if (checkSel(idname)) {
+		showBox('提示!',"请先选择要删除的补贴商品！",'alert');
+		return;
+	}
+	showBox('确认信息',"确认要删除选择的补贴商品吗？",'confirm',function()  {
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1);
+		ajax({
+			url:  TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ param +'/batchDeleteSubsifyProduct',
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					dataSubmit();
+				}
+			}
+		});
+	})
+}
+
+function selAll(o,idname){
+	var ids = $("input[type='checkbox'][class='"+idname+"']");
+	var checked = o.checked;
+	ids.each(function(){			
+		if(!checked){
+			$(this).prop("checked",false);
+		}else{
+			$(this).prop("checked",true);
+		}
+	});
+}
+
+function unselAll(){
+	$('body').on('click','.id',function(){
+		if(checkUnSel('id')){
+			$('#checkall').prop("checked",true);
+		}else{
+			$('#checkall').prop("checked",false);
+		}
+	})
+}
+
+function checkUnSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+
+function checkSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (!checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	dataSubmit(1);
+	unselAll();
+	$('#checkall').prop('checked',false);
+});
+</script>
+</head>
+<body id="bodyId">
+<!--头部-->
+<div id="headerId"></div>
+<!--头部结束-->
+<div class="bread"><a href="/">首页</a> &gt; 财务管理 &gt;  <span>补贴商品设置</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">补贴商品设置</div>
+				<div class="complaint_main">
+		            	<form method="get" id="dataForm">
+		               	   <div class="main_search">
+			                   <dl>
+			                      <dt>门店编码：</dt>
+			                      <dd><input type="text" class="txt grid-12" id="storeCode" name="storeCode" /></dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>门店名称：</dt>
+			                      <dd><input type="text" class="txt grid-12" id="storeName" name="storeName" /></dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>商品条形码：</dt>
+			                      <dd><input type="text" class="txt grid-12" id="barCode" name="barCode" /></dd>
+			                   </dl>
+			                   <dl>
+			                      <dt>商品名称：</dt>
+			                      <dd><input type="text" class="txt grid-12" id="saleProductName" name="saleProductName" /></dd>
+			                   </dl>
+			                   <p class="main_search_btn">
+			                   	 <permission code="FUNCTION_SEARCH_SELLER_SUBSIDY_SETTING">
+			                   	 	<input type="button" value="查询" class="btn_sure" onClick="dataSubmit()" />
+			                   	 </permission>
+			                   	 <permission code="FUNCTION_ADD_SELLER_SUBSIDY_SETTING">
+			                   	 	<input type="button" value="添加商品" onclick="selectProduct()" class="btn_sure" />
+			                   	 </permission>
+			                     <input type="hidden"  id="start" name="start" />
+								 <input type="hidden"  id="pageSize" name="pageSize" />
+			                   </p>
+		              	   </div>
+		              	   </form>
+			               <div class="order_index">
+		                   <table cellpadding="0" cellspacing="0" width="100%" class="simple_table">
+		                       <thead>
+		                          <tr>
+		                          	 <th width="10"></th>
+		                          	 <th width="80">门店编码</th>
+		                             <th width="100">门店名称</th>
+		                             <th width="100">商品条形码</th>
+		                          	 <th width="100">商品名称</th>
+		                             <th width="80">操作</th>
+		                          </tr>
+		                       </thead>
+		                       <tbody id="tbody">
+		                       </tbody> 
+		                   </table>
+		                  <div id="orderContent"></div> 
+		               	</div><!-- 显示财务管理->补贴商品设置结束-->
+						<dl class="main_pagination">
+						<input type="checkbox" class="tab_check" id='checkall' onclick="javascript:selAll(this,'id');" />
+						<label for="">全选</label>
+						<input type="button" style="cursor:pointer;" id="btndelete" onclick="javascript:batchDeleteSubsifyProduct('id');" value="删除" class="btn_sure" />
+						 <dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span> 
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>		               	  
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

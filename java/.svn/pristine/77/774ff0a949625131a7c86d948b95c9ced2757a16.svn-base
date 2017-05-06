@@ -1,0 +1,334 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link rel="stylesheet" href="/static-resource/css/timepicker.css" type="text/css" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<style>
+.workorder_save_button_new {
+	padding: 10px 100px
+}
+.workorder_leave_new {
+	padding: 10px 50px
+}
+</style>
+<script type="text/javascript">
+	var GLOBAL_PARAM = {
+		countWordsFlag : true,
+		g_boxId : $.trim(getUrlParam("boxId")),
+		flag : $.trim(getUrlParam("flag")),
+		applyId : $.trim(getUrlParam("applyId"))
+	};
+
+	//通过银行编号获得银行名称
+	function listAccountBindingType(val){
+		ajax({
+			    url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY  + '/getAccountBindingType',
+				type:'post',
+				async:false,
+				dataType:'json',
+				error:function(){return;}, 
+				success:function(data){
+					if(data.msgCode!=1){
+						return;
+					}
+					var accountBindingTypeMapList = data.entity;
+					var accountBindingTypeMapHtml = [];
+					if(accountBindingTypeMapList != null && accountBindingTypeMapList.length >0){
+						accountBindingTypeMapHtml.push('<option value="">--请选择--</option>');
+						for(var i=0,length=accountBindingTypeMapList.length;i<length;i++){
+								accountBindingTypeMapHtml.push('<option value="'+accountBindingTypeMapList[i].id);
+								accountBindingTypeMapHtml.push('" name="'+accountBindingTypeMapList[i].name+'">'+accountBindingTypeMapList[i].name+'</option>');
+						}
+					}
+					$('#bankCode').html(accountBindingTypeMapHtml.join(''));
+					 if(GLOBAL_PARAM.applyId!=''&&GLOBAL_PARAM.applyId!=null){
+						 $('#bankCode').val(val);
+					 }
+				}
+		});
+	}
+
+	function getWithdrawApplyDetail() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ GLOBAL_PARAM.applyId + '/loadWithdrawApplyDetail',
+			type : 'get',
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				var object = data.entity;
+				$('#storeCode').val(object.storeCode);
+				$('#customerName').val(object.customerName);
+				$('#contactName').val(object.contactName);
+				$('#telPhone').val(object.telPhone);
+				listAccountBindingType(object.bankCode);
+				$('#subBankName').val(object.subBankName);
+				$('#bankCardNo').val(object.bankCardNo);
+				$('#applyTime').val(object.applyTime);
+				$('#amount').val(toCenti(object.amount,2) + '元');
+				$('#currentBalance').val(toCenti(object.currentBalance,2) + '元');
+				listStatusCode(object.statusCode);
+				$('#auditTime').val(object.auditTime);
+				$('#statusCode').val(object.statusCode);
+				$('#auditNote').val(object.auditNote);
+			}
+		});
+	}
+
+	function showErr(errorType){
+		if(errorType=='statusCode'){
+			$('#statusCodeErr').text('');
+			$('#prompt').text('');
+		 	return;
+		 }
+	}
+	
+	/*审核用户提现申请*/
+	function updateWithdrawApplyAuditStatus() {
+		var statusCode = $('#statusCode').val();
+		var auditNote = $('#auditNote').val();
+		var url;
+		url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + GLOBAL_PARAM.applyId + '-' + statusCode + '-' + auditNote + '/updateWithdrawApplyAuditStatus';
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		var flag = true;
+		var statusCode=$('#statusCode').val();
+	    if(statusCode==null||statusCode==''||statusCode=='WITHDRAWAPPLYAUDITSTATUS_NOT_YET'){
+	       $('#statusCodeErr').text('请选择审核状态');
+	       flag=false;
+	       return;
+	    }
+		if (!flag) {
+			$('#prompt').text('请将信息填写完整再提交.');
+			return false;
+		} else {
+			$('#prompt').text('');
+		}
+		$.ajax({
+			type : 'post',
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			url : url,
+			error : function() {
+				alert("提交数据失败，请稍后再试")
+			},
+			success : function(data) {
+				if(data.msgCode==1){
+					$('#saveButton').attr("disabled","disabled");
+					$("#prompt").text('审核成功，正在返回...');
+					setTimeout(function(){
+						if (parent) {
+							parent.dataSubmit();
+							close_box();
+						}
+					},1000);
+				}else{
+					$("#prompt").text(data.msg);
+					$('#saveButton').removeAttr("disabled");
+					return;
+				}
+			}
+		});
+	}
+
+	function countwords(id) {
+		var inputLength = $("#" + id).val().length;
+		var maxCount = 50;
+		if (inputLength == 0) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + maxCount + "个字");
+		} else if (inputLength > 0 && inputLength <= maxCount) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + (maxCount - inputLength) + "个字");
+		} else if (inputLength > maxCount) {
+			GLOBAL_PARAM.countWordsFlag = false;
+			$("#" + id + "Err").html(
+					"<strong class='cred'>已经超过" + (inputLength - maxCount)
+							+ "个字</strong>");
+		}
+	}
+
+	/*关闭弹框*/
+	function close_box() {
+		if (GLOBAL_PARAM.g_boxId != '' && parent && parent.closeBox)
+			parent.closeBox(GLOBAL_PARAM.g_boxId);
+	}
+
+	function listStatusCode(val){
+		var systemDictType = 'WITHDRAWAPPLYAUDITSTATUS';  //提现申请状态类型
+		$.ajax({
+				url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+				type:'post',
+				async:false,
+				dataType:'json',
+				error:function(){return;}, 
+				success:function(data){
+					if(data.msgCode!=1){
+						return;
+					}
+					var statusCodeMapList = data.entity;
+					var statusCodeMapHtml = [];
+					if(statusCodeMapList != null && statusCodeMapList.length >0){
+						statusCodeMapHtml.push('<option value="">--请选择--</option>');
+						for(var i=0,length=statusCodeMapList.length;i<length;i++){
+							if(GLOBAL_PARAM.flag=='3'){
+								//查看,可以看到所有状态
+								statusCodeMapHtml.push('<option value="'+statusCodeMapList[i].id);
+								statusCodeMapHtml.push('" name="'+statusCodeMapList[i].name+'">'+statusCodeMapList[i].name+'</option>');
+							}else{
+								// 审核，不需要看到提现状态
+								if (statusCodeMapList[i].id != 'WITHDRAWAPPLYAUDITSTATUS_DRAW_PASSED') {
+									statusCodeMapHtml.push('<option value="'+statusCodeMapList[i].id);
+									statusCodeMapHtml.push('" name="'+statusCodeMapList[i].name+'">'+statusCodeMapList[i].name+'</option>');
+								}
+							}
+						}
+					}
+					$('#statusCode').html(statusCodeMapHtml.join(''));
+					if(val != 'WITHDRAWAPPLYAUDITSTATUS_NOT_YET'){
+						$('#auditTimedl').show();
+					}
+					if(GLOBAL_PARAM.applyId!=''&&GLOBAL_PARAM.applyId!=null){
+						$('#statusCode').val(val);
+					}
+				}
+		});
+	}
+	
+	$(document).ready(function(e) {
+		if (GLOBAL_PARAM.applyId != '' && GLOBAL_PARAM.applyId != null) {
+			getWithdrawApplyDetail();
+		}
+		if(GLOBAL_PARAM.flag=='3'){ //查看
+		   $('#statusCode').attr('disabled','true');
+	       $('#auditNote').attr('disabled', 'true');
+	       $('#saveButton').hide();
+	    }else{
+	       $('#statusCode').removeAttr('disabled');
+	       $('#auditNote').removeAttr('disabled');
+	       $('#saveButton').show();
+	    }
+	});
+</script>
+</head>
+<body>
+	<div class="workorder_mng">
+		<div class="workorder_leave_new">
+			<form method="post" id="dataForm">
+				<dl>
+					<dt>门店编号：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="storeCode" name="storeCode" disabled="disabled" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>门店名称：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="customerName" name="customerName" disabled="disabled" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>联系人：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="contactName" name="contactName" disabled="disabled" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>联系电话：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="telPhone" name="telPhone" disabled="disabled" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>提现银行：</dt>
+					<dd>
+						<select class="select grid-31" id="bankCode" name="bankCode" disabled="disabled"></select>
+					</dd>
+				</dl>
+				<dl>
+					<dt>所属支行：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="subBankName" name="subBankName" disabled="disabled" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>银行账号：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="bankCardNo" name="bankCardNo" disabled="disabled" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>申请时间：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="applyTime" name="applyTime" disabled="disabled" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>提现金额：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="amount" name="amount" disabled="disabled" style="color: red;" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>可提现金额：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="currentBalance" name="currentBalance" disabled="disabled" />
+					</dd>
+				</dl>
+				<dl id="auditTimedl" style="display: none;">
+					<dt>审核时间：</dt>
+					<dd>
+						<input type="text" class="txt grid-30" id="auditTime" name="auditTime" disabled="disabled" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>审核：</dt>
+					<dd>
+						<select class="select grid-10" id="statusCode" name="statusCode" onmousedown="showErr('statusCode')">
+						</select> <span id="statusCodeErr" class="cred"></span>
+					</dd>
+				</dl>
+				<dl>
+					<dt>备注：</dt>
+					<dd>
+						<textarea type="text" id="auditNote" name="auditNote" class="txt grid-30" rows="3" onkeyup="countwords('auditNote')"></textarea>
+					</dd>
+					<span id="auditNoteErr" class="gray" style="padding:1px 100px">可以输入50个字</span>
+				</dl>
+			</form>
+			<p class="workorder_save_button_new">
+				&nbsp;<input id="saveButton" type="button" onclick="javascript:updateWithdrawApplyAuditStatus();" class="btn_sure" value="确定" style="display: none;" />
+				<input id="resetButton" type="button" onclick="javascript:close_box();" class="btn_gray" value="返回" />
+				<span id="prompt" class="cred"></span>
+			</p>
+		</div>
+	</div>
+</body>
+</html>

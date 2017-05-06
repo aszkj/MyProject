@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd ">
+
+     <!-- 引入配置文件 -->
+    <context:property-placeholder location="classpath:config.properties, classpath:webservice.properties" />
+    <!-- 自动扫描包(自动注入) -->
+    <context:component-scan base-package="com.yilidi.erp.**.service" />
+    <context:annotation-config />
+    
+    <import resource="spring-dataSource.xml"/>
+	<import resource="dubbo/remote-common.xml"/>
+	<import resource="dubbo/remote-o2o-provider.xml"/>
+	<import resource="dubbo/remote-consumer.xml"/>
+
+</beans>

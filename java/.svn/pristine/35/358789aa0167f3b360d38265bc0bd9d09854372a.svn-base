@@ -1,0 +1,128 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/base64.js"></script>
+<script type="text/javascript">
+
+	function appTest(){
+			var param = [];
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"mobile":"13631665692","type":"1"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"mobile":"13631665692","code":"AAaa!!11","type":"1"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"mobile":"13631665692","code":"889832","type":"2"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"password":"12261226Cl"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"oldPassword":"12261226Cl","password":"AAaa!!11"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"dataTypeString":"1111"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"pageNum":"1","pageSize":2}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"statusCode":"4","pageNum":"1","pageSize":2}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"receiveNo":"222333"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"saleOrderNo":"201511121222027456av"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"saleOrderNo":"201511121222027456av"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"saleOrderNo":"201511121222027456av"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"saleOrderNo":"201511121222027456av","receiveNo":"222333"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"parentClassCode":"PC20160531164142467d1Y"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"parentClassCode":"PC20160531164142467d1Y","classCode":"PC20160531164049318D3U","keyword":"花","pageNum":"1","pageSize":2}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"saleProductIds":"3","enabledFlag":1}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"storeName":"Edison Shop","beginBusinessHour":"08:00:00","endBusinessHour":"23:00:00","deduceTransCostAmount":25000,"transCostAmount":3000,"hotline":"18675597224","storeStatus":0}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"beginTime":"2016-03-01 00:00:00","endTime":"2016-06-25 23:59:59"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"beginTime":"2015-03-01 00:00:00","endTime":"2016-06-26 23:59:59","pageNum":"1","pageSize":2}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"beginTime":"2015-03-01 00:00:00","endTime":"2016-06-26 23:59:59","pageNum":"1","pageSize":5}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"feebackContent":"希望一里递越办越好～！"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"allotInfo":[{"saleProductId":11,"allotNum":10},{"saleProductId":12,"allotNum":20}]}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"allotInfo":[{"saleProductId":11,"allotNum":10},{"saleProductId":12,"allotNum":20}],"allotNote":"very good"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"whetherComplete":0,"pageNum":"1","pageSize":5}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"allotOrderNo":"F1607070103517777SV1"}}';
+			//var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"allotOrderNo":"F1607070103517777SV1"}}';
+			var strJson = '{"versionCode":10,"intfCallChannel":"1","key":"1","deviceId":"100","entity":{"allotInfo":[{"saleProductId":11,"allotNum":6},{"saleProductId":12,"allotNum":12}],"allotOrderNo":"F1607070103517777SV1"}}';
+	        var base64 = new Base64();  
+	        var strBase64Json = base64.encode(strJson);  
+			param.push('param='+encodeURIComponent(strBase64Json));
+			//for(var i=0; i<500; i++){
+			$.ajax({
+				//url: TERMINAL_URL+'/interfaces/seller/system/sendcaptcha',
+				//url: TERMINAL_URL+'/interfaces/seller/user/login',
+				//url: TERMINAL_URL+'/interfaces/seller/user/logouta',
+				//url: TERMINAL_URL+'/interfaces/seller/system/checkcode',
+				//url: TERMINAL_URL+'/interfaces/seller/user/resetpassword',
+				//url: TERMINAL_URL+'/interfaces/seller/user/updatepassword',
+				//url: TERMINAL_URL+'/interfaces/seller/statistic/indexstata',
+				//url: TERMINAL_URL+'/interfaces/seller/user/inviteusersa',
+				//url: TERMINAL_URL+'/interfaces/seller/order/orderlista',
+				//url: TERMINAL_URL+'/interfaces/seller/order/orderdetailsa',
+				//url: TERMINAL_URL+'/interfaces/seller/order/accepta',
+				//url: TERMINAL_URL+'/interfaces/seller/order/cancela',
+				//url: TERMINAL_URL+'/interfaces/seller/order/deliverya',
+				//url: TERMINAL_URL+'/interfaces/seller/order/finisha',
+				//url: TERMINAL_URL+'/interfaces/seller/product/getproducttypea',
+				//url: TERMINAL_URL+'/interfaces/seller/product/searchproductsa',
+				//url: TERMINAL_URL+'/interfaces/seller/product/enabledflag',
+				//url: TERMINAL_URL+'/interfaces/seller/store/detailinfoa',
+				//url: TERMINAL_URL+'/interfaces/seller/store/settlesimpleinfoa',
+				//url: TERMINAL_URL+'/interfaces/seller/store/updateinfo',
+				//url: TERMINAL_URL+'/interfaces/seller/statistic/summerizeinfoa',
+				//url: TERMINAL_URL+'/interfaces/seller/statistic/vipuserdetaila',
+				//url: TERMINAL_URL+'/interfaces/seller/statistic/settledetaila',
+				//url: TERMINAL_URL+'/interfaces/seller/setting/feeback',
+				//url: TERMINAL_URL+'/interfaces/seller/setting/helpaddress',
+				//url: TERMINAL_URL+'/interfaces/seller/allot/confirmallot',
+				//url: TERMINAL_URL+'/interfaces/seller/allot/createallot',
+				//url: TERMINAL_URL+'/interfaces/seller/allot/orderlist',
+				//url: TERMINAL_URL+'/interfaces/seller/allot/orderdetails',
+				//url: TERMINAL_URL+'/interfaces/seller/allot/checkallot',
+				url: TERMINAL_URL+'/interfaces/seller/allot/confirmcheckallot',
+				
+				type: 'post',
+				data: param.join('&'),
+				dataType: 'json',
+				success: function(data){
+					//alert("data: " + data);
+					var str = JSON.stringify(data)
+					//alert("str==> " + str);
+					//alert("data.result: " + data.result);
+					alert("base64.decode(data.result): " + base64.decode(data.result));
+					var result = base64.decode(data.result);
+					var obj = eval('(' + result + ')');
+					if(obj.msgCode == 1){
+						alert("APP接口调用成功");
+						//alert("obj : " + obj);
+						//alert("obj.entity.userName : " + obj.entity.userName);
+						//alert("obj.entity.createTime : " + obj.entity.createTime);
+					}
+					else{
+						alert("APP接口调用失败：" + obj.msg);
+					}
+				}
+			})
+		//}
+	}
+	
+</script>
+</head>
+
+<body>
+	<h1>APP接口测试</h1>
+	<form method="post">
+			<input type="button"  value="测试"  onclick="javascript:appTest();"/>
+	</form>
+</body>
+</html>

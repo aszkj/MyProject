@@ -1,0 +1,293 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<link type="text/css" href="/static-resource/plugin/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<script type="text/javascript" src="/static-resource/js/jquery-1.5.2.min.js"></script>
+<script type="text/javascript" src="/static-resource/plugin/ligerUI/js/ligerui.all.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<style>
+.btn_sure,.btn_gray{padding:6px 15px;border-radius:3px;display:inline-block;font-size:12px;color:#fff;cursor:pointer}
+.btn_sure{border:1px solid #63ADEE;background-color:#63ADEE}
+.btn_gray{border:1px solid #666;background-color:#666}
+</style>
+<script type="text/javascript">
+var g_boxId = $.trim(getUrlParam("boxId"));
+var storeTypeClassCodes = null;
+
+function getList(storeTypeClassCodes){
+	var productClassList=getAllProductClass();
+	var html='';
+	if(productClassList != null && productClassList.length > 0){
+		$.each(productClassList,function(i,i_item){
+			html+='<div class="leftDiv rightDiv" align="left" style="margin-left:8px;line-height:20px;">';
+			html+='<div class="leftDiv-d rightDiv-d" style="line-height:20px" align="left">';
+			html+='<input class="leftClassCode rightClassCode" value="'+i_item.classCode+'" type="checkbox"';
+			if(storeTypeClassCodes != null && storeTypeClassCodes.length > 0){
+				$.each(storeTypeClassCodes,function(l,l_item){
+					if(i_item.classCode == l_item.classCode){
+						html+='checked="checked"';
+					}
+				});
+			}
+			if(i_item.subClassList == null || i_item.subClassList.length == 0){
+				html+='name="proclassname"';
+			}
+			html+='>';
+			html+='<span class="leftClassName rightClassName" style="cursor:pointer">'+i_item.className+'(';
+			if(i_item.subClassList != null && i_item.subClassList.length > 0){
+				html+=i_item.subClassList.length;	
+			}else{
+				html+=0;	
+			}
+			html+=')</span>';
+			html+='<div class="leftDiv rightDiv" style="line-height:10px;margin-left:12px;display:none" align="left">';
+			if(i_item.subClassList != null && i_item.subClassList.length > 0){
+				$.each(i_item.subClassList,function(j,j_item){
+					html+='<div class="leftDiv-d rightDiv-d" style="line-height:20px" align="left">';
+					html+='<input class="leftClassCode rightClassCode" value="'+j_item.classCode+'" type="checkbox"';
+					if(storeTypeClassCodes != null && storeTypeClassCodes.length > 0){
+						$.each(storeTypeClassCodes,function(l,l_item){
+							if(j_item.classCode == l_item.classCode){
+								html+='checked="checked"';
+							}
+						});
+					}
+					if(j_item.subClassList == null || j_item.subClassList.length == 0){
+						html+='name="proclassname"';
+					}
+					html+='>';
+					html+='<span class="leftClassName rightClassName" style="margin-left:2px;cursor:pointer;color:#0000FF">'+j_item.className+'(';
+					if(j_item.subClassList != null && j_item.subClassList.length > 0){
+						html+=j_item.subClassList.length;	
+					}else{
+						html+=0;	
+					}
+					html+=')</span>';
+					html+='<div class="leftDiv rightDiv" style="line-height:10px;margin-left:15px;display:none" align="left">';
+					if(j_item.subClassList != null && j_item.subClassList.length > 0){
+						$.each(j_item.subClassList,function(k,k_item){
+							html+='<div class="leftDiv-d rightDiv-d" style="line-height:20px" align="left">';
+							html+='<input class="leftClassCode rightClassCode" value="'+k_item.classCode+'" type="checkbox"';
+							if(storeTypeClassCodes != null && storeTypeClassCodes.length > 0){
+								$.each(storeTypeClassCodes,function(l,l_item){
+									if(k_item.classCode == l_item.classCode){
+										html+='checked="checked"';
+									}
+								});
+							}
+							if(k_item.subClassList == null || k_item.subClassList.length == 0){
+								html+='name="proclassname"';
+							}
+							html+='>';
+							html+='<span class="leftClassName rightClassName" style="margin-left:2px;color:#FF0000">'+k_item.className+'</span>';
+							html+='</div>';
+						});
+					}
+					html+='</div></div>';
+				});
+			}
+			html+='</div></div></div>';
+		});
+	}
+	$('#leftBox').html(html);
+	$('input[type="checkbox"]:checked').each(function(){
+		var parentDiv = $(this).parent("div");
+		checkedUp(parentDiv);
+	});
+}
+
+//得到所有分类
+function getAllProductClass(){
+	var productClassList=[];
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/getAllProductClass',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode!=1)return;
+			productClassList=data.entity;
+		}
+	});
+	return productClassList;
+}
+
+//获取回写时此门店类型下的分类code值所关联所有级别的code值
+function getProductClassByStoreType(){
+	if(getUrlParam('storeDictCode') == null && getUrlParam('storeDictCode') == ""){
+		$.ligerDialog.error('数据有误请重试!');
+		return;
+	}
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + getUrlParam('storeDictCode')  +  '/getProductClassByStoreType',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode!=1)return;
+			storeTypeClassCodes= data.entity;
+		}
+	})
+}
+
+
+function selectFunctionSubmit(){
+	var classCodeStr = "";
+	$('input[name="proclassname"]:checked').each(function(){
+			classCodeStr += $(this).val() + ",";
+	});
+	if(classCodeStr == ""){
+		$.ligerDialog.error('请选择需要分配的类型!');	
+		return;
+	}
+	if(getUrlParam('storeDictCode') == null && getUrlParam('storeDictCode') == ""){
+		$.ligerDialog.error('数据有误请重试!');
+		return;
+	}
+	var requestData = classCodeStr+getUrlParam('storeDictCode');
+	
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' +requestData + "/saveStoreTypeBasicClass",
+		type:'post',
+		dataType:'json',
+		error:function(data){
+			alert('操作失败!');	
+		},
+		success:function(data){
+			if(data.msgCode==3){ 
+				loginError(data.msg); 
+			}
+			if(data.msgCode != 1){
+				$('#prompt').text(data.msg);
+				$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+				return; 
+			}
+
+			$('#prompt').html('操作成功。<br>'+data.msg);
+			/* window.setTimeout(function(){
+				closeBox()
+				parent.location.reload();
+			},1000); */
+		}
+	});
+}
+function closeBox(){
+ if(g_boxId!=''&&parent&&parent.closeBox)parent.closeBox(g_boxId);
+}
+
+$(function(){
+	getProductClassByStoreType();//用于回写数据用
+	getList(storeTypeClassCodes);
+	//左边点击文字
+	$("#leftBox").on("click",".leftClassName",function(){
+		var obj = $(this).parent();
+		nextShow(obj);
+	});
+	//右边点击文字
+	/* $("#rightBox").on("click",".leftClassName",function(){
+		var obj = $(this).parent();
+		nextShow(obj);
+	}); */
+	//勾选复选框
+	$("#leftBox").on("click",".leftClassCode",function(){
+		nextChecked($(this));
+	});
+});
+
+//div显示
+function nextShow(obj){
+	if(obj.children(".leftDiv").is(":visible")){
+		obj.find(".leftDiv").hide();
+	}else{
+		obj.children(".leftDiv").show();
+	}
+}
+//复选框选中
+function nextChecked(obj){
+	var parentDiv = obj.parent("div");
+	var subCheckboxs = obj.parent().children(".leftDiv").find(".leftClassCode");
+	//var upDivs = parentObj.parent(".leftDiv").parents(".leftDiv");
+	if(obj.is(":checked")){
+		checkedUp(parentDiv);
+		subCheckboxs.each(function(){
+			$(this).attr("checked",'true');
+		});
+	}else{
+		/* checkNext(parentDiv); */
+		subCheckboxs.each(function(){
+			$(this).removeAttr("checked");
+		});
+	}
+}
+ //递归选中上一级
+function checkedUp(parentDiv){
+	parentDiv = parentDiv.parent(".leftDiv").parent("div");
+	if(parentDiv[0]){
+		parentDiv.children(".leftClassCode").attr("checked",'true');
+		checkedUp(parentDiv);
+	}
+} 
+/* //递归检查是否还有下级
+function checkNext(parentDiv){
+	parentDiv = parentDiv.parent(".leftDiv").parent("div");
+	if(parentDiv[0]){
+		var flag = false;
+		parentDiv.find(".leftClassCode").each(function(){
+			if($(this).is(":checked")){
+				flag = true;
+				return false;
+			}
+		});
+		if(flag){
+			console.log(1);
+			parentDiv.children(".leftClassCode").removeAttr("checked");
+		}
+		checkedUp(parentDiv);
+	}
+} */
+
+</script>
+</head>
+<body style="padding:10px;">
+<form name="form1" method="post" id="form1" onsubmit="selectFunctionSubmit();return false">
+<table border="1" bordercolor="#CCCCCC" style="border-collapse:collapse;width:560px;">
+	<tr>
+		<td style="height:20px" align="center" valign="middle">可选择产品类别</td>
+		<!-- <td style="height:20px" align="center" valign="middle">已选择产品类别</td> -->
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+			<div id="leftBox" style="height:280px;width:560px;overflow:auto;"></div>
+		</td>
+		<!-- <td align="center" valign="top">
+			<div id="rightBox" style="height:280px;width:265px;overflow:auto"></div>
+		</td> -->
+	</tr>
+</table>
+<div align="center" style="padding:2px">
+	<input type="submit" id="submit" value="提交" style="width:auto;display:inline" class="btn_sure"/>　　　　
+	<input type="reset" value="取消" onclick="closeBox()" style="width:auto;display:inline" class="btn_gray"/>
+    <span id="prompt" class="cred"></span>
+</div>
+</form>
+</body>
+</html>

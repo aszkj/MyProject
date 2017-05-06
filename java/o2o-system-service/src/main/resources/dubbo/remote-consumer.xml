@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!--关闭所有服务启动时检查依赖的服务是否可用 -->
+	<dubbo:consumer check="false" />
+
+	<dubbo:reference id="userProxyService"
+		interface="com.yilidi.o2o.user.proxy.IUserProxyService" />
+	<dubbo:reference id="loginLogProxyService"
+		interface="com.yilidi.o2o.user.proxy.ILoginLogProxyService" />
+	<dubbo:reference id="userClientTokenProxyService"
+		interface="com.yilidi.o2o.user.proxy.IUserClientTokenProxyService" />
+	<dubbo:reference id="smallTableUserInfoProxyService"
+		interface="com.yilidi.o2o.order.proxy.ISmallTableUserInfoProxyService" />
+	<dubbo:reference id="userShareProxyService"
+		interface="com.yilidi.o2o.user.proxy.IUserShareProxyService" />
+	<dubbo:reference id="shopCartProxyService"
+		interface="com.yilidi.o2o.order.proxy.IShopCartProxyService" />
+
+	<dubbo:reference id="productProxyService"
+		interface="com.yilidi.o2o.product.proxy.IProductProxyService" />
+	<dubbo:reference id="orderProxyService"
+		interface="com.yilidi.o2o.order.proxy.IOrderProxyService" />
+	<dubbo:reference id="themeProxyService"
+		interface="com.yilidi.o2o.product.proxy.IThemeProxyService" />
+	<dubbo:reference id="storeProfileProxyService"
+		interface="com.yilidi.o2o.user.proxy.IStoreProfileProxyService" />
+	<dubbo:reference id="couponProxyService"
+		interface="com.yilidi.o2o.order.proxy.ICouponProxyService" />
+</beans>

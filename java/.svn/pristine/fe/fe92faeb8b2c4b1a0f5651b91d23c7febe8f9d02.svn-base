@@ -1,0 +1,197 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	function detail() {
+		var orderNo = getUrlParam("saleOrderNo");
+		ajax({
+			//waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + orderNo
+					+ '/getSaleOrderDetail',
+			data : '',
+			dataType : 'json',//非必须.默认text
+			error : function() {
+			}, //非必须
+			success : function(data) {
+				/* checkJsonRight(data); */
+				if (data.msgCode == 1) {
+					$("#consigneeName")
+							.html(
+									data.entity.saleOrderDto.orderConsigneeAddressDto.userName);
+					$("#consigneePhoneNo")
+							.html(
+									data.entity.saleOrderDto.orderConsigneeAddressDto.phoneNo);
+					$("#addressDetail")
+							.html(
+									data.entity.saleOrderDto.orderConsigneeAddressDto.addressDetail);
+					$("#note").html(data.entity.saleOrderDto.note);
+
+					$("#orderNo").html(data.entity.saleOrderDto.saleOrderNo);
+					$("#orderTime").html(data.entity.saleOrderDto.createTime);
+					$("#orderTypeName").html(data.entity.saleOrderDto.orderTypeName || "");
+					
+					$("#deliveryMode").html(
+							data.entity.saleOrderDto.deliveryModeName);
+					$("#bestTime").html(data.entity.saleOrderDto.bestTime);
+					$("#orderStatus").html(data.entity.saleOrderDto.statusName);
+
+					$("#payTypeCode")
+							.html(data.entity.saleOrderDto.payTypeName);
+					$("#payTime").html(data.entity.saleOrderDto.payTime);
+					$("#takeTime").html(data.entity.saleOrderDto.takeTime);
+
+					var html = '';
+					var dataList = data.entity.items;
+					var totalCount = 0;
+					for (var i = 0, j = dataList.length; i < j; i++) {
+						totalCount += dataList[i].quantity;;
+						html += '<tr><td>';
+						html += dataList[i].productName;
+						html += '</td><td>';
+						html += dataList[i].specifications;
+						html += '</td><td>';
+						html += dataList[i].quantity;
+						html += '</td><td>';
+						html += toCenti(dataList[i].orderPrice, 2);
+						html += '</td><td>';
+						html += toCenti(dataList[i].totalPrice, 2);
+						html += '</td></tr>';
+					}
+					html += '<tr><td colspan="5">总计:商品数量:' + totalCount + '件,商品金额:￥'
+							+ toCenti(data.entity.saleOrderDto.totalAmount, 2) + ",运费:￥" + toCenti(
+									data.entity.saleOrderDto.transferFee,
+									2) + ",实际支付:￥" + toCenti(data.entity.saleOrderDto.totalAmount
+											+ data.entity.saleOrderDto.transferFee
+											- data.entity.saleOrderDto.preferentialAmt,
+											2)
+							+ "</td></tr>";
+					$("#tbody").html(html);
+				} else {
+					showBox('提示信息', data.msg, 'alert');
+				}
+			}//非必须
+		});
+	}
+
+	function comebackList() {
+		var urlParam = window.location.search;
+		locationHref('/seckill/seckillorder-index.html' + urlParam);
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		detail();
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; <span>秒杀管理</span>&gt; <span>秒杀订单管理</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">秒杀订单详情</div>
+					<div class="complaint_main">
+						<table cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td height="30" align="left">收货人姓名：<span id="consigneeName"></span></td>
+								<td align="left">手机号码：<span id="consigneePhoneNo"></span></td>
+								<td align="left">收货地址：<span id="addressDetail"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left" colspan="3">订单备注：<span
+									id="note"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">订单号：<span id="orderNo"></span></td>
+								<td align="left">下单时间：<span id="orderTime"></span></td>
+								<td align="left">订单类型：<span id="orderTypeName"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">配送方式：<span id="deliveryMode"></span></td>
+								<td align="left">配送时间：<span id="bestTime"></span></td>
+								<td align="left">订单状态：<span id="orderStatus"></span></td>
+							</tr>
+							<tr>
+								<td height="30" align="left">支付方式：<span id="payTypeCode"></span></td>
+								<td align="left">支付时间：<span id="payTime"></span></td>
+								<td align="left">收货时间：<span id="takeTime"></span></td>
+							</tr>
+						</table>
+						</br>
+						<div class="order_index">
+							<div
+								style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px; margin-bottom: 5px;">
+								<span>订单明细</span>
+							</div>
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<th>商品名称</th>
+										<th>规格</th>
+										<th>数量</th>
+										<th>秒杀价</th>
+										<th>小计</th>
+									</tr>
+								</thead>
+								<tbody id="tbody"></tbody>
+							</table>
+						</div>
+						</br>
+						<p>
+							<input type="button" value="返回" class="btn_gray" id="orderSearch"
+								onClick="comebackList()" />
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+	<!-- <div id="loading" class="loading hide">发送中</div> -->
+</body>
+</html>

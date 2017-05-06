@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<!-- **************************** 以下是配置消息生产者 **************************** -->
+
+	<!-- 定义push推送主题 -->
+	<bean id="pushSellerSystemMessageTopic" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="o2o.pushSellerSystemMessage" />
+	</bean>
+
+	<!-- pushSellerSystemMessageTopic send jms模板 -->
+	<bean id="pushSellerSystemMessageTopicSendJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory"></property>
+		<property name="defaultDestination" ref="pushSellerSystemMessageTopic" />
+		<property name="messageConverter" ref="o2oMessageConverter" />
+		<!-- 开启订阅模式 -->
+		<property name="pubSubDomain" value="true" />
+		<!-- 发送模式 DeliveryMode.NON_PERSISTENT=1:非持久 ; DeliveryMode.PERSISTENT=2:持久 -->
+		<property name="deliveryMode" value="2" />
+	</bean>
+
+	<!-- PUSH消息发送方 -->
+	<bean id="pushSellerSystemMessageSender" class="com.yilidi.o2o.system.jms.sender.PushSellerSystemMessageSender" parent="abstractSender"/>
+	
+	<!-- **************************** 以下是配置消息消费者 **************************** -->
+
+	<!-- PUSH消息接收方 -->
+	<bean id="pushSellerSystemMessageReceiver" class="com.yilidi.o2o.system.jms.receiver.PushSellerSystemMessageReceiver" parent="abstractReceiver"/>
+
+	<!-- PUSH主题消息监听容器 -->
+	<bean id="pushSellerListenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="pubSubDomain" value="true" />
+		<property name="destination" ref="pushSellerSystemMessageTopic" />
+		<property name="subscriptionDurable" value="true" />
+		<property name="clientId" value="clientId_pushSellerSystemMessage" />
+		<property name="messageListener" ref="pushSellerSystemMessageReceiver" />
+		<property name="sessionTransacted" value="true" />
+	</bean>
+
+</beans>

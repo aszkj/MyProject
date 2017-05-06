@@ -1,0 +1,1209 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.box-mask {
+	position: fixed;
+	width: 600px;
+	height: auto;
+	ovflow: hidden;
+	z-index: 9999999;
+	left: 50%;
+	top: 0;
+	margin-left: -300px;
+}
+
+.mask_close {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size: 16px;
+	color: red;
+	background: #fff;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+}
+
+.advertisement_img li{float:left;margin:0 6px 0 0}
+.advertisement_img .img{display:block;width:400px;height:100px;border:1px dashed #e3e4e4;text-align:center; line-height:100px;}
+.advertisement_img a.img{background:#fcfcfc url(/static-resource/images/base/image_bg.gif) no-repeat center center;overflow:hidden;text-align:left;text-indent:-1000px;cursor:pointer}
+.advertisement_img .img img{max-width:400px;max-height:100px;_height: expression(this.height > 100 ? "100" : true); _width: expression(this.width > 400 ? "400" : true); line-height:100px;}
+.advertisement_img p{text-align:center;line-height:24px}
+.advertisement_img p label{padding:0 8px 0 2px;}
+.advertisement_img p input {vertical-align: -2px;}
+
+.advertisement_imgnote{line-height:22px;overflow:hidden;padding:10px 0 0;}
+.advertisement_imgnote em{color:#E94B01;float:left;text-align:right;}
+.advertisement_imgnote p{color:#DF9067; margin:0 0 0 400px;}
+</style>
+<script type="text/javascript">
+	var method = getUrlParam("method");
+	function loadAdvertisementInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id + '/loadByAdvertisementId',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+					listAdvertisementTypeList(data.entity.typeCode);
+					listAdvertisementStatusList(data.entity.statusCode);
+					listAdvertisementLinkTypeList(data.entity.linkType);
+					$('#advertisementName').val(data.entity.advertisementName);
+					$('#strStartTime').val(data.entity.startTime);
+					$('#strEndTime').val(data.entity.endTime);
+					$('#sort').val(data.entity.sort);
+					showContent(data.entity.linkType,data.entity.linkData);
+					var html = [];
+					var advertisementImageUrl = data.entity.imageUrl;
+					var advertisementImageFullUrl = data.entity.imageFullUrl;
+					if (advertisementImageUrl != null && advertisementImageUrl != '') {
+						html.push('<span class="img"><a href="javascript:void(0)" onclick="showAdvertisementImg(\''
+								 + advertisementImageFullUrl
+								 + '\')" title="点击查看大图"><img src="');
+						html.push(advertisementImageFullUrl);
+						html.push('" alt="" width="400" height="100" border="0"/></a></span><p>');
+						if('view' != method){
+							html.push('<a href="javascript:;" class="ablue" onclick="delUploadImg()">删除</a></p>');
+						}
+						$('#imageUrl').val(advertisementImageUrl);
+						//IMAGEFLAG_NO表示是数据库正式环境的图片
+						$('#imageFlag').val('IMAGEFLAG_NO');
+						$('#uploadLi').html(html.join(''));
+					}					
+					$("#id").val(id);
+				}//非必须
+			});
+
+		}
+	}
+
+	function dataEditSubmit() {
+		if (method != 'add' && method != 'edit') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url = OPERATION_SYSTEM_IDENTITY + '/createAdvertisement';
+			if (!validateData()) {
+				return;
+			}
+		} else if (method == 'edit') {
+			url = OPERATION_SYSTEM_IDENTITY + '/updateAdvertisement';
+			if (!validateData()) {
+				return;
+			}
+		} else {
+			return;
+		}
+		var linkType = $('#linkType').val();
+		if('ADVERTISEMENTLINKTYPE_THEME' == linkType){
+			$('#linkData').val("themeType="+$.trim($('#themeType').val()));
+		}
+		if('ADVERTISEMENTLINKTYPE_ACTIVITY' == linkType){
+			$('#linkData').val("activityType="+$.trim($('#activityType').val()));
+		}
+		if('ADVERTISEMENTLINKTYPE_H5PAGE' == linkType){
+			$('#linkData').val("h5PageType="+$.trim($('#h5PageType').val()));
+		}
+		if('ADVERTISEMENTLINKTYPE_PRODUCTCLASS' == linkType){
+			$('#linkData').val("classCode="+$.trim($('#productClassCode').val()));
+		}
+		if('ADVERTISEMENTLINKTYPE_PRODUCT_DETAIL' == linkType){
+			$('#linkData').val("barCode="+$.trim($('#barCode').val()));
+		}
+		if('ADVERTISEMENTLINKTYPE_INFORMATION_ANNOUNCEMENT' == linkType){
+			$('#linkData').val("linkUrl="+$.trim($('#linkUrl').val()));
+		}
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+ 		$
+				.ajax({
+					type : 'post',
+					contentType : 'application/json',
+					dataType : 'json',
+					data : formJsonStr,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					},
+					url : TERMINAL_URL + url,
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window.setTimeout(function() {
+								var urlParam = window.location.search;
+								locationHref("/advertisement/advertisement-index.html"
+										+ urlParam);
+							}, 1000);
+						} else {
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							if('商品条形码不存在！' == data.msg){
+								$('#promptMessage').text('');
+								var $barCodeMsg = $('#barCodeMsg');
+								$barCodeMsg.html(data.msg).attr('class', 'error');
+							}else{
+								$('#promptMessage').text(data.msg);
+							}
+						}
+					}
+				}); 
+	}
+
+	var validate = (function() {
+		return {
+			validateAdvertisementName : function() {
+				var advertisementName = $.trim($('#advertisementName').val()), $advertisementNameMsg = $('#advertisementNameMsg');
+				if (!advertisementName) {
+					$advertisementNameMsg.html('请填写广告名称！').attr('class', 'error');
+					return false;
+				}
+				$advertisementNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateTypeCode : function() {
+				var typeCode = $.trim($('#typeCode').val()), $typeCodeMsg = $('#typeCodeMsg');
+				if (!typeCode) {
+					$typeCodeMsg.html('请选择广告类型！').attr('class', 'error');
+					return false;
+				}
+				$typeCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateAdvertisementImageUrl : function() {
+				var advertisementImageUrl = $.trim($('#imageUrl').val()), $advertisementImageUrlMsg = $('#imageUrlMsg');
+				if (!advertisementImageUrl) {
+					$advertisementImageUrlMsg.html('请上传图片！').attr('class', 'error');
+					return false;
+				}
+				$advertisementImageUrlMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateStrStartTime : function() {
+				var strStartTime = $.trim($('#strStartTime').val()), $timeMsg = $('#timeMsg');
+				if (!strStartTime) {
+					$timeMsg.html('请选择广告开始有效时间！').attr('class', 'error');
+					return false;
+				}
+				$timeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateStrEndTime : function() {
+				var strEndTime = $.trim($('#strEndTime').val()), $timeMsg = $('#timeMsg');
+				if (!strEndTime) {
+					$timeMsg.html('请选择广告结束有效时间！').attr('class', 'error');
+					return false;
+				}
+				var startTime = new Date($('#strStartTime').val().replace(/-/g,"/"));
+				var endTime = new Date($('#strEndTime').val().replace(/-/g,"/"));
+				if(startTime >= endTime){
+					$timeMsg.html('广告结束有效时间必须大于广告开始有效时间！').attr('class', 'error');
+					return false;
+				}
+				$timeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateSort : function() {
+				var sort = $.trim($('#sort').val()), $sortMsg = $('#sortMsg');
+				if (!sort) {
+					$sortMsg.html('请填写组内排序！').attr('class', 'error');
+					return false;
+				}
+				var re = /^[0-9]*[1-9][0-9]*$/ ;
+				if(!re.test(sort)){
+					$sortMsg.html('组内排序必须为大于0的整数！').attr('class', 'error');
+					return false;
+				}
+				$sortMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateStatusCode : function() {
+				var statusCode = $.trim($('#statusCode').val()), $statusCodeMsg = $('#statusCodeMsg');
+				if (!statusCode) {
+					$statusCodeMsg.html('请选择广告状态！').attr('class', 'error');
+					return false;
+				}
+				$statusCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateLinkType : function() {
+				var linkType = $.trim($('#linkType').val()), $linkTypeMsg = $('#linkTypeMsg');
+				if (!linkType) {
+					$linkTypeMsg.html('请选择跳转类型！').attr('class', 'error');
+					return false;
+				}
+				$linkTypeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateThemeType : function() {
+				var themeType = $.trim($('#themeType').val()), $themeTypeMsg = $('#themeTypeMsg');
+				if (!themeType) {
+					$themeTypeMsg.html('请选择专题类型！').attr('class', 'error');
+					return false;
+				}
+				$themeTypeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateActivityType : function() {
+				var activityType = $.trim($('#activityType').val()), $activityTypeMsg = $('#activityTypeMsg');
+				if (!activityType) {
+					$activityTypeMsg.html('请选择活动类型！').attr('class', 'error');
+					return false;
+				}
+				$activityTypeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateH5Page : function() {
+				var h5PageType = $.trim($('#h5PageType').val()), $h5PageTypeMsg = $('#h5PageTypeMsg');
+				if (!h5PageType) {
+					$h5PageTypeMsg.html('请选择H5页面类型！').attr('class', 'error');
+					return false;
+				}
+				$h5PageTypeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateProductClassCode : function() {
+				var productClassCode = $.trim($('#productClassCode').val()), $productClassCodeMsg = $('#productClassCodeMsg');
+				if (!productClassCode) {
+					$productClassCodeMsg.html('请选择商品分类！').attr('class', 'error');
+					return false;
+				}
+				$productClassCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateBarCode : function() {
+				var barCode = $.trim($('#barCode').val()), $barCodeMsg = $('#barCodeMsg');
+				if (!barCode) {
+					$barCodeMsg.html('请填写商品条形码！').attr('class', 'error');
+					return false;
+				}
+				$barCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateLinkUrl : function() {
+				var linkUrl = $.trim($('#linkUrl').val()), $linkUrlMsg = $('#linkUrlMsg');
+				if (!linkUrl) {
+					$linkUrlMsg.html('请填写链接URL！').attr('class', 'error');
+					return false;
+				}
+				$linkUrlMsg.html('').attr('class', 'right');
+				return true;
+			},
+		}
+	})();
+
+	function validateData() {
+		if (!validate.validateAdvertisementName()) {
+			return false;
+		}
+		if (!validate.validateTypeCode()) {
+			return false;
+		}
+		if (!validate.validateAdvertisementImageUrl()) {
+			return false;
+		}
+		if (!validate.validateStrStartTime()) {
+			return false;
+		}
+		if (!validate.validateStrEndTime()) {
+			return false;
+		}
+		if (!validate.validateSort()) {
+			return false;
+		}
+		if (!validate.validateStatusCode()) {
+			return false;
+		}
+		if (!validate.validateLinkType()) {
+			return false;
+		}
+		var linkType = $('#linkType').val();
+		if('ADVERTISEMENTLINKTYPE_THEME' == linkType){
+			if (!validate.validateThemeType()) {
+				return false;
+			}
+		}
+		if('ADVERTISEMENTLINKTYPE_ACTIVITY' == linkType){
+			if (!validate.validateActivityType()) {
+				return false;
+			}
+		}
+		if('ADVERTISEMENTLINKTYPE_PRODUCTCLASS' == linkType){
+			if (!validate.validateProductClassCode()) {
+				return false;
+			}
+		}
+		if('ADVERTISEMENTLINKTYPE_PRODUCT_DETAIL' == linkType){
+			if (!validate.validateBarCode()) {
+				return false;
+			}
+		}
+		if('ADVERTISEMENTLINKTYPE_INFORMATION_ANNOUNCEMENT' == linkType){
+			if (!validate.validateLinkUrl()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	function showUploadBox() {
+		$('#uploadImgType').val();
+		if ($('#uploadBtn').attr('disabled') == 'disabled') {
+			$('#uploadBtn').attr('disabled', false);
+		}
+		$('#uploadnote').html('');
+		showBox('上传图片','uploadBox');
+	}
+	
+	function uploadSubmit() {
+		var file = $.trim($('#uploadFile').val());
+		if (file == '') {
+			showBox('提示!', "上传的图片不能为空!", 'alert');
+			return;
+		}
+		var	url = '/uploadAdvertisementImageTemp';
+		$('#uploadBtn').attr('disabled', 'disabled');
+		ajax({
+			uploadForm : 'uploadForm',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + url,
+			type:'post',
+			contentType:'application/json',
+			dataType : 'json',//非必须.默认text
+			async : false,
+			error : function() {
+				return;
+			}, //非必须
+			success : function(data) {
+				checkJsonRight(data);
+				if (data.msgCode != 1) {
+					$('#uploadnote').html(data.msg);
+					return;
+				}
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = [];
+				var advertisementImageUrl = data.entity;
+				html.push('<span class="img"><a href="javascript:void(0)" onclick="showAdvertisementImg(\''
+						+ UPLOAD_FILE_TEMP_URL
+						+ advertisementImageUrl
+						+ '\')"><img src="');
+				html.push((UPLOAD_FILE_TEMP_URL + advertisementImageUrl));
+				html.push('" width="400" height="100" alt="" /></a></span><p>');
+				if('view' != method){
+					html.push('<a href="javascript:;" class="ablue" onclick="delUploadImg()">删除</a></p>');
+				}
+				$('#imageUrl').val(advertisementImageUrl);
+				//IMAGEFLAG_YES表示是上传的图片
+				$('#imageFlag').val('IMAGEFLAG_YES');
+				$('#uploadLi').html(html.join(''));
+				$('#uploadnote').html(data.msg);
+				$('#uploadBtn').attr('disabled', 'disabled');
+				setTimeout(function() {
+					closeBox();
+				}, 1000);
+			}//非必须
+		});
+	}
+
+	/*删除广告图片*/
+	function delUploadImg() {
+		if (confirm("您确定删除该广告图片吗？")) {
+			$('#uploadLi').html(
+					'<a class="img" onclick="showUploadBox()">点击上传</a>');
+			var tempPicPath = $('#imageUrl').val();
+			//如果是刚刚上传的，则需要删除临时服务器上的图片
+			if ($("#imageFlag").val() == 'IMAGEFLAG_YES') {
+				ajax({
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+							+ '/deleteAdvertisementTemp?tempPicPath=' + tempPicPath,
+					type : 'post',//非必须.默认get
+					dataType : 'json',//非必须.默认text
+					error : function(data) {
+					}, //非必须
+					success : function(data) {
+						$('#imageUrl').val('');
+					}//非必须
+				});
+			} else if ($("#imageFlag").val() == 'IMAGEFLAG_NO') { //如果原本就是正式环境的图片，先记下其url
+				delPicString = $('#imageUrl').val();
+				$("#delImageUrl").val(delPicString);
+				$("#imageUrl").val('');
+			}
+		}
+	}
+	
+	function closeme() {
+		$(".box-mask").remove();
+	}
+	
+	function showAdvertisementImg(path) {
+		showBox("查看广告图片","<img src='"+path+"' alt='' width='600' height='300' />");
+	}
+
+	function showErr(errorType) {
+		if (errorType == 'advertisementName') {
+			$('#advertisementNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'typeCode') {
+			$('#typeCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'imageUrl') {
+			$('#imageUrlMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		
+		if (errorType == 'strStartTime') {
+			$('#timeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'strEndTime') {
+			$('#timeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'sort') {
+			$('#sortMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'statusCode') {
+			$('#statusCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'linkType') {
+			$('#linkTypeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'themeType') {
+			$('#themeTypeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'activityType') {
+			$('#activityTypeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'h5PageType') {
+			$('#h5PageTypeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'productClassCode') {
+			$('#productClassCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'barCode') {
+			$('#barCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'linkUrl') {
+			$('#linkUrlMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+	}
+
+	function comebackList() {
+		var urlParam = window.location.search;
+		locationHref('/advertisement/advertisement-index.html' + urlParam);
+	}
+
+	//加载广告类型
+	function listAdvertisementTypeList(val){
+		var systemDictType = 'ADVERTISEMENTTYPE';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#typeCode').html(html);
+			}
+		});
+	}
+	//加载广告状态
+	function listAdvertisementStatusList(val){
+		var systemDictType = 'ADVERTISEMENTSTATUS';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#statusCode').html(html);
+			}
+		});
+	}
+	//加载广告链接类型
+	function listAdvertisementLinkTypeList(val){
+		var systemDictType = 'ADVERTISEMENTLINKTYPE';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#linkType').html(html);
+			}
+		});
+	}
+	
+	function showContent(linkType,val){
+		if('ADVERTISEMENTLINKTYPE_NONE' == linkType){
+			$('#contentSpan').html('');
+		}
+		if('ADVERTISEMENTLINKTYPE_THEME' == linkType){
+			$('#contentSpan').html('');
+			html = '';
+			html += '<dl>';
+			html += '<dt>';
+			html += '<span class="cred">*</span>专题类型：';
+			html += '</dt>';
+			html += '<dd>';
+			html += '<select class="select grid-40" id="themeType" name="themeType" onmousedown="showErr(\'themeType\')"></select>&nbsp;&nbsp; ';
+			html += '<span class="cred" id="themeTypeMsg"></span>';
+			html += '</dd>';
+			html += '</dl>';
+			$('#contentSpan').html(html);
+			if(val){
+				var valArray = val.split("=");
+				listThemeTypeList(valArray[1]);
+			}else{
+				listThemeTypeList();
+			}
+		}
+		if('ADVERTISEMENTLINKTYPE_ACTIVITY' == linkType){
+			$('#contentSpan').html('');
+			html = '';
+			html += '<dl>';
+			html += '<dt>';
+			html += '<span class="cred">*</span>活动类型：';
+			html += '</dt>';
+			html += '<dd>';
+			html += '<select class="select grid-40" id="activityType" name="activityType" onmousedown="showErr(\'activityType\')"></select>&nbsp;&nbsp; ';
+			html += '<span class="cred" id="activityTypeMsg"></span>';
+			html += '</dd>';
+			html += '</dl>';
+			$('#contentSpan').html(html);
+			if(val){
+				var valArray = val.split("=");
+				listActivityTypeList(valArray[1]);
+			}else{
+				listActivityTypeList();
+			}
+		}
+		if('ADVERTISEMENTLINKTYPE_H5PAGE' == linkType){
+			$('#contentSpan').html('');
+			html = '';
+			html += '<dl>';
+			html += '<dt>';
+			html += '<span class="cred">*</span>H5页面类型：';
+			html += '</dt>';
+			html += '<dd>';
+			html += '<select class="select grid-40" id="h5PageType" name="h5PageType" onmousedown="showErr(\'h5PageType\')"></select>&nbsp;&nbsp; ';
+			html += '<span class="cred" id="h5PageTypeMsg"></span>';
+			html += '</dd>';
+			html += '</dl>';
+			$('#contentSpan').html(html);
+			if(val){
+				var valArray = val.split("=");
+				listH5PageTypeList(valArray[1]);
+			}else{
+				listH5PageTypeList();
+			}
+		}
+		if('ADVERTISEMENTLINKTYPE_PRODUCTCLASS' == linkType){
+			$('#contentSpan').html('');
+			html = '';
+			html += '<dl>';
+			html += '<dt>';
+			html += '<span class="cred">*</span>商品分类：';
+			html += '</dt>';
+			html += '<dd>';
+			html += '<input type="hidden" id="productClassCode" name="productClassCode">';
+			html += '<div id="productClassDiv"></div>';
+			html += '<span class="cred" id="productClassCodeMsg"></span>';
+			html += '</dd>';
+			html += '</dl>';
+			$('#contentSpan').html(html);
+			if(val){
+				var valArray = val.split("=");
+				createProductClassSelect(valArray[1])
+			}else{
+				loadSubClass("TOP_LEVEL_CLASS");
+			}
+		}
+		if('ADVERTISEMENTLINKTYPE_PRODUCT_DETAIL' == linkType){
+			$('#contentSpan').html('');
+			html = '';
+			html += '<dl>';
+			html += '<dt>';
+			html += '<span class="cred">*</span>商品条形码：';
+			html += '</dt>';
+			html += '<dd>';
+			html += '<input type="text" class="txt grid-39" id="barCode" name="barCode" onmousedown="showErr(\'barCode\')" />&nbsp;&nbsp;';
+			html += '<span class="cred" id="barCodeMsg"></span>';
+			html += '</dd>';
+			html += '</dl>';
+			$('#contentSpan').html(html);
+			if(val){
+				var valArray = val.split("=");
+				$('#barCode').val(valArray[1]);
+			}
+		}
+		if('ADVERTISEMENTLINKTYPE_INFORMATION_ANNOUNCEMENT' == linkType){
+			$('#contentSpan').html('');
+			html = '';
+			html += '<dl>';
+			html += '<dt>';
+			html += '<span class="cred">*</span>链接URL：';
+			html += '</dt>';
+			html += '<dd>';
+			html += '<input type="text" class="txt grid-39" id="linkUrl" name="linkUrl" onmousedown="showErr(\'linkUrl\')" />&nbsp;&nbsp;';
+			html += '<span class="cred" id="linkUrlMsg"></span>';
+			html += '</dd>';
+			html += '</dl>';
+			$('#contentSpan').html(html);
+			if(val){
+				var valArray = val.split("=");
+				$('#linkUrl').val(valArray[1]);
+			}
+		}
+	}
+	
+	//加载专题类型
+	function listThemeTypeList(val){
+		var systemDictType = 'SALEZONETYPE';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#themeType').html(html);
+			}
+		});
+	}
+	
+	/* 回显分类 */
+	function createProductClassSelect(classCode){
+		if(classCode == null || classCode == "" || classCode == "TOP_LEVEL_CLASS"){
+			loadSubClass("TOP_LEVEL_CLASS");
+		}else{
+			$.ajax({
+				url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+classCode+'/getUpClassAndNextProductClassByClassCode',
+				type:"post",
+				dataType:"json",
+				success:function(data){
+					var html = '';
+					if(data.msgCode == 1){
+						var productClassListMap = data.entity;
+						var classCode = "";
+						$.each(productClassListMap,function(i,item){
+							classCode = item.classCode;
+							html+='<select class="select grid-15" id="productClass" name="productClassCode" onchange=changeClassSelect(this)>';
+							html+='<option value="">--请选择--</option>';
+							var subClassList = item.subClassList;
+							$.each(subClassList,function(j,subItem){
+								html+='<option value="'+subItem.classCode+'"';
+								if(subItem.classCode == classCode){
+									html+='selected="selected"';
+								}
+								html+='>'+subItem.className+'</option>';
+							});
+							html+='</select>';
+						});
+					}
+					if(html == ""){
+						showBox('提示!','产品分类数据加载失败,默认初始化一级分类!','alert');
+						loadSubClass("TOP_LEVEL_CLASS");
+					}else{
+						$("#productClassDiv").html(html);
+					}
+					if(method == 'view'){
+						$("#productClassDiv").children().each(function(){
+							$(this).attr("disabled","disabled");
+						});
+					}
+				},
+				error:function(error){
+					showBox('提示!','请求有误请重试!','alert');
+				}
+			});
+		}
+	}
+	
+	/* 加载商品分类 */
+	function loadSubClass(productClassCode){
+		$.ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+productClassCode+'/getAllNextProductClassByUpCode', 
+			type:'post',
+			dataType:'json',
+			success:function(data){
+				if(data.msgCode != 1) return;
+				//特殊处理 尖括号
+				data = JSON.parse(encodeString(JSON.stringify(data)));
+				if(null != data.entity && data.entity.length > 0){
+					initProductClassSelect(data.entity);
+				}
+			}
+		});
+	}
+	function initProductClassSelect(listProductClass){
+		var	html = '<select class="select grid-15" onchange=changeClassSelect(this)>';
+		  	html += '<option value="">--请选择--</option>';
+			for(var i=0;i<listProductClass.length;i++){
+				html += '<option value="'+listProductClass[i].classCode+'">';
+				html += listProductClass[i].className;
+				html +='</option>'
+			}
+		html += '<select/>';
+		$("#productClassDiv").append(html);
+	}
+
+	function changeClassSelect(ele){
+		var productClass = $(ele);
+		productClass.nextAll().each(function(){
+			$(this).remove();
+		});
+		if(productClass.val()!= ""){
+			$("#productClassCode").val(productClass.val());
+			loadSubClass($.trim($("#productClassCode").val()));
+		}else{
+			var parentClassCode = productClass.prev();
+			if(parentClassCode != null){
+				//如果选择了请选择就默认选择此节点上一个节点的值
+				$("#productClassCode").val(productClass.prev().val());
+			}else{
+				$("#productClassCode").val("TOP_LEVEL_CLASS");
+			}
+		}
+	}
+	
+	//加载活动类型
+	function listActivityTypeList(val){
+		var systemDictType = 'ACTIVITYTYPE';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#activityType').html(html);
+			}
+		});
+	}
+	
+	//加载H5页面类型
+	function listH5PageTypeList(val){
+		var systemDictType = 'H5PAGETYPE';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#h5PageType').html(html);
+			}
+		});
+	}
+	
+	/*加载时间控件*/
+	function loadTimeInput(){
+		$('#strStartTime').datetimepicker({});
+		$('#strEndTime').datetimepicker({});
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		listAdvertisementTypeList();
+		listAdvertisementStatusList();
+		listAdvertisementLinkTypeList();
+		loadTimeInput();
+		if (method == 'edit') {
+			$("#breadName").html('修改广告');
+			$("#pageTitle").html('修改广告');
+			loadAdvertisementInfo();
+			$('#typeCode').attr('disabled', true);
+		} else if (method == 'add') {
+			$("#breadName").html('新增广告');
+			$("#pageTitle").html('新增广告');
+		} else{
+			$("#breadName").html('查看广告');
+			$("#pageTitle").html('查看广告');
+			loadAdvertisementInfo();
+			$('#advertisementName').attr('disabled', true);
+			$('#typeCode').attr('disabled', true);
+			$('#imageUrl').attr('disabled', true);
+			$('#strStartTime').attr('disabled', true);
+			$('#strEndTime').attr('disabled', true);
+			$('#sort').attr('disabled', true);
+			$('#statusCode').attr('disabled', true);
+			$('#linkType').attr('disabled', true);
+			var linkType = $('#linkType').val();
+			if('ADVERTISEMENTLINKTYPE_THEME' == linkType){
+				$('#themeType').attr('disabled', true);
+			}
+			if('ADVERTISEMENTLINKTYPE_ACTIVITY' == linkType){
+				$('#activityType').attr('disabled', true);
+			}
+			if('ADVERTISEMENTLINKTYPE_H5PAGE' == linkType){
+				$('#h5PageType').attr('disabled', true);
+			}
+			if('ADVERTISEMENTLINKTYPE_PRODUCTCLASS' == linkType){
+				$('#productClassDiv').attr('disabled', true);
+			}
+			if('ADVERTISEMENTLINKTYPE_PRODUCT_DETAIL' == linkType){
+				$('#barCode').attr('disabled', true);
+			}
+			if('ADVERTISEMENTLINKTYPE_INFORMATION_ANNOUNCEMENT' == linkType){
+				$('#linkUrl').attr('disabled', true);
+			}
+			$('#submit').hide();
+		}
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 广告管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<input type="hidden" id="imageFlag" name="imageFlag" /> 
+							<input type="hidden" id="delImageUrl" name="delImageUrl" />
+							<input type="hidden" id="linkData" name="linkData" />
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>广告名称：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-39" id="advertisementName"
+											name="advertisementName" onmousedown="showErr('advertisementName')" />&nbsp;&nbsp;
+										<span class="cred" id="advertisementNameMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>广告类型：
+									</dt>
+									<dd>
+										<select class="select grid-40" id="typeCode" name="typeCode"
+											onmousedown="showErr('typeCode')"></select>&nbsp;&nbsp; <span
+											class="cred" id="typeCodeMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>广告图片：
+									</dt>
+									<input type="hidden" id="imageUrl" name="imageUrl" />
+									<dd>
+										<ul class="advertisement_img img">
+											<li id="uploadLi" class="pr"><a onclick="showUploadBox()"
+												class="img">点击上传</a></li>
+						
+										</ul>
+										<div class="advertisement_imgnote agray">
+											<em>温馨提示：</em>
+											<p style="color: #DF9067; margin: 0 0 0 0; padding: 0px">
+												请上传图片大小≤3M的图片！ <span id="imageUrlMsg">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>
+											</p>
+										</div>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>广告有效时间：
+									</dt>
+			                      <dd><input type="text" class="txt grid-17" id="strStartTime" name="strStartTime" onmousedown="showErr('strStartTime')" onkeydown="return false;"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			                      至
+			                      <input type="text" class="txt grid-17" id="strEndTime" name="strEndTime" onmousedown="showErr('strEndTime')" onkeydown="return false;"/>
+			                      <span class="cred" id="timeMsg"></span>
+			                      </dd>
+		                   		</dl>
+		                   		<dl>
+									<dt>
+										<span class="cred">*</span>组内排序：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-39" id="sort"
+											name="sort" onmousedown="showErr('sort')" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" onpaste="return false;"/>&nbsp;&nbsp;
+										<span class="cred" id="sortMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>广告状态：
+									</dt>
+									<dd>
+										<select class="select grid-40" id="statusCode" name="statusCode"
+											onmousedown="showErr('statusCode')"></select>&nbsp;&nbsp; <span
+											class="cred" id="statusCodeMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>跳转类型：
+									</dt>
+									<dd>
+										<select class="select grid-40" id="linkType" name="linkType"
+											onmousedown="showErr('linkType')" onchange="javascript:showContent(this.value)"></select>&nbsp;&nbsp; <span
+											class="cred" id="linkTypeMsg"></span>
+									</dd>
+								</dl>
+								<span id="contentSpan"></span>
+							</div>
+
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit(method)">&nbsp;&nbsp;&nbsp;<input type="button"
+											id="goBack" class="btn_gray" value="返回"
+											onclick="javascript:comebackList();"> <span
+											id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden" id="id" name="id" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+	<div id="uploadBox" class="hide">
+		<form id="uploadForm" onsubmit="uploadSubmit();return false;">
+			<div class="uploadbox">
+				<p>
+					<input id="uploadImgIndex" type="hidden" /> <input
+						id="uploadImgRow" type="hidden" /> <input id="uploadImgType"
+						type="hidden" /> <input id="uploadFile" name="file"
+						type="file" /> <span id="uploadnote" class="cred"></span>
+				</p>
+				<div class="uploadbox_btn">
+					<input type="submit" value="确定" class="btn_sure" id="uploadBtn" />
+					<input type="reset" onclick="closeBox()" value="取消"
+						class="btn_gray" />
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

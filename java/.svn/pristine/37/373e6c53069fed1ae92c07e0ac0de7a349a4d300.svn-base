@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<title>Cordova测试页面</title>
+<script type="text/javascript" src="static-resource/js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="static-resource/js/cordova-import.js"></script>
+</head>
+<body>
+	<input id="addProduct" type="button" value="加入购物车" />
+	<br />
+	<input id="reduceProduct" type="button" value="减去购物车" />
+	<br />
+	<input id="buyAtOnce" type="button" value="立即购买" />
+	<br />
+	<input id="clearCart" type="button" value="清空购物车" />
+	<br />
+	<input id="addProductByBarCode" type="button" value="使用barCode加入购物车-整体接口未做调整之前使用" />
+	<br />
+	<input id="addProductBy1Fen" type="button" value="1分钱商品加入购物车-整体接口未做调整之前使用" />
+	<br />
+	<input id="shareAll" type="button" value="分享" />
+	<br />
+	<input id="shareWXFriend" type="button" value="分享到微信好友" />
+	<br />
+	<input id="shareMoments" type="button" value="分享到朋友圈" />
+	<br />
+	<input id="shareSMS" type="button" value="分享到短信" />
+	<br />
+	<input id="toCartPage" type="button" value="跳转到购物车页面" />
+	<br />
+	<input id="toLogin" type="button" value="跳转到登陆" />
+	<br />
+	<input id="orderList" type="button" value="跳转到订单列表" />
+	<br />
+	<input id="orderDetail" type="button" value="跳转到订单详情" />
+	<br />
+	<input id="findClass" type="button" value="跳转到分类" />
+	<br />
+	<input id="findBrand" type="button" value="跳转到品牌" />
+	<br />
+	<input id="redirectPage" type="button" value="跳转到某一个H5页面，带了H5页面路径参数" />
+	<br />
+	<input id="backPressed" type="button" value="回退" />
+	<br />
+	<p id="scriptVersion"></p>
+</body>
+<script type="text/javascript">
+	var productInfo = new Object();
+	$(function() {
+		productInfo.saleProductId = 1;
+		productInfo.saleProductImageUrl = "https://test.png";
+		productInfo.saleProductName = "商品名称";
+		productInfo.saleProductSpec = "商品规格";
+		productInfo.retailPrice = 10000;
+		productInfo.promotionalPrice = 9000;
+		productInfo.remainCount = 5;
+		$("#scriptVersion").html(script.src);
+	});
+	/** 购物车信息Obj */
+	function corCartInfo(context) {
+		alert("cartInfo = " + JSON.stringify(context));
+	}
+	/** 用户信息Obj */
+	function corUserInfo(context) {
+		alert("userInfo = " + JSON.stringify(context));
+	}
+	/** 用户登录Session信息String */
+	function corUserSessionId(context) {
+		alert("userSession = " + JSON.stringify(context));
+	}
+	/** 小区信息Obj */
+	function corCommunityInfo(context) {
+		alert("communityInfo = " + JSON.stringify(context));
+	}
+	/** 店铺信息Obj */
+	function corStoreInfo(context) {
+		alert("storeInfo = " + JSON.stringify(context));
+	}
+	/** 定位信息Obj */
+	function corLocationInfo(context) {
+		alert("location = " + JSON.stringify(context));
+	}
+	/** 版本编号String */
+	function corVersionCode(context) {
+		alert("versionCode = " + JSON.stringify(context));
+	}
+	/** Loading标识Boolean */
+	function corAppLoadFlag(context) {
+		alert("appLoadFlag = " + JSON.stringify(context));
+	}
+	$("#addProduct").click(
+			function() {
+				if (isAndroid || isPhone) {
+					alert("调用加入购物车操作");
+					cordova.exec(corSuccess, corFail, "ProductCart",
+							"addToCart", [ productInfo ]);
+				}
+			});
+	$("#reduceProduct").click(
+			function() {
+				if (isAndroid || isPhone) {
+					alert("调用减去购物车操作");
+					cordova.exec(corSuccess, corFail, "ProductCart",
+							"removeToCart", [ productInfo ]);
+				}
+			});
+	$("#buyAtOnce").click(
+			function() {
+				if (isAndroid || isPhone) {
+					alert("立即购买操作");
+					cordova.exec(corSuccess, corFail, "ProductCart",
+							"buyAtOnce", [ productInfo ]);
+				}
+			});
+	$("#clearCart").click(function() {
+		if (isAndroid || isPhone) {
+			alert("清空购物车操作");
+			cordova.exec(corSuccess, corFail, "ProductCart", "clearCart", []);
+		}
+	});
+	$("#addProductByBarCode").click(
+			function() {
+				if (isAndroid || isPhone) {
+					alert("使用barCode加入购物车-整体接口未做调整之前使用操作");
+					cordova.exec(corSuccess, corFail, "ProductCart",
+							"addProductByBarCode",
+							[ "barCodeTestNo:21031203412" ]);
+				}
+			});
+	$("#addProductBy1Fen")
+			.click(
+					function() {
+						if (isAndroid || isPhone) {
+							alert("1分钱加入购物车-整体接口未做调整之前使用操作");
+							cordova.exec(corSuccess, corFail, "ProductCart",
+									"addProductByFen",
+									[ "barCodeTestNo:21031203412" ]);
+						}
+					});
+	$("#shareAll").click(function() {
+		if (isAndroid || isPhone) {
+			alert("分享操作");
+			cordova.exec(corSuccess, corFail, "Share", "shareToAll", []);
+		}
+	});
+	$("#shareWXFriend").click(function() {
+		if (isAndroid || isPhone) {
+			alert("分享到微信好友操作");
+			cordova.exec(corSuccess, corFail, "Share", "shareToFriend", []);
+		}
+	});
+	$("#shareMoments").click(function() {
+		if (isAndroid || isPhone) {
+			alert("分享到朋友圈操作");
+			cordova.exec(corSuccess, corFail, "Share", "shareToMoment", []);
+		}
+	});
+	$("#shareSMS").click(function() {
+		if (isAndroid || isPhone) {
+			alert("shareSMS操作");
+			cordova.exec(corSuccess, corFail, "Share", "shareSms", []);
+		}
+	});
+	$("#toCartPage").click(function() {
+		if (isAndroid || isPhone) {
+			alert("跳转到购物车页面");
+			cordova.exec(corSuccess, corFail, "Operation", "toCartPage", []);
+		}
+	});
+	$("#toLogin").click(function() {
+		if (isAndroid || isPhone) {
+			alert("跳转到登陆");
+			cordova.exec(corSuccess, corFail, "Operation", "toLoginPage", []);
+		}
+	});
+	$("#orderList").click(
+			function() {
+				if (isAndroid || isPhone) {
+					alert("跳转到订单列表");
+					cordova.exec(corSuccess, corFail, "Operation",
+							"toOrderListPage", []);
+				}
+			});
+	$("#orderDetail").click(
+			function() {
+				if (isAndroid || isPhone) {
+					alert("跳转到订单详情");
+					var orderNo = "O1230232131242140";
+					cordova.exec(corSuccess, corFail, "Operation",
+							"toOrderDetailPage", [ orderNo ]);
+				}
+			});
+	$("#findClass").click(function() {
+		if (isAndroid || isPhone) {
+			alert("跳转到分类");
+			cordova.exec(corSuccess, corFail, "Operation", "toClassPage", []);
+		}
+	});
+	$("#findBrand").click(function() {
+		if (isAndroid || isPhone) {
+			alert("跳转到品牌");
+			cordova.exec(corSuccess, corFail, "Operation", "toBrandPage", []);
+		}
+	});
+	$("#redirectPage").click(
+			function() {
+				if (isAndroid || isPhone) {
+					alert("跳转到某一个H5页面，带了H5页面路径参数");
+					cordova.exec(corSuccess, corFail, "Operation",
+							"redirectPage",
+							[ "http:mtest.yldbkd.com/index.html" ]);
+				}
+			});
+	$("#backPressed").click(function() {
+		if (isAndroid || isPhone) {
+			alert("回退操作");
+			cordova.exec(corSuccess, corFail, "Operation", "backPressed", []);
+		}
+	});
+	var corSuccess = function(message) {
+		alert("success = " + message);
+	};
+	var corFail = function(message) {
+		alert("fail = " + message);
+	};
+</script>
+</html>

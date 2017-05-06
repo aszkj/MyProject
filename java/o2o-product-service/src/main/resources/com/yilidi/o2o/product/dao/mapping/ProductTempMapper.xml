@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductTempMapper">
+	<resultMap id="BaseResultMap" type="ProductTemp">
+		<id column="TEMPID" property="tempId" jdbcType="INTEGER" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode" jdbcType="VARCHAR" />
+		<result column="RETAILPRICE" property="retailPrice" jdbcType="BIGINT" />
+		<result column="HOTSALEFLAG" property="hotSaleFlag" jdbcType="VARCHAR" />
+		<result column="SALESTATUS" property="saleStatus" jdbcType="VARCHAR" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="PRODUCTSPEC" property="productSpec" jdbcType="LONGVARCHAR" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="PROMOTIONALPRICE" property="promotionalPrice" jdbcType="BIGINT" />
+		<result column="COMMISSIONPRICE" property="commissionPrice" jdbcType="BIGINT" />
+		<result column="COSTPRICE" property="costPrice" jdbcType="BIGINT" />
+		<result column="VIPCOMMISSIONPRICE" property="vipCommissionPrice" jdbcType="BIGINT" />
+	</resultMap>
+
+	<resultMap id="ProductTempResultMap" type="ProductTempInfo">
+		<id column="TEMPID" property="tempId" jdbcType="INTEGER" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTSPEC" property="productSpec" jdbcType="LONGVARCHAR" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode" jdbcType="VARCHAR" />
+		<result column="CLASSNAME" property="className" jdbcType="VARCHAR" />
+		<result column="RETAILPRICE" property="retailPrice" jdbcType="BIGINT" />
+		<result column="SALESTATUS" property="saleStatus" jdbcType="VARCHAR" />
+		<result column="HOTSALEFLAG" property="hotSaleFlag" jdbcType="VARCHAR" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="PROMOTIONALPRICE" property="promotionalPrice" jdbcType="BIGINT" />
+		<result column="COMMISSIONPRICE" property="commissionPrice" jdbcType="BIGINT" />
+		<result column="COSTPRICE" property="costPrice" jdbcType="BIGINT" />
+		<result column="VIPCOMMISSIONPRICE" property="vipCommissionPrice" jdbcType="BIGINT" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		TEMPID,
+		PRODUCTNAME, BARCODE, PRODUCTCLASSCODE, HOTSALEFLAG, SALESTATUS, DISPLAYORDER, PRODUCTSPEC, RETAILPRICE,
+		CHANNELCODE, PROMOTIONALPRICE, COMMISSIONPRICE, COSTPRICE, VIPCOMMISSIONPRICE
+	</sql>
+
+	<insert id="saveProductTemp" parameterType="ProductTemp" useGeneratedKeys="true" keyProperty="tempId">
+		insert into
+		P_PRODUCT_TEMP (
+		PRODUCTNAME, BARCODE, PRODUCTCLASSCODE, HOTSALEFLAG, SALESTATUS, DISPLAYORDER, PRODUCTSPEC, RETAILPRICE,
+		CHANNELCODE, PROMOTIONALPRICE, COMMISSIONPRICE, COSTPRICE, VIPCOMMISSIONPRICE
+		)
+		values (
+		#{productName,jdbcType=VARCHAR},
+		#{barCode,jdbcType=VARCHAR},
+		#{productClassCode,jdbcType=VARCHAR}, #{hotSaleFlag,jdbcType=VARCHAR},
+		#{saleStatus,jdbcType=VARCHAR},
+		#{displayOrder,jdbcType=INTEGER}, #{productSpec,jdbcType=VARCHAR},
+		#{retailPrice,jdbcType=BIGINT},
+		#{channelCode,jdbcType=VARCHAR}, #{promotionalPrice,jdbcType=BIGINT},
+		#{commissionPrice,jdbcType=BIGINT}, #{costPrice,jdbcType=BIGINT}, #{vipCommissionPrice,jdbcType=BIGINT}
+		)
+	</insert>
+
+	<delete id="deleteProductTemp" parameterType="java.lang.Integer">
+		delete from P_PRODUCT_TEMP
+		where TEMPID = #{tempId, jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteAllProductTemp">
+		delete from
+		P_PRODUCT_TEMP
+	</delete>
+
+	<select id="loadProductTempById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_TEMP
+		where TEMPID = #{tempId, jdbcType=INTEGER}
+	</select>
+
+	<select id="loadProductTempByBarCodeAndChannelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_TEMP
+		where
+		BARCODE = #{barCode, jdbcType=VARCHAR}
+		and
+		CHANNELCODE = #{channelCode, jdbcType=VARCHAR}
+	</select>
+
+
+	<select id="findProductTemps" resultMap="ProductTempResultMap" parameterType="ProductTempQuery">
+		select
+		P.TEMPID as TEMPID ,
+		P.PRODUCTNAME as PRODUCTNAME,
+		P.BARCODE as BARCODE,
+		P.PRODUCTSPEC as PRODUCTSPEC,
+		P.PRODUCTCLASSCODE as PRODUCTCLASSCODE,
+		PC.CLASSNAME as CLASSNAME,
+		P.RETAILPRICE as RETAILPRICE,
+		P.SALESTATUS as SALESTATUS,
+		P.HOTSALEFLAG as HOTSALEFLAG,
+		P.DISPLAYORDER as DISPLAYORDER,
+		P.CHANNELCODE as CHANNELCODE,
+		P.PROMOTIONALPRICE as
+		PROMOTIONALPRICE,
+		P.COMMISSIONPRICE as COMMISSIONPRICE,
+		P.COSTPRICE as COSTPRICE,
+		P.VIPCOMMISSIONPRICE as VIPCOMMISSIONPRICE
+		from P_PRODUCT_TEMP P
+		left join
+		P_PRODUCT_CLASS PC on PC.CLASSCODE = P.PRODUCTCLASSCODE
+		<where>
+			1=1
+			<if test="tempId != null">
+				and P.TEMPID = #{tempId, jdbcType=INTEGER}
+			</if>
+			<if test="productName != null">
+				and P.PRODUCTNAME like
+				CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and P.BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="classCodes != null">
+				and P.PRODUCTCLASSCODE in
+				<foreach collection="classCodes" index="index" item="item" open="(" separator="," close=")">
+					#{item,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			<if test="productSpec != null">
+				and P.PRODUCTSPEC = #{productSpec, jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and P.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="hotSaleFlag != null">
+				and P.HOTSALEFLAG = #{hotSaleFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="displayOrder != null">
+				and P.DISPLAYORDER = #{displayOrder, jdbcType=INTEGER}
+			</if>
+			<if test="retailMaxPrice != null">
+				and P.RETAILPRICE &gt;=
+				#{retailMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="retailMinPrice != null">
+				and P.RETAILPRICE &lt;=
+				#{retailMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="channelCode != null">
+				and P.CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="listProductTemp" resultMap="ProductTempResultMap" parameterType="ProductTempQuery">
+		select
+		P.TEMPID as TEMPID ,
+		P.PRODUCTNAME as PRODUCTNAME,
+		P.BARCODE as BARCODE,
+		P.PRODUCTSPEC as PRODUCTSPEC,
+		P.PRODUCTCLASSCODE as PRODUCTCLASSCODE,
+		PC.CLASSNAME as CLASSNAME,
+		P.RETAILPRICE as RETAILPRICE,
+		P.SALESTATUS as SALESTATUS,
+		P.HOTSALEFLAG as HOTSALEFLAG,
+		P.DISPLAYORDER as DISPLAYORDER,
+		P.CHANNELCODE as CHANNELCODE,
+		P.PROMOTIONALPRICE as
+		PROMOTIONALPRICE,
+		P.COMMISSIONPRICE as COMMISSIONPRICE,
+		P.COSTPRICE as COSTPRICE,
+		P.VIPCOMMISSIONPRICE as VIPCOMMISSIONPRICE
+		from P_PRODUCT_TEMP P
+		left join
+		P_PRODUCT_CLASS PC on PC.CLASSCODE = P.PRODUCTCLASSCODE
+		<where>
+			1=1
+			<if test="tempId != null">
+				and P.TEMPID = #{tempId, jdbcType=INTEGER}
+			</if>
+			<if test="productName != null">
+				and P.PRODUCTNAME like
+				CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and P.BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="productClassCode != null">
+				and P.PRODUCTCLASSCODE = #{productClassCode, jdbcType=VARCHAR}
+			</if>
+			<if test="productSpec != null">
+				and P.PRODUCTSPEC = #{productSpec, jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and P.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="hotSaleFlag != null">
+				and P.HOTSALEFLAG = #{hotSaleFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="displayOrder != null">
+				and P.DISPLAYORDER = #{displayOrder, jdbcType=INTEGER}
+			</if>
+			<if test="retailMaxPrice != null">
+				and P.RETAILPRICE &gt;=
+				#{retailMaxPrice,jdbcType=BIGINT}
+			</if>
+			<if test="retailMinPrice != null">
+				and P.RETAILPRICE &lt;=
+				#{retailMinPrice,jdbcType=BIGINT}
+			</if>
+			<if test="channelCode != null">
+				and P.CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="getProductTempBarCode" resultType="java.lang.String">
+		select
+		BARCODE
+		from P_PRODUCT_TEMP
+	</select>
+
+</mapper>

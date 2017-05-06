@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>一里递</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<link rel="stylesheet" href="../static-resource/css/swiper-3.4.1.min.css" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript" src="../static-resource/js/swiper-3.4.1.jquery.min.js"></script>
+<script type="text/javascript">
+   document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+   document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+                + Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+    <!--顶部标题二级分类-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p id="secondClassName"></p>
+    </div>
+</header>
+<!--三级分类-->
+<div class="container">
+    <nav>
+        <div class="swiper-container moveNav" id="moveNav">
+            <div class="swiper-wrapper"></div>
+        </div>
+    </nav>
+</div>
+<div class="bordFixed" style="top:1.8rem;"></div>
+<div class="contentWrap">
+        <div class="cateProducts" style="padding-top: 1rem;">
+            <!--此处是产品列表-->
+        </div>
+    <div id="pullUp" class="hide">
+                <span class="loading">
+                    <span class="pullUpIcon"></span>
+                </span>
+        <span class="pullUpLabel">上拉加载更多...</span>
+    </div>
+</div>
+<div class="noMoreContent hide">
+    <p>没有更多内容了，别拉啦!</p>
+</div>
+<!--loading-->
+<section id="pageloading" class="hide">
+    <img src="../static-resource/images/loading.png">
+</section>
+<footer>
+    <!--悬浮购物车-->
+    <div class="bot-cart-wrap">
+        <div class="bot-cart-btn cart-btn"  onclick="window.location.href='../cart/cart.html'">
+            <div class="forcartimg" id="end"></div>
+            <input class="cart-pro-number" id="cartProNumber" readonly="readonly" value="" />
+        </div>
+    </div>
+</footer>
+</body>
+<script type="text/javascript">
+    var classCode = getUrlParam("classCode");
+    var pageNum = 0;
+    var pageSize = 12;
+    var totalPages = 0;
+    $(function() {
+        cateTmpl();
+        showCartNum();
+    });
+    function cateTmpl() {
+        var classData = getSessionStorage(sessionStorageClassDataKey);
+        if (!classData) {
+            alert("系统出现异常，请稍后重试！");
+            history.back();
+        }
+        var className = classData.className;
+        var subClassDatas = classData.subClassList;
+        if (!subClassDatas || subClassDatas.length <= 1) {
+            if (!isEmptyObj(subClassDatas)) {
+                className = subClassDatas[0].className;
+            }
+            $(".container").hide();
+            $(".bordFixed").hide();
+            $(".cateProducts").html("");
+            pageNum = 1;
+            cateProductsTmpl(pageNum);
+        } else {
+            $("#thirdCateTmpl").tmpl(subClassDatas).appendTo(".swiper-wrapper");
+            $(".swiper-wrapper a").click(function() {
+                window.scrollTo(0,0);
+                checkCateItem($(this).attr("data-classcode"));
+            });
+        }
+        if (!classCode || classCode == classData.classCode) {
+            if (!isEmptyObj(subClassDatas))
+                classCode = subClassDatas[0].classCode;
+        }
+        moveNav('#moveNav', 0);
+        checkCateItemData(classCode);
+        $("#secondClassName").html(className);
+    }
+    /*分类产品的渲染*/
+    function cateProductsTmpl(pageNumTemp) {
+        var params = new Object();
+        params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+        params.classCode = classCode;
+        params.pageNum = pageNumTemp;
+        params.pageSize = pageSize;
+        ajax("/product/searchproducts", params, function(data) {
+            totalPages = data.totalPages;
+            pageNum = data.pageNum;
+            console.log(pageNum);
+            if (data.pageNum <= 1) {
+                $(".cateProducts").html("");
+                window.scrollTo(0,0);
+            }
+            loadable = pageNum<=totalPages;
+            calculateProductCart(data.list);
+            if(loadable||totalPages==0)
+            $("#cateProductsTmpl").tmpl(data).appendTo(".cateProducts");
+            $("#pullUp").addClass("hide");
+            //拉到最后一页时候提示
+            if(pageNum!=1&&!loadable){
+                $(".noMoreContent").removeClass("hide");
+                setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+            }
+        }, function(data) {
+            alert(data);
+        }, true);
+    }
+    /*分页加载*/
+    $(window).scroll(function(){
+        if($(".contentWrap").height()-$(window).scrollTop()+$(".top-big-tit").height()+$("#moveNav").height()+$(".bordFixed").height()<=document.documentElement.clientHeight){
+            $("#pullUp").removeClass("hide");
+            pageNum++;
+            cateProductsTmpl(pageNum);
+        }
+    });
+    function checkCateItem(classCodeTemp) {
+        var checkClassCode = $(".swiper-wrapper a.on").attr(
+                "data-classcode");
+        if (checkClassCode == classCodeTemp)
+            return;
+        checkCateItemData(classCodeTemp);
+    }
+    function checkCateItemData(classCodeTemp) {
+        $(".swiper-wrapper a.on").removeClass(
+                "on");
+        $(".swiper-wrapper a").each(function() {
+            if ($(this).attr("data-classcode") == classCodeTemp) {
+                $(this).addClass("on");
+                if(swiper){
+                    swiper.slideTo($(this).attr("data-index"),1000,false);
+                }
+                window.scrollTo(0,0);
+                classCode = classCodeTemp;
+                $(".cateProducts").html("");
+                pageNum = 1;
+                alert("0");
+                cateProductsTmpl(pageNum);
+            }
+        });
+    }
+    function getAddToCartPosition(obj, e) {
+        var start = new Array();
+        validCartToAdd(obj, addCartSuccess, start, e);
+    }
+    function addCartSuccess(productInfo, startLocation, doc) {
+        addOperation(doc, productInfo);
+        showCartNum();
+    }
+    function getCateClass(item) {
+        return item == 0 ? "on" : "";
+    }
+    var swiper = null;
+    //滑动导航效果 及 处理当前选中状态
+    function moveNav(box,n){
+        var oBox = document.querySelector(box);
+        if (!oBox) {return};
+        var index = n || 0;
+        var initialSlide = index>=3 ? index-3 : 0;
+        swiper = new Swiper(box, {
+            pagination: '',
+            slidesPerView: 3.5,/*显示的导航数量*/
+            centeredSlides: false,
+            paginationClickable: true,
+            spaceBetween: 10,
+            initialSlide : initialSlide,
+            grabCursor : true,
+            roundLengths : true
+        });
+
+        oBox.addEventListener('click',function(e){
+            var tag = e.target;
+            if (tag.nodeName == 'A' && tag.className.indexOf('on')<0) {
+                _hmt.push(['_trackEvent',tag.innerHTML,'click'])
+            };
+        },false)
+        function navSwiper(){
+            var iW = document.documentElement.clientWidth||document.body.clientWidth;
+            if (iW>540) {
+                iW=540;
+            };
+            oBox.style.width =  iW+'px';
+            swiper.onResize();
+        }
+        //navSwiper();
+
+        var timer = null;
+        window.addEventListener('resize', function(e){
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                navSwiper();
+            },300)
+        },false);
+    }
+</script>
+<script id="thirdCateTmpl" type="text/x-jquery-tmpl">
+     <a class="swiper-slide ${getCateClass($index)}" href="javascript:void(0)" data-classcode="${classCode}" data-index="${$index}">${className}</a>
+</script>
+<script id="cateProductsTmpl" type="text/x-jquery-tmpl">
+ {{if (list && list.length > 0) }}
+        {{each(i,v) list}}
+         <div class="floor-pro-item ${getClass(i)}">
+            <div class="floor-pro-img"  onclick="window.location.href='../pro-detail/pro-detail.html?saleProductId=${v.saleProductId}'">
+                <img src="${v.saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+            </div>
+            <div class="pro-det"  onclick="window.location.href='../pro-detail/pro-detail.html?saleProductId=${v.saleProductId}'">
+                <p class="floor-pro-name">
+                    ${v.saleProductName}
+                </p>
+                <p class="floor-pro-size">
+                    ${v.saleProductSpec}
+                </p>
+                <p class="floor-pro-normal-price ">
+                    普通￥<span>${toCenti(v.retailPrice,2)}</span>
+                </p>
+                <p class="floor-pro-vip-price">
+                    VIP￥<span>${toCenti(v.promotionalPrice,2)}</span>
+                </p>
+            </div>
+             <div class="countBox">
+                <div class="count">
+                    <div class="reduce ${getShowClass(saleProductId)}" name="" type="button" onclick="getReduceToCart(this,${JSON.stringify(v)})"></div>
+                    <input class="pro-number ${getShowClass(saleProductId)}" name="" readonly="readonly" type="text" value="${getCartNum(saleProductId)}"/>
+                    <div class="add ${getBtnClass(saleProductId,stockNum)}" name="" type="button" onclick="getAddToCartPosition(${JSON.stringify(v)},this)"></div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+        <div class="clearfix"></div>
+        {{else}}
+            <div class="not-find-box">
+            <img src="../static-resource/images/search/notfind.png">
+            <p>没有找到相关的商品</p>
+           </div>
+        {{/if}}
+</script>
+</html>

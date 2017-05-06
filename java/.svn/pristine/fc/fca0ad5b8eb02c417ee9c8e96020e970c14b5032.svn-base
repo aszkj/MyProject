@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+ 
+    <dubbo:service interface="com.yilidi.o2o.system.proxy.IMessageProxyService" ref="messageProxyService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.proxy.IAreaDictProxyService" ref="areaDictProxyService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.proxy.ISystemParamsProxyService" ref="systemParamsProxyService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.proxy.ISystemDictProxyService" ref="systemDictProxyService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.proxy.crossdomain.ISystemLogCrossDomainProxyService" ref="systemLogCrossDomainProxyService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.proxy.crossdomain.ISystemParamsCrossDomainProxyService" ref="systemParamsCrossDomainProxyService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.proxy.IUserRoleProxyService" ref="userRoleProxyService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.proxy.IRoleProxyService" ref="roleProxyService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.proxy.ISystemMessageProxyService" ref="systemMessageProxyService" protocol="${dubbo.protocol.id}" />
+ 
+</beans>

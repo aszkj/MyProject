@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.EvaluationStatisticsMapper">
+	<resultMap id="BaseResultMap" type="EvaluationStatistics">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="GOODCOUNT" property="goodCount" jdbcType="INTEGER" />
+		<result column="NORMALCOUNT" property="normalCount" jdbcType="INTEGER" />
+		<result column="POORCOUNT" property="poorCount" jdbcType="INTEGER" />
+		<result column="IMAGECOUNT" property="imageCount" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEPRODUCTID, GOODCOUNT, NORMALCOUNT, POORCOUNT, IMAGECOUNT
+	</sql>
+
+	<insert id="save" parameterType="EvaluationStatistics">
+		insert into T_EVALUATION_STATISTICS (SALEPRODUCTID, GOODCOUNT,
+		NORMALCOUNT, POORCOUNT, IMAGECOUNT
+		)
+		values (#{saleProductId,jdbcType=INTEGER}, #{goodCount,jdbcType=INTEGER},
+		#{normalCount,jdbcType=INTEGER}, #{poorCount,jdbcType=INTEGER}, #{imageCount,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<update id="updateGoodBySaleProductId" parameterType="java.lang.Integer">
+		update T_EVALUATION_STATISTICS
+		set
+		GOODCOUNT = GOODCOUNT + 1
+		where SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateNormalBySaleProductId" parameterType="java.lang.Integer">
+		update T_EVALUATION_STATISTICS
+		set
+		NORMALCOUNT = NORMALCOUNT + 1
+		where SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</update>
+
+	<update id="updatePoorBySaleProductId" parameterType="java.lang.Integer">
+		update T_EVALUATION_STATISTICS
+		set
+		POORCOUNT = POORCOUNT + 1
+		where SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateImageBySaleProductId" parameterType="java.lang.Integer">
+		update T_EVALUATION_STATISTICS
+		set
+		IMAGECOUNT = IMAGECOUNT + 1
+		where SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</update>
+
+
+	<select id="loadBySaleProductId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_EVALUATION_STATISTICS
+		where SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</select>
+
+	<select id="checkSaleProduct" resultType="integer" parameterType="java.lang.Integer">
+		select count(SALEPRODUCTID)
+		from T_EVALUATION_STATISTICS
+		where SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</select>
+
+
+</mapper>

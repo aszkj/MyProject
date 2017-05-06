@@ -1,0 +1,485 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<style>
+.workorder_save_button_new {
+	padding: 10px 100px
+}
+.workorder_leave_new {
+	padding: 10px 50px
+}
+</style>
+<script type="text/javascript">
+	var GLOBAL_PARAM = {
+		showflag : $.trim(getUrlParam("flag")),
+		id : $.trim(getUrlParam("id"))
+	};
+		
+	function getAccountBindingDetail() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ GLOBAL_PARAM.id + '/loadAccountBindingDetailById',
+			type : 'get',
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				var object = data.entity;
+				if(GLOBAL_PARAM.showflag=='true'){
+					$('#saveButton').show();
+				}
+				$('#bingdingAccountId').val(object.bingdingAccountId);
+				$('#customerId').val(object.customerId);
+				$('#cityCode').val(object.cityCode);
+				$('#countyCode').val(object.countyCode);
+				loadCounty(object.cityCode,object.countyCode);
+				$('#addressDetail').val(object.addressDetail);
+				$('#customerName').val(object.customerName);
+				$('#contactName').val(object.contactName);
+				$('#telPhone').val(object.telPhone);
+				listAccountBindingType(object.accountBindingType);
+				var obj = document.getElementsByName('transferAccountType');
+			    for(i = 0; i < obj.length; i++){
+			      if(obj[i].value == object.transferAccountType){
+			        obj[i].checked = true;
+			      }
+			    }
+				$('#masterName').val(object.masterName);
+				$('#accountName').val(object.accountName);
+				$('#accountNo').val(object.accountNo);
+				$('#subBankName').val(object.subBankName);
+				$('#masterIDcardNo').val(object.masterIDcardNo);
+				$('#masterPhoneNo').val(object.masterPhoneNo);
+			}
+		});
+	}
+	
+	/*加载广东省下面的地市菜单*/
+	function loadCity() {
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/440000/getAreaDictsByParentCode', 
+			type:'post',
+			dataType:'json',
+			async:false,
+			success:function(data){
+				if(data.msgCode != 1) return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var listCity = data.entity;
+				var html = '';
+				html += '<option value="">--请选择--</option>';
+				for (var i = 0; i < listCity.length; i++) {
+					var city = listCity[i];
+					html += '<option value="' + city.id + '">' + city.text + '</option>';
+				}
+				$("#cityCode").html(html);
+			}
+		});
+	}
+	
+	/*加载县区菜单*/
+	function loadCounty(val,childval){
+		if(val){
+			$("#countyCode").html("");
+			$("#countyCode").html('<option value="">--请选择--</option>'); 
+		}                                                                                                                                                                                                                                                                                          
+		$.ajax({
+			url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/'+val+'/getAreaDictsByParentCode', 
+			type:'post',
+			dataType:'json',
+			success:function(data){
+				if(data.msgCode != 1) return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var county = data.entity;
+				html='<option value="">--请选择--</option>';
+				if(null != county && county.length > 0){
+					var len = county.length;
+					for(var i=0;i<len;i++){
+						var countyTemp = county[i];
+						if(childval==countyTemp.id){
+							html += '<option selected value="'+countyTemp.id+'">';
+							html += countyTemp.text;
+							html +='</option>'
+						}else{
+							html += '<option value="'+countyTemp.id+'">';
+							html += countyTemp.text;
+							html +='</option>'
+						}
+					}
+				}
+				$("#countyCode").html(html);
+			}
+		});
+	}
+	
+	function listAccountBindingType(val){
+		ajax({
+			    url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY  + '/getAccountBindingType',
+				type:'post',
+				async:false,
+				dataType:'json',
+				error:function(){return;}, 
+				success:function(data){
+					if(data.msgCode!=1){
+						return;
+					}
+					var departmentMapList = data.entity;
+					var accountBindingTypeMapList = data.entity;
+					var accountBindingTypeMapHtml = [];
+					if(accountBindingTypeMapList != null && accountBindingTypeMapList.length >0){
+						accountBindingTypeMapHtml.push('<option value="">--请选择--</option>');
+						for(var i=0,length=accountBindingTypeMapList.length;i<length;i++){
+								accountBindingTypeMapHtml.push('<option value="'+accountBindingTypeMapList[i].id);
+								accountBindingTypeMapHtml.push('" name="'+accountBindingTypeMapList[i].name+'">'+accountBindingTypeMapList[i].name+'</option>');
+						}
+					}
+					$('#accountBindingType').html(accountBindingTypeMapHtml.join(''));
+					 if(GLOBAL_PARAM.id!=''&&GLOBAL_PARAM.id!=null){
+						 $('#accountBindingType').val(val);
+					 }
+				}
+		});
+	}
+	
+	function showErr(errorType){
+		if(errorType=='accountBindingType'){
+			$('#accountBindingTypeErr').text('');
+			$('#prompt').text('');
+		 	return;
+		 }
+		if(errorType=='masterPhoneNo'){
+			$('#masterPhoneNoErr').text('');
+			$('#prompt').text('');
+		 	return;
+		 }
+		 if(errorType=='accountNo'){
+			$('#accountNoErr').text('');
+			$('#prompt').text('');
+		 	return;
+		 }
+		 if(errorType=='subBankName'){
+			$('#subBankNameErr').text('');
+			$('#prompt').text('');
+		 	return;
+		 }
+		 if(errorType=='masterIDcardNo'){
+			$('#masterIDcardNoErr').text('');
+			$('#prompt').text('');
+		 	return;
+		 }
+		 if(errorType=='accountName'){
+			$('#accountNameErr').text('');
+			$('#prompt').text('');
+		 	return;
+		 }
+		 if(errorType=='masterName'){
+			$('#masterNameErr').text('');
+			$('#prompt').text('');
+		 	return;
+		 }
+	}
+	
+	/*审核用户银行卡绑定*/
+	function updateAccountBinding(bingdingAccountId) {
+		var url;
+		url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/updateAccountBinding';
+		var flag = true;
+		var accountBindingType=$('#accountBindingType').val();
+		var masterPhoneNo=$('#masterPhoneNo').val();
+		var masterIDcardNo=$('#masterIDcardNo').val();
+		var masterName=$('#masterName').val();
+		var accountName=$('#accountName').val();
+		var accountNo=$('#accountNo').val();
+		var subBankName=$('#subBankName').val();
+		 if(accountBindingType==null||accountBindingType==''){
+	    	$('#accountBindingTypeErr').text('开户银行不能为空');
+	    	flag=false;
+	    }
+		if(subBankName==null || subBankName==''){
+			$('#subBankNameErr').text('所属支行名称不能为空');
+			flag=false;
+		}
+		if(accountNo==null || accountNo==''){
+			$('#accountNoErr').text('银行账号不能为空');
+			flag=false;
+		}
+		if(masterIDcardNo==null||masterIDcardNo==''){
+	       $('#masterIDcardNoErr').text('身份证号码不能为空');
+	       flag=false;
+	    }
+	    // 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X  
+	    var masterIDcardNoReg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+	    if(masterIDcardNoReg.test(masterIDcardNo) === false){  
+	       $('#masterIDcardNoErr').text('身份证号码不合法');
+	       flag=false;
+	    }
+	    if(accountName==null||accountName==''){
+	       $('#accountNameErr').text('开户人姓名不能为空');
+	       flag=false;
+	    }
+	    if(masterName==null||masterName==''){
+	       $('#masterNameErr').text('用户真实姓名不能为空');
+	       flag=false;
+	    }else if(accountName!=masterName){
+	    	$('#masterNameErr').text('真实姓名与开户人姓名不一致');
+	        flag=false;
+	    }
+	    if(masterPhoneNo==null||masterPhoneNo==''){
+	       $('#masterPhoneNoErr').text('手机号码不能为空');
+	       flag=false;
+	    }else if(/^1\d{10}$/g.test(masterPhoneNo)==false){/*1开头后面10位，test返回值是true或false*/
+	    	$('#masterPhoneNoErr').text('手机号码不合法');
+	    	flag=false;
+	    }
+		if (!flag) {
+			$('#prompt').text('请将信息填写完整再提交');
+			return false;
+		} else {
+			$('#prompt').text('');
+			$('#masterPhoneNoErr').text('');
+			$('#masterNameErr').text('');
+			$('#accountNameErr').text('');
+			$('#masterIDcardNoErr').text('');
+			$('#subBankNameErr').text('');
+			$('#accountNoErr').text('');
+			$('#accountBindingTypeErr').text('');
+		}
+		$('#bingdingAccountId').val(bingdingAccountId);
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$.ajax({
+			type : 'post',
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			url : url,
+			error : function() {
+				alert("提交数据失败，请稍后再试")
+			},
+			success : function(data) {
+				if(data.msgCode==1){
+					$('#saveButton').attr("disabled","disabled");
+					$("#prompt").text('修改成功，正在返回...');
+					setTimeout(function(){
+						var urlParam=window.location.search;
+						locationHref('/user/accountbinding-index.html'+urlParam+'&id='+bingdingAccountId);
+					},1000);
+				}else{
+					$("#prompt").text(data.msg);
+					$('#saveButton').removeAttr("disabled");
+					return;
+				}
+			}
+		});
+	}
+	
+	//返回
+	function comebackList(){
+		var urlParam=window.location.search;
+		locationHref('/user/accountbinding-index.html'+urlParam+'&id='+bingdingAccountId);
+	}
+	
+	$(document).ready(function(e) {
+		loadHtml("headerId","/include/header.html");
+		loadHtml("left_menu_content","/include/leftmenu.html");
+		loadHtml("footerId","/include/footer.html");
+		if (GLOBAL_PARAM.id != '' && GLOBAL_PARAM.id != null) {
+			loadCity();
+			getAccountBindingDetail();
+		}
+	 	if(GLOBAL_PARAM.showflag=='true'){
+		   $('#accountBindingType').removeAttr('disabled');
+	       $('#accountName').removeAttr('disabled');
+	       $('#accountNo').removeAttr('disabled');
+	       $('#subBankName').removeAttr('disabled');
+	       $('#masterName').removeAttr('disabled');
+	       $('#masterIDcardNo').removeAttr('disabled');
+	       $('#masterPhoneNo').removeAttr('disabled');
+	       $('#saveButton').show();
+	    }else{
+	       $('#accountBindingType').attr('disabled','true');
+	       $('#accountName').attr('disabled', 'true');
+	       $('#accountNo').attr('disabled','true');
+	       $('#subBankName').attr('disabled','true');
+	       $('#masterName').attr('disabled','true');
+		   $('#masterIDcardNo').attr('disabled', 'true');
+		   $('#masterPhoneNo').attr('disabled', 'true');
+	        $('#saveButton').hide();
+	    }
+	});
+</script>
+</head>
+<body id="bodyId">
+	<!--头部-->
+	<div id="headerId"></div>
+	<!--头部结束-->
+	<div class="bread">
+		<a href="/">首页</a> &gt; 财务管理 &gt;银行账号管理 &gt; <span> 修改/查看</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">修改/查看</div>
+					<div class="workorder_mng">
+						<div class="workorder_leave_new">
+							<form method="post" id="dataForm">
+								<input type="hidden" id="bingdingAccountId" name="bingdingAccountId">
+								<dl>
+									<dt>门店所在地：</dt>
+									<dd>
+										<select class="select grid-10" id="cityCode" name="cityCode" onChange="loadCounty(this.value)" disabled="disabled"></select>
+										<select class="select grid-10" id="countyCode" name="countyCode" disabled="disabled"></select>
+									</dd>
+									<dt>详细地址：</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id=addressDetail
+											name="addressDetail" disabled="disabled" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>门店名称：</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="customerName"
+											name="customerName" disabled="disabled" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>联系人：</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="contactName"
+											name="contactName" disabled="disabled" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>联系电话：</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="telPhone"
+											name="telPhone" disabled="disabled" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>开户银行：
+									</dt>
+									<dd>
+										<select class="select" id="accountBindingType" name="accountBindingType"  onmousedown="showErr('accountBindingType')"></select>
+										<span id="accountBindingTypeErr" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>账户类型：
+									</dt>
+									<dd>
+										<input type="radio" class="txt" id="transferAccountType" name="transferAccountType" value="TRANSFERACCOUNTTYPE_PRIVATE" />对私
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="radio" class="txt" id="transferAccountType" name="transferAccountType" value="TRANSFERACCOUNTTYPE_PUBLIC"/>对公
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>开户人姓名：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="accountName" name="accountName" onmousedown="showErr('accountName')"/>
+										<span id="accountNameErr" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>银行账号：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="accountNo" name="accountNo" onmousedown="showErr('accountNo')"/>
+										<span id="accountNoErr" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>所属支行：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="subBankName" name="subBankName" onmousedown="showErr('subBankName')"/>
+										<span id="subBankNameErr" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>真实姓名：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="masterName" name="masterName" onmousedown="showErr('masterName')"/>
+										<span id="masterNameErr" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>身份证号码：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="masterIDcardNo" name="masterIDcardNo" onmousedown="showErr('masterIDcardNo')" />
+										<span id="masterIDcardNoErr" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>手机号码：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="masterPhoneNo" name="masterPhoneNo" onmousedown="showErr('masterPhoneNo')" />
+										<span id="masterPhoneNoErr" class="cred"></span>
+									</dd>
+								</dl>
+							</form>
+							<p class="workorder_save_button_new">
+								&nbsp;<input id="saveButton" type="button" onclick="updateAccountBinding($('#bingdingAccountId').val())" class="btn_sure" value="确定" style="display: none;"/>
+								<input id="resetButton"	type="button" onclick="javascript:comebackList()" class="btn_gray" value="返回" />
+								<span id="prompt" class="cred"></span>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

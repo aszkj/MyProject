@@ -1,0 +1,361 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<style>
+.workorder_save_button_new {
+	padding: 10px 100px
+}
+</style>
+<script type="text/javascript">
+	var GLOBAL_PARAM = {
+		countWordsFlag : true,
+		g_boxId : $.trim(getUrlParam("boxId")),
+		type : $.trim(getUrlParam("type")),
+		userId : $.trim(getUrlParam("userId"))
+	};
+	function getUser() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + GLOBAL_PARAM.userId + '/loadAdminUserById',
+			type : 'get',
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				var object = data.entity;
+				listDepartment(object.department,object.invitationCode);
+				$('#id').val(object.id);
+				$('#userName').val(object.userName);
+			    $('#userName').attr('disabled','true');
+				$('#realName').val(object.realName);
+				$('#phone').val(object.phone);
+				$('#email').val(object.email);
+				$('#statusCode').val(object.statusCode);
+				$('#note').val(object.note);
+			}
+		});
+	}
+	
+	function listDepartment(departmentVal,invitationCodeVal){
+		ajax({
+			    url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY  + '/getDepartment',
+				type:'post',
+				async:false,
+				dataType:'json',
+				error:function(){return;}, 
+				success:function(data){
+					if(data.msgCode!=1){
+						return;
+					}
+					var departmentMapList = data.entity;
+					var departmentMapHtml = [];
+					if(departmentMapList != null && departmentMapList.length >0){
+						departmentMapHtml.push('<option value="">--请选择--</option>');
+						for(var i=0,length=departmentMapList.length;i<length;i++){
+								departmentMapHtml.push('<option value="'+departmentMapList[i].id);
+								departmentMapHtml.push('" name="'+departmentMapList[i].name+'">'+departmentMapList[i].name+'</option>');
+						}
+					}
+					$('#department').html(departmentMapHtml.join(''));
+					 if(GLOBAL_PARAM.userId!=''&&GLOBAL_PARAM.userId!=null){
+						 $('#department').val(departmentVal);
+						 doForDepartment(departmentVal);
+						 $('#invitationCode').val(invitationCodeVal);
+						 
+					 }
+				}
+		});
+	}
+
+	function checkUserInfo(value) {
+		if("" != $.trim(value)){
+			ajax({
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + value
+						+ '/checkUserNameIsExist',
+				type : 'get',
+				dataType : 'json',
+				error : function() {
+				},
+				success : function(data) {
+					if (data.msgCode == 1) {
+						if(data.entity){
+							$('#userNameErr').text('登录账号已经存在');
+						}
+					}else{
+						$('#userNameErr').text('验证登录账号出现系统异常');
+					}
+				}
+			});
+		}
+	}
+
+	/*保存*/
+	function saveUser() {
+		var url;
+		var flag=true;
+		if (GLOBAL_PARAM.userId != null && GLOBAL_PARAM.userId != '') {
+			url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/updateAdminUser';
+			$('#id').val(GLOBAL_PARAM.userId);
+		} else {
+			url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/saveAdminUser';
+		}
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm'))); 
+		var userName = $('#userName').val();
+		var realName = $('#realName').val();
+		var phone = $('#phone').val();
+		var email = $('#email').val();
+		var department = $('#department').val();
+		if (userName == null || userName == '') {
+			$('#userNameErr').text('登录账号为空');
+			flag = false;
+		}
+		if (realName == null || realName == '') {
+			$('#realNameErr').text('真实姓名为空');
+			flag = false;
+		}
+		if (phone == null || phone == '') {
+			$('#phoneErr').text('手机号码为空');
+			flag = false;
+		}
+		if (email == null || email == '') {
+			$('#emailErr').text('用户邮箱为空');
+			flag = false;
+		}
+		if (department == null || department == '') {
+			$('#departmentErr').text('所在部门为空');
+			flag = false;
+		}
+		if (!flag) {
+			$('#prompt').text('请将信息填写完整再提交.');
+			return false;
+		} else {
+			$('#prompt').text('');
+		}
+		var userNameErrText = $('#userNameErr').text();
+		var realNameErrText = $('#realNameErr').text();
+		var phoneErrText = $('#phoneErr').text();
+		var emailErrText = $('#emailErr').text();
+		var departmentErrText = $('#departmentErr').text();
+		if(userNameErrText != '' || realNameErrText != '' || phoneErrText != '' 
+			|| emailErrText != '' || departmentErrText != ''){
+			return false;
+		}
+		$.ajax({
+			type : 'post',
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			url : url,
+			error : function() {
+				alert("提交数据失败，请稍后再试")
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					if('登录账号已经存在' == data.msg){
+						$('#userNameErr').text(data.msg);
+					}else if('邀请码重复' == data.msg){
+						$('#invitationCodeErr').text(data.msg);
+					}else{
+						$('#prompt').text(data.msg);
+					}
+					return;
+				}
+				$('#prompt').html('操作成功.');
+				setTimeout(function(){
+				    if(parent){
+				    	parent.$('#userId').val(GLOBAL_PARAM.userId);
+				    	parent.dataSubmit();
+				    }
+					close_box();
+				},1000);
+			}
+		});
+	}
+
+	/*关闭弹框*/
+	function close_box() {
+		if (GLOBAL_PARAM.g_boxId != '' && parent && parent.closeBox){
+			if(GLOBAL_PARAM.type==1){
+		    	parent.$('#userId').val(GLOBAL_PARAM.userId);
+		    	parent.dataSubmit();
+			}
+			parent.closeBox(GLOBAL_PARAM.g_boxId);
+		}
+	}
+	function showErr(errorType) {
+		if (errorType == 'userName') {
+			$('#userNameErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+		if (errorType == 'realName') {
+			$('#realNameErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+		if (errorType == 'phone') {
+			$('#phoneErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+		if (errorType == 'email') {
+			$('#emailErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+		if (errorType == 'department') {
+			$('#departmentErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+		if (errorType == 'invitationCode') {
+			$('#invitationCodeErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+	}
+	function countwords(id) {
+		var inputLength = $("#" + id).val().length;
+		var maxCount = 50;
+		if (inputLength == 0) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + maxCount + "个字");
+		} else if (inputLength > 0 && inputLength <= maxCount) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + (maxCount - inputLength) + "个字");
+		} else if (inputLength > maxCount) {
+			GLOBAL_PARAM.countWordsFlag = false;
+			$("#" + id + "Err").html(
+					"<strong class='cred'>已经超过" + (inputLength - maxCount)
+							+ "个字</strong>");
+		}
+	}
+	
+	$(document).ready(function(e) {
+	    if(GLOBAL_PARAM.userId!=''&&GLOBAL_PARAM.userId!=null){
+	       getUser();
+	    }else{
+	    	listDepartment();
+	    }
+	    if(GLOBAL_PARAM.type==1){
+		   $('#userName').attr('disabled','true');
+	       $('#realName').attr('disabled', 'true');
+	       $('#phone').attr('disabled','true');
+	       $('#email').attr('disabled','true');
+	       $('#department').attr('disabled','true');
+	       $('#invitationCode').attr('disabled','true');
+		   $('#statusCode').attr('disabled', 'true');
+		   $('#note').attr('disabled', 'true');
+	       $('#saveButton').hide();
+	       $('#resetButton').val('关闭');
+	    }else{
+	       $('#userName').removeAttr('disabled');
+	       $('#realName').removeAttr('disabled');
+	       $('#phone').removeAttr('disabled');
+	       $('#email').removeAttr('disabled');
+	       $('#department').removeAttr('disabled');
+	       $('#invitationCode').removeAttr('disabled');
+	       $('#statusCode').removeAttr('disabled');
+	       $('#note').removeAttr('disabled');
+	       $('#saveButton').show();
+	       $('#resetButton').val('取消');
+	    }
+	});
+	
+	function doForDepartment(obj){
+		if('OPERATORDEPARTMENTTYPE_BUSINESS_EXPENDING_SALES' == obj){
+			var html = '';
+			html += '<dl>';
+			html += '<dt>邀请码：</dt>';
+			html += '<dd><input type="text" class="txt grid-30" id="invitationCode" name="invitationCode" onmousedown="showErr(\'invitationCode\')"/>&nbsp;&nbsp;';
+			html += '<span id="invitationCodeErr" class="cred"></span></dd>';
+			html += '</dl>';
+			$('#invitationCodeSpan').html(html);
+		}else{
+			$('#invitationCodeSpan').html('');
+		}
+		if(GLOBAL_PARAM.type==1){
+			$('#invitationCode').attr('disabled','true');
+		}
+	}
+	
+</script>
+</head>
+
+<body>
+<div class="workorder_mng">
+   <div class="workorder_leave">
+   <form method="post" id="dataForm">
+    <input type="hidden" class="txt" id="id" name="id"/>
+    <dl>
+       <dt><span class="cred">*</span>登录账号：</dt>
+	   <dd>
+		   <input type="text" class="txt grid-30" id="userName" name="userName" onmousedown="showErr('userName')"  onblur="checkUserInfo(this.value)" />&nbsp;&nbsp;
+		   <span id="userNameErr" class="cred"></span>
+	   </dd>
+    </dl>
+	<dl>
+	   	<dt><span class="cred">*</span>真实姓名：</dt>
+	   	<dd><input type="text" class="txt grid-30" id="realName" name="realName" onmousedown="showErr('realName')"/>&nbsp;&nbsp;
+	   	<span id="realNameErr" class="cred"></span></dd>
+   </dl>
+   <dl>
+     	<dt><span class="cred">*</span>手机号码：</dt>
+	   	<dd><input type="text" class="txt grid-30" id="phone" name="phone" onmousedown="showErr('phone')"/>&nbsp;&nbsp;
+	   	<span id="phoneErr" class="cred"></span></dd>
+   </dl>
+   <dl>
+     	<dt><span class="cred">*</span>用户邮箱：</dt>
+	   	<dd><input type="text" class="txt grid-30" id="email" name="email" onmousedown="showErr('email')"/>&nbsp;&nbsp;
+	   	<span id="emailErr" class="cred"></span></dd>
+   </dl>
+   <dl>
+		<dt><span class="cred">*</span>所在部门：</dt>
+		<dd><select class="select grid-31" id="department" name="department" onmousedown="showErr('department')" onchange="doForDepartment(this.value)"></select>&nbsp;&nbsp;
+		<span id="departmentErr" class="cred"></span></dd>
+	</dl>
+	<span id="invitationCodeSpan"></span>
+    <dl>
+		<dt><span class="cred">*</span>是否有效：</dt>
+	   	<dd>
+		   	<select class="select grid-31" id="statusCode" name="statusCode">
+				<option value="USERSTATUS_ON">是</option>
+				<option value="USERSTATUS_OFF">否</option>
+    	    </select>
+	   	</dd>
+    </dl>
+    <dl>
+		<dt>备注：</dt>
+		<dd>
+		<textarea type="text" id="note" name="note"
+			class="txt grid-30" rows="3" onkeyup="countwords('note')"></textarea>
+		</dd>
+		<span id="auditNoteErr" class="gray" style="padding:1px 100px">可以输入50个字</span>
+    </dl>
+   </form>
+   <p class="workorder_save_button_new">
+   	<input id="saveButton" type="button" onclick="saveUser()" class="btn_sure" value="提交" />
+   	<input id="resetButton" type="button" onclick="close_box()" class="btn_gray" value="取消" />
+   	<span id="prompt" class="cred"></span>
+   </p>
+   </div>
+ </div>
+</body>
+</html>

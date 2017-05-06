@@ -1,0 +1,573 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/lang/zh_CN.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var method = getUrlParam("method");
+var delPicListString = "";
+function editProduct(){
+	var id = getUrlParam("id");
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(id))){
+		ajax({
+			waitTagId:'bodyId',//非必须,设置等待图标在那个标签里显示
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ decodeURIComponent(getUrlParam("id")) + '/loadSaleProductTemp',
+			data:'',
+			dataType:'json',//非必须.默认text
+			error:function(){}, //非必须
+			success:function(data){
+				checkJsonRight(data);
+				if(data.msgCode!=1){
+					return;
+				}
+				loadClass();
+				var proData = data.entity;
+				$("#parentCode").val(proData.parentCode);
+				$("#productClass").val(proData.productClassCode);
+				loadSubClass(proData.parentCode,proData.productClassCode);
+				$("#saleProductName").val(proData.saleProductName);
+				$("#barCode").val(proData.barCode);
+				$("#barCode").attr("disabled","disabled");
+				$("#saleProductSpec").val(proData.saleProductProfileDto.saleProductSpec);
+				$("#retailPrice").val(toCenti(proData.saleProductPriceDto.retailPrice));
+				if(null != proData.saleProductPriceDto.promotionalPrice && "" != proData.saleProductPriceDto.promotionalPrice){
+					$("#promotionalPrice").val(toCenti(proData.saleProductPriceDto.promotionalPrice));
+				}
+				$("#hotSaleFlag").val(proData.saleProductProfileDto.hotSaleFlag);
+				$("#saleStatus").val(proData.saleProductProfileDto.saleStatus);
+				$("#displayOrder").val(proData.saleProductProfileDto.displayOrder);
+				$("#saleProductPriceId").val(proData.saleProductPriceDto.id);
+				$("#saleProductProfileId").val(proData.saleProductProfileDto.id);
+				if(proData.saleProductProfileDto.channelCode == "CHANNELTYPE_ALL"){
+					if(null != proData.saleProductProfileDto.content){
+						$("#content").val(proData.saleProductProfileDto.content);
+						editor1.html(proData.saleProductProfileDto.content)
+					}
+				}
+				$("#productClass").show();
+				$("#productClass").attr("disabled","disabled");
+				$("#parentCode").attr("disabled","disabled");
+				$("#saleProductName").attr("disabled","disabled");
+				$("#barCode").attr("disabled","disabled");
+				$("#saleProductSpec").attr("disabled","disabled");
+				$("#retailPrice").attr("disabled","disabled");
+				$("#promotionalPrice").attr("disabled","disabled");
+				$("#hotSaleFlag").attr("disabled","disabled");
+				$("#saleStatus").attr("disabled","disabled");
+				$("#displayOrder").attr("disabled","disabled");
+				editor1.readonly(true);
+				
+				var appItem = 1;
+				if(null != proData.saleProductImageDtos){
+					for(var i=0,j=proData.saleProductImageDtos.length;i<j;i++){
+						var saleProductImage = proData.saleProductImageDtos[i];
+						if(saleProductImage.channelCode == "CHANNELTYPE_ALL"){
+							$("#appPicPath"+appItem).val(saleProductImage.imageUrl);
+							$("#appPicOrder"+appItem).val(saleProductImage.imageOrder);
+							$("#appPicSort"+appItem).val(appItem);
+							//刚加载出来的的给一个需要不增加的标示
+							$("#appImageFlag"+appItem).val('IMAGEFLAG_YES');
+							var html = '<span class="img"><a onclick="showProductImg(\''+UPLOAD_FILE_URL+saleProductImage.imageUrl+'\')" href="javascript:void(0)"><img alt="" src="'+(UPLOAD_FILE_URL+saleProductImage.imageUrl)+'"></a></span><p><input type="radio" class="mainpic" value="'+appItem+'" id="appIsMainPic'+appItem+'" name="appIsMainPic"';
+							if(saleProductImage.masterFlag == "PRODUCTIMAGEMASTERFLAG_YES"){
+								html += ' checked="checked" ';
+							}
+							html += '><label for="appIsMainPic'+appItem+'">主图</label>'
+							$("#appUploadLi"+appItem).html(html);
+							if(method == 'audit'){
+								$("#appIsMainPic"+appItem).attr("disabled","disabled");
+							}
+							appItem ++;
+						}
+					}
+				}
+				viewimg();
+				removeAuditButton();
+			}//非必须
+		});
+	}
+}
+function setMainpic(){
+	$(document).on('click','.pr input',function(){
+		var tempa="#appPicMain"+$(this).val();
+		$('.js-mainPicv').val(0);
+		$(tempa).val(1);
+	})
+}
+function viewimg(){
+	$('.appimg li').each(function(){
+		if(!$(this).children('span').hasClass('img')){
+			$(this).remove();
+		}
+	})
+}
+function removeAuditButton(){
+	$("#reset").remove();
+}
+function showUploadBox(index,type){
+	$('#uploadImgIndex').val(index);
+	$('#uploadImgType').val(type);
+	showBox('上传图片','uploadBox');
+}
+function hasProductImg(type){
+	if($('.'+type+'img img').length>0){
+	   $('#'+type+'UploadImgTxt').html('&nbsp;').attr('class', 'success');			 
+	}
+	else{
+		$('#'+type+'UploadImgTxt').html('请上传图片！').attr('class', 'error');
+	}
+}
+function mainpicY(type){
+	var mainpic=$('.'+type+'img input:checked').attr('id');
+	var index = mainpic.slice(-1);
+	$("#"+type+"IsMainPic").val(index);
+}
+function showProductImg(path){
+	showBox("查看商品图片","<img src='"+path+"' alt='' height='400' />");
+}
+
+function dataEditSubmit(){
+	if(method != 'audit'){
+		$('#promptMessage').text('参数有误，请返回重试!');
+		return;
+	}
+	var	url = OPERATION_SYSTEM_IDENTITY  + '/auditSaleProductTemp';
+	$("#id").val(decodeURIComponent(getUrlParam("id")));
+	if(!validateData()){
+		return;
+	}
+	if(null != $("#retailPrice").val() && "" != $("#retailPrice").val()){
+		var retailPrice = parseFloat($("#retailPrice").val());
+		$("#retailPrice").val(toMul(retailPrice,1000));
+	}
+	if(null != $("#promotionalPrice").val() && "" != $("#promotionalPrice").val()){
+		var promotionalPrice = parseFloat($("#promotionalPrice").val());
+		$("#promotionalPrice").val(toMul(promotionalPrice,1000));
+	}
+	if(null != delPicListString && '' != delPicListString){
+		$("#deleteImageUrls").val(delPicListString);
+	}
+	$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+	$('#promptMessage').text('正在保存...');
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		url:TERMINAL_URL+url,
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		error : function(){
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+		},
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$('#promptMessage').text('保存成功');
+				window.setTimeout(function(){
+					locationHref("/product/saleproduct-index.html");
+				},1000);
+			}else{
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+				$('#promptMessage').text(data.msg);
+			}
+		}
+	}); 
+}
+var editor1;
+KindEditor.ready(function(K) {
+	editor1 = K.create('#content', {
+		uploadJson : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/uploadFile',
+		//fileManagerJson : '../jsp/file_manager_json.jsp',
+		//allowFileManager : true,
+		items : [
+		'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
+		'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+		'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+		'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+		'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+		'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 
+		'flash', 'media', 'insertfile', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
+		'anchor', 'link', 'unlink', '|', 'about'
+		],
+		afterCreate : function() { 
+			this.sync(); 
+		}, 
+		afterBlur:function(){ 
+			this.sync();
+		}           
+	});
+});
+var validate = (function(){
+	return {
+		validateAuditStatusCode : function() {
+			var auditStatusCode = $.trim($('#auditStatusCode').val()),
+				$auditStatusCodeMsg = $('#auditStatusCodeMsg');
+			if (!auditStatusCodeMsg) {
+				$auditStatusCodeMsg.html('请选择审核类型！').attr('class', 'error');
+				return false;
+			}
+			$auditStatusCodeMsg.html('').attr('class', 'right');
+			return true;
+		},
+	}				
+})();
+function validateData(){
+	if (!validate.validateAuditStatusCode()) {
+		return false;
+	}
+	return true;
+}
+
+
+/*加载商品类别的一级菜单*/
+function loadClass() {
+	ajax({
+		url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/'+"TOP_LEVEL_CLASS"+'/listSubProductClass', 
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var listProductClass = data.entity;
+			var html = '';
+			html += '<option value="">--全部--</option>';
+			for (var i = 0; i < listProductClass.length; i++) {
+				var parentProductClass = listProductClass[i];
+				html += '<option value="' + parentProductClass.classCode + '">' + parentProductClass.className + '</option>';
+			}
+			
+			$("#parentCode").html(html);
+		}
+	});
+}
+
+/*加载商品类别的二级联动菜单*/
+function loadSubClass(val,childval){
+	if(val){
+		$("#productClass").html("");
+		$("#productClass").html('<option value="">请选择</option>'); 
+	}
+	var key = $("#parentCode").val();
+	if(key){
+		$("#productClass").show();
+	}else{
+		$("#productClass").hide();
+		$("#productClass").val(null);
+	}                                                                                                                                                                                                                                                                                            
+	$.ajax({
+		url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/'+key+'/listSubProductClass', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var html = '';
+			var listProductClass = data.entity;
+			html='<option value="">请选择</option>';
+			if(null != listProductClass && listProductClass.length > 0){
+				var len = listProductClass.length;
+				for(var i=0;i<len;i++){
+					var product = listProductClass[i];
+					if(childval==product.classCode){
+						html += '<option selected value="'+product.classCode+'">';
+						html += product.className;
+						html +='</option>'
+					}else{
+						html += '<option value="'+product.classCode+'">';
+						html += product.className;
+						html +='</option>'
+					}
+					
+				}
+			}
+			$("#productClass").html(html);
+		}
+	});
+}
+
+//买点只能输入28字，兼容ie9
+function checklength(obj){
+	if (obj.value.length > 125) {
+	obj.value = obj.value.substr(0, 125);
+	}
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	loadClass();
+	setMainpic();
+	if (method == 'audit'){
+		$("#breadName").html('商品审核');
+		$("#pageTitle").html('商品审核');
+		editProduct();
+	}
+});
+
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 店面商品 &gt; <span id="breadName"></span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title" id="pageTitle"></div>
+				<div class="complaint_main">
+					<form method="post" class="user_form" id="dataForm">
+					<input type="hidden" id="id" name="id" />
+					<input type="hidden" id="deleteImageUrls" name="deleteImageUrls" />
+						<dl>
+							<dt><em class="cred">*</em>商品分类：</dt>
+							<dd>
+								<select class="select grid-15" id="parentCode" name="parentCode" onChange="loadSubClass(this.value)">
+									<option value="" selected>--请选择一级分类--</option>
+								</select>
+								<span id="parentCodeMsg"></span>
+								<select hidden class="select grid-15" id="productClass" name="productClassCode">
+									<option value="" selected>--请选择二级分类--</option>
+								</select>
+								<span id="productClassMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>商品名称：</dt>
+							<dd><input type="text" class="txt grid-20" id="saleProductName" name="saleProductName" /><span id="saleProductNameMsg"></span></dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>商品条形码：</dt>
+							<dd><input type="text" class="txt grid-20" id="barCode" name="barCode" /><span id="barCodeMsg"></span></dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>商品规格：</dt>
+							<dd>
+								<span fieldset="saleProductProfileDto">
+									<input type="hidden" id="saleProductProfileId" name="id" />
+						   	 		<input class="txt grid-20" id="saleProductSpec" name="saleProductSpec"/>
+						    	</span>
+					   	 		<span id="saleProductSpecMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>零售价格：</dt>
+							<dd>
+								<span fieldset="saleProductPriceDto">
+									<input type="hidden" id="saleProductPriceId" name="id" />
+						   	 		<input maxlength="10" class="txt grid-20" id="retailPrice" name="retailPrice"/>
+							    </span>
+					   	 		<span class="mlr5">单位（元）</span>
+					   	 		<span id="retailPriceMsg"></span>
+							</dd>
+						</dl>
+					 	<dl>
+							<dt></em>平台活动价格：</dt>
+							<dd>
+								<span fieldset="saleProductPriceDto">
+						   	 		<input maxlength="10" class="txt grid-20" id="promotionalPrice" name="promotionalPrice"/>
+							    </span>
+					   	 		<span class="mlr5">单位（元）</span>
+					   	 		<span id="promotionalPriceMsg"></span>
+							</dd>
+						</dl> 
+						<dl id="hotSaleFlag_box">
+							<dt><em class="cred">*</em>热卖图标：</dt>
+							<dd>
+								<span fieldset="saleProductProfileDto">
+									<select class="select grid-10" id="hotSaleFlag" name="hotSaleFlag" >
+										<option value="HOTSALEFLAG_NO">否</option>
+										<option value="HOTSALEFLAG_YES">是</option>
+									</select>
+								</span>
+								<span id="hotSaleFlagMsg"></span>
+							</dd>
+						</dl>
+						<dl id="saleStatus_box">
+							<dt><em class="cred">*</em>是否上架：</dt>
+							<dd>
+								<span fieldset="saleProductProfileDto">
+									<select class="select grid-10" id="saleStatus" name="saleStatus" >
+										<option value="SALEPRODUCTSALESTATUS_INIT">未上架</option>
+										<option value="SALEPRODUCTSALESTATUS_ONSALE">上架</option>
+										<option value="SALEPRODUCTSALESTATUS_OFFSALE">下架</option>
+									</select>
+								</span>
+								<span id="saleStatusMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt>显示顺序：</dt>
+							<dd>
+								<span fieldset="saleProductProfileDto">
+						   	 		<input class="txt grid-20" id="displayOrder" name="displayOrder"/>
+						    	</span>
+							</dd>
+				   	 		<span id="displayOrderMsg"></span>
+						</dl>
+						<dl>
+							<dt><em class="cred">*</em>商品图片：</dt>
+							<dd>
+								<span fieldset="firstAppImageProfileDto">
+									<input type="hidden" id="appPicPath1" name="appPicPath"  />
+									<input type="hidden" id="appPicSort1" name="appPicSort" /> 
+									<input type="hidden" id="appPicId1" name="appPicId" />
+									<input type="hidden" id="appPicOrder1" name="appPicOrder" />
+									<input type="hidden" id="appImageFlag1" name="appImageFlag" />
+									<input type="hidden" id="appPicMain1" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="secondAppImageProfileDto">
+									<input type="hidden" id="appPicId2" name="appPicId" />
+									<input type="hidden" id="appPicPath2" name="appPicPath" />
+									<input type="hidden" id="appPicOrder2" name="appPicOrder" />
+									<input type="hidden" id="appPicSort2" name="appPicSort" />
+									<input type="hidden" id="appImageFlag2" name="appImageFlag" />
+									<input type="hidden" id="appPicMain2" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="thirdAppImageProfileDto">
+									<input type="hidden" id="appPicId3" name="appPicId" />
+									<input type="hidden" id="appPicPath3" name="appPicPath"  />
+									<input type="hidden" id="appPicOrder3" name="appPicOrder" />
+									<input type="hidden" id="appPicSort3" name="appPicSort" />
+									<input type="hidden" id="appImageFlag3" name="appImageFlag" />
+									<input type="hidden" id="appPicMain3" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="fouthAppImageProfileDto">
+									<input type="hidden" id="appPicId4" name="appPicId" />
+									<input type="hidden" id="appPicPath4" name="appPicPath" />
+									<input type="hidden" id="appPicOrder4" name="appPicOrder" />
+									<input type="hidden" id="appPicSort4" name="appPicSort" />
+									<input type="hidden" id="appImageFlag4" name="appImageFlag" />
+									<input type="hidden" id="appPicMain4" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="fiveAppImageProfileDto">
+									<input type="hidden" id="appPicId5" name="appPicId" />
+									<input type="hidden" id="appPicPath5" name="appPicPath" />
+									<input type="hidden" id="appPicOrder5" name="appPicOrder" />
+									<input type="hidden" id="appPicSort5" name="appPicSort" />
+									<input type="hidden" id="appImageFlag5" name="appImageFlag" />
+									<input type="hidden" id="appPicMain5" name="appPicMain" class="js-mainPicv"/>
+								</span>
+								<span fieldset="sixAppImageProfileDto">
+									<input type="hidden" id="appPicId6" name="appPicId" />
+									<input type="hidden" id="appPicPath6" name="appPicPath" />
+									<input type="hidden" id="appPicOrder6" name="appPicOrder" />
+									<input type="hidden" id="appPicSort6" name="appPicSort" />
+									<input type="hidden" id="appImageFlag6" name="appImageFlag" />
+									<input type="hidden" id="appPicMain6" name="appPicMain" class="js-mainPicv"/>
+								</span> 
+								<ul class="product_release_img appimg">
+									<li id="appUploadLi1" class="pr"><a onclick="showUploadBox(1,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi2" class="pr"><a onclick="showUploadBox(2,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi3" class="pr"><a onclick="showUploadBox(3,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi4" class="pr"><a onclick="showUploadBox(4,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi5" class="pr"><a onclick="showUploadBox(5,'app')" class="img">点击上传</a></li>
+									<li id="appUploadLi6" class="pr"><a onclick="showUploadBox(6,'app')" class="img">点击上传</a></li>
+								</ul>
+								<div class="product_release_imgnote agray">
+									<em>温馨提示：</em>
+									<p>最多上传6张图片，每张图片大小≤3M，第1张为前台默认主图！ <span id="appUploadImgTxt">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>推荐上传800*600像素图片</p>
+								</div>
+							</dd>
+						</dl>
+						<dl>
+							<dt></em>商品介绍：</dt>
+							<dd>
+								<span fieldset="saleProductProfileDto">
+									<textarea id="content" name="content" style="width:650px;height:300px;visibility:hidden"></textarea>
+								<span>
+								<span id="contentMsg"></span>
+							</dd>
+						</dl>
+						<dl id="auditStatusCode_box">
+							<dt><em class="cred">*</em>审核：</dt>
+							<dd>
+								<select class="select grid-10" id="auditStatusCode" name="auditStatusCode" >
+									<!-- <option value="SALEPRODUCTAUDITSTATUS_NOT_YET">未审核</option> -->
+									<option value="SALEPRODUCTAUDITSTATUS_PASSED">审核通过</option>
+									<option value="SALEPRODUCTAUDITSTATUS_NOT_PASSED">审核不通过</option>
+								</select>
+								<span id="auditStatusCodeMsg"></span>
+							</dd>
+						</dl>
+						<dl id="auditNote_box">
+							<dt></em>审核意见：</dt>
+							<dd>
+								<textarea id="auditNote" name="auditNote" style="width:350px;height:100px"></textarea>
+								<span id="auditNoteMsg"></span>
+							</dd>
+						</dl>
+						<dl>
+							<dt></dt>
+							<dd>
+								<p class="main_search_btn">
+									<input type="button" class="btn_sure" value="审核" id="submit" onClick="dataEditSubmit(method)">
+									<input type="button" id="goBack" class="btn_gray" value="返回" onclick="javascript:history.go(-1);">
+									<span id="promptMessage" class="cred"></span>
+								</p>
+							</dd>
+						</dl>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营平台</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+<div id="uploadBox" class="hide">
+  <form id="uploadForm" onsubmit="uploadSubmit();return false;">
+	  <div class="uploadbox">
+	      <p><input id="uploadImgIndex" type="hidden" />
+		  <input id="uploadImgRow" type="hidden" />
+		  <input id="uploadImgType" type="hidden" />
+	      <input id="uploadFile" name="file" type="file"/> <span id="uploadnote" class="cred"></span></p>
+	      <div class="uploadbox_btn">
+	        <input type="submit"  value="确定" class="btn_sure" id="uploadBtn"/>
+	        <input type="reset" onclick="closeBox()"  value="取消"  class="btn_gray" />
+	      </div>
+	  </div>          
+  </form>
+</div>
+</body>
+</html>

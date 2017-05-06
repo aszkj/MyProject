@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>微信授权登录</title>
+</head>
+<body>
+	<script type="text/javascript">
+		window.onload = function() {
+			doRedirect();
+		};
+		// 获取url参数
+		function getUrlParam(sName) {
+			var sValue = '';
+			var re = new RegExp("\\b" + sName + "\\b=([^&=]+)");
+			var st = null;
+			st = window.location.search.match(re);
+			if (st && st.length == 2) {
+				st[1] = st[1].replace(/^\s*|\s*$/g, '');
+				sValue = st[1];
+			}
+			return sValue;
+		}
+
+		function appendParams(url, params) {
+			if (!params)
+				return url;
+			var baseWithSearch = url.split('#')[0];
+			var hash = url.split('#')[1];
+			for ( var key in params) {
+				var attrValue = params[key];
+				if (attrValue !== undefined) {
+					var newParam = key + "=" + attrValue;
+					if (baseWithSearch.indexOf('?') > 0) {
+						var oldParamReg = new RegExp(key
+								+ "=[-%.!~*\'\(\)\\w]*", "g");
+						if (oldParamReg.test(baseWithSearch)) {
+							baseWithSearch = baseWithSearch.replace(
+									oldParamReg, newParam);
+						} else {
+							baseWithSearch += "&" + newParam;
+						}
+					} else {
+						baseWithSearch += "?" + newParam;
+					}
+				}
+			}
+			if (!hash)
+				url = baseWithSearch;
+			url = baseWithSearch + "#" + hash;
+			return url;
+		}
+		function doRedirect() {
+			var code = getUrlParam('code');
+			var appId = getUrlParam('appid');
+			var scope = getUrlParam('scope') || 'snsapi_userinfo';
+			var state = getUrlParam('state');
+			var redirectUri;
+			if (!code) {
+				//第一步，没有拿到code，跳转至微信授权页面获取code
+				redirectUri = appendParams(
+						'https://open.weixin.qq.com/connect/oauth2/authorize#wechat_redirect',
+						{
+							'appid' : appId,
+							'redirect_uri' : encodeURIComponent(location.href),
+							'response_type' : 'code',
+							'scope' : scope,
+							'state' : state,
+						});
+			} else {
+				//第二步，从微信授权页面跳转回来，已经获取到了code，再次跳转到实际所需页面
+				redirectUri = appendParams(
+						decodeURIComponent(getUrlParam('redirect_uri')), {
+							'code' : code,
+							'state' : state
+						});
+			}
+			location.replace(redirectUri);
+		}
+	</script>
+</body>
+</html>

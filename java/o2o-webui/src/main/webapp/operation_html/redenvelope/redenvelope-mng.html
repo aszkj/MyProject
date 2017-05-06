@@ -1,0 +1,976 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var method = getUrlParam("method");
+	var validStartTimeOnBlur = '';
+	function loadActivityInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/' + id + '/getRedEnvelopeActivityDetail',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					if (data.msgCode != 1) {
+						return;
+					}
+					$("#activityName").val(data.entity.activityName);
+					$("#validStartTime").val(data.entity.validStartTime);
+					validStartTimeOnBlur = data.entity.validStartTime;
+					$("#validEndTime").val(data.entity.validEndTime);
+					$("#invokeProbability").val(data.entity.invokeProbability);
+					$("#rule").val(data.entity.rule);
+					var redEnvelopeRewards = data.entity.redEnvelopeRewards;
+					for(var i=0; i<redEnvelopeRewards.length; i++){
+						addRewards(redEnvelopeRewards[i]);
+					}
+					$("#id").val(id);
+				}//非必须
+			});
+
+		}
+	}
+	
+	function dataEditSubmit() {
+ 		if (method != 'add' && method != 'edit') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url =OPERATION_SYSTEM_IDENTITY +'/createRedEnvelopeActivity';
+			var $timeMsg = $('#timeMsg');
+			if('' != $timeMsg.html()){
+				return;
+			}
+			if (!validateData()) {
+				return;
+			}
+		} else if (method == 'edit') {
+			url = OPERATION_SYSTEM_IDENTITY +'/updateRedEnvelopeActivity';
+			var $timeMsg = $('#timeMsg');
+			if('' != $timeMsg.html()){
+				return;
+			}
+			if (!validateData()) {
+				return;
+			}
+			var rewardIdArray = document.getElementsByName('rewardId');
+			var rewardIds = '';
+			for(var i=0; i < rewardIdArray.length; i++){
+				if(i != rewardIdArray.length - 1){
+					rewardIds += $(rewardIdArray[i]).val() + ",";
+				}else{
+					rewardIds += $(rewardIdArray[i]).val();
+				}
+			}
+			$('#rewardIds').val(rewardIds);
+			var rewardSpanHtml = $('#rewardSpan').html();
+			if('' == rewardSpanHtml){
+				$('#promptMessage').text('红包奖励未设置，请添加红包奖励！').attr('class', 'error');
+				return ;
+			}
+		} else {
+			return;
+		} 
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;		
+		$('#promptMessage').text('正在保存...').attr('class', 'cred');
+		var invokeProbability = parseInt($.trim($('#invokeProbability').val()));
+		$('#invokeProbability').val(invokeProbability);
+		var rewardInfos = '';
+		var rewardTypeArray = document.getElementsByName('rewardType');
+		for(var i=0; i < rewardTypeArray.length; i++){
+			rewardInfos += $.trim($(rewardTypeArray[i]).val()) + ",";
+			if($(rewardTypeArray[i]).val() == 'REDENVELOPEREWARDTYPE_COUPON' || $(rewardTypeArray[i]).val() == 'REDENVELOPEREWARDTYPE_VOUCHER'){
+				rewardInfos += $.trim($(rewardTypeArray[i]).parent().parent().parent().find("dl dd select[name=prizeId]").val()) + ",";
+				rewardInfos += parseInt($.trim($(rewardTypeArray[i]).parent().parent().parent().find("dl dd input[name=releaseCount]").val())) + ",";
+				rewardInfos += parseFloat($.trim($(rewardTypeArray[i]).parent().parent().parent().find("dl dd input[name=winProbability]").val())) + ",";
+				rewardInfos += parseInt($.trim($(rewardTypeArray[i]).parent().parent().parent().find("dl dd input[name=winCountLimit]").val())) ;
+				if(i != rewardTypeArray.length - 1){
+					rewardInfos += "#";
+				}
+			}
+		}
+		$('#rewardInfos').val(rewardInfos);
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+   		$.ajax(
+				{
+					type : 'post',
+					contentType:'application/json',
+					dataType : 'json',
+					data : formJsonStr,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					},
+					url : TERMINAL_URL + url,
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window.setTimeout(
+										function() {
+											var urlParam=window.location.search;
+											locationHref("/redenvelope/redenvelope-index.html"+urlParam);
+										}, 1000);
+						} else {
+							$('#submit').removeClass().addClass(
+									'btn_sure')[0].disabled = false;
+							$('#promptMessage').text(data.msg);
+						}
+					}
+				});
+	}
+	
+	function listRewardTypes(obj){
+		var systemDictType = 'REDENVELOPEREWARDTYPE';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(undefined != obj && obj.rewardType == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+						}
+							html += mapList[i].name;
+							html +='</option>';
+					}
+				}
+				var rewardTypeArray = document.getElementsByName('rewardType');
+				$(rewardTypeArray[rewardTypeArray.length - 1]).html(html);
+				$('#rewardSpan').show();
+				if(undefined != obj && (method == 'detail' || method == 'edit')){
+					if(method == 'detail'){
+						$(rewardTypeArray[rewardTypeArray.length - 1]).attr('disabled', true);
+					}
+					doRewardType($(rewardTypeArray[rewardTypeArray.length - 1]),obj);
+				}
+			}
+		});
+	}
+	
+	function doRewardType(obj,obj1){
+ 		var rewardTypeValue = $(obj).val();
+		if('' != rewardTypeValue){
+			if('REDENVELOPEREWARDTYPE_VOUCHER' == rewardTypeValue){
+				if (!validate.validateValidStartTime()) {
+					var timeMsg = $('#timeMsg').text();
+					showBox('提示信息', timeMsg, 'alert');
+					$(obj).val('');
+					return false;
+				}
+				if (!validate.validateValidEndTime()) {
+					var timeMsg = $('#timeMsg').text();
+					showBox('提示信息', timeMsg, 'alert');
+					$(obj).val('');
+					return false;
+				}
+			}
+			if('REDENVELOPEREWARDTYPE_COUPON' == rewardTypeValue
+				|| 'REDENVELOPEREWARDTYPE_VOUCHER' == rewardTypeValue){
+				var packageName = '';
+				var ticketName = '';
+				if('REDENVELOPEREWARDTYPE_COUPON' == rewardTypeValue){
+					packageName = '优惠券包名称：';
+					ticketName = '优惠券名称：';
+				}
+				if('REDENVELOPEREWARDTYPE_VOUCHER' == rewardTypeValue){
+					ticketName = '抵用券名称：';
+				}
+				
+				var html = '';
+				html += '<span name="prizeBlock">';
+				html += '<div class="packageDiv">';
+				html += '<dl>';
+				html += '<dt>';
+				html += '<span class="cred">*</span>';
+				html += packageName;
+				html += '</dt>';
+				html += '<dd>';
+				html += '<select class="select grid-47" name="packageId" onmousedown="showErr(this)" onchange="doPackageId(this)"></select>&nbsp;&nbsp;'; 
+				html += '<span class="cred" name="prizeIdMsg"></span>';
+				html += '</dd>';
+				html += '</dl>';
+				html += '</div>';
+				html += '<dl>';
+				html += '<dt>';
+				html += '<span class="cred">*</span>';
+				html += ticketName;
+				html += '</dt>';
+				html += '<dd>';
+				html += '<select class="select grid-47" name="prizeId" onmousedown="showErr(this)" onchange="doPrizeId(this)"></select>&nbsp;&nbsp;'; 
+				html += '<span class="cred" name="prizeIdMsg"></span>';
+				html += '</dd>';
+				html += '</dl>';
+				
+				html += '<dl>';
+				html += '<dt>';
+				html += '<span class="cred">*</span>发放数量：';
+				html += '</dt>';
+				html += '<dd>';
+				html += '<input type="text" class="txt grid-46" name="releaseCount" ';
+				html += 'onkeyup="this.value=this.value.replace(/^0+|\\D/g,\'\')" ';
+				html += 'onafterpaste="this.value=this.value.replace(/^0+|\\D/g,\'\')" ';
+				html += 'onmousedown="showErr(this)">';
+				html += '</input>&nbsp;&nbsp;';
+				html += '<span class="gray">奖品的总数量，设置的数量必须大于0</span>&nbsp;&nbsp;';
+				html += '<span name="releaseCountMsg" class="cred"></span>';
+				html += '</dd>';
+				html += '</dl>';
+				html += '<dl>';
+				html += '<dt>';
+				html += '<span class="cred">*</span>中奖几率：';
+				html += '</dt>';
+				html += '<dd>';
+				html += '<input type="text" class="txt grid-46" name="winProbability" ';
+				html += 'onkeyup="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,6})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; "  ';
+				html += 'onafterpaste="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,6})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; " ';
+				html += 'onmousedown="showErr(this)" ';
+				html += '></input>&nbsp;&nbsp;';
+				html += '<span class="gray">单位：%，设置为100%，则表示百分百中奖；设置为0%，则表示不会中奖</span>&nbsp;&nbsp;';
+				html += '<span name="winProbabilityMsg" class="cred"></span>';
+				html += '</dd>';
+				html += '</dl>';
+				html += '<dl>';
+				html += '<dt>';
+				html += '<span class="cred">*</span>限中数量：';
+				html += '</dt>';
+				html += '<dd>';
+				html += '<input type="text" class="txt grid-46" name="winCountLimit" ';
+				html += 'onkeyup="this.value=this.value.replace(/\\D/g,\'\')" ';
+				html += 'onafterpaste="this.value=this.value.replace(/\\D/g,\'\')" ';
+				html += 'onmousedown="showErr(this)" ';
+				html += '></input>&nbsp;&nbsp;';
+				html += '<span class="gray">每个用户在活动时期限制中奖数量，0 表示不限制。</span>&nbsp;&nbsp;';
+				html += '<span name="winCountLimitMsg" class="cred"></span>';
+				html += '</dd>';
+				html += '</dl>';
+				html += '</span>';
+				$(obj).parent().parent().parent().find("span[name=prizeBlock]").remove();
+				$(obj).parent().parent().parent().append(html);
+				if(undefined != obj1 && (method == 'detail' || method == 'edit')){
+					$(obj).parent().parent().parent().find("dl dd input[name=releaseCount]").val(obj1.releaseCount);
+					$(obj).parent().parent().parent().find("dl dd input[name=winProbability]").val(obj1.winProbability);
+					$(obj).parent().parent().parent().find("dl dd input[name=winCountLimit]").val(obj1.winCountLimit);
+					if(method == 'detail'){
+						$(obj).parent().parent().parent().find("dl dd input[name=releaseCount]").attr('disabled', true);
+						$(obj).parent().parent().parent().find("dl dd input[name=winProbability]").attr('disabled', true);
+						$(obj).parent().parent().parent().find("dl dd input[name=winCountLimit]").attr('disabled', true);
+					}
+				}
+			}
+			if('REDENVELOPEREWARDTYPE_COUPON' == rewardTypeValue){
+				$(obj).parent().parent().parent().find(".packageDiv").show();
+				listAvailableCouponPackage(obj,obj1);
+			}
+			if('REDENVELOPEREWARDTYPE_VOUCHER' == rewardTypeValue){
+				$(obj).parent().parent().parent().find(".packageDiv").hide();
+				listAvailableVoucherPackage(obj, obj1);
+			}
+		} else {
+			$(obj).parent().parent().parent().find("span[name=prizeBlock]")
+					.remove();
+		}
+	}
+
+	//优惠券券包下拉框
+	function listAvailableCouponPackage(obj, obj1) {
+		var grantWay = 'COUPONSGRANTWAY_RED_ENVELOPE';
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' +grantWay + '/listAvailableCouponPackage',
+			type : 'post',
+			dataType : 'json',
+			async : false,
+			success : function(data) {
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var couponBasicInfoList = data.entity;
+				var html = '';
+				if (null != data.entity && data.entity.length > 0) {
+					html += '<option value="">--请选择--</option>';
+					$.each(data.entity, function(i, item) {
+						html += '<option value="'+item.id+'">' + item.conName
+								+ '</option>';
+					});
+				} else {
+					html += '<option value="">优惠券包</option>';
+				}
+				$(obj).parent().parent().parent().find(
+						"dl dd select[name=packageId]").html(html);
+				if (undefined != obj1 && (method == 'detail' || method == 'edit')) {
+					$(obj).parent().parent().parent().find("dl dd select[name=packageId]").val(obj1.packageId);
+					listAvailableCoupons(obj1.packageId, obj, obj1);
+					if (method == 'detail') {
+						$(obj).parent().parent().parent().find("dl dd select[name=packageId]").attr('disabled', true);
+					}
+				}
+			}
+		});
+	}
+	//抵用券券包下拉框
+	function listAvailableVoucherPackage(obj, obj1) {
+		var validStartTime = $.trim($('#validStartTime').val());
+		if(undefined != obj1 && (method == 'detail' || method == 'edit')){
+			validStartTime = "null";
+		}
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ validStartTime + '/listAvailableVouchers',
+			type : 'post',
+			dataType : 'json',
+			async : false,
+			success : function(data) {
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				if (null != data.entity && data.entity.length > 0) {
+					html += '<option value="">--请选择--</option>';
+					$.each(data.entity,function(i, item) {
+						html += '<option value="' + item.vouPackId + '_'+item.grantTime+'">'
+								+ item.vouPackName
+								+ '（发放时间：'
+								+ item.grantTime + '）</option>';
+					});
+				} else {
+					html += '<option value="">无可用抵用券</option>';
+				}
+				$(obj).parent().parent().parent().find("dl dd select[name=prizeId]").html(html);
+				if (undefined != obj1 && (method == 'detail' || method == 'edit')) {
+					$(obj).parent().parent().parent().find("dl dd select[name=prizeId]").val(obj1.prizeId + '_' + obj1.prizeGrantTime);
+					if (method == 'detail') {
+						$(obj).parent().parent().parent().parent().find(
+								"dl dd select[name=prizeId]").attr('disabled',
+								true);
+					}
+				}
+			}
+		});
+	}
+	
+	function doPackageId(obj,obj1) {
+		var rewardTypeObj = $(obj).parent().parent().parent().parent().parent().find("dl dd select[name=rewardType]");
+		var packageId = $(obj).parent().parent().parent().find("dl dd select[name=packageId]").val();
+		var rewardTypeValue = rewardTypeObj.val();
+		if ('REDENVELOPEREWARDTYPE_COUPON' == rewardTypeValue) {
+			listAvailableCoupons(packageId, rewardTypeObj, obj1);
+		}
+	}
+
+	//优惠券下拉框
+	function listAvailableCoupons(packageId, obj, obj1) {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + packageId
+					+ '/listAvailableCoupons',
+			type : 'post',
+			dataType : 'json',
+			async : false,
+			success : function(data) {
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var couponBasicInfoList = data.entity;
+				var html = '';
+				if (null != couponBasicInfoList) {
+					html += '<option value="">--请选择--</option>';
+					for (var i = 0; i < couponBasicInfoList.length; i++) {
+						var couponBasicInfo = couponBasicInfoList[i];
+						html += '<option value="' + couponBasicInfo.conId + '_'+couponBasicInfo.grantTime+'">'
+								+ couponBasicInfo.conName
+								+ '（发放时间：'
+								+ couponBasicInfo.grantTime
+								+ ',第'
+								+ couponBasicInfo.stageNo + '阶段）</option>';
+					}
+				} else {
+					html += '<option value="">无可用优惠券</option>';
+				}
+				$(obj).parent().parent().parent().find("dl dd select[name=prizeId]").html(html);
+				if (undefined != obj1 && (method == 'detail' || method == 'edit')) {
+					$(obj).parent().parent().parent().find("dl dd select[name=prizeId]").val(obj1.prizeId + '_' + obj1.prizeGrantTime);
+					if (method == 'detail') {
+						$(obj).parent().parent().parent().find("dl dd select[name=prizeId]").attr('disabled',true);
+					}
+				}
+			}
+		});
+	}
+
+	function doPrizeId(obj) {
+		var targetPrizeIdValue = $(obj).val();
+		if ('' != $(obj).val()) {
+			var targetRewardTypeValue = $(obj).parent().parent().parent()
+					.parent().find("dl dd select[name=rewardType]").val();
+			$(obj).val('');
+			var prizeIdArray = document.getElementsByName('prizeId');
+			for (var i = 0; i < prizeIdArray.length; i++) {
+				var rewardTypeValue = $(prizeIdArray[i]).parent().parent()
+						.parent().parent()
+						.find("dl dd select[name=rewardType]").val();
+				if ('REDENVELOPEREWARDTYPE_COUPON' == rewardTypeValue) {
+					var prizeIdValue = $(prizeIdArray[i]).val();
+					if ('REDENVELOPEREWARDTYPE_COUPON' == targetRewardTypeValue
+							&& targetPrizeIdValue == prizeIdValue) {
+						$(obj).val('');
+						showBox('提示信息', '请勿重复选择同一种优惠券', 'alert');
+						return false;
+					}
+				}
+				if ('REDENVELOPEREWARDTYPE_VOUCHER' == rewardTypeValue) {
+					var prizeIdValue = $(prizeIdArray[i]).val();
+					if ('REDENVELOPEREWARDTYPE_VOUCHER' == targetRewardTypeValue
+							&& targetPrizeIdValue == prizeIdValue) {
+						$(obj).val('');
+						showBox('提示信息', '请勿重复选择同一种抵用券', 'alert');
+						return false;
+					}
+				}
+			}
+			$(obj).val(targetPrizeIdValue);
+		}
+	}
+
+	function addRewards(obj) {
+		var html = '';
+		html += '<span name= "reward" style="border: 1px dashed;display:block">';
+		html += '<dl>';
+		html += '<dt>';
+		html += '<span class="cred">*</span>奖励类型：';
+		html += '</dt>';
+		html += '<dd>';
+		html += '<select class="select grid-47" name="rewardType" onchange="doRewardType(this)" onmousedown="showErr(this)"></select>&nbsp;&nbsp;';
+		html += '<span class="cred" name="rewardTypeMsg"></span>';
+		var rewardTypeArray = document.getElementsByName('rewardType');
+		if (method == 'edit') {
+			html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" onclick="delRewardBlock(this)" name="delReward" class="ablue">删除</a>&nbsp;&nbsp;';
+		} else {
+			if (rewardTypeArray.length > 0) {
+				if (method != 'detail') {
+					html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" onclick="delRewardBlock(this)" name="delReward" class="ablue">删除</a>&nbsp;&nbsp;';
+				}
+			}
+		}
+		html += '</dd>';
+		html += '</dl>';
+		if (undefined != obj && method == 'edit') {
+			html += '<input type="hidden" name="rewardId" value="'+obj.id+'"/>';
+		}
+		html += '</span>';
+		$('#rewardSpan').append(html);
+		$('#promptMessage').html('').attr('class', '');
+		listRewardTypes(obj);
+	}
+
+	function delRewardBlock(obj) {
+		$(obj).parent().parent().parent().remove();
+	}
+
+	var validate = (function() {
+		return {
+			validateActivityName : function() {
+				var activityName = $.trim($('#activityName').val()), $activityNameMsg = $('#activityNameMsg');
+				if (!activityName) {
+					$activityNameMsg.html('请填写红包游戏名称！').attr('class', 'error');
+					return false;
+				}
+				$activityNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateValidStartTime : function() {
+				var validStartTime = $.trim($('#validStartTime').val()), $timeMsg = $('#timeMsg');
+				if (!validStartTime) {
+					$timeMsg.html('请选择开始有效时间！').attr('class', 'error');
+					return false;
+				}
+				$timeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateValidEndTime : function() {
+				var validEndTime = $.trim($('#validEndTime').val()), $timeMsg = $('#timeMsg');
+				if (!validEndTime) {
+					$timeMsg.html('请选择结束有效时间！').attr('class', 'error');
+					return false;
+				}
+				var startTime = new Date($('#validStartTime').val().replace(
+						/-/g, "/"));
+				var endTime = new Date($('#validEndTime').val().replace(/-/g,
+						"/"));
+				if (startTime >= endTime) {
+					$timeMsg.html('结束有效时间必须大于开始有效时间！').attr('class', 'error');
+					return false;
+				}
+				$timeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateInvokeProbability : function() {
+				var invokeProbability = $.trim($('#invokeProbability').val()), $invokeProbabilityMsg = $('#invokeProbabilityMsg');
+				if (!invokeProbability) {
+					$invokeProbabilityMsg.html('请填写调用请求几率！').attr('class',
+							'error');
+					return false;
+				}
+				if (parseInt(invokeProbability) > 100) {
+					$invokeProbabilityMsg.html('调用请求几率不能大于100%！').attr('class',
+							'error');
+					return false;
+				}
+				$invokeProbabilityMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateRule : function() {
+				var rule = $.trim($('#rule').val()), $ruleMsg = $('#ruleMsg');
+				if (!rule) {
+					$ruleMsg.html('请填写活动规则说明！').attr('class', 'error');
+					return false;
+				}
+				$ruleMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateRewardType : function() {
+				var rewardType = $.trim($('#rewardType').val()), $rewardTypeMsg = $('#rewardTypeMsg');
+				if (!rewardType) {
+					$rewardTypeMsg.html('请选择奖励类型！').attr('class', 'error');
+					return false;
+				}
+				$rewardTypeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validaterRewardInfos : function() {
+				var rewardTypeArray = document.getElementsByName('rewardType');
+				for (var i = 0; i < rewardTypeArray.length; i++) {
+					var $rewardTypeMsg = $(rewardTypeArray[i]).siblings(
+							"span[name=rewardTypeMsg]");
+					if (!$(rewardTypeArray[i]).val()) {
+						$rewardTypeMsg.html('请选择奖励类型！').attr('class', 'error');
+						return false;
+					}
+					$rewardTypeMsg.html('').attr('class', 'right');
+					if ($(rewardTypeArray[i]).val() == 'REDENVELOPEREWARDTYPE_COUPON'
+							|| $(rewardTypeArray[i]).val() == 'REDENVELOPEREWARDTYPE_VOUCHER') {
+						prizeId = $.trim($(rewardTypeArray[i]).parent()
+								.parent().parent().find(
+										"dl dd select[name=prizeId]").val());
+						$prizeIdMsg = $(rewardTypeArray[i]).parent().parent()
+								.parent().find("dl dd span[name=prizeIdMsg]");
+						releaseCount = $
+								.trim($(rewardTypeArray[i]).parent().parent()
+										.parent()
+										.find("dl dd input[name=releaseCount]")
+										.val());
+						$releaseCountMsg = $(rewardTypeArray[i]).parent()
+								.parent().parent().find(
+										"dl dd span[name=releaseCountMsg]");
+						if (!prizeId) {
+							if ($(rewardTypeArray[i]).val() == 'REDENVELOPEREWARDTYPE_COUPON') {
+								$prizeIdMsg.html('请选择优惠券名称！').attr('class',
+										'error');
+							}
+							if ($(rewardTypeArray[i]).val() == 'REDENVELOPEREWARDTYPE_VOUCHER') {
+								$prizeIdMsg.html('请选择抵用券名称！').attr('class',
+										'error');
+							}
+							return false;
+						}
+						$prizeIdMsg.html('').attr('class', 'right');
+						if (!releaseCount) {
+							$releaseCountMsg.html('请填写发放数量！').attr('class',
+									'error');
+							return false;
+						}
+						$releaseCountMsg.html('').attr('class', 'right');
+					}
+					winProbability = $.trim($(rewardTypeArray[i]).parent()
+							.parent().parent().find(
+									"dl dd input[name=winProbability]").val());
+					$winProbabilityMsg = $(rewardTypeArray[i]).parent()
+							.parent().parent().find(
+									"dl dd span[name=winProbabilityMsg]");
+					winCountLimit = $.trim($(rewardTypeArray[i]).parent()
+							.parent().parent().find(
+									"dl dd input[name=winCountLimit]").val());
+					$winCountLimitMsg = $(rewardTypeArray[i]).parent().parent()
+							.parent().find("dl dd span[name=winCountLimitMsg]");
+					if (!winProbability) {
+						$winProbabilityMsg.html('请填写中奖几率！').attr('class',
+								'error');
+						return false;
+					}
+					if (parseFloat(winProbability) > 100) {
+						$winProbabilityMsg.html('中奖几率不能大于100%！').attr('class',
+								'error');
+						return false;
+					}
+					$winProbabilityMsg.html('').attr('class', 'right');
+					if (!winCountLimit) {
+						$winCountLimitMsg.html('请填写限中数量！').attr('class',
+								'error');
+						return false;
+					}
+					$winCountLimitMsg.html('').attr('class', 'right');
+				}
+				return true;
+			},
+			validateTotalWinProbabilities : function() {
+				var winProbabilityArray = document
+						.getElementsByName('winProbability');
+				var totalWinProbabilities = 0;
+				for (var i = 0; i < winProbabilityArray.length; i++) {
+					totalWinProbabilities += parseFloat($.trim($(
+							winProbabilityArray[i]).val()));
+				}
+				if (totalWinProbabilities > 100) {
+					$('#promptMessage').html('所有中奖几率总和不能大于100%！').attr('class',
+							'error');
+					return false;
+				}
+				$('#promptMessage').html('');
+				return true;
+			}
+		}
+	})();
+
+	function validateData() {
+		if (!validate.validateActivityName()) {
+			return false;
+		}
+		if (!validate.validateValidStartTime()) {
+			return false;
+		}
+		if (!validate.validateValidEndTime()) {
+			return false;
+		}
+		if (!validate.validateInvokeProbability()) {
+			return false;
+		}
+		if (!validate.validateRule()) {
+			return false;
+		}
+		if (!validate.validaterRewardInfos()) {
+			return false;
+		}
+		if (!validate.validateTotalWinProbabilities()) {
+			return false;
+		}
+		return true;
+	}
+
+	function showErr(obj) {
+		var filedName = $(obj).attr('name');
+		if (filedName == 'activityName') {
+			$('#activityNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+		if (filedName == 'validStartTime') {
+			$('#timeMsg').html('').attr('class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+		if (filedName == 'validEndTime') {
+			$('#timeMsg').html('').attr('class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+		if (filedName == 'invokeProbability') {
+			$('#invokeProbabilityMsg').html('').attr('class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+		if (filedName == 'rule') {
+			$('#ruleMsg').html('').attr('class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+		if (filedName == 'rewardType') {
+			$(obj).parent().find('span[name=rewardTypeMsg]').html('').attr(
+					'class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+		if (filedName == 'prizeId') {
+			$(obj).parent().find('span[name=prizeIdMsg]').html('').attr(
+					'class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+		if (filedName == 'releaseCount') {
+			$(obj).parent().find('span[name=releaseCountMsg]').html('').attr(
+					'class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+		if (filedName == 'winProbability') {
+			$(obj).parent().find('span[name=winProbabilityMsg]').html('').attr(
+					'class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+		if (filedName == 'winCountLimit') {
+			$(obj).parent().find('span[name=winCountLimitMsg]').html('').attr(
+					'class', '');
+			$('#promptMessage').html('').attr('class', '');
+			return;
+		}
+	}
+
+	function loadTimeInput() {
+		$('#validStartTime').datetimepicker({});
+		$('#validEndTime').datetimepicker({});
+	}
+
+	function doValidTime(obj) {
+		var validStartTime = $.trim($('#validStartTime').val());
+		var validEndTime = $.trim($('#validEndTime').val());
+		if (validStartTime && validEndTime) {
+			var startTime = new Date(validStartTime.replace(/-/g, "/"));
+			var endTime = new Date(validEndTime.replace(/-/g, "/"));
+			var $timeMsg = $('#timeMsg');
+			if (startTime >= endTime) {
+				$timeMsg.html('结束有效时间必须大于开始有效时间！').attr('class', 'error');
+				return false;
+			}
+			$timeMsg.html('').attr('class', '');
+			var id = $("#id").val();
+			if ('' == id) {
+				id = 0;
+			}
+			ajax({
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id + '_'
+						+ validStartTime + '_' + validEndTime
+						+ '/getValidTimeIntersectionFlag',
+				type : 'post',
+				dataType : 'json',
+				async : false,
+				success : function(data) {
+					if (data.msgCode != 1) {
+						$timeMsg.html(data.msg).attr('class', 'error');
+						return false;
+					} else {
+						//特殊处理 尖括号
+						var temp = JSON.stringify(data);
+						temp = encodeString(temp);
+						data = JSON.parse(temp);
+						if (data.entity == 'Y') {
+							$timeMsg.html(
+									'该有效期区间与之前设置的抢红包游戏有效期存在重叠，请重新选择有效期区间！')
+									.attr('class', 'error');
+						} else {
+							$timeMsg.html('').attr('class', '');
+						}
+						var timeName = $(obj).attr('name');
+						if ('validStartTime' == timeName) {
+							if (validStartTime != validStartTimeOnBlur) {
+								validStartTimeOnBlur = validStartTime;
+								var rewardTypeArray = document
+										.getElementsByName('rewardType');
+								for (var i = 0; i < rewardTypeArray.length; i++) {
+									if ('REDENVELOPEREWARDTYPE_COUPON' == $(
+											rewardTypeArray[i]).val()) {
+										listAvailableCoupons($(rewardTypeArray[i]));
+									}
+									if ('REDENVELOPEREWARDTYPE_VOUCHER' == $(
+											rewardTypeArray[i]).val()) {
+										listAvailableVouchers($(rewardTypeArray[i]));
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+		}
+	}
+
+	$(document)
+			.ready(
+					function(e) {
+						loadHtml("headerId", "/include/header.html");
+						loadHtml("left_menu_content", "/include/leftmenu.html");
+						loadHtml("footerId", "/include/footer.html");
+						loadTimeInput();
+						if (method == 'edit') {
+							$("#breadName").html('编辑红包游戏');
+							$("#pageTitle").html('编辑红包游戏');
+							loadActivityInfo();
+						} else if (method == 'add') {
+							$("#breadName").html('新增红包游戏');
+							$("#pageTitle").html('新增红包游戏');
+							addRewards();
+						} else if (method == 'detail') {
+							$("#breadName").html('查看红包游戏');
+							$("#pageTitle").html('查看红包游戏');
+							loadActivityInfo();
+							$("#activityName").attr('disabled', true);
+							$("#validStartTime").attr('disabled', true);
+							$("#validEndTime").attr('disabled', true);
+							$("#invokeProbability").attr('disabled', true);
+							$("#rule").attr('disabled', true);
+							$("#submit").remove();
+							$("#reset").remove();
+							$("#addReward").removeClass().addClass(
+									"btn_disabled")[0].disabled = true;
+						}
+					});
+
+	function comebackList() {
+		var urlParam = window.location.search;
+		locationHref('/redenvelope/redenvelope-index.html' + urlParam);
+	}
+</script>
+</head>
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 红包管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>红包游戏名称：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-46" id="activityName" name="activityName" onmousedown="showErr(this)" >&nbsp;&nbsp;
+										<span class="cred" id="activityNameMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>有效期：
+									</dt>
+									<dd><input type="text" class="txt grid-20" id="validStartTime" name="validStartTime" onmousedown="showErr(this)" onkeydown="return false;" onblur="doValidTime(this);"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										至
+										<input type="text" class="txt grid-21" id="validEndTime" name="validEndTime" onmousedown="showErr(this)" onkeydown="return false;" onblur="doValidTime(this);"/>
+										<span id="timeMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>调用请求几率：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-46"id="invokeProbability" name="invokeProbability" 
+										onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"
+										onmousedown="showErr(this)"></input>&nbsp;&nbsp;
+										<span class="gray">单位：%，设置为100%，表示每次点击都触发调用；设置为0%，表示每次都不调用请求。</span>
+										<span id="invokeProbabilityMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>活动规则说明：
+									</dt>
+									<dd>
+										<textarea type="text" class="txt grid-46" id="rule" name="rule" onmousedown="showErr(this)" rows="8" maxlength="1024"></textarea>&nbsp;&nbsp;
+										<span id="ruleMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span style="color: blue">红包奖励设置</span>
+									</dt>
+									<dd>
+										<input type="button" class="btn_sure" value="添加红包奖励" id="addReward" onClick="addRewards()">
+									</dd>
+								</dl>
+								<span id= "rewardSpan" class="disn"></span>
+							</div>
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit(method)"> <input
+											type="button" id="goBack" class="btn_gray" value="返回"
+											onclick="javascript:comebackList();"> <span
+											id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden"  id="id" name="activityId"/>
+							<input type="hidden"  id="rewardInfos" name="rewardInfos" />
+							<input type="hidden"  id="rewardIds" name="rewardIds" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

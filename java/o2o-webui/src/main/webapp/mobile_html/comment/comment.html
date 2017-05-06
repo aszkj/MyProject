@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/bootstrap.css" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<link rel="stylesheet" href="../static-resource/css/star-rating.css" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript" src="../static-resource/js/star-rating.js"></script>
+<script type="text/javascript" src="../static-resource/js/exif.js"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+<script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.0.0.js'></script>
+</head>
+<body class="commentBody">
+	<header>
+		<!--顶部标题-->
+		<div class="top-big-tit">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<p>评价晒单</p>
+		</div>
+	</header>
+	<section class="commentBox"></section>
+	<div class="serviceComment">
+		<div class="serviceComTit">
+			<p>服务评价</p>
+			<p>满意请给五星</p>
+		</div>
+		<div class="clearfix"></div>
+		<div class="sellerService" id="sellerService">
+			<p>商家服务</p>
+			<form onclick="subComBtnClass()">
+				<input id="input-21a" value="0" type="number" class="rating" min=0 max=5 step=1 data-size="xl">
+			</form>
+		</div>
+		<div class="deliveryService" id="deliveryService">
+			<p>配送服务</p>
+			<form onclick="subComBtnClass()">
+				<input id="input-21a" value="0" type="number" class="rating" min=0 max=5 step=1 data-size="xl">
+			</form>
+		</div>
+	</div>
+	<div style="height:.98rem;"></div>
+	<div class="evaluate">
+		<div class="anonymous noAnony" id="anonymousBox">
+			<p>匿名评价</p>
+		</div>
+		<button type="submit" class="subComBtn subComBtnNo" disabled="disabled">提交评价</button>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var saleOrderNo = getUrlParam("saleOrderNo");
+	$(function() {
+		comProTmpl();
+		$("#anonymousBox").click(function() {
+			$(this).toggleClass("noAnony isAnony");
+		});
+		$(".subComBtn").click(function() {
+			sendComment();
+		});
+	});
+	/*提交评论按钮样式控制*/
+	function subComBtnClass() {
+		var subComScore = true;
+		$(".commentItem").each(
+				function() {
+					var starScore = $(this).find(".proScore").find(".caption")
+							.children("span").html();
+					if ((starScore) <= 0) {
+						subComScore = false;
+					}
+				});
+		var serviceScore = $("#sellerService").find(".caption")
+				.children("span").html();
+		var deliverScore = $("#deliveryService").find(".caption").children(
+				"span").html();
+		if (serviceScore <= 0 || deliverScore <= 0) {
+			subComScore = false;
+		}
+		if (subComScore) {
+			$(".subComBtn").removeClass("subComBtnNo").addClass("subComBtnOk");
+			$(".subComBtn").attr("disabled", false);
+		}
+	}
+	/*提交评论*/
+	function sendComment() {
+		var isAnonymous = 0;
+		if ($("#anonymousBox").hasClass("isAnony")) {
+			isAnonymous = 1;
+		}
+		var param = new Object();
+		param.saleOrderNo = saleOrderNo;
+		param.serviceScore = $("#sellerService").find(".caption").children(
+				"span").html();
+		param.deliverScore = $("#deliveryService").find(".caption").children(
+				"span").html();
+		param.isAnonymous = isAnonymous;
+		var saleProductEvaluations = [];
+		$(".commentItem").each(
+				function() {
+					var evaluation = new Object();
+					evaluation.saleProductId = $(this).attr(
+							"data-saleProductId");
+					evaluation.saleProductScore = $(this).find(".proScore")
+							.find(".caption").children("span").html();
+					evaluation.evaluateContent = $(this).children(
+							".commentText").children(".comTextarea").val();
+					evaluation.evaluateImages = [];//评论图片url
+					var comImgDoc = $(this).children(".addComImg").children(
+							".comImgBox").children(".comImgWrap").children(
+							"img");
+					comImgDoc.each(function() {
+						var comImgUrl = new Object();
+						comImgUrl.imageUrl = $(this).attr("src");
+						evaluation.evaluateImages.push(comImgUrl);
+					});
+					saleProductEvaluations.push(evaluation);
+				});
+		param.saleProductEvaluations = saleProductEvaluations;
+		ajax("/evaluate/saveevaluation", param, function(data) {
+			history.go(-1);
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	/*获取订单商品相关信息*/
+	function comProTmpl() {
+		var params = new Object();
+		params.saleOrderNo = saleOrderNo;
+		ajax("/order/orderdetail", params, function(data) {
+			$("#comProTmpl").tmpl(data.saleOrderItemList).appendTo(
+					".commentBox");
+			var $input = $('input.rating'), count = Object.keys($input).length;
+			if (count > 0) {
+				$input.rating();
+			}
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	/*点击删除所选图片*/
+	function deleteComImg(e) {
+		$(e).parent(".comImgBox").remove();
+		commentFromUser();
+	}
+	/**
+	 * @param base64Codes
+	 *            图片的base64编码
+	 */
+	function sumitImageFile(base64Codes, node) {
+		var form = document.forms[0];
+		var formData = new FormData(form); //这里连带form里的其他参数也一起提交了,如果不需要提交其他参数可以直接FormData无参数的构造函数
+		//convertBase64UrlToBlob函数是将base64编码转换为Blob
+		formData.append("file", convertBase64UrlToBlob(base64Codes)); //append函数的第一个参数是后台获取数据的参数名,和html标签的input的name属性功能相同
+		//ajax 提交form
+		$.ajax({
+			url : TERMINAL_URL + '/upload/evaluateimage',
+			type : 'POST',
+			data : formData,
+			dataType : 'json',
+			cache : false,
+			contentType : false,
+			processData : false, // 不可缺
+			beforeSend : function() {
+				$(node).parent().removeClass("imgToAdd");
+				$(node).parent().addClass("imgBeforeSend");
+				$(node).siblings("p").removeClass("hide");
+				$(node).attr("disabled", true);
+			},
+			success : function(data) {
+				var resultStr = new Base64().decode(data.result);
+				var result = eval('(' + resultStr + ')');
+				if (result.msgCode == 1) {
+					var path = result.entity;
+					var comImg = $(node).parent().parent().children("img");
+					var isSameImg = false;
+					$(comImg).each(function() {
+						if (($(this).attr("src")) == path) {
+							isSameImg = true;
+							alert("请不要选择同一张图片重复上传");
+						}
+					});
+					if (isSameImg == false) {
+						$(node).val("");
+						$(node).parent().addClass("imgToAdd");
+						$(node).parent().removeClass("imgBeforeSend");
+						$(node).siblings().addClass("hide");
+						$(node).attr("disabled", false);
+						$("#comImgTmpl").tmpl(path).prependTo(
+								$(node).parent().parent());
+					}
+				} else {
+				}
+			},
+			error : function() {
+				$(node).parent().addClass("imgToAdd");
+				$(node).parent().removeClass("imgBeforeSend");
+				$(node).siblings().addClass("hide");
+				$(node).attr("disabled", false);
+				alert("图片上传失败，请重新上传");
+			}
+		});
+	}
+	/**
+	 * 将以base64的图片url数据转换为Blob
+	 * @param urlData
+	 *            用url方式表示的base64图片数据
+	 */
+	function convertBase64UrlToBlob(urlData) {
+		var bytes = window.atob(urlData.split(',')[1]); //去掉url的头，并转换为byte
+		//处理异常,将ascii码小于0的转换为大于0
+		var ab = new ArrayBuffer(bytes.length);
+		var ia = new Uint8Array(ab);
+		for (var i = 0; i < bytes.length; i++) {
+			ia[i] = bytes.charCodeAt(i);
+		}
+		return new Blob([ ab ], {
+			type : 'image/png'
+		});
+	}
+	function getUrl(node) {
+		var comImgCount = ($(node).parent().parent().children(".comImgBox"))
+				.size();
+		if (comImgCount > 9) {
+			alert("上传的评论图片不能超过10张");
+			return;
+		}
+		var tmpFile = node.files[0];
+		if (!tmpFile) {
+			return;
+		}
+		var orientation;
+		EXIF.getData(tmpFile,function(){
+			orientation=EXIF.getTag(this,'Orientation');
+		});
+		var reader = new FileReader();
+		reader.readAsDataURL(tmpFile);
+		reader.onload = function(e) {
+			getImgData(this.result,orientation,function(data){
+				sumitImageFile(data, node);
+			});
+			}
+	}
+	function getImgData(img,dir,next){
+		var image=new Image();
+		image.onload=function(){
+			var degree=0,drawWidth,drawHeight,width,height;
+			drawWidth=this.naturalWidth;
+			drawHeight=this.naturalHeight;
+//以下改变一下图片大小
+			var maxSide = Math.max(drawWidth, drawHeight);
+			var m=drawHeight/drawWidth;
+			if (maxSide < 300 ) {
+				alert("上传的评论图片宽高不能小于300像素");
+				return;
+			}
+			if (m<0.5||m>2) {
+				alert("上传的评论图片宽高比例不符合要求");
+				return;
+			}
+			if (drawHeight > 300 && drawWidth < 750) {
+				drawWidth = drawWidth;//不缩放
+				drawHeight = drawHeight;
+			}
+			if (drawWidth > 750 && drawWidth < 1500) {
+				drawWidth = drawWidth;//不缩放
+				drawHeight = drawHeight;
+			} else {
+				drawWidth = 750;//该值影响缩放后图片的大小
+				drawHeight = 750 * m;
+			}
+			var canvas=document.createElement('canvas');
+			canvas.width=width=drawWidth;
+			canvas.height=height=drawHeight;
+			var context=canvas.getContext('2d');
+//判断图片方向，重置canvas大小，确定旋转角度，iphone默认的是home键在右方的横屏拍摄方式
+			switch(dir){
+//iphone横屏拍摄，此时home键在左侧
+				case 3:
+					degree=180;
+					drawWidth=-width;
+					drawHeight=-height;
+					break;
+//iphone竖屏拍摄，此时home键在下方(正常拿手机的方向)
+				case 6:
+					canvas.width=height;
+					canvas.height=width;
+					degree=90;
+					drawWidth=width;
+					drawHeight=-height;
+					break;
+//iphone竖屏拍摄，此时home键在上方
+				case 8:
+					canvas.width=height;
+					canvas.height=width;
+					degree=270;
+					drawWidth=-width;
+					drawHeight=height;
+					break;
+			}
+//使用canvas旋转校正
+			context.rotate(degree*Math.PI/180);
+			context.drawImage(this,0,0,drawWidth,drawHeight);
+//返回校正图片
+			next(canvas.toDataURL("image/jpeg",.8));
+		}
+		image.src=img;
+	}
+	//弹出手机键盘时底部评论按钮等处理
+	$('#phone').bind('focus', function() {
+		$('.evaluate').css('position', 'static');
+	}).bind('blur', function() {
+		$('.evaluate').css('position', 'fixed');
+
+	});
+</script>
+<script id="comProTmpl" type="text/x-jquery-tmpl">
+    <div class="commentItem" data-saleProductId="${saleProductId}">
+    <div class="commentTit">
+        <div class="comProImg">
+            <img src="${saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+        </div>
+        <span>描述相符</span>
+        <div class="proScore" onclick="subComBtnClass()">
+            <input id="input-21a" value="0" type="number" class="rating" min=0 max=5 step=1 data-size="xl" >
+        </div>
+    </div>
+    <div class="commentText">
+        <textarea placeholder="分享购买心得或购物体验" class="comTextarea" maxlength="300"></textarea>
+    </div>
+    <div class="addComImg comImg">
+    <div class="addImgBtnWrap imgToAdd">
+         <p class="imgBeforeSendText hide">图片上传中</p>
+         <input type="file" id="fileId" name="fileId" value="上传图片" accept="image/*" class="addImgBtn" hidefocus="true" onchange="getUrl(this)"/>
+        </div>
+    <div class="clearfix"></div>
+    </div>
+</div>
+</script>
+<script id="comImgTmpl" type="text/x-jquery-tmpl">
+<div class="comImgBox">
+    <div class="comImgWrap">
+    <img src="${$data}" class="comImgToResize">
+    </div>
+    <div class="delComImg" onclick="deleteComImg(this)"></div>
+</div>
+</script>
+</html>

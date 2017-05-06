@@ -1,0 +1,512 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+var param ={
+		currentPage:1,
+		pageSize:10,
+		pageCount:0,
+		totalCount:0
+};
+var method = getUrlParam("method");
+	
+function loadInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id + '/getStoreDeliveryDetail',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+
+					$("#userName").val(data.entity.userName);
+					$("#storeCode").val(data.entity.storeCode);
+					$("#storeName").val(data.entity.storeName);
+					$("#contact").val(data.entity.contact);
+					$("#mobile").val(data.entity.mobile);
+					$("#remark").val(data.entity.remark);
+					$("#id").val(data.entity.id);
+					$("#storeId").val(data.entity.storeId);
+				}//非必须
+			});
+
+		}
+	}
+	
+	function dataEditSubmit() {
+		if (method != 'add' && method != 'edit') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url = OPERATION_SYSTEM_IDENTITY +'/createStoreDelivery';
+			if (!validateData()) {
+				return;
+			}
+		} else if (method == 'edit') {
+			url =OPERATION_SYSTEM_IDENTITY + '/updateStoreDelivery';
+			if (!validateData()) {
+				return;
+			}
+		}
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$.ajax({
+							type : 'post',
+							contentType:'application/json',
+							dataType : 'json',
+							data : formJsonStr,
+							error : function() {
+								$('#promptMessage').text('保存数据失败，请稍后再试');
+								$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							},
+							url : TERMINAL_URL + url,
+							beforeSubmit : function() {
+							},
+							success : function(data) {
+								//响应返回的业务处理  
+								if (data.msgCode == 1) {
+									$('#promptMessage').text('保存成功');
+									window.setTimeout(
+													function() {
+														var urlParam=window.location.search;
+														locationHref("/storedelivery/storedelivery-index.html"+urlParam);
+													}, 1000);
+								} else {
+									$('#submit').removeClass().addClass(
+											'btn_sure')[0].disabled = false;
+									$('#promptMessage').text(data.msg);
+								}
+							}
+						});
+	}
+	
+	var validate = (function() {
+		return {
+			validateUserName : function() {
+				var userName = $.trim($('#userName').val()), $userNameMsg = $('#userNameMsg');
+				if (!userName) {
+					$userNameCodeMsg.html('请填写接单员登录账号！').attr('class', 'error');
+					return false;
+				}
+				$userNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateStoreCode : function() {
+				var storeCode = $.trim($('#storeCode').val()), $storeCodeMsg = $('#storeCodeMsg');
+				if (!storeCode) {
+					$storeCodeMsg.html('请填写门店编号！').attr('class', 'error');
+					return false;
+				}
+				$storeCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateStoreName : function() {
+				var storeName = $.trim($('#storeName').val()), $storeNameMsg = $('#storeNameMsg');
+				if (!storeName) {
+					$storeNameMsg.html('请填写门店名称！').attr('class', 'error');
+					return false;
+				}
+				$storeNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateContact : function() {
+				var contact = $.trim($('#contact').val()), $contactMsg = $('#contactMsg');
+				if (!contact) {
+					$contactMsg.html('请填写联系人！').attr('class', 'error');
+					return false;
+				}
+				$contactMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateMobile : function() {
+				var mobile = $.trim($('#mobile').val()), $mobileMsg = $('#mobileMsg');
+				if (!mobile) {
+					$mobileMsg.html('请填写手机号码！').attr('class', 'error');
+					return false;
+				}
+				$mobileMsg.html('').attr('class', 'right');
+				return true;
+			}
+		}
+	})();
+	
+	function validateData() {
+		if (!validate.validateUserName()) {
+			return false;
+		}
+		if (!validate.validateStoreCode()) {
+			return false;
+		}
+		if (!validate.validateStoreName()) {
+			return false;
+		}
+		if (!validate.validateContact()) {
+			return false;
+		}
+		if (!validate.validateMobile()) {
+			return false;
+		}
+		return true;
+	}
+	
+	function showErr(errorType) {
+		if (errorType == 'userName') {
+			$('#userNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'storeCode') {
+			$('#storeCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'storeName') {
+			$('#storeNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'contact') {
+			$('#contactMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'mobile') {
+			$('#mobileMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+	}
+	
+function selectStore(){
+	showBox('选择门店','selectStore');
+	dataSubmit();
+}
+
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataListForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("保存数据失败，请稍后再试")
+		},
+		async:false,
+		url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/listStore',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+				for(var i=0,j=dataList.length;i<j;i++){
+					html += '<tr><td>';
+					html += dataList[i].userName;
+					html += '</td><td>';
+					html += dataList[i].storeCode;
+					html += '</td><td>';
+					html += dataList[i].storeName;
+					html += '</td><td>';
+					html += '<a href="javascript:void(0)" onclick="sel('+dataList[i].storeId+',\''+dataList[i].storeCode+'\',\''+dataList[i].storeName+'\')" class="ablue">选择</a>';
+					html += '</td></tr>';
+				}
+				}else{
+					html += '<tr><td colspan="4">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				updatePageInfo();
+			}else{
+				alert(data.msg);
+			}
+		}
+	}); 
+}
+function sel(storeId,storeCode,storeName){
+	$("#storeId").val(storeId);
+	$("#storeCode").val(storeCode);
+	$("#storeName").val(storeName);
+	closeBox();
+}
+
+function updatePageInfo(){
+	if(param['pageCount'] < 1) {$(".main_pagination").hide(); return;}
+	else {$(".main_pagination").show()}
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+}
+
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+function comebackList() {
+	var urlParam=window.location.search;
+	locationHref("/storedelivery/storedelivery-index.html"+urlParam);
+}
+
+$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		if (method == 'edit') {
+			$("#breadName").html('修改接单员');
+			$("#pageTitle").html('修改接单员');
+			loadInfo();
+			$('#userName').attr('disabled', true);
+			$('#shezhi').attr('disabled', true);
+		} else if(method == 'add') {
+			$("#breadName").html('新增接单员');
+			$("#pageTitle").html('新增接单员');
+		} 
+});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 门店管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<div id="userInfo">
+								<dl>
+									<dt>
+										选择门店：
+									</dt>
+									<dd>
+									<input type="button" class="btn_sure" value="选择门店" id ="shezhi" onClick="selectStore()"/>
+									</dd>
+									<dd><input type="hidden" class="txt grid-30" id="storeId" name="storeId" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>门店编号：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="storeCode" name="storeCode" disabled="disabled" />&nbsp;&nbsp;
+										<span class="cred" id="storeCodeMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>门店名称：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="storeName" name="storeName" disabled="disabled" />&nbsp;&nbsp;
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>接单员登录账号：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="userName" name="userName" onmousedown="showErr('userName')" />&nbsp;&nbsp;
+										<span class="cred" id="userNameMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>接单员手机号码：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="mobile" name="mobile" onmousedown="showErr('mobile')" />&nbsp;&nbsp;
+										<span class="cred" id="mobileMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>联系人姓名：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="contact" name="contact" onmousedown="showErr('contact')" />&nbsp;&nbsp;
+										<span class="cred" id="contactMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										备注：
+									</dt>
+									<dd>
+										<textarea type="text" class="txt grid-20"id="remark" name="remark"></textarea>
+									</dd>
+								</dl>
+							</div>
+
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit()"> <input type="reset"
+											id="reset" class="btn_gray" value="重置"> <input
+											type="button" id="goBack" class="btn_gray" value="返回"
+											onclick="javascript:comebackList();"> <span
+											id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden"  id="id" name="id" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+	
+<div id="selectStore" class="hide">
+	<div style="padding:10px; width:750px;">
+		<form method="get" id="dataListForm">
+			<div class="main_search">
+				<dl>
+					<dt>门店编号：</dt>
+						<dd><input type="text" class="txt grid-12" id="storeCode1" name="storeCode" /></dd>
+				</dl>
+				<dl>
+					<dt>门店名称：</dt>
+						<dd><input type="text" class="txt grid-12" id="storeName1" name="storeName" /></dd>
+				</dl>
+				<p class="main_search_btn pt10 cb">
+					<input type="button" value="查询" class="btn_sure" id="selectStoreSearch" onClick="dataSubmit()" /> 
+				</p>
+			</div>
+			<input type="hidden"  id="start" name="start" />
+			<input type="hidden"  id="pageSize" name="pageSize" />
+			
+			<!--搜索结束-->
+		</form>
+		<div class="order_index">
+			<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+				<thead>
+					<tr>
+						<th>登录账号</th>
+						<th>门店编号</th>
+						<th>门店名称</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody id="tbody"></tbody>
+			</table>
+		</div>
+		<dl class="main_pagination">
+			<dd class="pagination">
+				<span id="pageItem">
+					<span class="page_prev">&lt;&lt; 上一页</span>
+					<a class="bg_on" href="javascript:void(0);">1</a>
+					<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+					<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+				</span>
+				<span class="page_no">共<span id="pageCount">2</span>页 到第
+				<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+				<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+			</dd>
+		</dl>
+	</div>
+</div>
+</body>
+</html>

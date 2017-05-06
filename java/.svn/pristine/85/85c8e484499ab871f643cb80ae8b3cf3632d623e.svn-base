@@ -1,0 +1,743 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(TURN_PAGE_PARAMS['currentPage'] != 1){
+			showBox('提示!',"您输入的页码超出正常范围！",'alert');
+		} else { 
+			showBox('提示!',"当前已经是第一页！",'alert');
+		}
+		return;
+	}
+	if(pageNo>TURN_PAGE_PARAMS['pageCount']){
+		if(TURN_PAGE_PARAMS['currentPage'] != TURN_PAGE_PARAMS['pageCount']){
+			showBox('提示!',"您输入的页码超出正常范围！",'alert');
+		} else {
+			showBox('提示!',"当前已经是最后一页！",'alert');
+		}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+function dataSubmit(pageNo){
+	$("#tbody").html("");
+	var pattern = /\d+/;
+	if(typeof(pageNo)!="undefined" && pattern.test(parseInt(pageNo))){TURN_PAGE_PARAMS.currentPage = pageNo}
+	$('#currentPagesize').val(TURN_PAGE_PARAMS.pageSize);
+	$('#start').val(TURN_PAGE_PARAMS.currentPage);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listProductRelativeInfos',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				var pId = $("#id").val();
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						var product =dataList[i]; 
+						html += '<tr ';
+						if('' != pId && null != pId && pId == dataList[i].id){
+							html += ' name="selrow" bgcolor="#c8e3f8"';
+						}
+						html += '><td>';
+						html += '<input type="checkbox" class="pid" class="tab_check" value="'+product.id+'"/>';
+						html += '</td><td>';
+						html += null != product.displayOrder ? product.displayOrder : '---';
+						html += '</td><td>';
+						html += product.productName ? product.productName : '---';
+						html += '</td><td>';
+						html += product.barCode;
+						html += '</td><td>';
+						html += product.className;
+						html += '</td><td>';
+						html += product.productSpec;
+						html += '</td><td>';
+						html += product.costPrice ? toCenti(product.costPrice) : '---';
+						html += '</td><td>';
+						html += toCenti(product.retailPrice);
+						html += '</td><td>';
+						html += toCenti(product.promotionalPrice);
+						html += '</td><td>';
+						html += product.commissionPrice ? toCenti(product.commissionPrice) : '---';
+						html += '</td><td>';
+						html += product.vipCommissionPrice ? toCenti(product.vipCommissionPrice) : '---';
+						html += '</td><td>';
+						if(product.saleStatus == 'PRODUCTSALESTATUS_INIT'){
+							html += '<span class="cred">';
+						}
+						html += product.saleStatusName;
+						if(product.saleStatus == 'PRODUCTSALESTATUS_INIT'){
+							html += '</span>';
+						}
+						html += '</td><td>';
+						html += product.createTime ? product.createTime : '---';
+						html += '</td><td>';
+						html += '<permission code="FUNCTION_VIEW_PRODUCT_MANAGEMENT">';
+						html += '<a href="/product/product-edit.html?method=view&id='+product.id+'&'+getParamValue()+'" class="ablue">查看</a>';
+						html += '</permission>';
+						if(product.saleStatus == 'PRODUCTSALESTATUS_OFFSALE'){
+							html += '<permission code="FUNCTION_ONSALE_PRODUCT_MANAGEMENT">';
+							html += '<a href="javascript:void(0)" class="mlr5 ablue" onclick="javascript:changeSale('+product.id+',\'PRODUCTSALESTATUS_ONSALE\')">上架</a>';
+						}else if(product.saleStatus == 'PRODUCTSALESTATUS_ONSALE'){
+							html += '<permission code="FUNCTION_OFFSALE_PRODUCT_MANAGEMENT">';
+							html += '<a href="javascript:void(0)" class="mlr5 ablue" onclick="javascript:changeSale('+product.id+',\'PRODUCTSALESTATUS_OFFSALE\')">下架</a>';
+						}else{
+							html += '<permission code="FUNCTION_ONSALE_PRODUCT_MANAGEMENT">';
+							html += '<a href="javascript:void(0)" class="mlr5 ablue" onclick="javascript:changeSale('+product.id+',\'PRODUCTSALESTATUS_ONSALE\')">上架</a>';
+						}
+						html += '</permission>';
+						html += '<permission code="FUNCTION_EDIT_PRODUCT_MANAGEMENT">';
+						html += '<a href="/product/auditproduct-edit.html?method=update&id='+product.id+'&'+getParamValue()+'" class="ablue">修改</a>';
+						html += '</permission>';
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="14">暂无数据</td></tr>';
+				}
+
+				$("#tbody").html(html);
+				TURN_PAGE_PARAMS.currentPage = data.entity.currentPage;
+				TURN_PAGE_PARAMS.totalCount = data.entity.recordCount;
+				TURN_PAGE_PARAMS.pageCount = Math.ceil(data.entity.recordCount / data.entity.pageSize);
+				updateFlipLabel();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+	
+	$('#checkall').prop('checked',false);
+}
+
+/*导出报表开始*/
+function exportSearchProduct(){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/exportSearchProduct',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$("#product_down").attr("href",DOWNLOAD_FILE_TEMP_URL+data.entity.reportFilePath);
+				$("#product_down").show();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+
+
+/* 加载商品分类 */
+function loadSubClass(productClassCode){
+	$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+productClassCode+'/getAllNextProductClassByUpCode', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			data = JSON.parse(encodeString(JSON.stringify(data)));
+			if(null != data.entity && data.entity.length > 0){
+				initProductClassSelect(data.entity);
+			}
+		}
+	});
+}
+function initProductClassSelect(listProductClass){
+	var	html = '<select class="select grid-15" onchange=changeClassSelect(this)>';
+	  	html += '<option value="">--请选择--</option>';
+		for(var i=0;i<listProductClass.length;i++){
+			html += '<option value="'+listProductClass[i].classCode+'">';
+			html += listProductClass[i].className;
+			html +='</option>'
+		}
+	html += '<select/>';
+	$("#productClassDiv").append(html);
+}
+
+function changeClassSelect(ele){
+	var productClass = $(ele);
+	productClass.nextAll().each(function(){
+		$(this).remove();
+	});
+	if(productClass.val()!= ""){
+		$("#productClassCode").val(productClass.val());
+		loadSubClass($.trim($("#productClassCode").val()));
+	}else{
+		var parentClassCode = productClass.prev();
+		if(parentClassCode != null){
+			//如果选择了请选择就默认选择此节点上一个节点的值
+			$("#productClassCode").val(productClass.prev().val());
+		}else{
+			$("#productClassCode").val("TOP_LEVEL_CLASS");
+		}
+	}
+	
+}
+
+/* 加载商品品牌 */
+/* function loadSubBrand(){
+	$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/getAllBrandBasic', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			var html = '<option value="">--请选择--</option>';
+			if(data.msgCode == 1){
+				//特殊处理 尖括号
+				data = JSON.parse(encodeString(JSON.stringify(data)));
+				var listProductBrand=data.entity;
+				if(null != listProductBrand && listProductBrand.length > 0){
+					for(var i=0;i<listProductBrand.length;i++){
+						html += '<option value="'+listProductBrand[i].brandCode+'">';
+						html += listProductBrand[i].brandName;
+						html +='</option>'
+					}
+				}
+			}
+			$("#productBrand").html(html);
+			if(null != decodeURIComponent(getUrlParam('productBrand')) && "" != decodeURIComponent(getUrlParam('productBrand'))){
+				$('#productBrand').val(decodeURIComponent(getUrlParam('productBrand')));
+			}
+		}
+	});
+} */
+
+
+function selAll(o,idname){
+	var ids = $("input[type='checkbox'][class='"+idname+"']");
+	var checked = o.checked;
+	ids.each(function(){			
+		if(!checked){
+			$(this).prop("checked",false);
+		}else{
+			$(this).prop("checked",true);
+		}
+	});
+}
+function unselAll(){
+	$('body').on('click','.pid',function(){
+		if(checkUnSel('pid')){
+			$('#checkall').prop("checked",true);
+		}else{
+			$('#checkall').prop("checked",false);
+		}
+	})
+}
+function checkUnSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+function checkSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (!checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+/**
+ * 上架
+ */
+function changeSale(id,status){
+	var type = '';
+	if(status == 'PRODUCTSALESTATUS_OFFSALE'){
+		type = '下架';
+	}else if(status == 'PRODUCTSALESTATUS_ONSALE'){
+		type = '上架';
+	}else{
+		showBox('提示!',"参数不正确！",'alert');
+		return;
+	}
+	var param = id + ',' + status
+	showBox('提示！','确认进行' + type +'操作？','confirm',function(){
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY  +'/'+ param +'/updateSaleStatus',
+			type: 'post',
+			dataType: 'json',
+			async: true,
+			cache: false,
+			timeout: 30000,
+			error: function(){},
+			success: function(data){
+				if(data.msgCode != 1){
+					showBox('提示！','操作失败！','alert');
+					return;
+				}
+				showBox('提示！','操作成功！','alert',function(){
+					$("#id").val(id);
+					dataSubmit();
+				});
+			}
+		});
+	});
+}
+/**
+ * 批量上架
+ */
+function batchOnSale(idname) {
+	if (checkSel(idname)) {
+		showBox('提示!',"请先选择要批量上架的产品！",'alert');
+		return;
+	}		
+	showBox('确认信息',"确认要批量上架产品吗？",'confirm',function()  {
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1); 
+		ajax({
+			url:  TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ param +'/updateProductBatchOnSale',
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					dataSubmit();
+				}
+			   
+			}
+		});
+	})
+}
+/**
+ * 批量下架
+ */
+function batchOffSale(idname) {
+	if (checkSel(idname)) {
+		showBox('提示!',"请先选择要批量下架的产品！",'alert');
+		return;
+	}		
+	showBox('确认信息',"确认要批量下架的产品吗？",'confirm',function(){
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1); 
+		ajax({
+			url:  TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ param +'/updateProductBatchOffSale',
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					dataSubmit();
+				}
+			   
+			}
+		});
+	})
+}
+
+/*加载时间控件*/
+function loadTimeInput(){
+	$('#onsaleTimeBeginStr').datepicker({
+		dateFormat: 'yy-mm-dd',constrainInput:true
+	});
+	$('#onsaleTimeEndStr').datepicker({
+		dateFormat: 'yy-mm-dd',constrainInput:true
+	});
+}
+/**
+ * 批量热卖
+ */
+function batchHot(idname) {
+	if (checkSel(idname)) {
+		showBox('提示',"请先选择要批量热卖的产品！",'alert');
+		return;
+	}		
+	showBox('确认信息',"确认批量热卖产品吗？",'confirm',function() {
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1); 
+		ajax({
+			url:  TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ param +'/updateProductBatchHot',
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					dataSubmit();
+				}
+			   
+			}
+		});
+	})
+}
+/**
+ * 批量非热卖
+ */
+function batchNoHot(idname) {
+	if (checkSel(idname)) {
+		showBox('提示',"请先选择要批量取消热卖的产品！",'alert');
+		return;
+	}		
+	showBox('确认信息',"确认批量取消热卖产品吗？",'confirm',function(){
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1); 
+		ajax({
+			url:  TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ param +'/updateProductBatchNoHot',
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					dataSubmit();
+				}
+			}
+		});
+	})
+}
+function batchModifyClass(idname) {
+	if (checkSel(idname)) {
+		showBox('提示',"请先选择要批量修改产品分类的产品！",'alert');
+		return;
+	}
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var param = "";
+	ids.each(function() {
+		if($(this).prop("checked")){
+			param += $(this).val() + ",";
+		}
+	});
+	param = param.substring(0,param.length-1); 
+	showBox('批量修改产品分类','product-batchedit.html?width=600&height=200&&param='+ param);
+}
+/*获取返回页面的上次查询条件*/
+function setParamValue(){
+	$('#id').val(getUrlParam('id'));
+	$('#productName').val(decodeURIComponent(getUrlParam('productName')));
+	$('#barCode').val(decodeURIComponent(getUrlParam('barCode')));
+	$('#productClassCode').val(decodeURIComponent(getUrlParam('productClassCode')));
+	if(null != getUrlParam('productClassCode') && "" !=  getUrlParam('productClassCode')){
+		createProductClassSelect(getUrlParam('productClassCode'));		
+	}else{
+		loadSubClass("TOP_LEVEL_CLASS");
+	}
+	/* loadSubBrand(); */
+	$('#brandName').val(decodeURIComponent(getUrlParam('brandName')));
+	$('#saleStatus').val(decodeURIComponent(getUrlParam('saleStatus')));
+	if("" != getUrlParam('pageSize') && "" != getUrlParam('start') ){
+		TURN_PAGE_PARAMS.pageSize = getUrlParam('pageSize');
+		TURN_PAGE_PARAMS.currentPage = getUrlParam('start');
+	} 
+}
+function getParamValue(){
+	var passParam = [];
+	var productName = $.trim($("#productName").val());	
+	var barCode = $.trim($("#barCode").val());
+	var productClassCode = $.trim($("#productClassCode").val());
+	/* var productBrand = $.trim($("#productBrand").val()); */
+	var brandName = $.trim($("#brandName").val());
+	var saleStatus = $.trim($("#saleStatus").val());
+	var start = $.trim($('#start').val());
+	var pageSize = $.trim($('#currentPagesize').val());
+	passParam.push('productName='+productName);
+	passParam.push('barCode='+barCode);
+	passParam.push('productClassCode='+productClassCode);
+	/* passParam.push('productBrand='+productBrand); */
+	passParam.push('brandName='+brandName);
+	passParam.push('saleStatus='+saleStatus);
+	passParam.push('start=' + start);
+	passParam.push('pageSize=' + pageSize);
+	return passParam.join('&');
+}
+$(document).ready(function(e) {
+	$("#id").val(getUrlParam('id'))
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	setParamValue();
+	dataSubmit();
+	unselAll();
+	$('#checkall').prop('checked',false);
+});
+
+//返回列表时组装分类
+function createProductClassSelect(classCode){
+	if(classCode == null || classCode == "" || classCode == "TOP_LEVEL_CLASS"){
+		loadSubClass("TOP_LEVEL_CLASS");
+	}else{
+		$.ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+classCode+'/getUpClassAndNextProductClassByClassCode',
+			type:"post",
+			dataType:"json",
+			success:function(data){
+				var html = '';
+				if(data.msgCode == 1){
+					var productClassListMap = data.entity;
+					var classCode = "";
+					$.each(productClassListMap,function(i,item){
+						classCode = item.classCode;
+						html+='<select class="select grid-15" id="productClass" name="productClassCode" onchange=changeClassSelect(this)>';
+						html+='<option value="">--请选择--</option>';
+						var subClassList = item.subClassList;
+						$.each(subClassList,function(j,subItem){
+							html+='<option value="'+subItem.classCode+'"';
+							if(subItem.classCode == classCode){
+								html+='selected="selected"';
+							}
+							html+='>'+subItem.className+'</option>';
+						});
+						html+='</select>';
+					});
+				}
+				if(html == ""){
+					showBox('提示!','产品分类数据加载失败,默认初始化一级分类!','alert');
+					loadSubClass("TOP_LEVEL_CLASS");
+				}else{
+					$("#productClassDiv").html(html);
+					if(method == 'view'){
+						$("#productClassDiv").children().each(function(){
+							$(this).attr("disabled","disabled");
+						});
+					}
+				}
+			},
+			error:function(error){
+				showBox('提示!','请求有误请重试!','alert');
+			}
+		});
+	}
+}
+
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 产品管理 &gt; <span>产品管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">产品管理</div>
+				<div class="complaint_main">
+					<input type="hidden" id="id" name="id" value="" />
+					<form method="get" id="dataForm">
+						<input type="hidden" id="currentPagesize" name="pageSize" value="" />
+						<input type="hidden" id="start" name="start" value="" />
+						<div class="main_search">
+							<dl>
+								<dt>产品名称：</dt>
+								<dd><input type="text" class="txt grid-15" id="productName" name="productName" /></dd>
+							</dl>
+							<dl>
+								<dt>产品条形码：</dt>
+								<dd><input type="text" class="txt grid-15" id="barCode" name="barCode" /></dd>
+							</dl>
+							<dl>
+								<dt>产品分类：</dt>
+								<dd>
+									<input type="hidden" id="productClassCode" name="productClassCode">
+									<div id="productClassDiv">
+										<!-- <select class="select grid-15" id="productClass" name="productClassCode">
+											<option value="" selected>--请选择产品分类--</option>
+										</select> -->
+									</div>
+								</dd>
+							</dl>
+							<!-- <dl>
+								<dt>产品品牌：</dt>
+								<dd>
+									<div id="productBrandDiv">
+										<select class="select grid-15" id="productBrand" name="brandCode">
+											<option value="">--请选择--</option>
+										</select>
+									</div>
+								</dd>
+							</dl> -->
+							<dl>
+								<dt>产品品牌：</dt>
+								<dd>
+									<div id="productBrandDiv">
+										<input type="text" class="txt grid-15" id="brandName" name="brandName">
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>是否上架：</dt>
+								<dd>
+									<select class="select grid-10" id="saleStatus" name="saleStatus" >
+										<option value="">请选择</option>
+										<option value="PRODUCTSALESTATUS_INIT">未上架</option>
+										<option value="PRODUCTSALESTATUS_ONSALE">已上架</option>
+										<option value="PRODUCTSALESTATUS_OFFSALE">已下架</option>
+									</select>
+								</dd>
+							</dl>
+						<p class="main_search_btn">
+							<permission code="FUNCTION_SEARCH_PRODUCT_MANAGEMENT">
+								<input type="button" value="查询" class="btn_sure" id="productSearch" onClick="dataSubmit()" /> 
+							</permission>
+							<permission code="FUNCTION_ADD_PRODUCT_PRODUCT_MANAGEMENT">
+								<input type="button" value="新建产品" class="btn_sure" onClick="locationHref('/product/auditproduct-edit.html?method=add')" id="addProduct" />
+							</permission>
+							<!-- <permission code="FUNCTION_BATCH_ADD_PRODUCT_PRODUCT_MANAGEMENT">
+								<input type="button" value="批量添加产品" class="btn_sure" onClick="locationHref('/product/product-import.html')" id="importProduct" />
+							</permission> -->
+							<permission code="FUNCTION_ADD_TO_STORE_PRODUCT_MANAGEMENT">
+								<input type="button" value="同步产品" class="btn_sure" onClick="locationHref('/product/product-tostore.html')" id="toStoreProduct" />
+							</permission>
+							<permission code="FUNCTION_EXPORT_PRODUCT_PRODUCT_MANAGEMENT">
+								<input type="button" value="导出" class="btn_sure" onClick="javascript:exportSearchProduct();" />
+							</permission>
+							<a hidden id="product_down" style="COLOR:red; TEXT-DECORATION:underline"><span style="color:red">点击下载</span></a>
+							
+						</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="40">选中</th>
+									<th width="60">显示顺序</th>
+									<th width="80">产品名称</th>
+									<th width="130">产品条形码</th>
+									<th width="80">产品分类</th>
+									<th width="80">产品规格</th>
+									<th width="80">采购价（元）</th>
+									<th width="80">普通会员售价（元）</th>
+									<th width="80">VIP会员售价（元）</th>
+									<th width="80">普通会员返款（元）</th>
+									<th width="80">VIP会员返款（元）</th>
+									<th width="70">是否上架</th>
+									<th width="140">创建时间</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody">
+							</tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<input type="checkbox" class="tab_check"  id='checkall'onclick="javascript:selAll(this,'pid');" />
+						<label for="">全选</label>
+						<permission code="FUNCTION_BATCH_ONSALE_PRODUCT_MANAGEMENT">
+							<input type="button" style="cursor:pointer;" id="btnOnSale" onclick="javascript:batchOnSale('pid');" title="" value="批量上架" class="btn_sure"/>
+						</permission>
+						<permission code="FUNCTION_BATCH_OFFSALE_PRODUCT_MANAGEMENT">
+							<input type="button" style="cursor:pointer;" id="btnOffSale" onclick="javascript:batchOffSale('pid');" title="" value="批量下架"  class="btn_sure"/>
+						</permission>
+						<permission code="FUNCTION_BATCH_MODIFY_CLASS_PRODUCT_MANAGEMENT">
+							<input type="button" style="cursor:pointer;" id="btnModifyClass" onclick="javascript:batchModifyClass('pid');" title="" value="批量修改分类" class="btn_sure"/> 
+						</permission>
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营平台</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+<div id="loading" class="loading hide">发送中</div>
+</body>
+</html>

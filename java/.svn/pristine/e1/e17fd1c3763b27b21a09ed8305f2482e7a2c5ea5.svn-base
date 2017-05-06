@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.RedEnvelopeRewardMapper">
+	<resultMap id="BaseResultMap" type="RedEnvelopeReward">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="REDENVELOPEACTIVITYID" property="redEnvelopeActivityId" jdbcType="INTEGER" />
+		<result column="REWARDTYPE" property="rewardType" jdbcType="VARCHAR" />
+		<result column="PRIZEID" property="prizeId" jdbcType="INTEGER" />
+		<result column="PRIZEGRANTTIME" property="prizeGrantTime" jdbcType="TIMESTAMP" />
+		<result column="RELEASECOUNT" property="releaseCount" jdbcType="INTEGER" />
+  		<result column="RELEASEAMOUNT" property="releaseAmount" jdbcType="BIGINT" />
+  		<result column="WINAMOUNTSCOPEONCE" property="winAmountScopeOnce" jdbcType="VARCHAR" />
+		<result column="WINPROBABILITY" property="winProbability" jdbcType="VARCHAR" />
+  		<result column="PROBABILITYRANDOMNUM" property="probabilityRandomNum" jdbcType="VARCHAR" />
+ 		<result column="WINCOUNTLIMIT" property="winCountLimit" jdbcType="INTEGER" />
+  		<result column="REWARDSTATUS" property="rewardStatus" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, REDENVELOPEACTIVITYID, REWARDTYPE, PRIZEID, PRIZEGRANTTIME, RELEASECOUNT,
+		RELEASEAMOUNT, WINAMOUNTSCOPEONCE, WINPROBABILITY, PROBABILITYRANDOMNUM,
+		WINCOUNTLIMIT, REWARDSTATUS, CREATEUSERID, CREATETIME, MODIFYUSERID, MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="RedEnvelopeReward" useGeneratedKeys="true" keyProperty="id">
+		insert into P_RED_ENVELOPE_REWARD 
+		(REDENVELOPEACTIVITYID, REWARDTYPE, PRIZEID, PRIZEGRANTTIME, RELEASECOUNT,
+		RELEASEAMOUNT, WINAMOUNTSCOPEONCE, WINPROBABILITY, PROBABILITYRANDOMNUM,
+		WINCOUNTLIMIT, REWARDSTATUS, CREATEUSERID, CREATETIME)
+		values (#{redEnvelopeActivityId,jdbcType=INTEGER}, #{rewardType,jdbcType=VARCHAR}, 
+		#{prizeId,jdbcType=INTEGER}, #{prizeGrantTime,jdbcType=TIMESTAMP},
+		#{releaseCount,jdbcType=INTEGER}, #{releaseAmount,jdbcType=BIGINT},
+		#{winAmountScopeOnce,jdbcType=VARCHAR}, #{winProbability,jdbcType=VARCHAR},
+		#{probabilityRandomNum,jdbcType=VARCHAR}, #{winCountLimit,jdbcType=INTEGER},
+		#{rewardStatus,jdbcType=VARCHAR}, #{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<update id="updateById" parameterType="RedEnvelopeReward">
+		update P_RED_ENVELOPE_REWARD
+		set
+		REWARDTYPE = #{rewardType,jdbcType=VARCHAR},
+		PRIZEID = #{prizeId,jdbcType=INTEGER},
+		PRIZEGRANTTIME = #{prizeGrantTime,jdbcType=TIMESTAMP},
+		RELEASECOUNT = #{releaseCount,jdbcType=INTEGER},
+		RELEASEAMOUNT = #{releaseAmount,jdbcType=BIGINT},
+		WINAMOUNTSCOPEONCE = #{winAmountScopeOnce,jdbcType=VARCHAR},
+		WINPROBABILITY = #{winProbability,jdbcType=VARCHAR},
+		PROBABILITYRANDOMNUM = #{probabilityRandomNum,jdbcType=VARCHAR},
+		WINCOUNTLIMIT = #{winCountLimit,jdbcType=INTEGER},
+		REWARDSTATUS = #{rewardStatus,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_RED_ENVELOPE_REWARD
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listRedEnvelopeRewards" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_RED_ENVELOPE_REWARD
+		<where>
+			<if test="redEnvelopeActivityId != null">
+				REDENVELOPEACTIVITYID = #{redEnvelopeActivityId,jdbcType=INTEGER}
+			</if>
+			<if test="rewardStatus != null">
+				and REWARDSTATUS = #{rewardStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by REWARDTYPE asc, CREATETIME desc
+	</select>
+
+</mapper>

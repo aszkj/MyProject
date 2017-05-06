@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.ExceptionMessageInfoMapper">
+	<resultMap id="BaseResultMap" type="ExceptionMessageInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="MESSAGENAME" property="messageName" jdbcType="VARCHAR" />
+		<result column="EXCEPTIONJMSMESSAGEID" property="exceptionJmsMessageId" jdbcType="VARCHAR" />
+		<result column="PRODUCERCLASSNAME" property="producerClassName" jdbcType="VARCHAR" />
+		<result column="PARAMETERJSONSTRING" property="parameterJsonString" jdbcType="LONGVARCHAR" />
+		<result column="PARAMETERCLASSNAME" property="parameterClassName" jdbcType="VARCHAR" />
+		<result column="RETRYCOUNT" property="retryCount" jdbcType="INTEGER" />
+		<result column="MAXRETRYTHRESHOLD" property="maxRetryThreshold" jdbcType="INTEGER" />
+		<result column="CROSSDOMAINTRANSACTIONNAME" property="crossDomainTransactionName" jdbcType="VARCHAR" />
+		<result column="CROSSDOMAINTRANSACTIONID" property="crossDomainTransactionId" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, MESSAGENAME, EXCEPTIONJMSMESSAGEID, PRODUCERCLASSNAME, PARAMETERJSONSTRING, 
+		PARAMETERCLASSNAME, RETRYCOUNT, MAXRETRYTHRESHOLD, CROSSDOMAINTRANSACTIONNAME, CROSSDOMAINTRANSACTIONID, CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="ExceptionMessageInfo">
+		insert into S_EXCEPTION_MESSAGE_INFO(MESSAGENAME, EXCEPTIONJMSMESSAGEID, PRODUCERCLASSNAME, PARAMETERJSONSTRING, 
+		PARAMETERCLASSNAME, RETRYCOUNT, MAXRETRYTHRESHOLD, CROSSDOMAINTRANSACTIONNAME, CROSSDOMAINTRANSACTIONID, CREATETIME)
+		values (#{messageName,jdbcType=VARCHAR},
+		#{exceptionJmsMessageId,jdbcType=VARCHAR},
+		#{producerClassName,jdbcType=VARCHAR},
+		#{parameterJsonString,jdbcType=LONGVARCHAR},
+		#{parameterClassName,jdbcType=VARCHAR},
+		#{retryCount,jdbcType=INTEGER}, 
+		#{maxRetryThreshold,jdbcType=INTEGER},
+		#{crossDomainTransactionName,jdbcType=VARCHAR},
+		#{crossDomainTransactionId,jdbcType=VARCHAR},
+		CURRENT_TIME)
+	</insert>
+	
+	<select id="loadByExceptionJmsMessageId" resultMap="BaseResultMap" parameterType="string">
+		select
+		<include refid="Base_Column_List" />
+		from S_EXCEPTION_MESSAGE_INFO
+		where EXCEPTIONJMSMESSAGEID = #{exceptionJmsMessageId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateRetryCountByExceptionJmsMessageId" parameterType="string">
+		update S_EXCEPTION_MESSAGE_INFO
+		set RETRYCOUNT = RETRYCOUNT + 1
+		where EXCEPTIONJMSMESSAGEID = #{exceptionJmsMessageId,jdbcType=VARCHAR}
+		and MAXRETRYTHRESHOLD &gt;= RETRYCOUNT + 1
+	</update>
+
+	<delete id="deleteByExceptionJmsMessageId" parameterType="string">
+		delete from S_EXCEPTION_MESSAGE_INFO
+		where EXCEPTIONJMSMESSAGEID = #{exceptionJmsMessageId,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="listNeedScheduledHandleExceptionMessages" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from S_EXCEPTION_MESSAGE_INFO
+		where CREATETIME &lt;= DATE_SUB(now(),INTERVAL 10 MINUTE)
+		and RETRYCOUNT &lt; MAXRETRYTHRESHOLD
+	</select>
+
+</mapper>

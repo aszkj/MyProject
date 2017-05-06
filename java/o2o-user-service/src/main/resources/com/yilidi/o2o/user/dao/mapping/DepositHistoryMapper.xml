@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.DepositHistoryMapper">
+	<resultMap id="BaseResultMap" type="DepositHistory">
+		<id column="RECORDID" property="recordId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="CHANGETYPECODE" property="changeTypeCode"
+			jdbcType="VARCHAR" />
+		<result column="SOURCE" property="source" jdbcType="VARCHAR" />
+		<result column="TARGET" property="target" jdbcType="VARCHAR" />
+		<result column="AMOUNT" property="amount" jdbcType="BIGINT" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="REASON" property="reason" jdbcType="VARCHAR" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		RECORDID, STOREID, CHANGETYPECODE, SOURCE, TARGET, AMOUNT, CREATEUSERID,
+		CREATETIME,
+		REASON, NOTE
+	</sql>
+
+	<insert id="save" parameterType="DepositHistory">
+		insert into U_DEPOSIT_HISTORY (STOREID, CHANGETYPECODE,
+		SOURCE, TARGET, AMOUNT,
+		CREATEUSERID, CREATETIME, REASON,
+		NOTE)
+		values (#{storeId,jdbcType=INTEGER},
+		#{changeTypeCode,jdbcType=VARCHAR},
+		#{source,jdbcType=VARCHAR}, #{target,jdbcType=VARCHAR}, #{amount,jdbcType=BIGINT},
+		#{createUserId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+		#{reason,jdbcType=VARCHAR},
+		#{note,jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="saveForPayDeposit" parameterType="DepositHistory">
+		insert into U_DEPOSIT_HISTORY (STOREID, CHANGETYPECODE,
+		SOURCE, TARGET, AMOUNT,
+		CREATEUSERID, CREATETIME, REASON,
+		NOTE)
+		values (#{storeId,jdbcType=INTEGER},
+		#{changeTypeCode,jdbcType=VARCHAR},
+		#{source,jdbcType=VARCHAR}, #{target,jdbcType=VARCHAR}, 
+		(select case when REQUIREDDEPOSIT - CURRENTDEPOSIT &gt;=0 then REQUIREDDEPOSIT - CURRENTDEPOSIT else 0 end AMOUNT from U_STORE us where us.STOREID = #{storeId,jdbcType=INTEGER}),
+		#{createUserId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+		#{reason,jdbcType=VARCHAR},
+		#{note,jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="saveForReleaseDeposit" parameterType="DepositHistory">
+		insert into U_DEPOSIT_HISTORY (STOREID, CHANGETYPECODE,
+		SOURCE, TARGET, AMOUNT,
+		CREATEUSERID, CREATETIME, REASON,
+		NOTE)
+		values (#{storeId,jdbcType=INTEGER},
+		#{changeTypeCode,jdbcType=VARCHAR},
+		#{source,jdbcType=VARCHAR}, #{target,jdbcType=VARCHAR}, 
+		(select CURRENTDEPOSIT from U_STORE us where us.STOREID = #{storeId,jdbcType=INTEGER}),
+		#{createUserId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+		#{reason,jdbcType=VARCHAR},
+		#{note,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="findDepositHistories" resultMap="BaseResultMap"
+		parameterType="DepositHistoryQuery">
+		select
+		<include refid="Base_Column_List" />
+		from U_DEPOSIT_HISTORY
+		where STOREID = #{storeId,jdbcType=INTEGER}
+		order by CREATETIME desc
+	</select>
+
+</mapper>

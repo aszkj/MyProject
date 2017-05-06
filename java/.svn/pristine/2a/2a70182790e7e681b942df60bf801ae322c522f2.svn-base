@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.EmailNotifyMessageMapper">
+	<resultMap id="BaseResultMap" type="EmailNotifyMessage">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SUBJECT" property="subject" jdbcType="VARCHAR" />
+		<result column="FROMUSER" property="fromUser" jdbcType="VARCHAR" />
+		<result column="TOUSER" property="toUser" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="SENDTIME" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="MESSAGESTATUS" property="messageStatus"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SUBJECT, FROMUSER, TOUSER, CONTENT, SENDTIME,
+		MESSAGESTATUS
+	</sql>
+
+	<insert id="save" parameterType="EmailNotifyMessage">
+		insert into S_EMAIL_NOTIFY_MESSAGE (SUBJECT,
+		FROMUSER, TOUSER, CONTENT,
+		SENDTIME, MESSAGESTATUS)
+		values (
+		 #{subject,jdbcType=VARCHAR},
+		#{fromUser,jdbcType=VARCHAR}, #{toUser,jdbcType=VARCHAR},
+		#{content,jdbcType=VARCHAR},
+		#{sendTime,jdbcType=TIMESTAMP}, #{messageStatus,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from S_EMAIL_NOTIFY_MESSAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_EMAIL_NOTIFY_MESSAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listByReciever" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from S_EMAIL_NOTIFY_MESSAGE
+		where TOUSER = #{toUser,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.PurchaseOrderMapper">
+	<resultMap id="BaseResultMap" type="PurchaseOrder">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PURCHASEORDERNO" property="purchaseOrderNo" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="PURCHASECOUNT" property="purchaseCount" jdbcType="INTEGER" />
+		<result column="PURCHASEAMOUNT" property="purchaseAmount" jdbcType="BIGINT" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+		<result column="ORDERSTATUS" property="orderStatus" jdbcType="VARCHAR" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSERID" property="updateUserId" jdbcType="INTEGER" />
+		<result column="AUDITTIME" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITUSERID" property="auditUserId" jdbcType="INTEGER" />
+		<result column="AUDITREJECTREASON" property="auditRejectReason" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,PURCHASEORDERNO, STOREID, STORENAME,
+		STORECODE, PURCHASECOUNT, PURCHASEAMOUNT,
+		PROVINCECODE,
+		CITYCODE,COUNTYCODE,
+		CREATETIME, CREATEUSERID,NOTE, ORDERSTATUS,
+		UPDATETIME,
+		UPDATEUSERID, AUDITTIME,
+		AUDITUSERID,AUDITREJECTREASON
+	</sql>
+
+	<insert id="save" parameterType="PurchaseOrder" useGeneratedKeys="true" keyProperty="id">
+		insert into T_PURCHASE_ORDER (
+		PURCHASEORDERNO, STOREID, STORENAME,STORECODE, PURCHASECOUNT, PURCHASEAMOUNT, PROVINCECODE,
+		CITYCODE, COUNTYCODE,
+		CREATETIME, CREATEUSERID, NOTE,
+		ORDERSTATUS, UPDATETIME, UPDATEUSERID
+		)
+		values(
+		#{purchaseOrderNo,jdbcType=VARCHAR},
+		#{storeId,jdbcType=INTEGER},
+		#{storeName,jdbcType=VARCHAR},
+		#{storeCode,jdbcType=INTEGER},
+		#{purchaseCount,jdbcType=INTEGER},
+		#{purchaseAmount,jdbcType=BIGINT},
+		#{provinceCode,jdbcType=VARCHAR},
+		#{cityCode,jdbcType=VARCHAR},
+		#{countyCode,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{note,jdbcType=VARCHAR},
+		#{orderStatus,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUserId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<update id="updateOrderStautsForAuditPassedByPurchaseOrderNo">
+		update T_PURCHASE_ORDER
+		<set>
+			ORDERSTATUS = #{auditPassOrderStatus,jdbcType=VARCHAR},
+			UPDATETIME = #{auditTime, jdbcType=TIMESTAMP},
+			UPDATEUSERID =
+			#{auditUserId,jdbcType=INTEGER},
+			AUDITTIME = #{auditTime, jdbcType=TIMESTAMP},
+			AUDITUSERID = #{auditUserId,jdbcType=INTEGER}
+		</set>
+		where
+		PURCHASEORDERNO = #{purchaseOrderNo,jdbcType=VARCHAR} and ORDERSTATUS = #{oriOrderStauts,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStautsForAuditNotPassedByPurchaseOrderNo">
+		update T_PURCHASE_ORDER
+		<set>
+			ORDERSTATUS = #{auditNotPassOrderStatus,jdbcType=VARCHAR},
+			<if test="auditRejectReason != null">
+				AUDITREJECTREASON = #{auditRejectReason,jdbcType=VARCHAR},
+			</if>
+			UPDATETIME = #{auditTime, jdbcType=TIMESTAMP},
+			UPDATEUSERID =
+			#{auditUserId,jdbcType=INTEGER},
+			AUDITTIME = #{auditTime,
+			jdbcType=TIMESTAMP},
+			AUDITUSERID = #{auditUserId,jdbcType=INTEGER}
+		</set>
+		where
+		PURCHASEORDERNO = #{purchaseOrderNo,jdbcType=VARCHAR} and ORDERSTATUS = #{oriOrderStauts,jdbcType=VARCHAR}
+	</update>
+	<select id="loadByPurchaseOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_PURCHASE_ORDER
+		where PURCHASEORDERNO = #{purchaseOrderNo,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadForUpdateByPurchaseOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_PURCHASE_ORDER
+		where PURCHASEORDERNO = #{purchaseOrderNo,jdbcType=VARCHAR} for update
+	</select>
+
+	<select id="findPurchaseOrderInfos" resultMap="BaseResultMap" parameterType="PurchaseOrderQuery">
+		select
+		<include refid="Base_Column_List" />
+		from T_PURCHASE_ORDER
+		<where>
+			<if test="purchaseOrderNo != null">
+				and PURCHASEORDERNO = #{purchaseOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="purchaseOrderNoList !=null">
+				and PURCHASEORDERNO IN
+				<foreach item="item" index="index" collection="purchaseOrderNoList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="storeId != null">
+				and STOREID = #{storeId,jdbcType=INTEGER}
+			</if>
+			<if test="storeCode != null">
+				and STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and STORENAME like concat('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="orderStatus !=null">
+				and ORDERSTATUS = #{orderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="beginCreateTime != null">
+				and CREATETIME &gt;= #{beginCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="beginAuditTime != null">
+				and AUDITTIME &gt;= #{beginAuditTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and AUDITTIME &lt;= #{endAuditTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by CREATETIME desc
+	</select>
+	<select id="getCountsForExportPurchaseOrder" resultType="long" parameterType="PurchaseOrderQuery">
+		select
+		count(1)
+		from T_PURCHASE_ORDER
+		<where>
+			<if test="purchaseOrderNo != null">
+				and PURCHASEORDERNO = #{purchaseOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="purchaseOrderNoList !=null">
+				and PURCHASEORDERNO IN
+				<foreach item="item" index="index" collection="purchaseOrderNoList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="storeCode != null">
+				and STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and STORENAME like concat('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="orderStatus !=null">
+				and ORDERSTATUS = #{orderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="beginCreateTime != null">
+				and CREATETIME &gt;= #{beginCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="beginAuditTime != null">
+				and AUDITTIME &gt;= #{beginAuditTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and AUDITTIME &lt;= #{endAuditTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+</mapper>

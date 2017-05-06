@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<link rel="stylesheet" type="text/css"
+	href="/static-resource/css/base.css">
+<link rel="stylesheet" type="text/css"
+	href="/static-resource/css/module.css">
+<link rel="stylesheet" type="text/css"
+	href="/static-resource/css/system.css">
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/md5.js"></script>
+<style>
+.workorder_save_button_new {
+	padding: 8px 185px
+}
+</style>
+<script type="text/javascript">
+	$(document).ready(function() {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		selectNavigation("passwdModify");//菜单高亮
+		bindEvent();
+	});
+
+	var validate = (function() {
+		//var passwordReg = /^\w{6,26}$/;
+		var passwordReg = /^[A-Za-z0-9]{6,16}$/;
+		var validatePwd = {};
+		validatePwd.oldPasswordBlur = function() {
+			var oldPassword = $.trim($('#oldPassword').val());
+			var oldPasswordMsg = $('#oldPasswordMsg');
+			var result = false;
+			if (passwordReg.test(oldPassword)) {
+				oldPasswordMsg.html('').attr('class', 'right');
+				result = true;
+			} else {
+				oldPasswordMsg.html('6-16个字符，请使用字母、数字的组合密码').attr('class',
+						'error');
+			}
+			return result;
+		};
+
+		validatePwd.newPasswordBlur = function() {
+			var oldPassword = $.trim($('#oldPassword').val());
+			var newPassword = $.trim($('#newPassword').val());
+			var newPasswordMsg = $('#newPasswordMsg');
+			var result = false;
+			if (passwordReg.test(newPassword)) {
+				if (newPassword == oldPassword) {
+					newPasswordMsg.html('新密码与旧密码不能相同').attr('class', 'error');
+				} else {
+					newPasswordMsg.html('').attr('class', 'right');
+					result = true;
+				}
+			} else {
+				newPasswordMsg.html('6-16个字符，请使用字母、数字组合密码').attr('class',
+						'error');
+			}
+			return result;
+		};
+
+		validatePwd.confirmPasswordBlur = function() {
+			var confirmPassword = $.trim($('#confirmPassword').val());
+			var newPassword = $.trim($('#newPassword').val());
+			var confirmPasswordMsg = $('#confirmPasswordMsg');
+			var result = false;
+			if (passwordReg.test(confirmPassword)
+					&& confirmPassword === newPassword) {
+				confirmPasswordMsg.html('').attr('class', 'right');
+				result = true;
+			} else {
+				confirmPasswordMsg.html('两次输入的密码不一致，请重新输入').attr('class',
+						'error');
+			}
+			return result;
+		};
+
+		return validatePwd;
+	})();
+
+	function bindEvent() {
+		$('#pwd').on('blur', '#oldPassword', validate.oldPasswordBlur).on(
+				'blur', '#newPassword', validate.newPasswordBlur).on('blur',
+				'#confirmPassword', validate.confirmPasswordBlur).on('click',
+				'#updatePwd', submitPwd).on('click', '#reset', resetInput);
+	}
+
+	function submitPwd() {
+		if (!validate.oldPasswordBlur()) {
+			return false
+		}
+		if (!validate.newPasswordBlur()) {
+			return false
+		}
+		if (!validate.confirmPasswordBlur()) {
+			return false
+		}
+		updatePwd();
+	}
+
+	function updatePwd() {
+		$('#oldPassword').val(hex_md5($.trim($('#oldPassword').val())));
+		$('#newPassword').val(hex_md5($.trim($('#newPassword').val())));
+		$('#confirmPassword').val(hex_md5($.trim($('#confirmPassword').val())));
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#pwd')));
+		$.ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/updatePassword',
+			type : 'post',
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			success : updatePwdSuccess
+		})
+	}
+
+	function updatePwdSuccess(data) {
+		checkJsonRight(data);
+		if (data.msgCode != 1) {
+			resetInput();
+			$('#msg').html(data.msg);
+			return;
+		}
+		$('#reset').click();
+		$('#msg').html(data.msg);
+	}
+
+	function resetInput() {//清空表单
+		$('.user_form dd span').html('').attr('class', '');
+		$('#msg').html('');
+	}
+</script>
+</head>
+<body>
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; <span>修改密码</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">修改密码</div>
+					<div class="page_main">
+						<form method="post" class="user_form" id="pwd">
+							<dl>
+								<dt>
+									<em class="cred">*</em>旧密码：
+								</dt>
+								<dd>
+									<input type="password" class="txt grid-12" id="oldPassword"
+										name="oldPassword" /><span id="oldPasswordMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>新密码：
+								</dt>
+								<dd>
+									<input type="password" class="txt grid-12" id="newPassword"
+										name="newPassword" /><span id="newPasswordMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>确认密码：
+								</dt>
+								<dd>
+									<input type="password" class="txt grid-12" id="confirmPassword"
+										name="confirmPassword" /><span id="confirmPasswordMsg"></span>
+								</dd>
+							</dl>
+							<p id="msg" class="cred workorder_save_button_new"></p>
+							<p class="workorder_save_button_new">
+								<input type="button" value="提交" class="btn_sure" id="updatePwd" />
+								<input type="reset" id="reset" class="btn_sure" value="重置" />
+							</p>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.CommunityMapper">
+	<resultMap id="CommunityResultMap" type="Community">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="TOWNCODE" property="townCode" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="LONGITUDE" property="longitude" jdbcType="VARCHAR" />
+		<result column="LATITUDE" property="latitude" jdbcType="VARCHAR" />
+		<result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+		<result column="DISPLAY" property="display" jdbcType="VARCHAR" />
+		<result column="STORECOUNT" property="storeCount" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="CommunityLocationInfoResultMap" type="CommunityLocationInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="DISTANCE" property="distance" jdbcType="BIGINT" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, NAME, PROVINCECODE, CITYCODE, COUNTYCODE, TOWNCODE,
+		ADDRESSDETAIL, LONGITUDE,
+		LATITUDE, DESCRIPTION,
+		CREATEUSERID,
+		CREATETIME,MODIFYUSERID,MODIFYTIME,DISPLAY,STORECOUNT
+	</sql>
+
+	<select id="loadById" resultMap="CommunityResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_COMMUNITY WHERE ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listCommunityByName" resultMap="CommunityResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from U_COMMUNITY WHERE 1=1
+		<if test="distName !=null">
+			AND NAME like CONCAT('%',#{distName,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<select id="findCommunitys" resultMap="CommunityResultMap" parameterType="CommunityQuery">
+		select
+		<include refid="Base_Column_List" />
+		from U_COMMUNITY
+		<where>
+			1=1
+			<if test="communityName !=null">
+				and NAME LIKE
+				CONCAT('%',#{communityName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="cityCode !=null">
+				and CITYCODE = #{cityCode,jdbcType=VARCHAR}
+			</if>
+			<if test="countyCode !=null">
+				and COUNTYCODE = #{countyCode,jdbcType=VARCHAR}
+			</if>
+			<if test="display !=null">
+				and DISPLAY = #{display,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="findCommunitysPage" resultMap="CommunityResultMap">
+		select
+		C.ID, NAME, PROVINCECODE, CITYCODE, COUNTYCODE, TOWNCODE,
+		ADDRESSDETAIL, LONGITUDE,
+		LATITUDE, DESCRIPTION,
+		CREATEUSERID,
+		CREATETIME,MODIFYUSERID,MODIFYTIME,DISPLAY,STORECOUNT
+		from U_COMMUNITY C LEFT JOIN U_DISTRICT_STORE D
+		ON C.ID=D.COMMUNITYID
+		<where>
+			D.COMMUNITYID IS NOT NULL
+			<if test="communityQuery.keywords !=null">
+				and (NAME LIKE
+				CONCAT('%',#{communityQuery.keywords,jdbcType=VARCHAR},'%')
+				or ADDRESSDETAIL LIKE
+				CONCAT('%',#{communityQuery.keywords,jdbcType=VARCHAR},'%')
+				)
+			</if>
+			<if test="communityQuery.provinceCode !=null">
+				and PROVINCECODE =
+				#{communityQuery.provinceCode,jdbcType=VARCHAR}
+			</if>
+			<if test="communityQuery.cityCode !=null">
+				and CITYCODE =
+				#{communityQuery.cityCode,jdbcType=VARCHAR}
+			</if>
+			<if test="communityQuery.countyCode !=null">
+				and COUNTYCODE =
+				#{communityQuery.countyCode,jdbcType=VARCHAR}
+			</if>
+			<if test="communityQuery.display !=null">
+				and DISPLAY = #{communityQuery.display,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<insert id="save" parameterType="Community" useGeneratedKeys="true" keyProperty="id">
+		insert into U_COMMUNITY (ID,NAME,
+		PROVINCECODE, CITYCODE,
+		COUNTYCODE, TOWNCODE, ADDRESSDETAIL,
+		LONGITUDE, LATITUDE,
+		DESCRIPTION,
+		CREATEUSERID,
+		CREATETIME,MODIFYUSERID,MODIFYTIME,DISPLAY,STORECOUNT
+		)
+		values
+		(#{id,jdbcType=INTEGER},
+		#{name,jdbcType=INTEGER},
+		#{provinceCode,jdbcType=INTEGER},
+		#{cityCode,jdbcType=VARCHAR},
+		#{countyCode,jdbcType=VARCHAR},
+		#{townCode,jdbcType=VARCHAR},
+		#{addressDetail,jdbcType=VARCHAR},
+		#{longitude,jdbcType=VARCHAR},
+		#{latitude,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=INTEGER},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{display,jdbcType=VARCHAR},
+		#{storeCount,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<update id="update" parameterType="Community">
+		UPDATE U_COMMUNITY
+		SET NAME=
+		#{name,jdbcType=VARCHAR},
+		CITYCODE=
+		#{cityCode,jdbcType=VARCHAR},
+		COUNTYCODE = #{countyCode,jdbcType=VARCHAR},
+		LONGITUDE=#{longitude,jdbcType=VARCHAR},
+		LATITUDE
+		=#{latitude,jdbcType=VARCHAR},
+		DISPLAY=#{display,jdbcType=VARCHAR},
+		ADDRESSDETAIL=#{addressDetail,jdbcType=VARCHAR},
+		MODIFYUSERID =#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		WHERE ID
+		=#{id,jdbcType=INTEGER}
+	</update>
+
+	<resultMap id="CommunityStoreRelatedInfoMap" type="CommunityStoreRelatedInfo">
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="CONTACT" property="contact" jdbcType="VARCHAR" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="STORESTATUS" property="storeStatus" jdbcType="VARCHAR" />
+		<result column="COMMUNITYNAME" property="communityName" jdbcType="VARCHAR" />
+		<result column="COMMUNITYID" property="communityId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="BUSINESSHOURSBEGIN" property="businessHoursBegin" jdbcType="VARCHAR" />
+		<result column="BUSINESSHOURSEND" property="businessHoursEnd" jdbcType="VARCHAR" />
+		<result column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STORETYPE" property="storeType" jdbcType="VARCHAR" />
+		<result column="STOCKSHARE" property="stockShare" jdbcType="VARCHAR" />
+		<result column="INVITATIONCODE" property="invitationCode" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="findCommunityStores" resultMap="CommunityStoreRelatedInfoMap" parameterType="CommunityStoreRelatedQuery">
+		SELECT GROUP_CONCAT(C.NAME) AS COMMUNITYNAME,
+		P.STORECODE,P.MOBILE,P.STORENAME,P.CONTACT,P.PROVINCECODE,P.CITYCODE,P.COUNTYCODE,
+		P.ADDRESSDETAIL,P.STORESTATUS,P.EMAIL,P.BUSINESSHOURSBEGIN,P.BUSINESSHOURSEND,P.STOREID
+		AS STOREID,P.ID AS ID,P.STORETYPE AS STORETYPE,T.INVITATIONCODE AS INVITATIONCODE,P.STOCKSHARE AS STOCKSHARE
+		FROM U_STORE_PROFILE P
+		LEFT JOIN U_DISTRICT_STORE D ON D.STOREID = P.STOREID
+		LEFT JOIN U_COMMUNITY C ON
+		D.COMMUNITYID = C.ID
+		LEFT JOIN U_USER U ON U.CUSTOMERID = P.STOREID 
+		LEFT JOIN U_CUSTOMER T ON P.STOREID = T.ID
+		WHERE 1=1
+		AND U.MASTERFLAG = 'USERMASTERFLAG_MAIN'
+		AND U.STATUSCODE = 'USERSTATUS_ON'
+		AND T.STATUSCODE = 'CUSTOMERSTATUS_ON'
+		<if test="communityName !=null">
+			AND C.NAME LIKE
+			CONCAT('%',#{communityName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="storeIds != null">
+				AND P.STOREID IN
+				<foreach item="item" index="index" collection="storeIds" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		</if>
+		<if test="communityId !=null">
+			AND C.ID=#{communityId,jdbcType=INTEGER}
+		</if>
+		<if test="cityCode !=null">
+			AND P.CITYCODE= #{cityCode,jdbcType=VARCHAR}
+		</if>
+		<if test="countyCode !=null">
+			AND P.COUNTYCODE= #{countyCode,jdbcType=VARCHAR}
+		</if>
+		<if test="storeStatus !=null">
+			AND P.STORESTATUS=#{storeStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="storeName !=null">
+			AND P.STORENAME like concat('%',#{storeName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="storeCode !=null">
+			AND P.STORECODE like concat('%',#{storeCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="mobile !=null">
+			AND P.MOBILE=#{mobile,jdbcType=VARCHAR}
+		</if>
+		<if test="storeType !=null">
+			AND P.STORETYPE=#{storeType,jdbcType=VARCHAR}
+		</if>
+		<if test="excludeStoreType !=null">
+			AND P.STORETYPE &lt;&gt; #{excludeStoreType,jdbcType=VARCHAR}
+		</if>
+		<if test="userName !=null">
+			AND U.USERNAME=#{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="currentOpenDate !=null">
+			AND P.STORESTATUS = 'STORESTATUS_OPEN'
+			AND
+			(SUBSTR(#{currentOpenDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentOpenDate,jdbcType=TIMESTAMP}))
+			&gt;= P.BUSINESSHOURSBEGIN
+			AND
+			SUBSTR(#{currentOpenDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentOpenDate,jdbcType=TIMESTAMP}))
+			&lt;= P.BUSINESSHOURSEND
+			) > 0
+		</if>
+		<if test="currentCloseDate !=null">
+			AND
+			((SUBSTR(#{currentCloseDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentCloseDate,jdbcType=TIMESTAMP}))
+			&gt;=
+			P.BUSINESSHOURSBEGIN
+			AND
+			SUBSTR(#{currentCloseDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentCloseDate,jdbcType=TIMESTAMP}))
+			&lt;= P.BUSINESSHOURSEND ) = 0
+			OR P.STORESTATUS = 'STORESTATUS_CLOSED')
+		</if>
+		GROUP BY P.ID
+		ORDER BY P.ID DESC
+	</select>
+
+	<select id="listDataForExportStore" resultMap="CommunityStoreRelatedInfoMap">
+		SELECT GROUP_CONCAT(C.NAME) AS COMMUNITYNAME,
+		P.STORECODE,P.MOBILE,P.STORENAME,P.CONTACT,P.PROVINCECODE,P.CITYCODE,P.COUNTYCODE,
+		P.ADDRESSDETAIL,P.STORESTATUS,P.EMAIL,P.BUSINESSHOURSBEGIN,P.BUSINESSHOURSEND,P.STOREID
+		AS STOREID,P.ID AS ID,P.STORETYPE AS
+		STORETYPE
+		FROM U_STORE_PROFILE P
+		LEFT JOIN U_DISTRICT_STORE D ON D.STOREID = P.ID
+		LEFT JOIN U_COMMUNITY
+		C ON D.COMMUNITYID =
+		C.ID WHERE 1=1
+		<if test="communityStoreRelatedQuery.communityName !=null">
+			AND C.NAME LIKE
+			CONCAT('%',#{communityName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="communityStoreRelatedQuery.cityCode !=null">
+			AND P.CITYCODE= #{cityCode,jdbcType=VARCHAR}
+		</if>
+		<if test="communityStoreRelatedQuery.countyCode !=null">
+			AND P.COUNTYCODE= #{countyCode,jdbcType=VARCHAR}
+		</if>
+		<if test="communityStoreRelatedQuery.storeStatus !=null">
+			AND P.STORESTATUS=#{storeStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="communityStoreRelatedQuery.storeName !=null">
+			AND P.STORENAME=#{storeName,jdbcType=VARCHAR}
+		</if>
+		<if test="communityStoreRelatedQuery.storeCode !=null">
+			AND P.STORECODE=#{storeCode,jdbcType=VARCHAR}
+		</if>
+		<if test="communityStoreRelatedQuery.mobile !=null">
+			AND P.MOBILE=#{mobile,jdbcType=VARCHAR}
+		</if>
+		<if test="communityStoreRelatedQuery.storeType !=null">
+			AND P.STORETYPE=#{storeType,jdbcType=VARCHAR}
+		</if>
+		<if test="communityStoreRelatedQuery.currentOpenDate !=null">
+			AND P.STORESTATUS = 'STORESTATUS_OPEN'
+			AND
+			(SUBSTR(#{currentOpenDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentOpenDate,jdbcType=TIMESTAMP}))
+			&gt;= P.BUSINESSHOURSBEGIN
+			AND
+			SUBSTR(#{currentOpenDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentOpenDate,jdbcType=TIMESTAMP}))
+			&lt;= P.BUSINESSHOURSEND
+			) > 0
+		</if>
+		<if test="communityStoreRelatedQuery.currentCloseDate !=null">
+			AND
+			((SUBSTR(#{currentCloseDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentCloseDate,jdbcType=TIMESTAMP}))
+			&gt;=
+			P.BUSINESSHOURSBEGIN
+			AND
+			SUBSTR(#{currentCloseDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentCloseDate,jdbcType=TIMESTAMP}))
+			&lt;= P.BUSINESSHOURSEND ) = 0
+			OR P.STORESTATUS = 'STORESTATUS_CLOSED')
+		</if>
+		GROUP BY P.ID
+		ORDER BY P.ID DESC
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+
+	<select id="getCountsForExportStore" resultType="long" parameterType="CommunityStoreRelatedQuery">
+		SELECT COUNT(*) FROM (SELECT P.ID
+		FROM U_STORE_PROFILE P
+		LEFT JOIN U_DISTRICT_STORE D ON D.STOREID = P.ID
+		LEFT JOIN
+		U_COMMUNITY
+		C ON D.COMMUNITYID = C.ID WHERE 1=1
+		<if test="communityName !=null">
+			AND C.NAME LIKE
+			CONCAT('%',#{communityName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="cityCode !=null">
+			AND P.CITYCODE= #{cityCode,jdbcType=VARCHAR}
+		</if>
+		<if test="countyCode !=null">
+			AND P.COUNTYCODE= #{countyCode,jdbcType=VARCHAR}
+		</if>
+		<if test="storeStatus !=null">
+			AND P.STORESTATUS=#{storeStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="storeName !=null">
+			AND P.STORENAME=#{storeName,jdbcType=VARCHAR}
+		</if>
+		<if test="storeCode !=null">
+			AND P.STORECODE=#{storeCode,jdbcType=VARCHAR}
+		</if>
+		<if test="mobile !=null">
+			AND P.MOBILE=#{mobile,jdbcType=VARCHAR}
+		</if>
+		<if test="storeType !=null">
+			AND P.STORETYPE=#{storeType,jdbcType=VARCHAR}
+		</if>
+		<if test="currentOpenDate !=null">
+			AND P.STORESTATUS = 'STORESTATUS_OPEN'
+			AND
+			(SUBSTR(#{currentOpenDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentOpenDate,jdbcType=TIMESTAMP}))
+			&gt;= P.BUSINESSHOURSBEGIN
+			AND
+			SUBSTR(#{currentOpenDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentOpenDate,jdbcType=TIMESTAMP}))
+			&lt;= P.BUSINESSHOURSEND
+			) > 0
+		</if>
+		<if test="currentCloseDate !=null">
+			AND
+			((SUBSTR(#{currentCloseDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentCloseDate,jdbcType=TIMESTAMP}))
+			&gt;=
+			P.BUSINESSHOURSBEGIN
+			AND
+			SUBSTR(#{currentCloseDate,jdbcType=TIMESTAMP},12,LENGTH(#{currentCloseDate,jdbcType=TIMESTAMP}))
+			&lt;= P.BUSINESSHOURSEND ) = 0
+			OR P.STORESTATUS = 'STORESTATUS_CLOSED')
+		</if>
+		GROUP BY P.ID) AS A
+	</select>
+
+	<select id="findCommunityStoresByCommunityId" resultMap="CommunityStoreRelatedInfoMap" parameterType="CommunityStoreRelatedQuery">
+		SELECT
+		P.STORECODE,P.MOBILE,P.STORENAME,P.PROVINCECODE,P.CITYCODE,P.COUNTYCODE,P.STORESTATUS,
+		C.ID AS COMMUNITYID,P.STOREID
+		AS STOREID,P.EMAIL,P.ID AS
+		ID,P.STORETYPE AS STORETYPE
+		FROM U_DISTRICT_STORE D,U_STORE_PROFILE
+		P,U_COMMUNITY C
+		WHERE
+		D.COMMUNITYID = C.ID AND D.STOREID = P.STOREID
+		<if test="communityId !=null">
+			AND C.ID =#{communityId,jdbcType=INTEGER}
+		</if>
+	</select>
+
+	<update id="updateStoreCountById">
+		UPDATE U_COMMUNITY
+		SET
+		STORECOUNT=#{storeCount,jdbcType=INTEGER}
+		WHERE ID
+		=#{id,jdbcType=INTEGER}
+	</update>
+
+	<!-- 根据经度和纬度获取定位接口 -->
+	<select id="findNearestCommunity" resultMap="CommunityLocationInfoResultMap">
+		SELECT
+		ID,
+		NAME,ADDRESSDETAIL, PROVINCECODE, CITYCODE,
+		COUNTYCODE,round(6378137*2*asin(sqrt(power(sin((#{latitude,jdbcType=VARCHAR}-LATITUDE)*pi()/360),2)+
+		cos(#{latitude,jdbcType=VARCHAR}*pi()/180)*cos(LATITUDE*pi()/180)*power(sin((#{longitude,jdbcType=VARCHAR}-LONGITUDE)*pi()/360),2))))
+		as DISTANCE
+		FROM U_COMMUNITY
+		HAVING DISTANCE &lt;=#{distance}
+		ORDER BY DISTANCE limit 1
+	</select>
+	<select id="findAroundCommunityList" resultMap="CommunityLocationInfoResultMap">
+		SELECT
+		C.ID,
+		NAME,ADDRESSDETAIL, PROVINCECODE, CITYCODE,
+		COUNTYCODE,round(6378137*2*asin(sqrt(power(sin((#{latitude,jdbcType=VARCHAR}-LATITUDE)*pi()/360),2)+
+		cos(#{latitude,jdbcType=VARCHAR}*pi()/180)*cos(LATITUDE*pi()/180)*power(sin((#{longitude,jdbcType=VARCHAR}-LONGITUDE)*pi()/360),2))))
+		as DISTANCE
+		FROM U_COMMUNITY C LEFT JOIN U_DISTRICT_STORE D
+		ON C.ID=D.COMMUNITYID
+		WHERE D.COMMUNITYID IS NOT NULL
+		HAVING DISTANCE
+		&lt;=#{communityQuery.distance}
+		ORDER BY DISTANCE
+	</select>
+	<select id="listAroundCommunities" resultMap="CommunityLocationInfoResultMap">
+		SELECT
+		ID,
+		NAME,ADDRESSDETAIL, PROVINCECODE, CITYCODE,
+		COUNTYCODE,round(6378137*2*asin(sqrt(power(sin((#{latitude,jdbcType=VARCHAR}-LATITUDE)*pi()/360),2)+
+		cos(#{latitude,jdbcType=VARCHAR}*pi()/180)*cos(LATITUDE*pi()/180)*power(sin((#{longitude,jdbcType=VARCHAR}-LONGITUDE)*pi()/360),2))))
+		as DISTANCE
+		FROM U_COMMUNITY
+		HAVING DISTANCE
+		&lt;=#{distance,jdbcType=INTEGER}
+		ORDER BY DISTANCE
+	</select>
+	<select id="listCommunitiesByCountyCode" resultMap="CommunityResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_COMMUNITY WHERE 1=1
+		<if test="countyCode !=null">
+			AND COUNTYCODE = #{countyCode,jdbcType=VARCHAR}
+		</if>
+	</select>
+</mapper>

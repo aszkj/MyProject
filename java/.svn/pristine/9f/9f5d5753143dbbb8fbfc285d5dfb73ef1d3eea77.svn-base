@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.PurchaseOrderAddressMapper">
+	<resultMap id="BaseResultMap" type="PurchaseOrderAddress">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PURCHASEORDERNO" property="purchaseOrderNo" jdbcType="VARCHAR" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="PHONENO" property="phoneNo" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PURCHASEORDERNO, USERNAME, ADDRESSDETAIL, PHONENO
+	</sql>
+
+	<insert id="save" parameterType="PurchaseOrderAddress" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_PURCHASE_ORDER_ADDRESS (
+		PURCHASEORDERNO, USERNAME, ADDRESSDETAIL,
+		PHONENO
+		)
+		values(
+		#{purchaseOrderNo,jdbcType=VARCHAR},
+		#{userName,jdbcType=VARCHAR}, #{addressDetail,jdbcType=VARCHAR},
+		#{phoneNo,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="loadByPurchaseOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_PURCHASE_ORDER_ADDRESS
+		where PURCHASEORDERNO = #{purchaseOrderNo,jdbcType=VARCHAR}
+	</select>
+	<select id="listPurchaseOrderAddress" resultMap="BaseResultMap" parameterType="PurchaseOrderAddressQuery">
+		select
+		<include refid="Base_Column_List" />
+		from T_PURCHASE_ORDER_ADDRESS
+		<where>
+			<if test="purchaseOrderNo != null">
+				and PURCHASEORDERNO=#{purchaseOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="phoneNo != null">
+				and PHONENO=#{purchaseOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and USERNAME=#{userName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

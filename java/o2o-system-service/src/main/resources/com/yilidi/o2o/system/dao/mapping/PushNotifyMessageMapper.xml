@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.PushNotifyMessageMapper">
+	<resultMap id="BaseResultMap" type="PushNotifyMessage">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="TOUSER" property="toUser" jdbcType="INTEGER" />
+		<result column="PUSHMSGTYPE" property="pushMsgType" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="SENDTIME" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="MESSAGESTATUS" property="messageStatus" jdbcType="VARCHAR" />
+		<result column="PUSHPROVIDETYPE" property="pushProvideType" jdbcType="VARCHAR" />
+		<result column="PUSHJOBID" property="pushJobId" jdbcType="VARCHAR" />
+		<result column="FAILUREREASON" property="failureReason" jdbcType="VARCHAR" />	
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PUSHMSGTYPE, TOUSER, CONTENT, SENDTIME,
+		MESSAGESTATUS, PUSHPROVIDETYPE, PUSHJOBID, FAILUREREASON
+	</sql>
+
+	<insert id="save" parameterType="PushNotifyMessage" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		S_PUSH_NOTIFY_MESSAGE
+		(PUSHMSGTYPE,
+		TOUSER, CONTENT,
+		SENDTIME, MESSAGESTATUS, 
+		PUSHPROVIDETYPE, PUSHJOBID, FAILUREREASON)
+		values (
+		#{pushMsgType,jdbcType=VARCHAR},
+		#{toUser,jdbcType=INTEGER},
+		#{content,jdbcType=VARCHAR},
+		#{sendTime,jdbcType=TIMESTAMP},
+		#{messageStatus,jdbcType=VARCHAR},
+		#{pushProvideType,jdbcType=VARCHAR},
+		#{pushJobId,jdbcType=VARCHAR},
+		#{failureReason,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="findPushNotifyMessages" resultMap="BaseResultMap" parameterType="PushNotifyMessageQuery">
+		select
+		<include refid="Base_Column_List" />
+		from S_PUSH_NOTIFY_MESSAGE
+		<where>
+			<if test="toUser != null">
+				and TOUSER = #{toUser,jdbcType=INTEGER}
+			</if>
+			<if test="startSendDate != null">
+				and SENDTIME &gt;= #{startSendDate, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endSendDate != null">
+				and SENDTIME &lt;= #{endSendDate, jdbcType=TIMESTAMP}
+			</if>
+			<if test="messageStatus != null">
+				and MESSAGESTATUS = #{messageStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="pushMsgType != null">
+				and PUSHMSGTYPE = #{pushMsgType,jdbcType=VARCHAR}
+			</if>
+			<if test="pushProvideType != null">
+				and PUSHPROVIDETYPE = #{pushProvideType,jdbcType=VARCHAR}
+			</if>
+			<if test="pushJobId != null">
+				and PUSHJOBID = #{pushJobId,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by SENDTIME DESC
+	</select>
+
+	<update id="updateSendStatus">
+		update
+		S_PUSH_NOTIFY_MESSAGE set
+		MESSAGESTATUS =
+		#{pushNotifyMessage.messageStatus,jdbcType=VARCHAR},
+		PUSHJOBID =
+		#{pushNotifyMessage.pushJobId,jdbcType=VARCHAR},
+		FAILUREREASON =
+		#{pushNotifyMessage.failureReason,jdbcType=VARCHAR}
+		where ID =
+		#{pushNotifyMessage.id,jdbcType=INTEGER}
+		and MESSAGESTATUS =
+		#{sendStatus, jdbcType=VARCHAR}
+	</update>
+
+</mapper>

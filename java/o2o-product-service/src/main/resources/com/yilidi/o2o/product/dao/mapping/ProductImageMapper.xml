@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductImageMapper">
+	<resultMap id="BaseResultMap" type="ProductImage">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="MASTERFLAG" property="masterFlag" jdbcType="VARCHAR" />
+		<result column="IMAGEURL1" property="imageUrl1" jdbcType="VARCHAR" />
+		<result column="IMAGEURL2" property="imageUrl2" jdbcType="VARCHAR" />
+		<result column="IMAGEURL3" property="imageUrl3" jdbcType="VARCHAR" />
+		<result column="IMAGEORDER" property="imageOrder" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PRODUCTID, CHANNELCODE, MASTERFLAG, IMAGEURL1,
+		IMAGEURL2 , IMAGEURL3, IMAGEORDER, CREATETIME,
+		CREATEUSERID,MODIFYTIME, MODIFYUSERID
+	</sql>
+	<select id="loadProductImageById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_IMAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<insert id="saveProductImage" parameterType="ProductImage" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_PRODUCT_IMAGE (ID,
+		PRODUCTID, CHANNELCODE,
+		MASTERFLAG, IMAGEURL1,
+		IMAGEURL2, IMAGEURL3,
+		IMAGEORDER,CREATETIME, CREATEUSERID )
+		values
+		(#{id,jdbcType=INTEGER},
+		#{productId,jdbcType=INTEGER},
+		#{channelCode,jdbcType=VARCHAR}
+		,#{masterFlag,jdbcType=VARCHAR},
+		#{imageUrl1,jdbcType=VARCHAR},
+		#{imageUrl2,jdbcType=VARCHAR},
+		#{imageUrl3,jdbcType=VARCHAR},
+		#{imageOrder,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER})
+	</insert>
+
+	<delete id="deleteProductImageById" parameterType="java.lang.Integer">
+		delete from
+		P_PRODUCT_IMAGE
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteProductImageByProductIdAndChannelCode" parameterType="java.lang.Integer">
+		delete from
+		P_PRODUCT_IMAGE
+		where
+		PRODUCTID =
+		#{productId, jdbcType=INTEGER}
+		and
+		CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteProductImageByImageUrl1">
+		delete from
+		P_PRODUCT_IMAGE
+		where
+		IMAGEURL1 =
+		#{imageUrl1, jdbcType=VARCHAR}
+	</delete>
+
+	<update id="updateMasterFlagById">
+		update P_PRODUCT_IMAGE
+		set
+		MASTERFLAG = #{masterFlag,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id, jdbcType=INTEGER}
+	</update>
+
+	<update id="updateImageOrderById">
+		update P_PRODUCT_IMAGE
+		set
+		IMAGEORDER = #{imageOrder,jdbcType=INTEGER}，
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id, jdbcType=INTEGER}
+	</update>
+
+	<update id="updateProductImageById" parameterType="ProductImage">
+		update
+		P_PRODUCT_IMAGE
+		set
+		MASTERFLAG =
+		#{masterFlag,jdbcType=VARCHAR},
+		IMAGEURL1 = #{imageUrl1,jdbcType=VARCHAR},
+		IMAGEURL2 = #{imageUrl2,jdbcType=VARCHAR},
+		IMAGEURL3 = #{imageUrl3,jdbcType=VARCHAR},
+		IMAGEORDER = #{imageOrder,jdbcType=INTEGER},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=VARCHAR},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id, jdbcType=INTEGER}
+	</update>
+
+	<select id="listProductImagesByProductIdAndChannelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_IMAGE
+		<where>
+			PRODUCTID = #{productId,jdbcType=INTEGER}
+			<if test="channelCode != null">
+				and CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

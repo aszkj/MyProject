@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<link rel="stylesheet" href="../static-resource/css/iscroll.css" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部栏-->
+		<div class="top-big-tit">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<p>选择收货地址</p>
+			<div class="top-right-con" onclick="toNewAddress()">
+				<span style="color:#ffc600;">新建</span>
+			</div>
+		</div>
+	</header>
+	<section style="padding-top: .9rem;">
+		<!--地址列表-->
+		<div class="addressList"></div>
+	</section>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var addrLength = 0;
+	$(function() {
+		addressTmpl();
+		removeSaveInfo();
+	});
+	function selectAddressToCart(data) {
+		setSessionStorage(sessionStorageAddressOfCartKey, data);
+		window.location.href = '../cart/cart.html';
+	}
+	/** 操作清除编辑地址信息的操作 */
+	function removeSaveInfo() {
+		removeSessionStorage(sessionEditAddressInfoKey);
+		removeSessionStorage(sessionEditCommunityInfoKey);
+	}
+	function addressTmpl() {
+		var params = new Object();
+		setTimeout(function() {
+			ajax("/useraddress/addresslist", params, function(data) {
+				if (data) {
+					$("#addressTmpl").tmpl(data).prependTo(".addressList");
+				}
+				addrLength = data.length;
+			}, function(data) {
+			}, true);
+		}, 300);
+	}
+	/*点击右上角新建地址的操作*/
+	function toNewAddress() {
+		if (addrLength >= 10) {
+			alert("收货地址数量已达上限");
+		} else {
+			window.location.href = "newAddress.html";
+		}
+	}
+	/*判断收货地址是否在配送范围，不在配送范围则不可选*/
+	function isInScale(data) {
+		var dataAddr = JSON.parse(data);
+		if (getSessionStorage(sessionStorageCommunityKey)) {
+			if (dataAddr.community.communityId == getSessionStorage(sessionStorageCommunityKey).communityId) {
+				return "hide";
+			}
+		}
+		if (getSessionStorage(sessionStorageStoreKey)
+				&& dataAddr.community.storeInfo) {
+			if (dataAddr.community.storeInfo.storeId == getSessionStorage(sessionStorageStoreKey).storeId) {
+				return "hide";
+			}
+		}
+		return "showInline";
+	}
+</script>
+<script id="addressTmpl" type="text/x-jquery-tmpl">
+    <div class="addressItem">
+    	<div onclick="selectAddressToCart(${JSON.stringify($data)})">
+        	<span class="receiverName">${consigneeName}</span>
+        	<span class="teleNum">${phoneNo}</span><span class="notInScaleText ${isInScale(JSON.stringify($data))}">不在配送范围</span>
+        	<p class="reAddress">${community.communityName}${addressDetail}</p>
+        </div>
+        <div class="edit" onclick="javascript:location.href='newAddress.html?addressId='+${addressId}">
+        	<img src="../static-resource/images/cart/edd.png">
+        </div>
+        <div class="notInScale ${isInScale(JSON.stringify($data))}"></div>
+    </div>
+</script>
+</html>

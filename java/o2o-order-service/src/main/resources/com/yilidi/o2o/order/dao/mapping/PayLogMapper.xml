@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.PayLogMapper">
+	<resultMap id="BaseResultMap" type="PayLog">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PAYLOGORDERNO" property="payLogOrderNo"
+			jdbcType="VARCHAR" />
+		<result column="PAYLOGTYPE" property="payLogType" jdbcType="VARCHAR" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="PAYPLATFORMCODE" property="payPlatformCode"
+			jdbcType="VARCHAR" />
+		<result column="PAYSEQUENCE" property="paySequence" jdbcType="VARCHAR" />
+		<result column="PAYPLATFORMORDERID" property="payPlatformOrderId"
+			jdbcType="VARCHAR" />
+		<result column="PAYLOGSTATUS" property="payLogStatus" jdbcType="VARCHAR" />
+		<result column="PAYPRICE" property="payPrice" jdbcType="BIGINT" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="OPERUSERTYPE" property="operUserType" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="INTERFACECONTENT" property="interfaceContent"
+			jdbcType="VARCHAR" />
+		<result column="RETURNCONTENT" property="returnContent"
+			jdbcType="VARCHAR" />
+		<result column="DEVICEID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="PAYERID" property="payerId" jdbcType="VARCHAR" />
+		<result column="PAYEREMAIL" property="payerEmail" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="PayLogInfoMap" type="PayLogInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PAYLOGORDERNO" property="payLogOrderNo"
+			jdbcType="VARCHAR" />
+		<result column="PAYLOGTYPE" property="payLogType" jdbcType="VARCHAR" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="PAYPLATFORMCODE" property="payPlatformCode"
+			jdbcType="VARCHAR" />
+		<result column="PAYSEQUENCE" property="paySequence" jdbcType="VARCHAR" />
+		<result column="PAYPLATFORMORDERID" property="payPlatformOrderId"
+			jdbcType="VARCHAR" />
+		<result column="PAYLOGSTATUS" property="payLogStatus" jdbcType="VARCHAR" />
+		<result column="PAYPRICE" property="payPrice" jdbcType="BIGINT" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="OPERUSERTYPE" property="operUserType" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="INTERFACECONTENT" property="interfaceContent"
+			jdbcType="VARCHAR" />
+		<result column="RETURNCONTENT" property="returnContent"
+			jdbcType="VARCHAR" />
+		<result column="DEVICEID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="PAYERID" property="payerId" jdbcType="VARCHAR" />
+		<result column="PAYEREMAIL" property="payerEmail" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, PAYLOGORDERNO, PAYLOGTYPE, USERID, SALEORDERNO,
+		PAYPLATFORMCODE, PAYSEQUENCE, PAYPLATFORMORDERID,
+		PAYLOGSTATUS,
+		PAYPRICE, CREATETIME, OPERUSERTYPE, CREATEUSERID, UPDATETIME, CONTENT,
+		INTERFACECONTENT, RETURNCONTENT,
+		DEVICEID, PAYERID, PAYEREMAIL
+	</sql>
+
+	<insert id="save" parameterType="PayLog" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into
+		T_PAY_LOG (
+		PAYLOGORDERNO,
+		PAYLOGTYPE, USERID,
+		SALEORDERNO, PAYPLATFORMCODE, PAYSEQUENCE, PAYPLATFORMORDERID,
+		PAYLOGSTATUS, PAYPRICE,
+		CREATETIME, OPERUSERTYPE, CREATEUSERID,
+		UPDATETIME, CONTENT, INTERFACECONTENT, RETURNCONTENT, DEVICEID,
+		PAYERID, PAYEREMAIL
+		)
+		values(
+		#{payLogOrderNo,jdbcType=VARCHAR},
+		#{payLogType,jdbcType=VARCHAR},
+		#{userId,jdbcType=INTEGER},
+		#{saleOrderNo,jdbcType=VARCHAR},
+		#{payPlatformCode,jdbcType=VARCHAR},
+		#{paySequence,jdbcType=VARCHAR},
+		#{payPlatformOrderId,jdbcType=VARCHAR},
+		#{payLogStatus,jdbcType=VARCHAR},
+		#{payPrice,jdbcType=BIGINT},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{operUserType,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{content,jdbcType=VARCHAR},
+		#{interfaceContent,jdbcType=VARCHAR},
+		#{returnContent,jdbcType=VARCHAR},
+		#{deviceId,jdbcType=VARCHAR},
+		#{payerId,jdbcType=VARCHAR},
+		#{payerEmail,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="updatePayLogByPayLogOrderNoAndStatus">
+		update T_PAY_LOG
+		<set>
+			<if test="payLog.paySequence != null">
+				PAYSEQUENCE = #{payLog.paySequence,jdbcType=VARCHAR},
+			</if>
+			<if test="payLog.payPlatformOrderId != null">
+				PAYPLATFORMORDERID =
+				#{payLog.payPlatformOrderId,jdbcType=VARCHAR},
+			</if>
+			<if test="payLog.payLogStatus != null">
+				PAYLOGSTATUS = #{payLog.payLogStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="payLog.updateTime != null">
+				UPDATETIME = #{payLog.updateTime, jdbcType=TIMESTAMP},
+			</if>
+			<if test="payLog.interfaceContent != null">
+				INTERFACECONTENT =
+				#{payLog.interfaceContent,jdbcType=INTEGER},
+			</if>
+			<if test="payLog.returnContent != null">
+				RETURNCONTENT = #{payLog.returnContent,jdbcType=INTEGER},
+			</if>
+			<if test="payLog.payerId != null">
+				PAYERID = #{payLog.payerId,jdbcType=INTEGER},
+			</if>
+			<if test="payLog.payerEmail != null">
+				PAYEREMAIL = #{payLog.payerEmail,jdbcType=INTEGER},
+			</if>
+		</set>
+		where PAYLOGORDERNO = #{payLogOrderNo,jdbcType=VARCHAR} and
+		PAYLOGSTATUS = #{payLogStatus,jdbcType=VARCHAR}
+	</update>
+
+	<select id="findPayLogs" resultMap="PayLogInfoMap"
+		parameterType="PayLogQuery">
+		select
+		L.ID, L.PAYLOGORDERNO, L.PAYLOGTYPE, L.USERID,U.USERNAME,
+		L.SALEORDERNO,
+		L.PAYPLATFORMCODE, L.PAYSEQUENCE, L.PAYPLATFORMORDERID,
+		L.PAYLOGSTATUS,
+		L.PAYPRICE, L.CREATETIME, L.OPERUSERTYPE,
+		L.CREATEUSERID, L.UPDATETIME, L.CONTENT,
+		L.INTERFACECONTENT,
+		L.RETURNCONTENT,
+		L.DEVICEID, L.PAYERID, L.PAYEREMAIL
+		from T_PAY_LOG L
+		LEFT JOIN T_SMALLTABLE_USERINFO U
+		ON L.USERID =
+		U.USERID
+		<where>
+			1=1
+			<if test="payLogOrderNo != null">
+				and L.PAYLOGORDERNO = #{payLogOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="paySequence != null">
+				and L.PAYSEQUENCE = #{paySequence,jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and U.USERNAME = #{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderNo != null">
+				and L.SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="payPlatformCode != null">
+				and L.PAYPLATFORMCODE =
+				#{payPlatformCode,jdbcType=VARCHAR}
+			</if>
+			<if test="payLogStatus != null">
+				and L.PAYLOGSTATUS = #{payLogStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="beginCreateTime != null">
+				and L.CREATETIME &gt;=
+				#{beginCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and L.CREATETIME &lt;=
+				#{endCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="beginUpdateTime != null">
+				and L.UPDATETIME &gt;=
+				#{beginUpdateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endUpdateTime != null">
+				and L.UPDATETIME &lt;=
+				#{endUpdateTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="listDataForExportOnlinePayLog" resultMap="PayLogInfoMap">
+		select
+		L.ID, L.PAYLOGORDERNO, L.PAYLOGTYPE, L.USERID,U.USERNAME,
+		L.SALEORDERNO,
+		L.PAYPLATFORMCODE, L.PAYSEQUENCE, L.PAYPLATFORMORDERID,
+		L.PAYLOGSTATUS,
+		L.PAYPRICE, L.CREATETIME, L.OPERUSERTYPE,
+		L.CREATEUSERID, L.UPDATETIME, L.CONTENT,
+		L.INTERFACECONTENT,
+		L.RETURNCONTENT,
+		L.DEVICEID, L.PAYERID, L.PAYEREMAIL
+		from T_PAY_LOG L
+		LEFT JOIN T_SMALLTABLE_USERINFO U
+		ON L.USERID =
+		U.USERID
+		<where>
+			1=1
+			<if test="payLogQuery.payLogOrderNo != null">
+				and L.PAYLOGORDERNO =
+				#{payLogQuery.payLogOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="payLogQuery.paySequence != null">
+				and L.PAYSEQUENCE =
+				#{payLogQuery.paySequence,jdbcType=VARCHAR}
+			</if>
+			<if test="payLogQuery.userName != null">
+				and U.USERNAME = #{payLogQuery.userName,jdbcType=VARCHAR}
+			</if>
+			<if test="payLogQuery.saleOrderNo != null">
+				and L.SALEORDERNO =
+				#{payLogQuery.saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="payLogQuery.payPlatformCode != null">
+				and L.PAYPLATFORMCODE =
+				#{payLogQuery.payPlatformCode,jdbcType=VARCHAR}
+			</if>
+			<if test="payLogQuery.payLogStatus != null">
+				and L.PAYLOGSTATUS =
+				#{payLogQuery.payLogStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="payLogQuery.beginCreateTime != null">
+				and CREATETIME &gt;=
+				#{payLogQuery.beginCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="payLogQuery.endCreateTime != null">
+				and L.CREATETIME &lt;=
+				#{payLogQuery.endCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="payLogQuery.beginUpdateTime != null">
+				and L.UPDATETIME &gt;=
+				#{payLogQuery.beginUpdateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="payLogQuery.endUpdateTime != null">
+				and L.UPDATETIME &lt;=
+				#{payLogQuery.endUpdateTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="payLogQuery.order != null">
+			order by ${payLogQuery.order}
+			<if test="payLogQuery.sort != null">
+				${payLogQuery.sort}
+			</if>
+		</if>
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+
+	<select id="listInitPayLogs" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_PAY_LOG
+		where SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR} and
+		PAYLOGTYPE = #{payLogType,jdbcType=VARCHAR} and
+		PAYLOGSTATUS =
+		#{payLogStatus,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadByPayLogOrderNo" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_PAY_LOG
+		where PAYLOGORDERNO = #{payLogOrderNo,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadBySaleOrderNo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_PAY_LOG
+		where SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR} and
+		PAYLOGTYPE = #{payLogType,jdbcType=VARCHAR} and
+		PAYLOGSTATUS =
+		#{payLogStatus,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getCountsForExportPayLog" resultType="long"
+		parameterType="PayLogQuery">
+		SELECT COUNT(1)
+		from T_PAY_LOG L
+		LEFT JOIN T_SMALLTABLE_USERINFO U
+		ON
+		L.USERID =
+		U.USERID
+		<where>
+			1=1
+			<if test="payLogOrderNo != null">
+				and L.PAYLOGORDERNO = #{payLogOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="paySequence != null">
+				and L.PAYSEQUENCE = #{paySequence,jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and U.USERName = #{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderNo != null">
+				and L.SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="payPlatformCode != null">
+				and L.PAYPLATFORMCODE = #{payPlatformCode,jdbcType=VARCHAR}
+			</if>
+			<if test="payLogStatus != null">
+				and L.PAYLOGSTATUS = #{payLogStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="beginCreateTime != null">
+				and L.CREATETIME &gt;=
+				#{beginCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and L.CREATETIME &lt;= #{endCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="beginUpdateTime != null">
+				and L.UPDATETIME &gt;=
+				#{beginUpdateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endUpdateTime != null">
+				and L.UPDATETIME &lt;= #{endUpdateTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+
+</mapper>

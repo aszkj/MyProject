@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.PermissionMapper">
+	<resultMap id="BaseResultMap" type="Permission">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PARENTID" property="parentId" jdbcType="INTEGER" />
+		<result column="PERMISSIONNAME" property="permissionName"
+			jdbcType="VARCHAR" />
+		<result column="PARENTNAME" property="parentName" jdbcType="VARCHAR" />
+		<result column="PERMISSIONTYPE" property="permissionType"
+			jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType"
+			jdbcType="VARCHAR" />
+		<result column="PERMISSIONCODE" property="permissionCode"
+			jdbcType="VARCHAR" />
+		<result column="PERMISSIONLEVEL" property="permissionLevel" jdbcType="VARCHAR" />
+		<result column="SORT" property="sort" jdbcType="INTEGER" />
+		<result column="PERMISSIONURL" property="permissionUrl"
+			jdbcType="VARCHAR" />
+		<result column="PERMISSIONSTATUS" property="permissionStatus"
+			jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSER" property="modifyUser" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="PERMISSIONDESC" property="permissionDesc"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PARENTID, PERMISSIONNAME, PARENTNAME, PERMISSIONTYPE, CUSTOMERTYPE,
+	    PERMISSIONCODE, PERMISSIONLEVEL, SORT, PERMISSIONURL, PERMISSIONSTATUS,
+	    CREATEUSERID, CREATETIME, MODIFYUSER, MODIFYTIME, PERMISSIONDESC
+	</sql>
+
+	<insert id="save" parameterType="Permission" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into S_PERMISSION (PARENTID, PERMISSIONNAME, PARENTNAME, 
+		PERMISSIONTYPE, CUSTOMERTYPE, PERMISSIONCODE, PERMISSIONLEVEL, 
+		SORT, PERMISSIONURL, PERMISSIONSTATUS, CREATEUSERID, CREATETIME, 
+		MODIFYUSER, MODIFYTIME, PERMISSIONDESC)
+		values (#{parentId,jdbcType=INTEGER},
+		#{permissionName,jdbcType=VARCHAR},
+		#{parentName,jdbcType=VARCHAR}, 
+		#{permissionType,jdbcType=VARCHAR},
+		#{customerType,jdbcType=VARCHAR},
+		#{permissionCode,jdbcType=VARCHAR},
+		#{permissionLevel,jdbcType=VARCHAR},
+		#{sort,jdbcType=INTEGER},
+		#{permissionUrl,jdbcType=VARCHAR},
+		#{permissionStatus,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}, 
+		#{modifyUser,jdbcType=INTEGER}, 
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{permissionDesc,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from S_PERMISSION
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteByParentId" parameterType="java.lang.Integer">
+		delete from S_PERMISSION
+		where PARENTID = #{parentId, jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateByIdSelective" parameterType="Permission">
+		update S_PERMISSION
+		<set>
+			<if test="parentId != null">
+				PARENTID = #{parentId,jdbcType=INTEGER},
+			</if>
+			<if test="permissionName != null">
+				PERMISSIONNAME = #{permissionName,jdbcType=VARCHAR},
+			</if>
+			<if test="parentName != null">
+				PARENTNAME = #{parentName,jdbcType=VARCHAR},
+			</if>
+			<if test="permissionType != null">
+				PERMISSIONTYPE = #{permissionType,jdbcType=VARCHAR},
+			</if>
+			<if test="customerType != null">
+				CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR},
+			</if>
+			<if test="permissionCode != null">
+				PERMISSIONCODE = #{permissionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="permissionLevel != null">
+				PERMISSIONLEVEL = #{permissionLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				SORT = #{sort,jdbcType=INTEGER},
+			</if>
+			<if test="permissionUrl != null">
+				PERMISSIONURL = #{permissionUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="permissionStatus != null">
+				PERMISSIONSTATUS = #{permissionStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyUser != null">
+				MODIFYUSER = #{modifyUser,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="permissionDesc != null">
+				PERMISSIONDESC = #{permissionDesc,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateById" parameterType="Permission">
+		update S_PERMISSION
+		set PARENTID = #{parentId,jdbcType=INTEGER},
+		PERMISSIONNAME = #{permissionName,jdbcType=VARCHAR},
+		PARENTNAME = #{parentName,jdbcType=VARCHAR},
+		PERMISSIONTYPE = #{permissionType,jdbcType=VARCHAR},
+		CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR},
+		PERMISSIONCODE = #{permissionCode,jdbcType=VARCHAR},
+		PERMISSIONLEVEL = #{permissionLevel,jdbcType=VARCHAR},
+		SORT = #{sort,jdbcType=INTEGER},
+		PERMISSIONURL = #{permissionUrl,jdbcType=VARCHAR},
+		PERMISSIONSTATUS = #{permissionStatus,jdbcType=VARCHAR},
+		MODIFYUSER = #{modifyUser,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+		PERMISSIONDESC = #{permissionDesc,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_PERMISSION
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="loadByPermissionCode" resultMap="BaseResultMap" parameterType="string">
+		select
+		<include refid="Base_Column_List" />
+		from S_PERMISSION
+		where PERMISSIONCODE = #{permissionCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="listByParentId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_PERMISSION
+		where PARENTID = #{parentId,jdbcType=INTEGER}
+		order by SORT
+	</select>
+	
+	<select id="listPermissions" resultMap="BaseResultMap" parameterType="Permission">
+		select
+		<include refid="Base_Column_List" />
+		from S_PERMISSION
+		<where>
+			<if test="parentId != null">
+				and PARENTID = #{parentId,jdbcType=INTEGER}
+			</if>
+			<if test="permissionName != null">
+				and PERMISSIONNAME like CONCAT('%',#{permissionName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="parentName != null">
+				and PARENTNAME like CONCAT('%',#{parentName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="permissionType != null">
+				and PERMISSIONTYPE = #{permissionType,jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				and CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionCode != null">
+				and PERMISSIONCODE = #{permissionCode,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionLevel != null">
+				and PERMISSIONLEVEL = #{permissionLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionUrl != null">
+				and PERMISSIONURL = #{permissionUrl,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionStatus != null">
+				and PERMISSIONSTATUS = #{permissionStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+				order by PERMISSIONLEVEL, SORT
+	</select>
+
+	<select id="listUserPermissions" resultMap="BaseResultMap">
+		SELECT P.ID, P.PARENTID, P.PERMISSIONNAME, P.PARENTNAME, P.PERMISSIONTYPE, P.CUSTOMERTYPE,
+	    P.PERMISSIONCODE, P.PERMISSIONLEVEL, P.SORT, P.PERMISSIONURL, P.PERMISSIONSTATUS, P.CREATEUSERID,
+		P.CREATETIME, P.MODIFYUSER, P.MODIFYTIME, P.PERMISSIONDESC
+		FROM S_PERMISSION P
+		INNER JOIN S_ROLE_PERMISSION RP ON P.ID = RP.PERMISSIONID
+		INNER JOIN S_ROLE R ON R.ID = RP.ROLEID
+		INNER JOIN S_USER_ROLE UR ON R.ID = UR.ROLEID
+		<where>
+			<if test="customerType != null">
+				and R.CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				and P.CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionLevel != null">
+				and P.PERMISSIONLEVEL = #{permissionLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionStatus != null">
+				and P.PERMISSIONSTATUS = #{permissionStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null">
+				and P.PARENTID = #{parentId, jdbcType = INTEGER}
+			</if>
+			<if test="userId != null">
+				and UR.USERID = #{userId, jdbcType = INTEGER}
+			</if>
+		</where>
+				group by  P.ID
+				order by P.PERMISSIONLEVEL, P.SORT
+	</select>
+	
+	<select id="findPermissions" resultMap="BaseResultMap" parameterType="PermissionQuery">
+		select
+		<include refid="Base_Column_List" />
+		from S_PERMISSION
+		<where>
+			<if test="parentId != null">
+				and PARENTID = #{parentId,jdbcType=INTEGER}
+			</if>
+			<if test="permissionName != null">
+				and PERMISSIONNAME like CONCAT('%',#{permissionName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="parentName != null">
+				and PARENTNAME like CONCAT('%',#{parentName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="permissionType != null">
+				and PERMISSIONTYPE = #{permissionType,jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				and CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionCode != null">
+				and PERMISSIONCODE = #{permissionCode,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionLevel != null">
+				and PERMISSIONLEVEL = #{permissionLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionUrl != null">
+				and PERMISSIONURL = #{permissionUrl,jdbcType=VARCHAR}
+			</if>
+			<if test="permissionStatus != null">
+				and PERMISSIONSTATUS = #{permissionStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+				order by CUSTOMERTYPE, PERMISSIONLEVEL, SORT
+	</select>
+
+</mapper>

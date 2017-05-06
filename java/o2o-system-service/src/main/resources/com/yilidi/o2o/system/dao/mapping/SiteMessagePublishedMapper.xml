@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SiteMessagePublishedMapper">
+	<resultMap id="BaseResultMap" type="SiteMessagePublished">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SITEMESSAGEID" property="siteMessageId"
+			jdbcType="INTEGER" />
+		<result column="SUBJECT" property="subject" jdbcType="VARCHAR" />
+		<result column="RECEIVEID" property="receiveId" jdbcType="INTEGER" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="MESSAGETYPE" property="messageType" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="SiteMessagePublishedRelationInfoResultMap"
+		type="SiteMessagePublishedRelationInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SITEMESSAGEID" property="siteMessageId"
+			jdbcType="INTEGER" />
+		<result column="SUBJECT" property="subject" jdbcType="VARCHAR" />
+		<result column="RECEIVEID" property="receiveId" jdbcType="INTEGER" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="MESSAGETYPE" property="messageType" jdbcType="VARCHAR" />
+		<result column="SENDID" property="sendId" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, SITEMESSAGEID, SUBJECT, RECEIVEID, STATUSCODE,
+		MESSAGETYPE
+	</sql>
+
+	<insert id="save" parameterType="SiteMessagePublished">
+		insert into
+		S_SITE_MESSAGE_PUBLISHED (SITEMESSAGEID, SUBJECT,
+		RECEIVEID,STATUSCODE, MESSAGETYPE )
+		values
+		(#{siteMessageId,jdbcType=INTEGER},
+		#{subject,jdbcType=VARCHAR},
+		#{receiveId,jdbcType=INTEGER},
+		#{statusCode,jdbcType=VARCHAR},
+		#{messageType,jdbcType=VARCHAR} )
+	</insert>
+
+	<update id="updateStatusById">
+		update S_SITE_MESSAGE_PUBLISHED
+		set STATUSCODE =
+		#{status,jdbcType=VARCHAR},
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_SITE_MESSAGE_PUBLISHED
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listByReceiveId" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from S_SITE_MESSAGE_PUBLISHED
+		where RECEIVEID =
+		#{receiveId,jdbcType=INTEGER}
+	</select>
+
+	<select id="listByReceiveIdAndStatus" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from S_SITE_MESSAGE_PUBLISHED
+		where RECEIVEID =
+		#{receiveId,jdbcType=INTEGER}
+		and STATUSCODE = #{status,
+		jdbcType=VARCHAR}
+	</select>
+	<select id="listSiteMessagePublishedRelationInfo" parameterType="SiteMessagePublishedQuery"
+		resultMap="SiteMessagePublishedRelationInfoResultMap">
+		select
+		SP.ID AS ID,
+		SP.SITEMESSAGEID AS SITEMESSAGEID,
+		SP.SUBJECT AS
+		SUBJECT,
+		SP.MESSAGETYPE AS MESSAGETYPE,
+		SP.STATUSCODE AS STATUSCODE,
+		SI.SENDID AS SENDID,
+		SI.CONTENT AS CONTENT,
+		SI.CREATETIME AS CREATETIME
+		from S_SITE_MESSAGE_PUBLISHED SP,S_SITE_MESSAGE SI
+		<where>
+			SP.SITEMESSAGEID = SI.ID
+			<if test="receiveId != null">AND SP.RECEIVEID = #{receiveId}</if>
+			<if test="messageType != null">AND SP.MESSAGETYPE = #{messageType}</if>
+			<if test="statusCode != null">AND SP.STATUSCODE = #{statusCode}</if>
+			<if test="siteMessageId != null">AND SI.ID = #{siteMessageId}</if>
+			<if test="sendId != null">AND SI.SENDID = #{sendId}</if>
+		</where>
+		ORDER BY SI.CREATETIME DESC
+	</select>
+
+</mapper>

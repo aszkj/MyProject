@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SecKillSceneMapper">
+	<resultMap id="BaseResultMap" type="SecKillScene">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="ACTIVITYID" property="activityId" jdbcType="INTEGER" />
+		<result column="SCENENAME" property="sceneName" jdbcType="VARCHAR" />
+		<result column="STARTTIME" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="REPEATTTYPE" property="repeatType" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSERID" property="updateUserId" jdbcType="INTEGER" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,ACTIVITYID, SCENENAME, STARTTIME, REPEATTTYPE,
+		STATUSCODE,
+		CREATEUSERID,
+		CREATETIME,UPDATEUSERID,UPDATETIME
+	</sql>
+
+	<insert id="save" parameterType="SecKillScene" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_SECKILL_SCENE (
+		ACTIVITYID,
+		SCENENAME,
+		STARTTIME, REPEATTTYPE, STATUSCODE,
+		CREATEUSERID, CREATETIME,
+		UPDATEUSERID,UPDATETIME)
+		values(
+		#{activityId,jdbcType=INTEGER},
+		#{sceneName,jdbcType=VARCHAR},
+		#{startTime,jdbcType=TIMESTAMP},
+		#{repeatType,jdbcType=VARCHAR},
+		#{statusCode,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{updateUserId,jdbcType=INTEGER},
+		#{updateTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from
+		P_SECKILL_SCENE
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	<update id="updateSelective" parameterType="SecKillScene">
+		update P_SECKILL_SCENE
+		<set>
+			<if test="sceneName != null">
+				SCENENAME =
+				#{sceneName,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null">
+				STARTTIME = #{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="repeatType != null">
+				REPEATTTYPE =#{repeatType,jdbcType=VARCHAR},
+			</if>
+			UPDATEUSERID =
+			#{updateUserId,jdbcType=INTEGER},
+			UPDATETIME =
+			#{updateTime,jdbcType=TIMESTAMP}
+		</set>
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateStatusCodeById">
+		update P_SECKILL_SCENE
+		set
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR},
+		UPDATEUSERID =
+		#{updateUserId,jdbcType=INTEGER},
+		UPDATETIME =
+		#{updateTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id,jdbcType=INTEGER}
+		and STATUSCODE !=
+		#{statusCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateStatusCodeForExpiredByStartTime">
+		update P_SECKILL_SCENE
+		set
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR},
+		UPDATEUSERID =
+		#{updateUserId,jdbcType=INTEGER},
+		UPDATETIME =
+		#{updateTime,jdbcType=TIMESTAMP}
+		where
+		STARTTIME &lt;=
+		#{startTime,jdbcType=TIMESTAMP}
+		and STATUSCODE !=
+		#{statusCode,jdbcType=VARCHAR}
+	</update>
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="loadByActivityId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE
+		where
+		ACTIVITYID = #{activityId,jdbcType=INTEGER}
+	</select>
+	<select id="loadStartingSecKillSceneByCurrentTime" resultMap="BaseResultMap" parameterType="java.util.Date">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE
+		where
+		STARTTIME &lt;= #{currentTime,jdbcType=TIMESTAMP}
+		order by STARTTIME desc limit 1
+	</select>
+	<select id="loadNextSecKillSceneByCurrentTime" resultMap="BaseResultMap" parameterType="java.util.Date">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE
+		where
+		STARTTIME &gt; #{currentTime,jdbcType=TIMESTAMP}
+		order by STARTTIME limit 1
+	</select>
+	<select id="listByStartTime" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE
+		where
+		STARTTIME &gt;= #{beginStartTime,jdbcType=TIMESTAMP}
+		and STARTTIME &lt;=
+		#{endStartTime,jdbcType=TIMESTAMP}
+	</select>
+	<select id="listBeforeOrEqualsByCurrentTime" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE
+		where
+		STARTTIME &lt;= #{currentTime,jdbcType=TIMESTAMP}
+		order by STARTTIME desc
+		<if test="limit != null">
+			limit
+			#{limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="listAfterByCurrentTime" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE
+		where
+		STARTTIME &gt; #{currentTime,jdbcType=TIMESTAMP}
+		order by STARTTIME
+		<if test="limit != null">
+			limit
+			#{limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="listSecKillSceneForRepeatByStartTime" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE
+		<where>
+			<if test="repeatType != null">
+				and REPEATTTYPE = #{repeatType,jdbcType=VARCHAR}
+			</if>
+			<if test="beginStartTime != null">
+				and STARTTIME &gt;= #{beginStartTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endStartTime != null">
+				and STARTTIME &lt;= #{endStartTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by STARTTIME
+	</select>
+	<select id="findSecKillScenes" resultMap="BaseResultMap" parameterType="SecKillSceneQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE
+		<where>
+			<if test="sceneName != null">
+				and SCENENAME like CONCAT('%',#{sceneName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="repeatType != null">
+				and REPEATTTYPE = #{repeatType,jdbcType=VARCHAR}
+			</if>
+			<if test="beginStartTime != null">
+				and STARTTIME &gt;= #{beginStartTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endStartTime != null">
+				and STARTTIME &lt;= #{endStartTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		ORDER BY STARTTIME DESC
+	</select>
+	<select id="findSecKillProductRelationScenes" resultMap="BaseResultMap" parameterType="SecKillSceneQuery">
+		select
+		PSS.ID,PSS.ACTIVITYID, PSS.SCENENAME, PSS.STARTTIME, PSS.REPEATTTYPE,
+		PSS.STATUSCODE,
+		PSS.CREATEUSERID,
+		PSS.CREATETIME,PSS.UPDATEUSERID,PSS.UPDATETIME
+		from
+		P_SECKILL_SCENE PSS
+		left join
+		P_SECKILL_SCENE_PRODUCT_RELATION PSPR
+		on
+		PSPR.SECKILLSCENEID = PSS.ID
+		<where>
+			<if test="secKillProductId != null">
+				and PSPR.SECKILLPRODUCTID =#{secKillProductId,jdbcType=INTEGER}
+			</if>
+			<if test="sceneName != null">
+				and PSS.SCENENAME like CONCAT('%',#{sceneName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="statusCode != null">
+				and PSS.STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="repeatType != null">
+				and REPEATTTYPE = #{repeatType,jdbcType=VARCHAR}
+			</if>
+			<if test="beginStartTime != null">
+				and PSS.STARTTIME &gt;= #{beginStartTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endStartTime != null">
+				and PSS.STARTTIME &lt;= #{endStartTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		ORDER BY UPDATETIME DESC
+	</select>
+</mapper>

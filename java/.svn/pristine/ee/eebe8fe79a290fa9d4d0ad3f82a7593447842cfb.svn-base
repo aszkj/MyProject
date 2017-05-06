@@ -1,0 +1,2129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.SaleOrderMapper">
+	<resultMap id="BaseResultMap" type="SaleOrder">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="BUYERCUSTOMERID" property="buyerCustomerId"
+			jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="TYPECODE" property="typeCode" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="ORDERCOUNT" property="orderCount" jdbcType="INTEGER" />
+		<result column="TOTALAMOUNT" property="totalAmount" jdbcType="BIGINT" />
+		<result column="TRANSFERFEE" property="transferFee" jdbcType="BIGINT" />
+		<result column="DELIVERYMODE" property="deliveryMode" jdbcType="VARCHAR" />
+		<result column="BESTTIME" property="bestTime" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="PROVINCECODE" property="proviceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="PAYTYPECODE" property="payTypeCode" jdbcType="VARCHAR" />
+		<result column="PAYTIME" property="payTime" jdbcType="TIMESTAMP" />
+		<result column="PAYSTATUS" property="payStatus" jdbcType="VARCHAR" />
+		<result column="ACCEPTTIME" property="acceptTime" jdbcType="TIMESTAMP" />
+		<result column="ACCEPTUSERID" property="acceptUserId" jdbcType="INTEGER" />
+		<result column="SENDSTATUS" property="sendStatus" jdbcType="VARCHAR" />
+		<result column="SENDTIME" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="SENDCOUNT" property="sendCount" jdbcType="INTEGER" />
+		<result column="SENDUSERID" property="sendUserId" jdbcType="INTEGER" />
+		<result column="TAKESTATUS" property="takeStatus" jdbcType="VARCHAR" />
+		<result column="TAKETIME" property="takeTime" jdbcType="TIMESTAMP" />
+		<result column="TAKEUSERID" property="takeUserId" jdbcType="INTEGER" />
+		<result column="LEAVEMESSAGE" property="leaveMessage" jdbcType="VARCHAR" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+		<result column="PAYPLATFORMCODE" property="payPlatformCode"
+			jdbcType="VARCHAR" />
+		<result column="CANCELTYPECODE" property="cancelTypeCode"
+			jdbcType="VARCHAR" />
+		<result column="CANCELREASON" property="cancelReason" jdbcType="VARCHAR" />
+		<result column="CANCELTIME" property="cancelTime" jdbcType="TIMESTAMP" />
+		<result column="CANCELUSERID" property="cancelUserId" jdbcType="INTEGER" />
+		<result column="REFUNDAUDITTIME" property="refundAuditTime"
+			jdbcType="TIMESTAMP" />
+		<result column="REFUNDAUDITUSERID" property="refundAuditUserId"
+			jdbcType="INTEGER" />
+		<result column="REFUNDAUDITFAILUREREASON" property="refundAuditFailureReason"
+			jdbcType="VARCHAR" />
+		<result column="CONCODE" property="conCode" jdbcType="VARCHAR" />
+		<result column="PREFERENTIALAMT" property="preferentialAmt"
+			jdbcType="BIGINT" />
+		<!-- 
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		 -->
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="OBAMOUNT" property="obAmount" jdbcType="BIGINT" />
+		<result column="COMMISSIONAMOUNT" property="commissionAmount"
+			jdbcType="BIGINT" />
+		<result column="COMMISSIONCOUNT" property="commissionCount"
+			jdbcType="INTEGER" />
+		<result column="DEVICEID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="RECEIVECODE" property="receiveCode" jdbcType="VARCHAR" />
+		<result column="RECOMMENDCUSTOMERID" property="recommendCustomerId"
+			jdbcType="INTEGER" />
+		<result column="USERCOUPONID" property="userCouponId" jdbcType="VARCHAR" />
+		<result column="USERVOUCHERID" property="userVoucherId"
+			jdbcType="VARCHAR" />
+		<result column="APPRAISEFLAG" property="appraiseFlag" jdbcType="VARCHAR" />
+		<result column="APPRAISETIME" property="appraiseTime" jdbcType="TIMESTAMP" />
+		<result column="APPRAISEUSERID" property="appraiseUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<resultMap id="SettleDetailResultMap" type="SettleDetailInfo">
+		<result column="STATISTICDATE" property="statisticDate"
+			jdbcType="VARCHAR" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="SETTLEAMOUNT" property="settleAmount" jdbcType="BIGINT" />
+	</resultMap>
+
+	<resultMap id="FinishOrderAmountInfoMap" type="FinishOrderAmountInfo">
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="SUMORDERAMOUNT" property="sumOrderAmount"
+			jdbcType="BIGINT" />
+	</resultMap>
+
+	<resultMap id="FinishOrderCountInfoMap" type="FinishOrderCountInfo">
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="FINISHEDCOUNT" property="finishedCount"
+			jdbcType="INTEGER" />
+	</resultMap>
+
+	<resultMap id="RecommendOrderInfoMap" type="RecommendOrderInfo">
+		<result column="RECOMMENDREALNAME" property="recommendRealName"
+			jdbcType="VARCHAR" />
+		<result column="RECOMMENDMOBILE" property="recommendMobile"
+			jdbcType="VARCHAR" />
+		<result column="INVITATIONCODE" property="invitationCode"
+			jdbcType="VARCHAR" />
+		<result column="BUYERMOBILE" property="buyerMobile" jdbcType="VARCHAR" />
+		<result column="BUYERREGISTERTIME" property="buyerRegisterTime"
+			jdbcType="TIMESTAMP" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="SALEORDERAMOUNT" property="saleOrderAmount"
+			jdbcType="BIGINT" />
+		<result column="SALEORDERSTATUS" property="saleOrderStatus"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, BUYERCUSTOMERID, STOREID, USERID,
+		TYPECODE, STATUSCODE, CHANNELCODE,
+		ORDERCOUNT, TOTALAMOUNT,
+		TRANSFERFEE, DELIVERYMODE, BESTTIME, CREATETIME, CREATEUSERID,
+		PROVINCECODE, CITYCODE, COUNTYCODE, PAYTYPECODE,
+		PAYTIME,PAYSTATUS,ACCEPTTIME,ACCEPTUSERID,
+		SENDSTATUS, SENDTIME,
+		SENDCOUNT,SENDUSERID, TAKESTATUS, TAKETIME, TAKEUSERID,
+		LEAVEMESSAGE,
+		NOTE,PAYPLATFORMCODE,
+		CANCELTYPECODE,CANCELREASON,CANCELTIME,CANCELUSERID,REFUNDAUDITTIME,REFUNDAUDITUSERID,REFUNDAUDITFAILUREREASON
+		REFUNDAUDITFAILUREREASON,CONCODE,PREFERENTIALAMT,<!-- USERNAME,  --> STORENAME,
+		STORECODE,OBAMOUNT,COMMISSIONAMOUNT,COMMISSIONCOUNT,DEVICEID,RECEIVECODE,RECOMMENDCUSTOMERID,USERCOUPONID,USERVOUCHERID
+		,APPRAISEFLAG,APPRAISETIME,APPRAISEUSERID
+	</sql>
+
+	<insert id="save" parameterType="SaleOrder">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into T_SALE_ORDER (
+		SALEORDERNO, BUYERCUSTOMERID, STOREID,
+		USERID, TYPECODE,
+		STATUSCODE, CHANNELCODE,
+		ORDERCOUNT,
+		TOTALAMOUNT,
+		TRANSFERFEE, DELIVERYMODE, BESTTIME, CREATETIME, CREATEUSERID,
+		PROVINCECODE, CITYCODE, COUNTYCODE, PAYTYPECODE,
+		PAYTIME,PAYSTATUS,
+		ACCEPTTIME,ACCEPTUSERID, SENDSTATUS, SENDTIME,
+		SENDCOUNT,SENDUSERID,
+		TAKESTATUS, TAKETIME, TAKEUSERID,
+		LEAVEMESSAGE, NOTE,
+		PAYPLATFORMCODE,CANCELTYPECODE,CANCELREASON,CANCELTIME,CANCELUSERID,CONCODE,PREFERENTIALAMT,
+		<!-- USERNAME, -->STORENAME,STORECODE,OBAMOUNT,COMMISSIONAMOUNT,COMMISSIONCOUNT,DEVICEID,RECEIVECODE,RECOMMENDCUSTOMERID,
+		USERCOUPONID,USERVOUCHERID
+		)
+		values
+		(#{saleOrderNo,jdbcType=VARCHAR},
+		#{buyerCustomerId,jdbcType=INTEGER},
+		#{storeId,jdbcType=INTEGER},
+		#{userId,jdbcType=INTEGER},
+		#{typeCode,jdbcType=VARCHAR},
+		#{statusCode,jdbcType=VARCHAR},
+		#{channelCode,jdbcType=VARCHAR},
+		#{orderCount,jdbcType=INTEGER},
+		#{totalAmount,jdbcType=BIGINT},
+		#{transferFee,jdbcType=BIGINT},
+		#{deliveryMode,jdbcType=VARCHAR},
+		#{bestTime,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{proviceCode,jdbcType=VARCHAR},
+		#{cityCode,jdbcType=VARCHAR},
+		#{countyCode,jdbcType=VARCHAR},
+		#{payTypeCode,jdbcType=VARCHAR},
+		#{payTime,jdbcType=TIMESTAMP},#{payStatus,jdbcType=VARCHAR},
+		#{acceptTime,jdbcType=TIMESTAMP},#{acceptUserId,jdbcType=INTEGER},
+		#{sendStatus,jdbcType=VARCHAR},
+		#{sendTime,jdbcType=TIMESTAMP},
+		#{sendCount,jdbcType=INTEGER},
+		#{sendUserId,jdbcType=INTEGER},
+		#{takeStatus,jdbcType=VARCHAR},
+		#{takeTime,jdbcType=TIMESTAMP},
+		#{takeUserId,jdbcType=INTEGER},
+		#{leaveMessage,jdbcType=VARCHAR},
+		#{note,jdbcType=VARCHAR},#{payPlatformCode,jdbcType=VARCHAR},
+		#{cancelTypeCode,jdbcType=VARCHAR},#{cancelReason,jdbcType=VARCHAR},
+		#{cancelTime,jdbcType=TIMESTAMP},#{cancelUserId,jdbcType=INTEGER},#{conCode,jdbcType=VARCHAR},#{preferentialAmt,jdbcType=BIGINT},
+		<!-- #{userName,jdbcType=VARCHAR}, --> #{storeName,jdbcType=VARCHAR},
+		#{storeCode,jdbcType=VARCHAR},#{obAmount,jdbcType=BIGINT},#{commissionAmount,jdbcType=BIGINT},#{commissionCount,jdbcType=BIGINT},
+		#{deviceId,jdbcType=VARCHAR},#{receiveCode,jdbcType=VARCHAR},#{recommendCustomerId,jdbcType=INTEGER},
+		#{userCouponId,jdbcType=VARCHAR},
+		#{userVoucherId,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="updatePriceBySaleOrderNo">
+		update T_SALE_ORDER
+		<set>
+			<if test="totalAmount != null">
+				TOTALAMOUNT = #{totalAmount, jdbcType=BIGINT},
+			</if>
+			<if test="transferFee != null">
+				TRANSFERFEE = #{transferFee, jdbcType=BIGINT},
+			</if>
+		</set>
+		where SALEORDERNO = #{saleOrderNo, jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateStautsCodeBySaleOrderNo">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+	</update>
+
+
+	<update id="updatePayBySaleOrderNo">
+		update T_SALE_ORDER
+		set
+		PAYTYPECODE =
+		#{payTypeCode,jdbcType=VARCHAR},
+		PAYTIME = #{payTime,
+		jdbcType=TIMESTAMP}
+		where SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+	</update>
+
+	<select id="loadBySaleOrderNo" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_ORDER
+		where SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+	</select>
+
+	<resultMap id="SaleOrderInfoMap" type="SaleOrderInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="BUYERCUSTOMERID" property="buyerCustomerId"
+			jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="DELIVERYMODE" property="deliveryMode" jdbcType="VARCHAR" />
+		<result column="CONSIGNEEUSERNAME" property="consigneeUserName"
+			jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail"
+			jdbcType="VARCHAR" />
+		<result column="PHONENO" property="phoneNo" jdbcType="VARCHAR" />
+		<result column="TOTALAMOUNT" property="totalAmount" jdbcType="BIGINT" />
+		<result column="TRANSFERFEE" property="transferFee" jdbcType="BIGINT" />
+		<result column="PREFERENTIALAMT" property="preferentialAmt"
+			jdbcType="BIGINT" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="PAYSTATUS" property="payStatus" jdbcType="VARCHAR" />
+		<result column="PAYTIME" property="payTime" jdbcType="TIMESTAMP" />
+		<result column="PAYTYPECODE" property="payTypeCode" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="ORDERTYPE" property="orderType" jdbcType="VARCHAR" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="PAYPLATFORMCODE" property="payPlatformCode"
+			jdbcType="VARCHAR" />
+		<result column="APPRAISEFLAG" property="appraiseFlag" jdbcType="VARCHAR" />
+		<result column="APPRAISETIME" property="appraiseTime" jdbcType="TIMESTAMP" />
+		<result column="APPRAISEUSERID" property="appraiseUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="findSaleOrderInfos" resultMap="SaleOrderInfoMap"
+		parameterType="SaleOrderQueryDto">
+		SELECT
+		S.ID,S.SALEORDERNO,S.STORENAME,U.USERNAME,S.STOREID,S.STORECODE,S.DELIVERYMODE,S.BUYERCUSTOMERID,
+		A.USERNAME AS
+		CONSIGNEEUSERNAME,A.ADDRESSDETAIL,
+		A.PHONENO,
+		S.TOTALAMOUNT,S.CREATETIME,S.PAYSTATUS,S.PAYTIME,S.PAYTYPECODE,S.STATUSCODE,S.TYPECODE
+		AS
+		ORDERTYPE,S.CHANNELCODE,S.PAYPLATFORMCODE,S.APPRAISEFLAG,S.APPRAISETIME,S.APPRAISEUSERID
+		FROM T_SALE_ORDER S LEFT
+		JOIN T_ORDER_CONSIGNEE_ADDRESS A ON S.SALEORDERNO =
+		A.SALEORDERNO
+		LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID=U.USERID
+		<where>
+			1=1
+			<if test="saleOrderNo != null">
+				and S.SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="userName !=null">
+				and U.USERNAME =#{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="consigneeUserName != null">
+				and A.USERNAME = #{consigneeUserName,jdbcType=INTEGER}
+			</if>
+			<if test="consigneePhoneNo != null">
+				and A.PHONENO = #{consigneePhoneNo,jdbcType=INTEGER}
+				and
+				S.DELIVERYMODE &lt;&gt; 'SALEORDERDELIVERYMODE_PICKUP'
+			</if>
+			<if test="statusCode != null">
+				and S.STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="startOrderDate != null">
+				and S.CREATETIME &gt;=
+				#{startOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endOrderDate != null">
+				and S.CREATETIME &lt;= #{endOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="startPayDate !=null">
+				and S.PAYTIME &gt;=#{startPayDate,jdbcType =TIMESTAMP}
+			</if>
+			<if test="endPayDate !=null">
+				and S.PAYTIME &lt;=#{endPayDate,jdbcType =TIMESTAMP}
+			</if>
+			<if test="storeCode !=null">
+				and S.STORECODE =#{storeCode,jdbcType =VARCHAR}
+			</if>
+			<if test="typeCode !=null">
+				and S.TYPECODE =#{typeCode,jdbcType =VARCHAR}
+			</if>
+			<if test="channelCode !=null">
+				and S.CHANNELCODE =#{channelCode,jdbcType =VARCHAR}
+			</if>
+			<if test="deliveryMode !=null">
+				and S.DELIVERYMODE =#{deliveryMode,jdbcType =VARCHAR}
+			</if>
+			<if test="appraiseFlag !=null">
+				and S.APPRAISEFLAG =#{appraiseFlag,jdbcType =VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="findSaleOrders" resultMap="BaseResultMap"
+		parameterType="SaleOrderQuery">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="userId !=null">
+				and USERID =#{userId,jdbcType=VARCHAR}
+			</if>
+			<if test="buyerCustomerId !=null">
+				and BUYERCUSTOMERID =#{buyerCustomerId,jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="statusCodes !=null">
+				and STATUSCODE IN
+				<foreach item="item" index="index" collection="statusCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="typeCode !=null">
+				and TYPECODE =#{typeCode,jdbcType =VARCHAR}
+			</if>
+			<if test="channelCode !=null">
+				and CHANNELCODE =#{channelCode,jdbcType =VARCHAR}
+			</if>
+			<if test="appraiseFlag !=null">
+				and APPRAISEFLAG =#{appraiseFlag,jdbcType =VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="listDataForExportOrder" resultMap="SaleOrderInfoMap">
+		SELECT
+		S.ID,S.SALEORDERNO,S.STORENAME,U.USERNAME,S.STOREID,S.STORECODE,
+		A.USERNAME AS CONSIGNEEUSERNAME,A.ADDRESSDETAIL,
+		A.PHONENO,
+		S.TOTALAMOUNT,S.CREATETIME,S.PAYTIME,S.PAYTYPECODE,S.STATUSCODE,S.TYPECODE
+		AS
+		ORDERTYPE,S.CHANNELCODE,S.PAYPLATFORMCODE,S.APPRAISEUSERID,S.APPRAISETIME
+		FROM T_SALE_ORDER S LEFT
+		JOIN T_ORDER_CONSIGNEE_ADDRESS A ON S.SALEORDERNO =
+		A.SALEORDERNO
+		LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		<where>
+			1=1
+			<if test="saleOrderQueryDto.saleOrderNo != null">
+				and S.SALEORDERNO =
+				#{saleOrderQueryDto.saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderQueryDto.userName !=null">
+				and U.USERNAME
+				=#{saleOrderQueryDto.userName,jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderQueryDto.consigneeUserName != null">
+				and A.USERNAME =
+				#{saleOrderQueryDto.consigneeUserName,jdbcType=INTEGER}
+			</if>
+			<if test="saleOrderQueryDto.consigneePhoneNo != null">
+				and A.PHONENO =
+				#{saleOrderQueryDto.consigneePhoneNo,jdbcType=INTEGER}
+			</if>
+			<if test="saleOrderQueryDto.statusCode != null">
+				and S.STATUSCODE =
+				#{saleOrderQueryDto.statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderQueryDto.startOrderDate != null">
+				and S.CREATETIME &gt;=
+				#{saleOrderQueryDto.startOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="saleOrderQueryDto.endOrderDate != null">
+				and S.CREATETIME &lt;=
+				#{saleOrderQueryDto.endOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="saleOrderQueryDto.startPayDate !=null">
+				and S.PAYTIME
+				&gt;=#{saleOrderQueryDto.startPayDate,jdbcType =TIMESTAMP}
+			</if>
+			<if test="saleOrderQueryDto.endPayDate !=null">
+				and S.PAYTIME
+				&lt;=#{saleOrderQueryDto.endPayDate,jdbcType =TIMESTAMP}
+			</if>
+			<if test="saleOrderQueryDto.storeCode !=null">
+				and S.STORECODE =#{saleOrderQueryDto.storeCode,jdbcType
+				=VARCHAR}
+			</if>
+			<if test="saleOrderQueryDto.typeCode !=null">
+				and S.TYPECODE =#{saleOrderQueryDto.typeCode,jdbcType
+				=VARCHAR}
+			</if>
+			<if test="saleOrderQueryDto.channelCode !=null">
+				and S.CHANNELCODE
+				=#{saleOrderQueryDto.channelCode,jdbcType =VARCHAR}
+			</if>
+			<if test="saleOrderQueryDto.appraiseFlag !=null">
+				and S.APPRAISEFLAG =#{saleOrderQueryDto.appraiseFlag,jdbcType =VARCHAR}
+			</if>
+		</where>
+		limit #{startLineNum},#{pageSize}
+	</select>
+	<select id="listSaleOrderByStatusCodes" resultMap="SaleOrderInfoMap">
+		SELECT
+		SO.ID AS ID,SO.BUYERCUSTOMERID,SO.SALEORDERNO AS
+		SALEORDERNO,SO.STORENAME AS STORENAME,OCA.USERNAME AS
+		CONSIGNEEUSERNAME,SO.STOREID,SO.STORECODE AS
+		STORECODE,OCA.ADDRESSDETAIL AS ADDRESSDETAIL,OCA.PHONENO AS
+		PHONENO,SO.TOTALAMOUNT AS TOTALAMOUNT,
+		SO.TRANSFERFEE AS TRANSFERFEE,
+		SO.PREFERENTIALAMT AS PREFERENTIALAMT,
+		SO.CREATETIME AS
+		CREATETIME,SO.PAYTIME AS PAYTIME,SO.PAYTYPECODE AS
+		PAYTYPECODE,SO.STATUSCODE AS
+		STATUSCODE,SO.TYPECODE AS ORDERTYPE,
+		SO.CHANNELCODE AS CHANNELCODE,SO.PAYPLATFORMCODE AS
+		PAYPLATFORMCODE,SO.APPRAISEFLAG,SO.APPRAISETIME,SO.APPRAISEUSERID
+
+		FROM T_SALE_ORDER
+		SO
+		LEFT JOIN T_ORDER_CONSIGNEE_ADDRESS
+		OCA ON
+		SO.SALEORDERNO=OCA.SALEORDERNO
+		<where>
+			<if test="statusCodes !=null">
+				AND STATUSCODE IN
+				<foreach item="item" index="index" collection="statusCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="getCountsForExportOrder" resultType="long"
+		parameterType="saleOrderQueryDto">
+		SELECT COUNT(S.ID)
+		FROM T_SALE_ORDER S LEFT JOIN
+		T_ORDER_CONSIGNEE_ADDRESS A ON S.SALEORDERNO = A.SALEORDERNO
+		LEFT JOIN T_SMALLTABLE_USERINFO U ON U.USERID=S.USERID
+		<where>
+			1=1
+			<if test="saleOrderNo != null">
+				and S.SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="userName !=null">
+				and U.USERNAME =#{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="consigneeUserName != null">
+				and A.USERNAME = #{consigneeUserName,jdbcType=INTEGER}
+			</if>
+			<if test="consigneePhoneNo != null">
+				and A.PHONENO = #{consigneePhoneNo,jdbcType=INTEGER}
+			</if>
+			<if test="statusCode != null">
+				and S.STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="startOrderDate != null">
+				and S.CREATETIME &gt;=
+				#{startOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endOrderDate != null">
+				and S.CREATETIME &lt;= #{endOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="startPayDate !=null">
+				and S.PAYTIME &gt;=#{startPayDate,jdbcType =TIMESTAMP}
+			</if>
+			<if test="endPayDate !=null">
+				and S.PAYTIME &lt;=#{endPayDate,jdbcType =TIMESTAMP}
+			</if>
+			<if test="storeCode !=null">
+				and S.STORECODE =#{storeCode,jdbcType =VARCHAR}
+			</if>
+			<if test="typeCode !=null">
+				and S.TYPECODE =#{typeCode,jdbcType =VARCHAR}
+			</if>
+			<if test="channelCode !=null">
+				and S.CHANNELCODE =#{channelCode,jdbcType =VARCHAR}
+			</if>
+			<if test="appraiseFlag !=null">
+				and S.APPRAISEFLAG =#{appraiseFlag,jdbcType =VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<update id="cancelOrder">
+		update T_SALE_ORDER
+		set
+		STATUSCODE
+		=#{orderStatus,jdbcType=VARCHAR},
+		CANCELTYPECODE =
+		#{cancelType,jdbcType=VARCHAR},
+		CANCELREASON = #{reason,
+		jdbcType=VARCHAR},
+		CANCELTIME = #{cancelTime,jdbcType =TIMESTAMP}
+		where
+		ID = #{orderId,jdbcType=INTEGER}
+	</update>
+
+	<resultMap id="SaleOrderStatisticsInfoMap" type="SaleOrderStatisticsInfo">
+		<id column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="TOTALORDERCOUNT" property="totalOrderCount"
+			jdbcType="INTEGER" />
+		<result column="TOTALAMOUNT" property="totalAmount" jdbcType="BIGINT" />
+		<result column="TOTALORDERCOUNTFROMSUCCESS" property="totalOrderCountFromSuccess"
+			jdbcType="INTEGER" />
+		<result column="TOTALAMOUNTFROMSUCCESS" property="totalAmountFromSuccess"
+			jdbcType="BIGINT" />
+		<result column="TOTALORDERCOUNTFROMCANCEL" property="totalOrderCountFromCancel"
+			jdbcType="INTEGER" />
+		<result column="TOTALAMOUNTFROMCANCEL" property="totalAmountFromCancel"
+			jdbcType="BIGINT" />
+		<result column="ORDERTIME" property="orderTime" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="findOrderStatisticsInfos" resultMap="SaleOrderStatisticsInfoMap"
+		parameterType="SaleOrderStatisticsQuery">
+		SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS TOTALORDERCOUNT,SUM(S.TOTALAMOUNT)
+		AS TOTALAMOUNT
+		FROM T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		WHERE 1=1
+		<if test="userName !=null">
+			AND U.USERNAME =#{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;= #{strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="strEndOrderTime !=null">
+			AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		GROUP BY S.USERID ORDER BY SUM(S.TOTALAMOUNT) DESC
+	</select>
+
+	<select id="listDataForExportOrderStatistics" resultMap="SaleOrderStatisticsInfoMap">
+		SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS TOTALORDERCOUNT,SUM(S.TOTALAMOUNT)
+		AS TOTALAMOUNT
+		FROM T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		WHERE 1=1
+		<if test="saleOrderStatisticsQuery.userName !=null">
+			AND U.USERNAME
+			=#{saleOrderStatisticsQuery.userName,jdbcType=VARCHAR}
+		</if>
+		<if test="saleOrderStatisticsQuery.strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;=
+			#{saleOrderStatisticsQuery.strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="saleOrderStatisticsQuery.strEndOrderTime !=null">
+			AND S.CREATETIME &lt;=
+			#{saleOrderStatisticsQuery.strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		GROUP BY S.USERID ORDER BY SUM(S.TOTALAMOUNT) DESC
+		limit
+		#{startLineNum},#{pageSize}
+	</select>
+
+	<select id="getCountsForExportOrderStatistics" resultType="long"
+		parameterType="SaleOrderStatisticsQuery">
+		SELECT COUNT(*) FROM
+		(SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS
+		TOTALORDERCOUNT,SUM(S.TOTALAMOUNT) AS TOTALAMOUNT
+		FROM T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		WHERE
+		1=1
+		<if test="userName !=null">
+			AND U.USERNAME =#{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;= #{strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="strEndOrderTime !=null">
+			AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		GROUP BY S.USERID ORDER BY SUM(S.TOTALAMOUNT) DESC) AS A
+	</select>
+
+	<select id="getOrderStatisticsInfoFromSuccess" resultMap="SaleOrderStatisticsInfoMap"
+		parameterType="SaleOrderStatisticsQuery">
+		SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS
+		TOTALORDERCOUNTFROMSUCCESS,SUM(S.TOTALAMOUNT) AS TOTALAMOUNTFROMSUCCESS
+		FROM T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		WHERE 1=1
+		<if test="userName !=null">
+			AND U.USERNAME =#{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;= #{strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="strEndOrderTime !=null">
+			AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="orderStatusList !=null">
+			AND S.STATUSCODE IN
+			<foreach item="item" index="index" collection="orderStatusList"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		GROUP BY S.USERID ORDER BY SUM(S.TOTALAMOUNT) DESC
+	</select>
+
+	<select id="getOrderStatisticsInfoFromCancel" resultMap="SaleOrderStatisticsInfoMap"
+		parameterType="SaleOrderStatisticsQuery">
+		SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS
+		TOTALORDERCOUNTFROMCANCEL,SUM(S.TOTALAMOUNT) AS TOTALAMOUNTFROMCANCEL
+		FROM T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		WHERE 1=1
+		<if test="userName !=null">
+			AND U.USERNAME =#{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;= #{strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="strEndOrderTime !=null">
+			AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="orderStatusList !=null">
+			AND S.STATUSCODE IN
+			<foreach item="item" index="index" collection="orderStatusList"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		GROUP BY S.USERID ORDER BY SUM(S.TOTALAMOUNT) DESC
+	</select>
+
+	<select id="findOrderStatisticsInfosByDate" resultMap="SaleOrderStatisticsInfoMap"
+		parameterType="SaleOrderStatisticsQuery">
+		SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS TOTALORDERCOUNT,SUM(S.TOTALAMOUNT)
+		AS TOTALAMOUNT,DATE(S.CREATETIME) AS ORDERTIME
+		FROM
+		T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		<where>
+			1=1
+			<if test="userName !=null">
+				AND U.USERNAME =#{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="strBeginOrderTime !=null">
+				AND S.CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY DATE(S.CREATETIME) ORDER BY DATE(S.CREATETIME)
+		DESC,SUM(S.TOTALAMOUNT) DESC
+	</select>
+
+	<select id="listDataForExportOrderStatisticsByDate" resultMap="SaleOrderStatisticsInfoMap">
+		SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS TOTALORDERCOUNT,SUM(S.TOTALAMOUNT)
+		AS TOTALAMOUNT,DATE(S.CREATETIME) AS ORDERTIME
+		FROM
+		T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		<where>
+			1=1
+			<if test="saleOrderStatisticsQuery.userName !=null">
+				AND U.USERNAME
+				=#{saleOrderStatisticsQuery.userName,jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderStatisticsQuery.strBeginOrderTime !=null">
+				AND S.CREATETIME &gt;=
+				#{saleOrderStatisticsQuery.strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderStatisticsQuery.strEndOrderTime !=null">
+				AND S.CREATETIME &lt;=
+				#{saleOrderStatisticsQuery.strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY DATE(S.CREATETIME) ORDER BY DATE(S.CREATETIME)
+		DESC,SUM(S.TOTALAMOUNT) DESC
+		limit #{startLineNum},#{pageSize}
+	</select>
+
+	<select id="getCountsForExportOrderStatisticsByDate" resultType="long"
+		parameterType="SaleOrderStatisticsQuery">
+		SELECT COUNT(*) FROM (SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS
+		TOTALORDERCOUNT,SUM(S.TOTALAMOUNT) AS TOTALAMOUNT,DATE(S.CREATETIME)
+		AS
+		ORDERTIME
+		FROM T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		<where>
+			1=1
+			<if test="userName !=null">
+				AND U.USERNAME =#{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="strBeginOrderTime !=null">
+				AND S.CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY DATE(S.CREATETIME) ORDER BY DATE(S.CREATETIME)
+		DESC,SUM(S.TOTALAMOUNT) DESC) AS A
+	</select>
+
+	<select id="getOrderStatisticsInfoFromSuccessByDate" resultMap="SaleOrderStatisticsInfoMap"
+		parameterType="SaleOrderStatisticsQuery">
+		SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS
+		TOTALORDERCOUNTFROMSUCCESS,SUM(S.TOTALAMOUNT) AS
+		TOTALAMOUNTFROMSUCCESS,DATE(S.CREATETIME)
+		AS ORDERTIME
+		FROM T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		<where>
+			1=1
+			<if test="userName !=null">
+				AND U.USERNAME =#{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="strBeginOrderTime !=null">
+				AND S.CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="orderStatusList !=null">
+				AND S.STATUSCODE IN
+				<foreach item="item" index="index" collection="orderStatusList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY DATE(S.CREATETIME) ORDER BY DATE(S.CREATETIME)
+		DESC,SUM(S.TOTALAMOUNT) DESC
+	</select>
+
+	<select id="getOrderStatisticsInfoFromCancelByDate" resultMap="SaleOrderStatisticsInfoMap"
+		parameterType="SaleOrderStatisticsQuery">
+		SELECT S.USERID,U.USERNAME,COUNT(S.ID) AS
+		TOTALORDERCOUNTFROMCANCEL,SUM(S.TOTALAMOUNT) AS
+		TOTALAMOUNTFROMCANCEL,DATE(S.CREATETIME) AS
+		ORDERTIME
+		FROM T_SALE_ORDER S LEFT JOIN T_SMALLTABLE_USERINFO U ON S.USERID = U.USERID
+		<where>
+			1=1
+			<if test="userName !=null">
+				AND U.USERNAME =#{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="strBeginOrderTime !=null">
+				AND S.CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="orderStatusList !=null">
+				AND S.STATUSCODE IN
+				<foreach item="item" index="index" collection="orderStatusList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY DATE(S.CREATETIME) ORDER BY DATE(S.CREATETIME)
+		DESC,SUM(S.TOTALAMOUNT) DESC
+	</select>
+
+	<resultMap id="BaseVolumeStatisticsInfoMap" type="BaseVolumeStatisticsInfo">
+		<result column="TOTALORDERCOUNT" property="totalOrderCount"
+			jdbcType="INTEGER" />
+		<result column="TOTALAMOUNT" property="totalAmount" jdbcType="BIGINT" />
+		<result column="TOTALUSERCOUNT" property="totalUserCount"
+			jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="getBaseVolumeStatisticsInfoByStatusList" resultMap="BaseVolumeStatisticsInfoMap">
+		SELECT SUM(A.orderCount) AS TOTALORDERCOUNT,COUNT(A.userCount) AS
+		TOTALUSERCOUNT,
+		SUM(A.totalAmount) AS TOTALAMOUNT
+		FROM
+		(SELECT COUNT(ID)
+		orderCount,USERID userCount,SUM(TOTALAMOUNT) totalAmount FROM
+		T_SALE_ORDER
+		<where>
+			1=1
+			<if test="orderStatusList !=null">
+				AND STATUSCODE IN
+				<foreach item="item" index="index" collection="orderStatusList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY USERID) A
+	</select>
+
+	<resultMap id="AllVolumeStatisticsInfoMap" type="AllVolumeStatisticsInfo">
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="TOTALORDERCOUNT" property="totalOrderCount"
+			jdbcType="INTEGER" />
+		<result column="TOTALAMOUNT" property="totalAmount" jdbcType="BIGINT" />
+		<result column="TOTALORDERCOUNTFROMSUCCESS" property="totalOrderCountFromSuccess"
+			jdbcType="INTEGER" />
+		<result column="TOTALAMOUNTFROMSUCCESS" property="totalAmountFromSuccess"
+			jdbcType="BIGINT" />
+		<result column="TOTALUSERCOUNTFROMSUCCESS" property="totalUserCountFromSuccess"
+			jdbcType="INTEGER" />
+		<result column="TOTALORDERCOUNTFROMCANCEL" property="totalOrderCountFromCancel"
+			jdbcType="INTEGER" />
+		<result column="TOTALAMOUNTFROMCANCEL" property="totalAmountFromCancel"
+			jdbcType="BIGINT" />
+		<result column="ORDERTIME" property="orderTime" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="findAllVolumeStatisticsInfos" resultMap="AllVolumeStatisticsInfoMap"
+		parameterType="AllVolumeStatisticsQuery">
+		SELECT SUM(TOTALAMOUNT) AS TOTALAMOUNT,COUNT(ID) AS
+		TOTALORDERCOUNT,DATE(CREATETIME) AS ORDERTIME
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY DATE(CREATETIME) ORDER BY DATE(CREATETIME) DESC
+	</select>
+
+	<select id="listDataForExportVolumeStatisticsDetail" resultMap="AllVolumeStatisticsInfoMap">
+		SELECT SUM(TOTALAMOUNT) AS TOTALAMOUNT,COUNT(ID) AS
+		TOTALORDERCOUNT,DATE(CREATETIME) AS ORDERTIME
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="allVolumeStatisticsQuery.strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{allVolumeStatisticsQuery.strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.strEndOrderTime !=null">
+				AND CREATETIME &lt;=
+				#{allVolumeStatisticsQuery.strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY DATE(CREATETIME) ORDER BY DATE(CREATETIME) DESC
+		limit
+		#{startLineNum},#{pageSize}
+	</select>
+
+	<select id="getCountsForExportVolumeStatisticsDetail"
+		resultType="long" parameterType="AllVolumeStatisticsQuery">
+		SELECT COUNT(*) FROM (SELECT SUM(TOTALAMOUNT) AS TOTALAMOUNT,COUNT(ID)
+		AS TOTALORDERCOUNT,DATE(CREATETIME) AS ORDERTIME
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY DATE(CREATETIME) ORDER BY DATE(CREATETIME) DESC) AS A
+	</select>
+
+	<select id="getAllVolumeStatisticsInfoFromSuccessByDate"
+		resultMap="AllVolumeStatisticsInfoMap" parameterType="AllVolumeStatisticsQuery">
+		SELECT SUM(A.orderCount) AS
+		TOTALORDERCOUNTFROMSUCCESS,COUNT(A.userCount) AS
+		TOTALUSERCOUNTFROMSUCCESS,SUM(A.totalAmount)
+		AS TOTALAMOUNTFROMSUCCESS
+		FROM (SELECT COUNT(ID) orderCount,USERID userCount,SUM(TOTALAMOUNT)
+		totalAmount FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="orderNoList !=null">
+				AND SALEORDERNO IN
+				<foreach item="item" index="index" collection="orderNoList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="orderStatusList !=null">
+				AND STATUSCODE IN
+				<foreach item="item" index="index" collection="orderStatusList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY USERID) A
+	</select>
+
+	<select id="getAllVolumeStatisticsInfoFromCancelByDate"
+		resultMap="AllVolumeStatisticsInfoMap" parameterType="AllVolumeStatisticsQuery">
+		SELECT SUM(A.orderCount) AS
+		TOTALORDERCOUNTFROMCANCEL,SUM(A.totalAmount) AS TOTALAMOUNTFROMCANCEL
+		FROM (SELECT COUNT(ID)
+		orderCount,SUM(TOTALAMOUNT) totalAmount FROM
+		T_SALE_ORDER
+		<where>
+			1=1
+			<if test="strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="orderNoList !=null">
+				AND SALEORDERNO IN
+				<foreach item="item" index="index" collection="orderNoList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="orderStatusList !=null">
+				AND STATUSCODE IN
+				<foreach item="item" index="index" collection="orderStatusList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY USERID) A
+	</select>
+
+	<select id="listSaleOrderNosByTime" resultType="java.lang.String">
+		SELECT SALEORDERNO FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="allVolumeStatisticsQuery.strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{allVolumeStatisticsQuery.strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.strEndOrderTime !=null">
+				AND CREATETIME &lt;=
+				#{allVolumeStatisticsQuery.strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.storeCode !=null">
+				AND STORECODE =
+				#{allVolumeStatisticsQuery.storeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.storeName !=null">
+				AND STORENAME =
+				#{allVolumeStatisticsQuery.storeName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllVolumeStatisticsInfosForStore" resultMap="AllVolumeStatisticsInfoMap"
+		parameterType="AllVolumeStatisticsQuery">
+		SELECT STORECODE,STORENAME,COUNT(ID) AS
+		TOTALORDERCOUNT,SUM(TOTALAMOUNT) AS TOTALAMOUNT
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="storeName !=null">
+				AND STORENAME = #{storeName,jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode !=null">
+				AND STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY STOREID ORDER BY SUM(TOTALAMOUNT) DESC
+	</select>
+
+	<select id="listDataForExportStoreVolumeByOneDay" resultMap="AllVolumeStatisticsInfoMap">
+		SELECT STORECODE,STORENAME,COUNT(ID) AS
+		TOTALORDERCOUNT,SUM(TOTALAMOUNT) AS TOTALAMOUNT
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="allVolumeStatisticsQuery.strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{allVolumeStatisticsQuery.strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.strEndOrderTime !=null">
+				AND CREATETIME &lt;=
+				#{allVolumeStatisticsQuery.strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.storeName !=null">
+				AND STORENAME =
+				#{allVolumeStatisticsQuery.storeName,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.storeCode !=null">
+				AND STORECODE =
+				#{allVolumeStatisticsQuery.storeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY STOREID ORDER BY SUM(TOTALAMOUNT) DESC
+		limit
+		#{startLineNum},#{pageSize}
+	</select>
+
+	<select id="getCountsForExportStoreVolumeByOneDay" resultType="long"
+		parameterType="AllVolumeStatisticsQuery">
+		SELECT COUNT(*) FROM (SELECT STORECODE,STORENAME,COUNT(ID) AS
+		TOTALORDERCOUNT,SUM(TOTALAMOUNT) AS TOTALAMOUNT
+		FROM
+		T_SALE_ORDER
+		<where>
+			1=1
+			<if test="strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="storeName !=null">
+				AND STORENAME = #{storeName,jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode !=null">
+				AND STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY STOREID ORDER BY SUM(TOTALAMOUNT) DESC) AS A
+	</select>
+
+	<select id="listDataForExportStoreVolumeList" resultMap="AllVolumeStatisticsInfoMap">
+		SELECT STORECODE,STORENAME,COUNT(ID) AS
+		TOTALORDERCOUNT,SUM(TOTALAMOUNT) AS TOTALAMOUNT
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="allVolumeStatisticsQuery.strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{allVolumeStatisticsQuery.strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.strEndOrderTime !=null">
+				AND CREATETIME &lt;=
+				#{allVolumeStatisticsQuery.strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.storeName !=null">
+				AND STORENAME =
+				#{allVolumeStatisticsQuery.storeName,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.storeCode !=null">
+				AND STORECODE =
+				#{allVolumeStatisticsQuery.storeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY STOREID ORDER BY SUM(TOTALAMOUNT) DESC
+		limit
+		#{startLineNum},#{pageSize}
+	</select>
+
+	<select id="getCountsForExportStoreVolumeList" resultType="long"
+		parameterType="AllVolumeStatisticsQuery">
+		SELECT COUNT(*) FROM (SELECT STORECODE,STORENAME,COUNT(ID) AS
+		TOTALORDERCOUNT,SUM(TOTALAMOUNT) AS TOTALAMOUNT
+		FROM
+		T_SALE_ORDER
+		<where>
+			1=1
+			<if test="strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="storeName !=null">
+				AND STORENAME = #{storeName,jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode !=null">
+				AND STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY STOREID ORDER BY SUM(TOTALAMOUNT) DESC) AS A
+	</select>
+
+	<select id="findAllVolumeStatisticsInfosForStoreByDay"
+		resultMap="AllVolumeStatisticsInfoMap" parameterType="AllVolumeStatisticsQuery">
+		SELECT COUNT(ID) AS TOTALORDERCOUNT,SUM(TOTALAMOUNT) AS
+		TOTALAMOUNT,DATE(CREATETIME) AS ORDERTIME
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="storeName !=null">
+				AND STORENAME = #{storeName,jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode !=null">
+				AND STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY DATE(CREATETIME) ORDER BY DATE(CREATETIME) DESC
+	</select>
+
+	<select id="listDataForExportStoreVolumeListForDay" resultMap="AllVolumeStatisticsInfoMap">
+		SELECT COUNT(ID) AS TOTALORDERCOUNT,SUM(TOTALAMOUNT) AS
+		TOTALAMOUNT,DATE(CREATETIME) AS ORDERTIME
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="allVolumeStatisticsQuery.strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{allVolumeStatisticsQuery.strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.strEndOrderTime !=null">
+				AND CREATETIME &lt;=
+				#{allVolumeStatisticsQuery.strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.storeName !=null">
+				AND STORENAME =
+				#{allVolumeStatisticsQuery.storeName,jdbcType=VARCHAR}
+			</if>
+			<if test="allVolumeStatisticsQuery.storeCode !=null">
+				AND STORECODE =
+				#{allVolumeStatisticsQuery.storeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY DATE(CREATETIME) ORDER BY DATE(CREATETIME) DESC
+		limit
+		#{startLineNum},#{pageSize}
+	</select>
+
+	<select id="getCountsForExportStoreVolumeListForDay" resultType="long"
+		parameterType="AllVolumeStatisticsQuery">
+		SELECT COUNT(*) FROM (SELECT COUNT(ID) AS
+		TOTALORDERCOUNT,SUM(TOTALAMOUNT) AS TOTALAMOUNT,DATE(CREATETIME) AS
+		ORDERTIME
+		FROM T_SALE_ORDER
+		<where>
+			1=1
+			<if test="strBeginOrderTime !=null">
+				AND CREATETIME &gt;=
+				#{strBeginOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="strEndOrderTime !=null">
+				AND CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+			</if>
+			<if test="storeName !=null">
+				AND STORENAME = #{storeName,jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode !=null">
+				AND STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY DATE(CREATETIME) ORDER BY DATE(CREATETIME) DESC) AS A
+	</select>
+
+	<resultMap id="SaleProductStatisticsInfoMap" type="SaleProductStatisticsInfo">
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="ORDERCOUNT" property="orderCount" jdbcType="INTEGER" />
+		<result column="ORDERTIME" property="orderTime" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="findSaleProductStatistics" resultMap="SaleProductStatisticsInfoMap"
+		parameterType="SaleProductStatisticsQuery">
+		SELECT I.BARCODE AS BARCODE,I.PRODUCTNAME AS PRODUCTNAME,S.STORECODE
+		AS STORECODE,S.STORENAME AS STORENAME,SUM(I.QUANTITY)
+		AS ORDERCOUNT
+		FROM T_SALE_ORDER_ITEM I,T_SALE_ORDER S
+		WHERE S.SALEORDERNO=
+		I.SALEORDERNO
+		<if test="strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;=
+			#{strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="strEndOrderTime !=null">
+			AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="storeName !=null">
+			AND S.STORENAME = #{storeName,jdbcType=VARCHAR}
+		</if>
+		<if test="storeCode !=null">
+			AND S.STORECODE = #{storeCode,jdbcType=VARCHAR}
+		</if>
+		<if test="barCode !=null">
+			AND I.BARCODE = #{barCode,jdbcType=VARCHAR}
+		</if>
+		<if test="productName !=null">
+			AND I.PRODUCTNAME = #{productName,jdbcType=VARCHAR}
+		</if>
+		AND S.STATUSCODE='SALEORDERSTATUS_FINISHED' GROUP BY I.BARCODE
+	</select>
+
+	<select id="listDataForExportProductStatisticsList" resultMap="SaleProductStatisticsInfoMap">
+		SELECT I.BARCODE AS BARCODE,I.PRODUCTNAME AS PRODUCTNAME,S.STORECODE
+		AS STORECODE,S.STORENAME AS STORENAME,SUM(I.QUANTITY)
+		AS ORDERCOUNT
+		FROM T_SALE_ORDER_ITEM I,T_SALE_ORDER S
+		WHERE S.SALEORDERNO=
+		I.SALEORDERNO
+		<if test="saleProductStatisticsQuery.strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;=
+			#{saleProductStatisticsQuery.strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.strEndOrderTime !=null">
+			AND S.CREATETIME &lt;=
+			#{saleProductStatisticsQuery.strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.storeName !=null">
+			AND S.STORENAME =
+			#{saleProductStatisticsQuery.storeName,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.storeCode !=null">
+			AND S.STORECODE =
+			#{saleProductStatisticsQuery.storeCode,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.barCode !=null">
+			AND I.BARCODE =
+			#{saleProductStatisticsQuery.barCode,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.productName !=null">
+			AND I.PRODUCTNAME =
+			#{saleProductStatisticsQuery.productName,jdbcType=VARCHAR}
+		</if>
+		AND S.STATUSCODE='SALEORDERSTATUS_FINISHED' GROUP BY I.BARCODE
+		limit
+		#{startLineNum},#{pageSize}
+	</select>
+
+	<select id="getCountsForExportProductStatisticsList" resultType="long"
+		parameterType="SaleProductStatisticsQuery">
+		SELECT COUNT(*) FROM (SELECT I.BARCODE AS BARCODE,I.PRODUCTNAME AS
+		PRODUCTNAME,S.STORECODE AS STORECODE,S.STORENAME AS
+		STORENAME,SUM(I.QUANTITY) AS ORDERCOUNT
+		FROM T_SALE_ORDER_ITEM
+		I,T_SALE_ORDER S
+		WHERE S.SALEORDERNO= I.SALEORDERNO
+		<if test="strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;=
+			#{strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="strEndOrderTime !=null">
+			AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="storeName !=null">
+			AND S.STORENAME = #{storeName,jdbcType=VARCHAR}
+		</if>
+		<if test="storeCode !=null">
+			AND S.STORECODE = #{storeCode,jdbcType=VARCHAR}
+		</if>
+		<if test="barCode !=null">
+			AND I.BARCODE = #{barCode,jdbcType=VARCHAR}
+		</if>
+		<if test="productName !=null">
+			AND I.PRODUCTNAME = #{productName,jdbcType=VARCHAR}
+		</if>
+		AND S.STATUSCODE='SALEORDERSTATUS_FINISHED' GROUP BY I.BARCODE) AS A
+	</select>
+
+	<select id="findSaleProductStatisticsDetail" resultMap="SaleProductStatisticsInfoMap"
+		parameterType="SaleProductStatisticsQuery">
+		SELECT I.BARCODE AS BARCODE,I.PRODUCTNAME AS PRODUCTNAME,S.STORECODE
+		AS STORECODE,S.STORENAME AS STORENAME,
+		SUM(I.QUANTITY)
+		AS
+		ORDERCOUNT,DATE(CREATETIME) AS ORDERTIME
+		FROM T_SALE_ORDER_ITEM
+		I,T_SALE_ORDER S
+		WHERE S.SALEORDERNO= I.SALEORDERNO AND
+		S.STATUSCODE='SALEORDERSTATUS_FINISHED'
+		<if test="strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;=
+			#{strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="strEndOrderTime !=null">
+			AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="storeName !=null">
+			AND S.STORENAME = #{storeName,jdbcType=VARCHAR}
+		</if>
+		<if test="storeCode !=null">
+			AND S.STORECODE = #{storeCode,jdbcType=VARCHAR}
+		</if>
+		<if test="barCode !=null">
+			AND I.BARCODE = #{barCode,jdbcType=VARCHAR}
+		</if>
+		<if test="productName !=null">
+			AND I.PRODUCTNAME = #{productName,jdbcType=VARCHAR}
+		</if>
+		GROUP BY DATE(CREATETIME) ORDER BY DATE(CREATETIME) DESC
+	</select>
+
+	<select id="listDataForExportProductStatisticsDetail" resultMap="SaleProductStatisticsInfoMap">
+		SELECT I.BARCODE AS BARCODE,I.PRODUCTNAME AS PRODUCTNAME,S.STORECODE
+		AS STORECODE,S.STORENAME AS STORENAME,
+		SUM(I.QUANTITY)
+		AS
+		ORDERCOUNT,DATE(CREATETIME) AS ORDERTIME
+		FROM T_SALE_ORDER_ITEM
+		I,T_SALE_ORDER S
+		WHERE S.SALEORDERNO= I.SALEORDERNO AND
+		S.STATUSCODE='SALEORDERSTATUS_FINISHED'
+		<if test="saleProductStatisticsQuery.strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;=
+			#{saleProductStatisticsQuery.strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.strEndOrderTime !=null">
+			AND S.CREATETIME &lt;=
+			#{saleProductStatisticsQuery.strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.storeName !=null">
+			AND S.STORENAME =
+			#{saleProductStatisticsQuery.storeName,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.storeCode !=null">
+			AND S.STORECODE =
+			#{saleProductStatisticsQuery.storeCode,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.barCode !=null">
+			AND I.BARCODE =
+			#{saleProductStatisticsQuery.barCode,jdbcType=VARCHAR}
+		</if>
+		<if test="saleProductStatisticsQuery.productName !=null">
+			AND I.PRODUCTNAME =
+			#{saleProductStatisticsQuery.productName,jdbcType=VARCHAR}
+		</if>
+		GROUP BY DATE(CREATETIME) ORDER BY DATE(CREATETIME) DESC
+		limit
+		#{startLineNum},#{pageSize}
+	</select>
+
+	<select id="getCountsForExportProductStatisticsDetail"
+		resultType="long" parameterType="SaleProductStatisticsQuery">
+		SELECT COUNT(*) FROM (SELECT I.BARCODE AS BARCODE,I.PRODUCTNAME AS
+		PRODUCTNAME,S.STORECODE AS STORECODE,S.STORENAME AS
+		STORENAME,
+		SUM(I.QUANTITY) AS ORDERCOUNT,DATE(CREATETIME) AS ORDERTIME
+		FROM
+		T_SALE_ORDER_ITEM I,T_SALE_ORDER S
+		WHERE
+		S.SALEORDERNO= I.SALEORDERNO
+		AND S.STATUSCODE='SALEORDERSTATUS_FINISHED'
+		<if test="strBeginOrderTime !=null">
+			AND S.CREATETIME &gt;=
+			#{strBeginOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="strEndOrderTime !=null">
+			AND S.CREATETIME &lt;= #{strEndOrderTime,jdbcType=VARCHAR}
+		</if>
+		<if test="storeName !=null">
+			AND S.STORENAME = #{storeName,jdbcType=VARCHAR}
+		</if>
+		<if test="storeCode !=null">
+			AND S.STORECODE = #{storeCode,jdbcType=VARCHAR}
+		</if>
+		<if test="barCode !=null">
+			AND I.BARCODE = #{barCode,jdbcType=VARCHAR}
+		</if>
+		<if test="productName !=null">
+			AND I.PRODUCTNAME = #{productName,jdbcType=VARCHAR}
+		</if>
+		GROUP BY DATE(CREATETIME) ORDER BY DATE(CREATETIME) DESC) AS A
+	</select>
+
+	<select id="getForAcceptOrderCount" resultType="int">
+		select COUNT(ID)
+		from T_SALE_ORDER
+		where STOREID =
+		#{storeId,jdbcType=INTEGER}
+		and
+		STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+	</select>
+
+	<select id="getFinishOrderAmount" resultType="long">
+		select
+		SUM(TOTALAMOUNT - IFNULL(PREFERENTIALAMT,0) + TRANSFERFEE) AS
+		SUMORDERAMOUNT
+		from T_SALE_ORDER
+		where STOREID =
+		#{storeId,jdbcType=INTEGER}
+		and STATUSCODE = #{statusCode, jdbcType =
+		VARCHAR}
+		and TAKETIME &gt;= #{beginDate,jdbcType=TIMESTAMP}
+		and TAKETIME
+		&lt;= #{endDate,jdbcType=TIMESTAMP}
+	</select>
+
+
+	<select id="findOrderBasicInfoListForSeller" resultMap="BaseResultMap"
+		parameterType="SellerListOrderQuery">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_ORDER
+		where STATUSCODE IN
+		<foreach item="item" index="index" collection="statusCodeList"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		<if test="orderTypeCodeList != null">
+			and TYPECODE IN
+			<foreach item="item" index="index" collection="orderTypeCodeList"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="deliveryTypeCode != null">
+			and DELIVERYMODE = #{deliveryTypeCode, jdbcType = VARCHAR}
+		</if>
+		and STOREID = #{storeId,jdbcType=INTEGER}
+		<if test="masterFlag != null and masterFlag != '' and masterFlag == 'USERMASTERFLAG_SUB'">
+			and (ACCEPTUSERID is null or ACCEPTUSERID = #{userId,jdbcType=INTEGER})
+		</if>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="findOrderBasicInfoListForSellerWithKeyword"
+		resultMap="BaseResultMap" parameterType="SellerListOrderQuery">
+		select A.SALEORDERNO, A.CREATETIME, A.PAYTIME, A.TOTALAMOUNT,
+		A.PREFERENTIALAMT, A.TRANSFERFEE, A.DELIVERYMODE, A.USERID
+		from
+		T_SALE_ORDER A
+		left join T_ORDER_CONSIGNEE_ADDRESS B on
+		A.SALEORDERNO =
+		B.SALEORDERNO
+		where A.STOREID =
+		#{storeId,jdbcType=INTEGER}
+		and
+		A.PAYSTATUS = #{payStatus,jdbcType=VARCHAR}
+		and
+		(A.SALEORDERNO
+		like
+		CONCAT('%',#{keyword,jdbcType=VARCHAR},'%')
+		or B.PHONENO like
+		CONCAT('%',#{keyword,jdbcType=VARCHAR},'%')
+		or B.USERNAME
+		like
+		CONCAT('%',#{keyword,jdbcType=VARCHAR},'%'))
+		<if test="orderTypeCodeList != null">
+			and A.TYPECODE in
+			<foreach item="item" index="index" collection="orderTypeCodeList"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="deliveryTypeCode != null">
+			and A.DELIVERYMODE = #{deliveryTypeCode, jdbcType =
+			VARCHAR}
+		</if>
+		<if test="masterFlag != null and masterFlag != '' and masterFlag == 'USERMASTERFLAG_SUB'">
+			and (A.ACCEPTUSERID is null or A.ACCEPTUSERID = #{userId,jdbcType=INTEGER})
+		</if>
+	</select>
+
+	<update id="updateOrderStatusForPaid">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{forAcceptStatusCode,jdbcType=VARCHAR},
+		PAYTIME =
+		#{payTime,jdbcType=TIMESTAMP},
+		PAYSTATUS =
+		#{paidStatusCode,jdbcType=VARCHAR},
+		PAYPLATFORMCODE =
+		#{payPlatformCode,jdbcType=VARCHAR}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{notPayStatusCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateOrderStatusForAccept">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{forSendStatusCode,jdbcType=VARCHAR},
+		ACCEPTTIME =
+		#{acceptTime,jdbcType=TIMESTAMP},
+		ACCEPTUSERID =
+		#{acceptUserId,jdbcType=INTEGER}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{paidStatusCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateOrderStatusForSellerCancel">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{refundingStatusCode,jdbcType=VARCHAR},
+		CANCELTIME =
+		#{cancelTime,jdbcType=TIMESTAMP},
+		CANCELUSERID =
+		#{cancelUserId,jdbcType=INTEGER},
+		CANCELTYPECODE =
+		#{cancelTypeCode,jdbcType=VARCHAR},
+		CANCELREASON =
+		#{cancelReason,jdbcType=VARCHAR}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{paidStatusCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStatusForFinished">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{finishedStatusCode,jdbcType=VARCHAR},
+		TAKESTATUS =
+		#{takeStatusCode,jdbcType=VARCHAR},
+		TAKETIME =
+		#{takeTime,jdbcType=TIMESTAMP},
+		TAKEUSERID =
+		#{takeUserId,jdbcType=INTEGER}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{forReceiveStatusCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStatusForAppraise">
+		update T_SALE_ORDER
+		set
+		APPRAISEFLAG =
+		#{saleorderstatusAppraise,jdbcType=VARCHAR},
+		APPRAISETIME =
+		#{appraiseTime,jdbcType=TIMESTAMP},
+		APPRAISEUSERID =
+		#{appraiseUserId,jdbcType=INTEGER}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{saleorderstatusFinished,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStatusForRefundSuccess">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{refundSuccessStatusCode,jdbcType=VARCHAR},
+		REFUNDAUDITTIME =
+		#{refundAuditTime,jdbcType=TIMESTAMP},
+		REFUNDAUDITUSERID =
+		#{refundAuditUserId,jdbcType=INTEGER}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{refundingStatusCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStatusForRefundFailure">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{refundFailureStatusCode,jdbcType=VARCHAR},
+		REFUNDAUDITFAILUREREASON=#{refundFailureReason,jdbcType=VARCHAR},
+		REFUNDAUDITTIME =
+		#{refundAuditTime,jdbcType=TIMESTAMP},
+		REFUNDAUDITUSERID = #{refundAuditUserId,jdbcType=INTEGER}
+		where
+		SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{refundingStatusCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStatusForSellerSend">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{forReceiveStatusCode,jdbcType=VARCHAR},
+		SENDSTATUS =
+		#{sendStatus,jdbcType=VARCHAR},
+		SENDTIME =
+		#{sendTime,jdbcType=TIMESTAMP},
+		SENDUSERID =
+		#{sendUserId,jdbcType=INTEGER},
+		SENDCOUNT =
+		#{sendCount,jdbcType=INTEGER}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{forSendStatusCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStatusForUnPayCancel">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{cancelStatusCode,jdbcType=VARCHAR},
+		CANCELTIME =
+		#{cancelTime,jdbcType=TIMESTAMP},
+		CREATEUSERID =
+		#{cancelUserId,jdbcType=INTEGER},
+		CANCELTYPECODE =
+		#{cancelTypeCode,jdbcType=VARCHAR},
+		CANCELREASON =
+		#{cancelReason,jdbcType=VARCHAR}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{forPayStatusCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStatusForSellerConfirmReceive">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{finishedStatusCode,jdbcType=VARCHAR},
+		RECEIVECODE =
+		#{receiveNo,jdbcType=VARCHAR},
+		TAKESTATUS =
+		#{takeStatus,jdbcType=VARCHAR},
+		TAKETIME =
+		#{takeTime,jdbcType=TIMESTAMP},
+		TAKEUSERID =
+		#{takeUserId,jdbcType=INTEGER}
+		where
+		SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{forReceiveStatusCode,jdbcType=VARCHAR}
+	</update>
+	<select id="getTotalCommissionAmountByTimes" resultType="long">
+		select SUM(COMMISSIONAMOUNT) AS
+		TOTALCOMMISSIONAMOUNT
+		from
+		T_SALE_ORDER
+		where STOREID = #{storeId,jdbcType=INTEGER}
+		and STATUSCODE =
+		#{statusCode, jdbcType = VARCHAR}
+		<if test="beginDate != null">
+			and TAKETIME &gt;= #{beginDate,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endDate != null">
+			and TAKETIME &lt;= #{endDate,jdbcType=TIMESTAMP}
+		</if>
+	</select>
+	<select id="getTotalCommissionCountByTimes" resultType="java.lang.Integer">
+		select count(1) AS
+		TOTALSALEORDERNO
+		from
+		T_SALE_ORDER
+		where STOREID =
+		#{storeId,jdbcType=INTEGER}
+		and STATUSCODE = #{statusCode, jdbcType =
+		VARCHAR}
+		and COMMISSIONAMOUNT &gt; 0
+		<if test="beginDate != null">
+			and TAKETIME &gt;= #{beginDate,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endDate != null">
+			and TAKETIME &lt;= #{endDate,jdbcType=TIMESTAMP}
+		</if>
+	</select>
+	<select id="getTotalByStoreIdAndReceiveCodeAndStatusCodes"
+		resultType="java.lang.Integer">
+		select count(1) AS
+		TOTALSALEORDERNO
+		from T_SALE_ORDER
+		where STOREID =
+		#{storeId,jdbcType=INTEGER}
+		<if test="statusCodes != null">
+			and STATUSCODE IN
+			<foreach item="item" index="index" collection="statusCodes"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		and RECEIVECODE = #{receiveCode}
+	</select>
+	<select id="getSaleOrderNoByStoreIdAndReceiveCodeAndStatusCodes"
+		resultType="java.lang.String">
+		select SALEORDERNO
+		from T_SALE_ORDER
+		where STOREID =
+		#{storeId,jdbcType=INTEGER}
+		<if test="statusCodes != null">
+			and STATUSCODE IN
+			<foreach item="item" index="index" collection="statusCodes"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		and RECEIVECODE = #{receiveCode}
+	</select>
+	<select id="getFinishOrderCountByTimes" resultType="int">
+		select
+		COUNT(ID) AS
+		FINISHORDERCOUNT
+		from T_SALE_ORDER
+		where STOREID
+		=
+		#{storeId,jdbcType=INTEGER}
+		and STATUSCODE = #{statusCode, jdbcType =
+		VARCHAR}
+		and TAKETIME &gt;=
+		#{beginDate,jdbcType=TIMESTAMP}
+		and TAKETIME
+		&lt;= #{endDate,jdbcType=TIMESTAMP}
+	</select>
+	<select id="findSettleDetails" resultMap="SettleDetailResultMap"
+		parameterType="SettleDetailQuery">
+		select SALEORDERNO, COMMISSIONAMOUNT
+		AS SETTLEAMOUNT,
+		SUBSTRING(TAKETIME, 1, 10) AS STATISTICDATE
+		from
+		T_SALE_ORDER
+		where
+		STOREID = #{storeId,jdbcType=INTEGER}
+		and
+		STATUSCODE = #{statusCode,
+		jdbcType = VARCHAR}
+		and TAKETIME &gt;=
+		#{beginTime,jdbcType=TIMESTAMP}
+		and TAKETIME &lt;=
+		#{endTime,jdbcType=TIMESTAMP}
+		order by TAKETIME desc
+	</select>
+	<select id="listFinishOrderAmountByStoreIds" resultMap="FinishOrderAmountInfoMap">
+		select STOREID,SUM(TOTALAMOUNT - IFNULL(PREFERENTIALAMT,0) +
+		TRANSFERFEE) AS SUMORDERAMOUNT
+		from T_SALE_ORDER
+		where STOREID
+		IN
+		<foreach item="item" index="index" collection="storeIds" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		and STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+		group by STOREID
+		<foreach item="item" index="index" collection="storeIds"
+			open="order by field(STOREID," separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="listFinishOrderCountByStoreIds" resultMap="FinishOrderCountInfoMap">
+		select STOREID,COUNT(ID) AS FINISHEDCOUNT
+		from T_SALE_ORDER
+		where
+		STOREID IN
+		<foreach item="item" index="index" collection="storeIds" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		and STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+		group by STOREID
+		<foreach item="item" index="index" collection="storeIds"
+			open="order by field(STOREID," separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<update id="updateOrderStatusForSendCancel">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{refundingStatusCode,jdbcType=VARCHAR},
+		CANCELTIME =
+		#{cancelTime,jdbcType=TIMESTAMP},
+		CANCELUSERID =
+		#{cancelUserId,jdbcType=INTEGER},
+		CANCELTYPECODE =
+		#{cancelTypeCode,jdbcType=VARCHAR},
+		CANCELREASON =
+		#{cancelReason,jdbcType=VARCHAR}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{forSendStatusCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStatusForReceiveCancel">
+		update T_SALE_ORDER
+		set
+		STATUSCODE =
+		#{refundingStatusCode,jdbcType=VARCHAR},
+		CANCELTIME =
+		#{cancelTime,jdbcType=TIMESTAMP},
+		CANCELUSERID =
+		#{cancelUserId,jdbcType=INTEGER},
+		CANCELTYPECODE =
+		#{cancelTypeCode,jdbcType=VARCHAR},
+		CANCELREASON =
+		#{cancelReason,jdbcType=VARCHAR}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE =
+		#{forReceiveStatusCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderTypeBySaleOrderNo">
+		update T_SALE_ORDER
+		set
+		TYPECODE =
+		#{typeCode,jdbcType=VARCHAR},
+		COMMISSIONAMOUNT =
+		#{commissionAmount,jdbcType=BIGINT},
+		COMMISSIONCOUNT =
+		#{commissionCount,jdbcType=INTEGER}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+	</update>
+	<select id="listOrdersForNeedAutoReceived" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_ORDER
+		where
+		STATUSCODE =
+		#{forReceiveStatusCode,jdbcType=VARCHAR}
+		and SENDTIME &lt;=
+		#{sendTimeForNeedAutoReceive,jdbcType=TIMESTAMP}
+		and DELIVERYMODE
+		=#{deliveryMode,jdbcType =VARCHAR}
+	</select>
+	<select id="listOrderByDeliveryModeAndStatusCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_ORDER
+		<where>
+			<if test="statusCode!=null">and STATUSCODE = #{statusCode,jdbcType=VARCHAR}</if>
+			<if test="deliveryMode != null">and DELIVERYMODE = #{deliveryMode,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+	<select id="findRecommendOrderInfos" resultMap="RecommendOrderInfoMap">
+		SELECT C.REALNAME AS RECOMMENDREALNAME, C.CUSTOMERMOBILE AS
+		RECOMMENDMOBILE,
+		C.INVITATIONCODE AS INVITATIONCODE,
+		D.USERMOBILE AS
+		BUYERMOBILE,
+		D.REGISTERTIME AS BUYERREGISTERTIME, A.SALEORDERNO AS
+		SALEORDERNO,
+		A.TOTALAMOUNT -
+		IFNULL(A.PREFERENTIALAMT,0) + A.TRANSFERFEE
+		AS SALEORDERAMOUNT,
+		A.STATUSCODE AS SALEORDERSTATUS
+		FROM T_SALE_ORDER A
+		INNER JOIN
+		(SELECT B.REALNAME, B.CUSTOMERID, B.CUSTOMERMOBILE,
+		B.INVITATIONCODE FROM T_SMALLTABLE_USERINFO B GROUP BY B.CUSTOMERID) C
+		ON A.RECOMMENDCUSTOMERID = C.CUSTOMERID
+		INNER JOIN
+		T_SMALLTABLE_USERINFO D ON A.USERID = D.USERID
+		<where>
+			<if test="statusCodes !=null">
+				A.STATUSCODE IN
+				<foreach item="item" index="index" collection="statusCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="recommendOrderInfoQuery.recommendRealName !=null">
+				AND C.REALNAME LIKE
+				CONCAT('%',#{recommendOrderInfoQuery.recommendRealName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="recommendOrderInfoQuery.invitationCode !=null">
+				AND C.INVITATIONCODE =
+				#{recommendOrderInfoQuery.invitationCode,jdbcType=VARCHAR}
+			</if>
+			<if test="recommendOrderInfoQuery.saleOrderNo !=null">
+				AND A.SALEORDERNO =
+				#{recommendOrderInfoQuery.saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="recommendOrderInfoQuery.saleOrderStatus !=null">
+				AND A.STATUSCODE =
+				#{recommendOrderInfoQuery.saleOrderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="recommendOrderInfoQuery.startRegisterDate !=null">
+				AND D.REGISTERTIME &gt;=
+				#{recommendOrderInfoQuery.startRegisterDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="recommendOrderInfoQuery.endRegisterDate !=null">
+				AND D.REGISTERTIME &lt;=
+				#{recommendOrderInfoQuery.endRegisterDate,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		ORDER BY C.INVITATIONCODE
+	</select>
+	<select id="getCountsForExportRecommendOrder" resultType="long">
+		SELECT COUNT(*) FROM (SELECT 1
+		FROM T_SALE_ORDER A
+		INNER JOIN (SELECT
+		B.REALNAME, B.CUSTOMERID, B.CUSTOMERMOBILE,
+		B.INVITATIONCODE FROM
+		T_SMALLTABLE_USERINFO B GROUP BY B.CUSTOMERID) C ON
+		A.RECOMMENDCUSTOMERID = C.CUSTOMERID
+		INNER JOIN
+		T_SMALLTABLE_USERINFO D
+		ON A.USERID = D.USERID
+		<where>
+			<if test="statusCodes !=null">
+				A.STATUSCODE IN
+				<foreach item="item" index="index" collection="statusCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="recommendOrderInfoQuery.recommendRealName !=null">
+				AND C.REALNAME LIKE
+				CONCAT('%',#{recommendOrderInfoQuery.recommendRealName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="recommendOrderInfoQuery.invitationCode !=null">
+				AND C.INVITATIONCODE =
+				#{recommendOrderInfoQuery.invitationCode,jdbcType=VARCHAR}
+			</if>
+			<if test="recommendOrderInfoQuery.saleOrderNo !=null">
+				AND A.SALEORDERNO =
+				#{recommendOrderInfoQuery.saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="recommendOrderInfoQuery.saleOrderStatus !=null">
+				AND A.STATUSCODE =
+				#{recommendOrderInfoQuery.saleOrderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="recommendOrderInfoQuery.startRegisterDate !=null">
+				AND D.REGISTERTIME &gt;=
+				#{recommendOrderInfoQuery.startRegisterDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="recommendOrderInfoQuery.endRegisterDate !=null">
+				AND D.REGISTERTIME &lt;=
+				#{recommendOrderInfoQuery.endRegisterDate,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		ORDER BY C.INVITATIONCODE) E
+	</select>
+	<select id="listDataForExportRecommendOrder" resultMap="RecommendOrderInfoMap">
+		SELECT C.REALNAME AS RECOMMENDREALNAME, C.CUSTOMERMOBILE AS
+		RECOMMENDMOBILE,
+		C.INVITATIONCODE AS INVITATIONCODE,
+		D.USERMOBILE AS
+		BUYERMOBILE,
+		D.REGISTERTIME AS BUYERREGISTERTIME, A.SALEORDERNO AS
+		SALEORDERNO,
+		A.TOTALAMOUNT -
+		IFNULL(A.PREFERENTIALAMT,0) + A.TRANSFERFEE
+		AS SALEORDERAMOUNT,
+		A.STATUSCODE AS SALEORDERSTATUS
+		FROM T_SALE_ORDER A
+		INNER JOIN
+		(SELECT B.REALNAME, B.CUSTOMERID, B.CUSTOMERMOBILE,
+		B.INVITATIONCODE FROM T_SMALLTABLE_USERINFO B GROUP BY B.CUSTOMERID) C
+		ON A.RECOMMENDCUSTOMERID = C.CUSTOMERID
+		INNER JOIN
+		T_SMALLTABLE_USERINFO D ON A.USERID = D.USERID
+		<where>
+			<if test="statusCodes !=null">
+				A.STATUSCODE IN
+				<foreach item="item" index="index" collection="statusCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="recommendOrderInfoQuery.recommendRealName !=null">
+				AND C.REALNAME LIKE
+				CONCAT('%',#{recommendOrderInfoQuery.recommendRealName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="recommendOrderInfoQuery.invitationCode !=null">
+				AND C.INVITATIONCODE =
+				#{recommendOrderInfoQuery.invitationCode,jdbcType=VARCHAR}
+			</if>
+			<if test="recommendOrderInfoQuery.saleOrderNo !=null">
+				AND A.SALEORDERNO =
+				#{recommendOrderInfoQuery.saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="recommendOrderInfoQuery.saleOrderStatus !=null">
+				AND A.STATUSCODE =
+				#{recommendOrderInfoQuery.saleOrderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="recommendOrderInfoQuery.startRegisterDate !=null">
+				AND D.REGISTERTIME &gt;=
+				#{recommendOrderInfoQuery.startRegisterDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="recommendOrderInfoQuery.endRegisterDate !=null">
+				AND D.REGISTERTIME &lt;=
+				#{recommendOrderInfoQuery.endRegisterDate,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		ORDER BY C.INVITATIONCODE
+		limit #{startLineNum},#{pageSize}
+	</select>
+
+	<resultMap id="SaleOrderItemInfoResultMap" type="SaleOrderItemInfo">
+		<id column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="BUYERCUSTOMERID" property="buyerCustomerId"
+			jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="TYPECODE" property="typeCode" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="TAKETIME" property="takeTime" jdbcType="TIMESTAMP" />
+		<result column="SALEPRODUCTID" property="saleProductId"
+			jdbcType="INTEGER" />
+		<result column="QUANTITY" property="quantity" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="listSaleOrderItemInfoByOrderNo" resultMap="SaleOrderItemInfoResultMap"
+		parameterType="java.lang.String">
+		SELECT
+		SO.SALEORDERNO AS SALEORDERNO,
+		SO.STOREID AS STOREID,
+		SO.USERID AS
+		USERID,
+		SO.TYPECODE AS TYPECODE,
+		SO.STATUSCODE AS
+		STATUSCODE,
+		SO.TAKETIME
+		AS TAKETIME,
+		SOI.SALEPRODUCTID AS SALEPRODUCTID,
+		SOI.QUANTITY AS
+		QUANTITY
+		FROM
+		T_SALE_ORDER SO
+		INNER JOIN
+		T_SALE_ORDER_ITEM SOI ON
+		SO.SALEORDERNO = SOI.SALEORDERNO
+		<where>
+			SO.SALEORDERNO =
+			#{saleOrderNo,jdbcType=VARCHAR}
+			<if test="statusCodes !=null">
+				and STATUSCODE IN
+				<foreach item="item" index="index" collection="statusCodes"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	<!-- 子账号订单列表 -->
+	<select id="findChildAccountOrder" parameterType="com.yilidi.o2o.order.model.query.SaleOrderQuery" resultMap="BaseResultMap">
+		SELECT
+			t.ID,
+			t.SALEORDERNO,
+			t.STOREID,
+			t.USERID,
+			t.STATUSCODE,
+			t.ORDERCOUNT,
+			t.TOTALAMOUNT,
+			t.TRANSFERFEE,
+			t.CREATETIME,
+			t.ACCEPTTIME,
+			t.ACCEPTUSERID,
+			t.SENDTIME,
+			t.SENDUSERID,
+			t.TAKETIME,
+			t.TAKEUSERID
+		FROM
+			T_SALE_ORDER t
+		WHERE
+			t.ACCEPTUSERID = #{acceptUserId,jdbcType=INTEGER}
+			<if test="saleOrderNo != null">
+				AND t.SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null and statusCode != ''">
+				AND t.STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+				<!-- 待发货 -->
+				<if test="statusCode == 'SALEORDERSTATUS_FORSEND'">
+					<if test="beginTime != null">
+						AND t.ACCEPTTIME &gt;= #{beginTime,jdbcType=TIMESTAMP}
+					</if>
+					<if test="endTime != null">
+						AND t.ACCEPTTIME &lt;= #{endTime,jdbcType=TIMESTAMP}
+					</if>
+				</if>
+				<!-- 已发货 -->
+				<if test="statusCode == 'SALEORDERSTATUS_FORRECEIVE'">
+					<if test="beginTime != null">
+						AND t.SENDTIME &gt;= #{beginTime,jdbcType=TIMESTAMP}
+					</if>
+					<if test="endTime != null">
+						AND t.SENDTIME &lt;= #{endTime,jdbcType=TIMESTAMP}
+					</if>
+				</if>
+				<!-- 已完成 -->
+				<if test="statusCode == 'SALEORDERSTATUS_FINISHED'">
+					<if test="beginTime != null">
+						AND t.TAKETIME &gt;= #{beginTime,jdbcType=TIMESTAMP}
+					</if>
+					<if test="endTime != null">
+						AND t.TAKETIME &lt;= #{endTime,jdbcType=TIMESTAMP}
+					</if>
+				</if>
+			</if>
+	</select>
+</mapper>

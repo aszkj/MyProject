@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.FloorAdvertisementTypeMapper">
+	<resultMap id="BaseResultMap" type="FloorAdvertisementType">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="FLOORID" property="floorId" jdbcType="INTEGER" />
+		<result column="ADVERTISEMENTTYPECODE" property="advertisementTypeCode" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,FLOORID,ADVERTISEMENTTYPECODE,CREATETIME,CREATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="FloorAdvertisementType" useGeneratedKeys="true" keyProperty="id">
+		insert into P_FLOOR_ADVERTISEMENTTYPE
+		(FLOORID,ADVERTISEMENTTYPECODE,CREATETIME,CREATEUSERID)
+		values
+		(#{floorId,jdbcType=INTEGER},#{advertisementTypeCode,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},#{createUserId,jdbcType=INTEGER})
+	</insert>
+
+	<delete id="deleteByFloorId">
+		delete from P_FLOOR_ADVERTISEMENTTYPE
+		where FLOORID = #{floorId,jdbcType=INTEGER}
+	</delete>
+
+	<select id="listFloorIdsByAdvertisementTypeCode" resultType="integer">
+		SELECT FLOORID FROM P_FLOOR_ADVERTISEMENTTYPE WHERE ADVERTISEMENTTYPECODE =
+		#{advertisementTypeCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadAdvertisementTypeCodeByFloorId" resultType="string">
+		SELECT ADVERTISEMENTTYPECODE FROM P_FLOOR_ADVERTISEMENTTYPE WHERE FLOORID =
+		#{floorId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

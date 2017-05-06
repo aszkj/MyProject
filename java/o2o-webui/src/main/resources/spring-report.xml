@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd ">
+
+	<!-- 导出 -->
+	<bean id="userReportExport" class="com.yilidi.o2o.report.export.user.UserReportExport" scope="prototype">
+		<property name="userServiceHessian" ref="userServiceHessian" />
+	</bean>
+	<bean id="buyerUserReportExport" class="com.yilidi.o2o.report.export.user.BuyerUserReportExport" scope="prototype">
+		<property name="userServiceHessian" ref="userServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="withdrawApplyReportExport" class="com.yilidi.o2o.report.export.user.WithdrawApplyReportExport" scope="prototype">
+		<property name="withdrawApplyServiceHessian" ref="withdrawApplyServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="withdrawApplySuccessDetailReportExport" class="com.yilidi.o2o.report.export.user.WithdrawApplySuccessDetailReportExport"
+		scope="prototype">
+		<property name="withdrawApplyServiceHessian" ref="withdrawApplyServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="storeEvaluationReportExport" class="com.yilidi.o2o.report.export.user.StoreEvaluationReportExport" scope="prototype">
+		<property name="storeEvaluationServiceHessian" ref="storeEvaluationServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="saleProductEvaluationReportExport" class="com.yilidi.o2o.report.export.user.SaleProductEvaluationReportExport"
+		scope="prototype">
+		<property name="saleProductEvaluationServiceHessian" ref="saleProductEvaluationServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="sellerAccountReportExport" class="com.yilidi.o2o.report.export.user.SellerAccountReportExport" scope="prototype">
+		<property name="accountServiceHessian" ref="accountServiceHessian" />
+	</bean>
+	<bean id="sellerAccountPayLogReportExport" class="com.yilidi.o2o.report.export.user.SellerAccountPayLogReportExport"
+		scope="prototype">
+		<property name="accountServiceHessian" ref="accountServiceHessian" />
+	</bean>
+	<bean id="sellerOnlinePayLogReportExport" class="com.yilidi.o2o.report.export.user.SellerOnlinePayLogReportExport"
+		scope="prototype">
+		<property name="accountServiceHessian" ref="accountServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="sellerRefundLogReportExport" class="com.yilidi.o2o.report.export.user.SellerRefundLogReportExport" scope="prototype">
+		<property name="accountServiceHessian" ref="accountServiceHessian" />
+	</bean>
+	<bean id="userAccountReportExport" class="com.yilidi.o2o.report.export.user.UserAccountReportExport" scope="prototype">
+		<property name="accountServiceHessian" ref="accountServiceHessian" />
+	</bean>
+	<bean id="userAccountDetailReportExport" class="com.yilidi.o2o.report.export.user.UserAccountDetailReportExport" scope="prototype">
+		<property name="accountServiceHessian" ref="accountServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="userPayLogReportExport" class="com.yilidi.o2o.report.export.user.UserPayLogReportExport" scope="prototype">
+		<property name="accountServiceHessian" ref="accountServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="sellerCountAccountDetailReportExport" class="com.yilidi.o2o.report.export.user.SellerCountAccountDetailReportExport"
+		scope="prototype">
+		<property name="accountServiceHessian" ref="accountServiceHessian" />
+	</bean>
+	<bean id="storeProductSubsidyReportExport" class="com.yilidi.o2o.report.export.user.StoreProductSubsidyReportExport"
+		scope="prototype">
+		<property name="storeProductSubsidyServiceHessian" ref="storeProductSubsidyServiceHessian" />
+	</bean>
+	<bean id="storeSubsidyRecordReportExport" class="com.yilidi.o2o.report.export.user.StoreSubsidyRecordReportExport"
+		scope="prototype">
+		<property name="storeSubsidyRecordServiceHessian" ref="storeSubsidyRecordServiceHessian" />
+	</bean>
+	<bean id="productReportExport" class="com.yilidi.o2o.report.export.product.ProductReportExport" scope="prototype">
+		<property name="productServiceHessian" ref="productServiceHessian" />
+	</bean>
+	<bean id="saleProductReportExport" class="com.yilidi.o2o.report.export.product.SaleProductReportExport" scope="prototype">
+		<property name="saleProductServiceHessian" ref="saleProductServiceHessian" />
+	</bean>
+	<bean id="warehouseSaleProductInventoryReportExport" class="com.yilidi.o2o.report.export.product.WarehouseSaleProductInventoryReportExport"
+		scope="prototype">
+		<property name="saleProductServiceHessian" ref="saleProductServiceHessian" />
+	</bean>
+	<bean id="saleProductInventoryReportExport" class="com.yilidi.o2o.report.export.product.SaleProductInventoryReportExport"
+		scope="prototype">
+		<property name="saleProductServiceHessian" ref="saleProductServiceHessian" />
+	</bean>
+	<bean id="orderReportExport" class="com.yilidi.o2o.report.export.order.OrderReportExport" scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="payLogOnlineReportExport" class="com.yilidi.o2o.report.export.order.PayLogOnlineReportExport" scope="prototype">
+		<property name="payLogServiceHessian" ref="payLogServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="secKillOrderReportExport" class="com.yilidi.o2o.report.export.order.SecKillOrderReportExport" scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="storeReportExport" class="com.yilidi.o2o.report.export.user.StoreReportExport" scope="prototype">
+		<property name="communityServiceHessian" ref="communityServiceHessian" />
+	</bean>
+	<bean id="orderStatisticsReportExport" class="com.yilidi.o2o.report.export.order.OrderStatisticsReportExport" scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="orderStatisticsByDateReportExport" class="com.yilidi.o2o.report.export.order.OrderStatisticsByDateReportExport"
+		scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="volumeStatisticsDetailReportExport" class="com.yilidi.o2o.report.export.order.VolumeStatisticsDetailReportExport"
+		scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="storeVolumeByOneDayReportExport" class="com.yilidi.o2o.report.export.order.StoreVolumeByOneDayReportExport"
+		scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="storeVolumeListReportExport" class="com.yilidi.o2o.report.export.order.StoreVolumeListReportExport" scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="storeVolumeListForDayReportExport" class="com.yilidi.o2o.report.export.order.StoreVolumeListForDayReportExport"
+		scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="productStatisticsListReportExport" class="com.yilidi.o2o.report.export.product.ProductStatisticsListReportExport"
+		scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="productStatisticsDetailReportExport" class="com.yilidi.o2o.report.export.product.ProductStatisticsDetailReportExport"
+		scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="purchaseOrderReportExport" class="com.yilidi.o2o.report.export.order.PurchaseOrderReportExport" scope="prototype">
+		<property name="purchaseOrderServiceHessian" ref="purchaseOrderServiceHessian" />
+	</bean>
+	<bean id="stockOutOrderReportExport" class="com.yilidi.o2o.report.export.order.StockOutOrderReportExport" scope="prototype">
+		<property name="stockOutOrderServiceHessian" ref="stockOutOrderServiceHessian" />
+	</bean>
+	<bean id="recommendOrderReportExport" class="com.yilidi.o2o.report.export.order.RecommendOrderReportExport" scope="prototype">
+		<property name="orderServiceHessian" ref="orderServiceHessian" />
+	</bean>
+	<bean id="buyerFeedbackExport" class="com.yilidi.o2o.report.export.user.BuyerFeedbackExport" scope="prototype">
+		<property name="buyerFeedbackServiceHessian" ref="buyerFeedbackServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	
+	<!-- 导入 -->
+	<bean id="userReportImport" class="com.yilidi.o2o.report.imports.user.UserReportImport" scope="prototype">
+		<property name="userService" ref="userService" />
+		<property name="userServiceHessian" ref="userServiceHessian" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="saleProductReportImport" class="com.yilidi.o2o.report.imports.product.SaleProductReportImport" scope="prototype">
+		<property name="productService" ref="productService" />
+		<property name="productServiceHessian" ref="productServiceHessian" />
+		<property name="saleProductServiceHessian" ref="saleProductServiceHessian" />
+	</bean>
+	<bean id="saleProductSortReportImport" class="com.yilidi.o2o.report.imports.product.SaleProductSortReportImport" scope="prototype">
+		<property name="saleProductServiceHessian" ref="saleProductServiceHessian" />
+		<property name="productClassService" ref="productClassService" />
+	</bean>
+	<bean id="saleProductOtherReportImport" class="com.yilidi.o2o.report.imports.product.SaleProductOtherReportImport"
+		scope="prototype">
+		<property name="productServiceHessian" ref="productServiceHessian" />
+		<property name="saleProductServiceHessian" ref="saleProductServiceHessian" />
+		<property name="productClassService" ref="productClassService" />
+	</bean>
+	<bean id="productReportImport" class="com.yilidi.o2o.report.imports.product.ProductReportImport" scope="prototype">
+		<property name="productTempService" ref="productTempService" />
+		<property name="productServiceHessian" ref="productServiceHessian" />
+		<property name="productTempServiceHessian" ref="productTempServiceHessian" />
+		<property name="productClassService" ref="productClassService" />
+	</bean>
+	<bean id="auditProductReportImport" class="com.yilidi.o2o.report.imports.product.AuditProductReportImport" scope="prototype">
+		<property name="auditProductServiceHessian" ref="auditProductServiceHessian" />
+		<property name="productServiceHessian" ref="productServiceHessian" />
+		<property name="productClassServiceHessian" ref="productClassServiceHessian" />
+		<property name="productBrandServiceHessian" ref="productBrandServiceHessian" />
+		<property name="productBrandService" ref="productBrandService" />
+		<property name="systemBasicDataInfoUtils" ref="systemBasicDataInfoUtils" />
+	</bean>
+	<bean id="storeEvaluateImport" class="com.yilidi.o2o.report.imports.user.StoreEvaluateImport" scope="prototype">
+		<property name="storeEvaluationServiceHessian" ref="storeEvaluationServiceHessian" />
+	</bean>
+	<bean id="saleProductEvaluateImport" class="com.yilidi.o2o.report.imports.user.SaleProductEvaluateImport" scope="prototype">
+		<property name="storeEvaluationServiceHessian" ref="storeEvaluationServiceHessian" />
+		<property name="saleProductEvaluationServiceHessian" ref="saleProductEvaluationServiceHessian" />
+	</bean>
+</beans>

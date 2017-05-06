@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+				+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body class="floor-bg">
+	<div class="floorDetail">
+		<!--顶部返回上一页按钮-->
+		<div class="back-tit">
+			<div class="back-tit-btn" onclick="window.location.href='../index.html'"></div>
+		</div>
+		<!--顶部楼层标题和返回按钮-->
+		<div class="floorTop" style="height:1rem;">
+			<div class="top-big-tit">
+				<div class="top-big-tit-btn" onclick="window.location.href='../index.html'"></div>
+				<p id="floorName"></p>
+			</div>
+			<div class="bord"></div>
+		</div>
+		<!--楼层内页头部banner-->
+		<div class="floor-top-banner-img">
+			<img style="width: 100%;height: auto;">
+		</div>
+		<!--楼层内页小标题-->
+		<div class="mid-small-img">
+			<img>
+		</div>
+		<!--楼层内页商品列表-->
+		<div class="floor-detail-pro">
+			<div class="floor-pro">
+				<div class="clearfix"></div>
+			</div>
+		</div>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<footer>
+		<!--悬浮购物车-->
+		<div class="bot-cart-wrap">
+			<div class="bot-cart-btn" onclick="window.location.href='../cart/cart.html'">
+				<div class="forcartimg" id="end"></div>
+				<input class="cart-pro-number" id="cartProNumber" readonly="readonly" value="" />
+			</div>
+		</div>
+	</footer>
+	<script type="text/javascript">
+		$(function() {
+			floorDetailProductsList();
+			showCartNum();
+		});
+		function getAddToCartPosition(obj, e) {
+			//获取商品图片位置
+			var x = $(e).offset().left;
+			var y = $(e).offset().top;
+			var start = new Array();
+			start.push(x);
+			start.push(y);
+			//加入购物车前的判断
+			validCartToAdd(obj, addCartSuccess, start, e);
+		}
+		function addCartSuccess(productInfo, startLocation, doc) {
+			//购物车小红圆点
+			addOperation(doc, productInfo);
+			showCartNum();
+			/*//商品加入购物车动画
+			var cart = $('#end');
+			var imgtodrag = $(doc).parent().parent().parent().children().find('img');
+			if (imgtodrag) {
+				var imgclone = imgtodrag.clone()
+						.offset({
+							top: imgtodrag.offset().top,
+							left: imgtodrag.offset().left
+						})
+						.css({
+							'opacity': '0.5',
+							'position': 'absolute',
+							'height': '3.32rem',
+							'width': '3.32rem',
+							'z-index': '19941112'
+						})
+						.appendTo($('body'))
+						.animate({
+							'top': cart.offset().top + 10,
+							'left': cart.offset().left + 10,
+							'width': 75,
+							'height': 75
+						}, 800, 'easeInCubic');
+
+				imgclone.animate({
+					'width': 0,
+					'height': 0
+				}, function () {
+					$(this).detach()
+				});
+			}*/
+		}
+		function getReduceToCart(doc, productInfo) {
+			if (reduceOperation(doc, productInfo)) {
+				showCartNum();
+			}
+		}
+		function floorDetailProductsList() {
+			var params = new Object();
+			var typeCode = getUrlParam("zoneCode");
+			var floorId = getUrlParam("floorId");
+			var floorName = decodeURIComponent(getUrlParam("floorName"));
+			params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+			if (typeCode) {
+				params.typeCode = typeCode;//专题类型编码
+				ajax("/product/themeinfo", params, function (data) {
+					$(".floorTop").hide();
+					$(".floor-bg").css("background-color", "#" + data.baseColor);
+					$(".floor-top-banner-img img").attr("src", data.themeImageUrl);
+					$(".mid-small-img img").attr("src", data.sloganImageUrl);
+					calculateProductCart(data.saleProducts);
+					$("#floorDetailProductsListTmpl").tmpl(data.saleProducts)
+							.prependTo(".floor-pro");
+				}, function (msg) {
+					alert(msg);
+				}, true);
+			}
+
+			if (floorId) {
+				params.floorId = floorId;//楼层ID
+				ajax("/product/floorproducts", params, function (data) {
+					$("#floorName").html(floorName);
+					$(".back-tit").hide();
+					$(".mid-small-img img").hide();
+					$(".floor-top-banner-img").hide();
+					calculateProductCart(data);
+					$("#floorDetailProductsListTmpl").tmpl(data)
+							.prependTo(".floor-pro");
+				}, function (msg) {
+					alert(msg);
+				}, true);
+			}
+		}
+		function getClass(item) {
+			return item % 2 == 0 ? "floor-pro-iteml" : "";
+		}
+	</script>
+	<script id="floorDetailProductsListTmpl" type="text/x-jquery-tmpl">
+        <div class="floor-pro-item ${getClass($index)}">
+            <div class="floor-pro-img"  onclick="window.location.href='../pro-detail/pro-detail.html?saleProductId=${saleProductId}'">
+                <img src="${saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+            </div>
+            <div class="pro-det"  onclick="window.location.href='../pro-detail/pro-detail.html?saleProductId=${saleProductId}'">
+                <p class="floor-pro-name">
+                    ${saleProductName}
+                </p>
+                <p class="floor-pro-size ">
+                    ${saleProductSpec}
+                </p>
+                <p class="floor-pro-normal-price">
+                    普通￥<span>${toCenti(retailPrice,2)}</span>
+                </p>
+                <p class="floor-pro-vip-price">
+                    VIP￥<span>${toCenti(promotionalPrice,2)}</span>
+                </p>
+            </div>
+             <div class="countBox">
+            <div class="count">
+                <div class="reduce ${getShowClass(saleProductId)}" name="" type="button" onclick="getReduceToCart(this,${JSON.stringify($data)})"></div>
+                <input class="pro-number ${getShowClass(saleProductId)}" name="" readonly="readonly" type="text" value="${getCartNum(saleProductId)}"/>
+                <div class="add ${getBtnClass(saleProductId,stockNum)}" name="" type="button" onclick="getAddToCartPosition(${JSON.stringify($data)},this)"></div>
+            </div>
+            </div>
+        </div>
+</script>
+</body>
+</html>

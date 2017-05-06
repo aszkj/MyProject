@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.VoucherMapper">
+	<resultMap id="BaseResultMap" type="Voucher">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="VOUPACKID" property="vouPackId" jdbcType="INTEGER" />
+		<result column="BATCHNO" property="batchNo" jdbcType="VARCHAR" />
+		<result column="VOUAMOUNT" property="vouAmount" jdbcType="BIGINT" />
+		<result column="ORDERAMOUNTLIMIT" property="orderAmountLimit" jdbcType="BIGINT" />
+		<result column="PRODUCTCLASSLIMIT" property="productClassLimit" jdbcType="VARCHAR" />
+		<result column="BUSINESSRULELIMIT" property="businessRuleLimit" jdbcType="VARCHAR" />
+		<result column="PRODUCTLIMIT" property="productLimit" jdbcType="VARCHAR" />
+		<result column="VALIDSTARTTIME" property="validStartTime" jdbcType="TIMESTAMP" />
+		<result column="VALIDENDTIME" property="validEndTime" jdbcType="TIMESTAMP" />
+		<result column="GRANTRANGE" property="grantRange" jdbcType="VARCHAR" />
+		<result column="GRANTWAY" property="grantWay" jdbcType="VARCHAR" />
+		<result column="RULE" property="rule" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="BUYERUSERTYPE" property="buyerUserType" jdbcType="VARCHAR" />
+		<result column="SELLERUSERTYPE" property="sellerUserType" jdbcType="VARCHAR" />
+		<result column="GRANTUSERID" property="grantUserId" jdbcType="INTEGER" />
+		<result column="GRANTTIME" property="grantTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,VOUPACKID,BATCHNO,VOUAMOUNT,ORDERAMOUNTLIMIT,PRODUCTCLASSLIMIT,
+		BUSINESSRULELIMIT,PRODUCTLIMIT,VALIDSTARTTIME,
+		VALIDENDTIME,GRANTRANGE,GRANTWAY,RULE,CUSTOMERTYPE,
+		BUYERUSERTYPE,SELLERUSERTYPE,GRANTTIME,GRANTUSERID
+	</sql>
+
+	<insert id="save" parameterType="Voucher" useGeneratedKeys="true" keyProperty="id">
+		insert into T_VOUCHER
+		(VOUPACKID,BATCHNO,VOUAMOUNT,ORDERAMOUNTLIMIT,PRODUCTCLASSLIMIT,
+		BUSINESSRULELIMIT,PRODUCTLIMIT,VALIDSTARTTIME,
+		VALIDENDTIME,GRANTRANGE,GRANTWAY,RULE,CUSTOMERTYPE,
+		BUYERUSERTYPE,SELLERUSERTYPE,GRANTTIME,GRANTUSERID)
+		values
+		(#{vouPackId,jdbcType=INTEGER}, #{batchNo,jdbcType=VARCHAR},#{vouAmount,jdbcType=BIGINT},
+		#{orderAmountLimit,jdbcType=BIGINT}, #{productClassLimit,jdbcType=VARCHAR},
+		#{businessRuleLimit,jdbcType=VARCHAR}, #{productLimit,jdbcType=VARCHAR},  
+		#{validStartTime,jdbcType=TIMESTAMP}, #{validEndTime,jdbcType=TIMESTAMP},
+		#{grantRange,jdbcType=VARCHAR}, #{grantWay,jdbcType=VARCHAR},
+		#{rule,jdbcType=VARCHAR}, #{customerType,jdbcType=VARCHAR},
+		#{buyerUserType,jdbcType=VARCHAR}, #{sellerUserType,jdbcType=VARCHAR},
+		#{grantTime,jdbcType=TIMESTAMP}, #{grantUserId,jdbcType=INTEGER})
+	</insert>
+	
+	<select id="loadVoucherById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_VOUCHER where ID =#{id,jdbcType=INTEGER}
+	</select>
+	
+ 	<select id="listVouPackIdForRedEnvelopeActivity" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_VOUCHER 
+		where GRANTWAY =#{grantWay,jdbcType=VARCHAR}
+		<if test="activityStartDate != null and activityStartDate != ''">
+			and VALIDENDTIME &gt; #{activityStartDate,jdbcType=TIMESTAMP}
+			and VALIDENDTIME &gt; CURRENT_TIME
+		</if>
+		and CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+		and BUYERUSERTYPE = #{buyerUserType,jdbcType=VARCHAR}
+		group by VOUPACKID,GRANTTIME
+	</select>
+	
+	<select id="listByVouPackIdAndGrantTime" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_VOUCHER 
+		where VOUPACKID =#{vouPackId,jdbcType=INTEGER}
+		and GRANTTIME = #{grantTime,jdbcType=TIMESTAMP}
+	</select>
+	
+	<select id="findVoucherRecord" parameterType="com.yilidi.o2o.order.model.query.VoucherQuery" resultType="com.yilidi.o2o.order.model.result.VoucherInfo">
+		SELECT
+			t.BATCHNO AS batchNo,
+			t.GRANTWAY AS grantWay,
+			t.GRANTTIME AS grantTime,
+			t.GRANTUSERID AS grantUserId,
+			t.RULE AS rule,
+			(SELECT COUNT(1) FROM T_USER_VOUCHER WHERE BATCHNO=t.BATCHNO) AS grantNum,
+			(SELECT COUNT(1) FROM T_USER_VOUCHER WHERE BATCHNO=t.BATCHNO AND `STATUS`='USERVOUCHERSTATUS_USED') AS	useNum,
+			(SELECT COUNT(1) FROM T_USER_VOUCHER WHERE BATCHNO=t.BATCHNO AND `STATUS`='USERVOUCHERSTATUS_EXPIRED') AS overdueNum
+		FROM
+			T_VOUCHER t
+		WHERE
+			t.VOUPACKID = #{vouPackId,jdbcType=INTEGER}
+			<if test="granBeginTime != null">
+				and t.GRANTTIME &gt;= #{granBeginTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="granEndTime != null">
+				and t.GRANTTIME &lt;= #{granEndTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="rule != null and rule != ''">
+				and t.RULE like CONCAT('%',#{rule,jdbcType=VARCHAR},'%') 
+			</if>
+		GROUP BY
+			t.BATCHNO
+		ORDER BY t.GRANTTIME DESC
+	</select>
+
+	<select id="getVoucherGrantRecord" resultType="com.yilidi.o2o.order.model.result.VoucherInfo">
+		SELECT
+			t.ID AS id,
+			t.BATCHNO AS batchNo,
+			t.VOUPACKID AS vouPackId,
+			t.ORDERAMOUNTLIMIT AS orderAmountLimit,
+			t.PRODUCTCLASSLIMIT AS productClassLimit,
+			t.BUSINESSRULELIMIT AS businessRuleLimit,
+			t.PRODUCTLIMIT AS productLimit,
+			t.VALIDSTARTTIME validStartTime,
+			t.VALIDENDTIME AS validEndTime,
+			t.GRANTRANGE AS grantRange,
+			CASE
+				WHEN t.GRANTRANGE='VOUCHERGRANTRANGE_BATCH' THEN '批量发放'
+				WHEN t.GRANTRANGE='VOUCHERGRANTRANGE_SINGLE' THEN '单独发放'
+				ELSE '无'
+			END AS grantRangeName,
+			t.GRANTWAY AS grantWay,
+			CASE
+				WHEN t.GRANTWAY='VOUCHERGRANTWAY_RED_ENVELOPE' THEN '抢红包' 
+				WHEN t.GRANTWAY='VOUCHERGRANTWAY_SHARE_GIFT' THEN '分享有礼'
+				WHEN t.GRANTWAY='VOUCHERGRANTWAY_AUTO_RELEASE' THEN '系统自动发放'
+				WHEN t.GRANTWAY='VOUCHERGRANTWAY_REGISTER_GIFT' THEN '注册有礼'
+				ELSE '无'
+			END AS grantWayName,
+			t.RULE AS rule,
+			t.BUYERUSERTYPE AS buyerUserType
+		FROM
+			T_VOUCHER t
+		WHERE
+			t.VOUPACKID = #{vouPackId,jdbcType=INTEGER}
+		AND t.BATCHNO = #{batchNo,jdbcType=VARCHAR}
+	</select>
+
+<select id="getVoucherByGrantWay" resultMap="BaseResultMap">
+	select
+	<include refid="Base_Column_List" />
+	from T_VOUCHER 
+	where GRANTWAY = #{grantWay,jdbcType=VARCHAR} 
+	and VALIDENDTIME &gt; SYSDATE()
+</select>
+
+<select id="getValidRegistUsevoucherActive" resultMap="BaseResultMap">
+	SELECT
+		<include refid="Base_Column_List" />
+	FROM
+		T_VOUCHER
+	WHERE
+		GRANTWAY = 'VOUCHERGRANTWAY_REGIST_GIFT'
+	AND VALIDSTARTTIME &lt; #{nowTime,jdbcType=TIMESTAMP}
+	AND VALIDENDTIME &gt; #{nowTime,jdbcType=TIMESTAMP}
+	AND VOUPACKID IN (
+		SELECT
+			ID
+		FROM
+			T_VOUCHER_PACKAGE
+		WHERE
+			STATE = 'VOUCHERSTATE_GRANTED'
+	)
+	</select>
+</mapper>

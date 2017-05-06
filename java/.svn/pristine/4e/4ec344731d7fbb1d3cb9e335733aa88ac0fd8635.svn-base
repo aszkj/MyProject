@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.OrderConsigneeAddressMapper">
+	<resultMap id="BaseResultMap" type="OrderConsigneeAddress">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="PHONENO" property="phoneNo" jdbcType="VARCHAR" />
+		<result column="LONGITUDE" property="longitude" jdbcType="VARCHAR" />
+		<result column="LATITUDE" property="latitude" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, USERNAME, ADDRESSDETAIL, PHONENO, LONGITUDE, LATITUDE
+	</sql>
+
+	<insert id="save" parameterType="OrderConsigneeAddress" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_ORDER_CONSIGNEE_ADDRESS (
+		SALEORDERNO, USERNAME, ADDRESSDETAIL,
+		PHONENO,
+		LONGITUDE, LATITUDE)
+		values (
+		#{saleOrderNo,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR},
+		#{addressDetail,jdbcType=VARCHAR}, #{phoneNo,jdbcType=VARCHAR}, #{longitude,jdbcType=VARCHAR},
+		#{latitude,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="loadByOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_ORDER_CONSIGNEE_ADDRESS
+		where SALEORDERNO = #{orderNo,jdbcType=VARCHAR}
+	</select>
+</mapper>

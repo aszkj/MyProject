@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.LoginLogMapper">
+	<resultMap id="BaseResultMap" type="LoginLog">
+		<id column="LOGINLOGID" property="loginLogId" jdbcType="INTEGER" />
+		<result column="SESSIONID" property="sessionId" jdbcType="VARCHAR" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="LOGINTIME" property="loginTime" jdbcType="TIMESTAMP" />
+		<result column="LOGINIP" property="loginIP" jdbcType="VARCHAR" />
+		<result column="LOGINCHANNELCODE" property="loginChannelCode"
+			jdbcType="VARCHAR" />
+		<result column="LOGOUTTIME" property="logoutTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		LOGINLOGID, SESSIONID, USERID,USERNAME, CUSTOMERTYPE, LOGINTIME, LOGINIP, LOGINCHANNELCODE, LOGOUTTIME
+	</sql>
+
+	<insert id="save" parameterType="LoginLog">
+		insert into U_LOGIN_LOG (SESSIONID, USERID,
+		USERNAME, CUSTOMERTYPE, LOGINTIME, 
+		LOGINIP, LOGINCHANNELCODE, LOGOUTTIME)
+		values (#{sessionId,jdbcType=VARCHAR},
+		#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, 
+		#{customerType,jdbcType=VARCHAR}, #{loginTime,jdbcType=TIMESTAMP}, 
+		#{loginIP,jdbcType=VARCHAR}, #{loginChannelCode,jdbcType=VARCHAR},
+		#{logoutTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<update id="updateLogoutTimeBySessionId" parameterType="string">
+		update U_LOGIN_LOG
+		set LOGOUTTIME = CURRENT_TIME
+		where SESSIONID = #{sessionId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="findLoginLogs" resultMap="BaseResultMap" parameterType="LoginLogQuery">
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGIN_LOG
+		<where>
+			<if test="userId != null">
+				USERID = #{userId,jdbcType=INTEGER}
+			</if>
+			<if test="userName != null">
+				AND USERNAME LIKE CONCAT('%',#{userName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="customerType != null">
+				AND CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+			</if>
+			<if test="loginIP != null">
+				AND LOGINIP = #{loginIP,jdbcType=VARCHAR}
+			</if>
+			<if test="channelCode != null">
+				AND LOGINCHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+			<if test="startLoginTime != null">
+				AND LOGINTIME &gt;= #{startLoginTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endLoginTime != null">
+				AND LOGINTIME &lt;= #{endLoginTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<select id="getLoginLogBySessionId" resultMap="BaseResultMap"  >
+		select
+		<include refid="Base_Column_List" />
+		from U_LOGIN_LOG
+		where SESSIONID = #{sessionId,jdbcType=VARCHAR} 
+	</select>
+	
+	<!--  统计每个渠道的登录次数
+	<select id="getChannelCount" resultType="LoginChannelCountResult" >
+		select
+		LOGINCHANNELCODE as channelCode, count(*) as count
+		from U_LOGIN_LOG group by LOGINCHANNELCODE
+	</select>
+	-->
+
+</mapper>

@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一里递运营中心</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.btn_sure,.btn_gray{padding:6px 15px;border-radius:3px;display:inline-block;font-size:12px;color:#fff;cursor:pointer}
+.btn_sure{border:1px solid #63ADEE;background-color:#63ADEE}
+.btn_gray{border:1px solid #666;background-color:#666}
+</style>
+<script type="text/javascript">
+  var communityIds=$.trim(getUrlParam('communityIds'));
+  var storeId=$.trim(getUrlParam('storeId'));
+  var storeProfileId=$.trim(getUrlParam('storeProfileId')); 
+  var g_boxId = $.trim(getUrlParam("boxId"));
+$(function(){
+	getCommunityList();
+	initSelectCommunity();
+});
+function initSelectCommunity(){
+	var st=communityIds.split(',');
+	for(var i=0,length=st.length;i<length;i++){
+		var communityId=parseInt(st[i]);
+		if(isNaN(communityId)||communityId<=0)return;
+		$('#selectCommunity'+communityId).attr('checked',true);
+	}
+	showSelectCommunityList();
+}
+/*关闭弹框*/
+function close_box(){
+	if(g_boxId!=''&&parent&&parent.closeBox)parent.closeBox(g_boxId);
+}
+function getCommunityList(){
+	var st=[];
+	var html='';
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + storeId  + '/listAllOptionalCommunity',
+		type:'post',
+		dataType:'json',
+		cache:false,
+		async:false,
+		data:'',
+		success:function(data){
+			st=data.entity;			
+		}
+	});			
+	for(var i=0,length=st.length;i<length;i++){
+		html +=" <div align='left' style='width:260px;height:20px' ><input onclick='showSelectCommunityList()' id='selectCommunity"+st[i].id +"' value='"+st[i].id+"' type='checkbox' />";
+		html += " <label style='margin-left:2px;' for='selectCommunity'"+st[i].id+"'> "+st[i].name+ "</label></div> ";
+	}
+	$('#communityListBox').html(html);
+}
+function showSelectCommunityList(){
+	var st=$('#communityListBox input');
+	var st1=$('#communityListBox label');
+	var html='';
+	for(var i=0,length=st.length;i<length;i++){
+		if(st[i].checked){
+			html+= " <div align='left' style='width:260px;height:20px' ><input value='"+st[i].value+"' type='hidden' />";
+			html+= " <label>"+st1[i].innerHTML+"</label></div>";	
+		}	
+	}	
+	$('#selectCommunityListBox').html(html);
+}
+function selectCommunitySubmit(){
+	var st=$('#selectCommunityListBox input');
+	var result="";
+	for(var i=0,length=st.length;i<length;i++){
+		if(i ==length-1 ){
+			result +=st[i].value;
+		}else{
+			result +=st[i].value +",";
+		}	
+	}
+	ajax({
+		type : 'post',
+		contentType : 'application/json',
+		dataType : 'json',
+		error : function() {
+			$('#promptMessage').text('保存数据失败，请稍后再试');
+			$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + storeId + '-' + result + '/saveStoreCommunityRelations',
+		beforeSubmit : function() {
+		},
+		success : function(data) {
+			//响应返回的业务处理  
+			if (data.msgCode == 1) {
+				$('#promptMessage').text('保存成功');
+				setTimeout(function(){
+				    if(parent){ 
+				    	 if(storeProfileId!=null&&storeProfileId!=''){
+				    		 parent.sid = storeProfileId;
+				    	 }
+				    	parent.dataSubmit();
+				    }
+					close_box();
+				},1000);
+			} else {
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+				$('#promptMessage').text(data.msg);
+			}
+		}
+	});
+}
+function closeBox(){
+	close_box();
+}
+</script>
+</head>
+<body style="padding:10px;">
+<form name="form1" method="post" id="form1" onsubmit="selectCommunitySubmit();return false">
+<table border="1" bordercolor="#CCCCCC" style="border-collapse:collapse;width:660px;">
+	<tr>
+		<td style="height:20px" align="center" valign="middle">可选择小区</td>
+		<td style="height:20px" align="center" valign="middle">已选择小区</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+			<div id="communityListBox" style="height:300px;width:330px;overflow:auto;"></div>
+		</td>
+		<td align="center" valign="top">
+			<div id="selectCommunityListBox" style="height:300px;width:330px;overflow:auto"></div>
+		</td>
+	</tr>
+</table>
+<div align="center" style="padding:2px">
+	<input type="submit" id="submit" value="提交" style="width:auto;display:inline;align:center" class="btn_sure"/>　　　　
+	<input type="reset" value="取消" onclick="closeBox()" style="width:auto;display:inline;align:center" class="btn_gray"/>
+	</br>
+	<span id="promptMessage" class="cred"></span> 
+</div>
+    </form>
+</body>
+</html>

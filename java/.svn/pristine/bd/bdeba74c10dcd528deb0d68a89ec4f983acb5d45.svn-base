@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+    <dubbo:service interface="com.yilidi.o2o.system.service.ISystemLogService" ref="systemLogService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.ISystemParamsService" ref="systemParamsService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.ISystemDictService" ref="systemDictService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.IPermissionService" ref="permissionService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.IRoleService" ref="roleService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.IRolePermissionService" ref="rolePermissionService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.IUserRoleService" ref="userRoleService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.IAreaDictService" ref="areaDictService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.ISmsNotifyMessageService" ref="smsNotifyMessageService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.IMessageService" ref="messageService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.ISiteMessagePublishedService" ref="siteMessagePublishedService" protocol="${dubbo.protocol.id}" />
+    <dubbo:service interface="com.yilidi.o2o.system.service.ISystemMessageService" ref="systemMessageService" protocol="${dubbo.protocol.id}" />
+</beans>

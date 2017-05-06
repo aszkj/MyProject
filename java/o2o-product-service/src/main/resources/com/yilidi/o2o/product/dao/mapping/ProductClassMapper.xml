@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductClassMapper">
+	<resultMap id="BaseResultMap" type="ProductClass">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="CLASSCODE" property="classCode" jdbcType="VARCHAR" />
+		<result column="CLASSNAME" property="className" jdbcType="VARCHAR" />
+		<result column="CLASSIMAGEURL" property="classImageUrl" jdbcType="VARCHAR" />
+		<result column="CLASSSORT" property="classSort" jdbcType="INTEGER" />
+		<result column="CLASSLEVEL" property="classLevel" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="DISPLAY" property="display" jdbcType="VARCHAR" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, CLASSCODE, CLASSNAME, CLASSIMAGEURL, CLASSSORT,
+		CLASSLEVEL, STATUSCODE,DISPLAY, NOTE, CREATEUSERID,
+		CREATETIME,
+		MODIFYUSERID,MODIFYTIME
+	</sql>
+
+	<insert id="saveProductClass" parameterType="ProductClass" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_PRODUCT_CLASS (ID,
+		CLASSCODE, CLASSNAME, CLASSIMAGEURL, CLASSSORT,
+		CLASSLEVEL, STATUSCODE,DISPLAY,
+		NOTE, CREATEUSERID,
+		CREATETIME)
+		values
+		(#{id,jdbcType=INTEGER},
+		#{classCode,jdbcType=VARCHAR},
+		#{className,jdbcType=VARCHAR},
+		#{classImageUrl,jdbcType=VARCHAR},
+		#{classSort,jdbcType=INTEGER},
+		#{classLevel,jdbcType=VARCHAR},
+		#{statusCode,jdbcType=VARCHAR},
+		#{display,jdbcType=VARCHAR},
+		#{note,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteProductClassById" parameterType="java.lang.Integer">
+		delete P,PC
+		from P_PRODUCT_CLASS as P
+		left join
+		P_PRODUCT_CLASS_MAPPING as PC on
+		PC.CHILDCLASSCODE=P.CLASSCODE
+		where P.ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateProductClassByClassCode" parameterType="ProductClass">
+		update
+		P_PRODUCT_CLASS
+		set
+		CLASSNAME =
+		#{className,jdbcType=VARCHAR},
+		CLASSIMAGEURL = #{classImageUrl,jdbcType=VARCHAR},
+		CLASSSORT =
+		#{classSort,jdbcType=INTEGER},
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR},
+		DISPLAY=#{display,jdbcType=VARCHAR},
+		NOTE = #{note,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		CLASSCODE =
+		#{classCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateClassNameByClassCode" parameterType="ProductClass">
+		update
+		P_PRODUCT_CLASS
+		set
+		CLASSNAME =
+		#{className,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		CLASSCODE =
+		#{classCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateStatusCodeByClassCode" parameterType="ProductClass">
+		update
+		P_PRODUCT_CLASS
+		set
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where CLASSCODE =
+		#{classCode,jdbcType=VARCHAR}
+	</update>
+
+
+	<update id="updateStatusCodeById">
+		update
+		P_PRODUCT_CLASS
+		set
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		CLASSCODE =
+		#{classCode,jdbcType=VARCHAR}
+	</update>
+
+	<select id="loadProductClassByClassCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_CLASS
+		where
+		CLASSCODE = #{classCode,jdbcType=VARCHAR}
+		<if test="statusCode != null">
+			AND
+			STATUSCODE =#{statusCode,jdbcType=VARCHAR}
+		</if>
+		order by CLASSSORT
+	</select>
+
+	<select id="loadProductClassById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_CLASS
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</select>
+
+
+	<select id="loadProductClassByClassName" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_CLASS
+		where CLASSNAME = #{className, jdbcType=VARCHAR}
+	</select>
+
+	<select id="findProductClass" resultMap="BaseResultMap" parameterType="ProductClassQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_CLASS
+		<where>
+			1=1
+			<if test="classCode != null">
+				and CLASSCODE = #{classCode, jdbcType=VARCHAR}
+			</if>
+			<if test="className != null">
+				and CLASSNAME like
+				CONCAT('%',#{className,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="classImageUrl != null">
+				and CLASSIMAGEURL like
+				CONCAT('%',#{classImageUrl,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="classSort != null">
+				and CLASSSORT = #{classSort, jdbcType=INTEGER}
+			</if>
+			<if test="classLevel != null">
+				and CLASSLEVEL = #{classLevel, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+			<if test="note != null">
+				and NOTE like CONCAT('%',#{note,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="createUserId != null">
+				and CREATEUSERID = #{createUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startCreateTime != null">
+				and CREATETIME &gt;=
+				#{startCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="modifyUserId != null">
+				and MODIFYUSERID = #{modifyUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startModifyTime != null">
+				and MODIFYTIME &gt;=
+				#{startModifyTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endModifyTime != null">
+				and MODIFYTIME &lt;= #{endModifyTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="listProductClass" resultMap="BaseResultMap" parameterType="ProductClassQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_CLASS
+		<where>
+			1=1
+			<if test="classCode != null">
+				and CLASSCODE = #{classCode, jdbcType=VARCHAR}
+			</if>
+			<if test="className != null">
+				and CLASSNAME like
+				CONCAT('%',#{className,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="classImageUrl != null">
+				and CLASSIMAGEURL like
+				CONCAT('%',#{classImageUrl,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="classSort != null">
+				and CLASSSORT = #{classSort, jdbcType=INTEGER}
+			</if>
+			<if test="classLevel != null">
+				and CLASSLEVEL = #{classLevel, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+			<if test="note != null">
+				and NOTE like CONCAT('%',#{note,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="createUserId != null">
+				and CREATEUSERID = #{createUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startCreateTime != null">
+				and CREATETIME &gt;=
+				#{startCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="modifyUserId != null">
+				and MODIFYUSERID = #{modifyUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startModifyTime != null">
+				and MODIFYTIME &gt;=
+				#{startModifyTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endModifyTime != null">
+				and MODIFYTIME &lt;= #{endModifyTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="getProClassBasic" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_CLASS
+		<where>
+			1=1
+			<if test="classLevel != null">
+				and CLASSLEVEL = #{classLevel, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY CLASSSORT DESC
+	</select>
+
+	<select id="listProductClassNamesByCodes" resultType="java.lang.String">
+		SELECT CLASSNAME FROM P_PRODUCT_CLASS
+		<where>
+			1=1
+			<if test="codesList !=null">
+				and CLASSCODE IN
+				<foreach item="item" index="index" collection="codesList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	<select id="listProductClassByClassCodesAndStatus" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM P_PRODUCT_CLASS
+		<where>
+			<if test="codesList !=null">
+				and CLASSCODE IN
+				<foreach item="item" index="index" collection="codesList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="statusCode">
+				AND STATUSCODE=#{statusCode}
+			</if>
+			<if test="display != null">
+				AND DISPLAY=#{display,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by CLASSSORT
+	</select>
+	<select id="listProductClassByStoreType" resultMap="BaseResultMap">
+		select
+		P.ID,
+		P.CLASSCODE,
+		P.CLASSNAME,
+		P.CLASSIMAGEURL,
+		P.CLASSSORT,
+		P.CLASSLEVEL,
+		P.STATUSCODE,
+		P.NOTE,
+		P.CREATEUSERID,
+		P.CREATETIME,
+		P.MODIFYUSERID,
+		P.MODIFYTIME
+		FROM
+		P_PRODUCT_CLASS P,
+		P_STORE_TYPE_PRODUCT_CLASS PS
+		<where>
+			P.CLASSCODE = PS.CLASSCODE
+			AND PS.STORETYPE = #{storeType, jdbcType=VARCHAR}
+			<if test="statusCode">
+				AND P.STATUSCODE=#{statusCode}
+			</if>
+			<if test="display != null">
+				AND P.DISPLAY=#{display,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY P.CLASSSORT
+	</select>
+	<select id="listParentClassByChildClassCodes" resultMap="BaseResultMap">
+		select
+		P.ID,
+		P.CLASSCODE,
+		P.CLASSNAME,
+		P.CLASSIMAGEURL,
+		P.CLASSSORT,
+		P.CLASSLEVEL,
+		P.STATUSCODE,
+		P.NOTE,
+		P.CREATEUSERID,
+		P.CREATETIME,
+		P.MODIFYUSERID,
+		P.MODIFYTIME
+		FROM
+		P_PRODUCT_CLASS P,
+		P_PRODUCT_CLASS_MAPPING PS
+		<where>
+			P.CLASSCODE = PS.CLASSCODE
+			AND P.STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			AND PS.CHILDCLASSCODE IN
+			<foreach item="item" index="index" collection="codesList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			<if test="display != null">
+				AND P.DISPLAY=#{display,jdbcType=VARCHAR}
+			</if>
+		</where>
+		GROUP BY P.ID
+		ORDER BY P.CLASSSORT
+	</select>
+	
+	<!-- 根据上级code获取下级产品分类（通用） -->
+	<select id="getAllNextProductClassByUpCode" parameterType="com.yilidi.o2o.product.service.dto.query.ProductClassQuery" resultMap="BaseResultMap">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			P_PRODUCT_CLASS t
+		WHERE
+			t.CLASSCODE IN (
+				SELECT
+					a.CHILDCLASSCODE
+				FROM
+					P_PRODUCT_CLASS_MAPPING a
+				WHERE
+					a.CLASSCODE = #{classCode,jdbcType=VARCHAR}
+			)
+		<if test="statusCode != null and statusCode != ''">
+			AND t.STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+		</if>
+		<if	test="display != null and display != ''">
+			AND t.DISPLAY = #{display,jdbcType=VARCHAR}
+		</if>	
+		ORDER BY t.CLASSSORT DESC
+	</select>
+	
+	<!-- 根据下级找上级（通用） -->
+	<select id="getUpProductClassByClassCode" resultMap="BaseResultMap">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			P_PRODUCT_CLASS t
+		WHERE
+			t.CLASSCODE IN (
+				SELECT
+					a.CLASSCODE
+				FROM
+					P_PRODUCT_CLASS_MAPPING a
+				WHERE
+					a.CHILDCLASSCODE = #{classCode,jdbcType=VARCHAR}
+			)
+		AND t.STATUSCODE = 'PRODUCTCLASSSTATUS_ON'
+		AND t.DISPLAY = 'PRODUCTCLASSDISPLAY_YES'
+		ORDER BY t.CLASSSORT
+	</select>
+</mapper>

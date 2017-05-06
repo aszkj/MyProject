@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.ICommunityProxyService" ref="communityProxyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.IConsigneeAddressProxyService" ref="consigneeAddressProxyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.ILoginLogProxyService" ref="loginLogProxyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.IUserProxyService" ref="userProxyService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.ICustomerProxyService" ref="customerProxyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.ILogisticProxyService" ref="logisticProxyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.IStoreSubsidyRecordProxyService" ref="storeSubsidyRecordProxyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.IStoreProfileProxyService" ref="storeProfileProxyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.IUserClientTokenProxyService" ref="userClientTokenProxyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.user.proxy.IStoreWarehouseProxyService" ref="storeWarehouseProxyService"
+		protocol="${dubbo.protocol.id}" />
+		<dubbo:service interface="com.yilidi.o2o.user.proxy.IUserShareProxyService" ref="userShareProxyService"
+		protocol="${dubbo.protocol.id}" />
+</beans>

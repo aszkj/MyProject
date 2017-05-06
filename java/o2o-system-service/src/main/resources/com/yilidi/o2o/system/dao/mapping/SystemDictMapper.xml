@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SystemDictMapper">
+	<resultMap id="BaseResultMap" type="SystemDict">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="DICTNAME" property="dictName" jdbcType="VARCHAR" />
+		<result column="DICTCODE" property="dictCode" jdbcType="VARCHAR" />
+		<result column="DICTTYPE" property="dictType" jdbcType="VARCHAR" />
+		<result column="TYPENAME" property="typeName" jdbcType="VARCHAR" />
+		<result column="DICTDESC" property="dictDesc" jdbcType="VARCHAR" />
+		<result column="SORT" property="sort" jdbcType="INTEGER" />
+		<result column="DICTSTATUS" property="dictStatus" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap id="typeMap" type="map">
+		<result column="DICTTYPE" property="dictType" jdbcType="VARCHAR" />
+		<result column="TYPENAME" property="typeName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, DICTNAME, DICTCODE, DICTTYPE, TYPENAME, DICTDESC, SORT,
+		DICTSTATUS, CREATEUSERID, CREATETIME, MODIFYUSERID, MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="SystemDict" useGeneratedKeys="true" keyProperty="id">
+		insert into S_SYSTEM_DICT (
+		DICTNAME, 
+		DICTCODE,
+		DICTTYPE, 
+		TYPENAME, 
+		DICTDESC,
+		SORT, 
+		DICTSTATUS,
+		CREATEUSERID,
+		CREATETIME)
+		values (
+		#{dictName,jdbcType=VARCHAR},
+		#{dictCode,jdbcType=VARCHAR},
+		#{dictType,jdbcType=VARCHAR},
+		#{typeName,jdbcType=VARCHAR},
+		#{dictDesc,jdbcType=VARCHAR},
+		#{sort,jdbcType=INTEGER},
+		#{dictStatus,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<update id="updateDictNameById">
+		update S_SYSTEM_DICT
+		set
+		DICTNAME =
+		#{dictName,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = CURRENT_TIME
+		where ID =
+		#{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateNameByDictCode">
+		update S_SYSTEM_DICT
+		set
+		DICTNAME =
+		#{dictName,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = CURRENT_TIME
+		where
+		DICTCODE = #{dictCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateByIdSelective" parameterType="SystemDict">
+		update S_SYSTEM_DICT	
+		<set>
+			<if test="dictName != null">
+				DICTNAME = #{dictName,jdbcType=VARCHAR},
+			</if>
+			<if test="typeName != null">
+				TYPENAME = #{typeName,jdbcType=VARCHAR},
+			</if>
+			<if test="dictDesc != null">
+				DICTDESC = #{dictDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				SORT = #{sort,jdbcType=VARCHAR},
+			</if>
+			<if test="dictStatus != null">
+				DICTSTATUS = #{dictStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateById" parameterType="SystemDict">
+		update S_SYSTEM_DICT	
+		set DICTNAME = #{dictName,jdbcType=VARCHAR},
+		TYPENAME = #{typeName,jdbcType=VARCHAR},
+		DICTDESC = #{dictDesc,jdbcType=VARCHAR},
+		SORT = #{sort,jdbcType=VARCHAR},
+		DICTSTATUS = #{dictStatus,jdbcType=VARCHAR},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_DICT
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByDictCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_DICT
+		where DICTCODE = #{dictCode, jdbcType=VARCHAR}
+	</select>
+
+	<select id="listByDictName" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_DICT
+		<if test="dictName != null">
+			where DICTNAME like CONCAT('%',
+			#{dictName,jdbcType=VARCHAR}, '%')
+			order by DICTTYPE
+		</if>
+	</select>
+
+	<select id="listAllValidDictType" resultMap="typeMap">
+		select
+		distinct DICTTYPE,
+		TYPENAME
+		from S_SYSTEM_DICT
+		where DICTSTATUS = 'SYSDICTSTATUS_ON'
+		order by CREATETIME desc
+	</select>
+
+	<select id="listAllValidDictByDictType" resultType="SystemDict">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_DICT
+		where DICTTYPE = #{dictType,jdbcType=VARCHAR}
+		and DICTSTATUS = 'SYSDICTSTATUS_ON'
+		order by SORT
+	</select>
+	
+	<select id="getDictCountsByDictType" resultType="java.lang.Integer">
+		select COUNT(1)
+		from S_SYSTEM_DICT
+		where DICTTYPE = #{dictType,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findSystemDict" resultMap="BaseResultMap" parameterType="SystemDictQuery">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_DICT
+		<where>
+			<if test="dictCode != null">
+				and DICTCODE = #{dictCode,jdbcType=VARCHAR}
+			</if>
+			<if test="dictType != null">
+				and DICTTYPE = #{dictType,jdbcType=VARCHAR}
+			</if>
+			<if test="dictName != null">
+				and DICTNAME like CONCAT('%',#{dictName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="typeName != null">
+				and TYPENAME like CONCAT('%',#{typeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="dictStatus != null">
+				and DICTSTATUS = #{dictStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+			order by CREATETIME desc, DICTTYPE, SORT
+	</select>
+
+</mapper>

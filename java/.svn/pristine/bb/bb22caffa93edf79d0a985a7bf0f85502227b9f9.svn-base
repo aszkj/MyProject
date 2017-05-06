@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.SaleOrderShardingMapper">
+	<resultMap id="BaseResultMap" type="SaleOrder">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="RETAILERID" property="retailerId" jdbcType="INTEGER" />
+		<result column="PROVIDERID" property="providerId" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="TYPECODE" property="typeCode" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="ORDERCOUNT" property="orderCount" jdbcType="INTEGER" />
+		<result column="TOTALAMOUNT" property="totalAmount" jdbcType="BIGINT" />
+		<result column="TRANSFERFEE" property="transferFee" jdbcType="BIGINT" />
+		<result column="DELIVERYMODE" property="deliveryMode" jdbcType="VARCHAR" />
+		<result column="BESTTIME" property="bestTime" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="PROVINCECODE" property="proviceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="PAYTYPECODE" property="payTypeCode" jdbcType="VARCHAR" />
+		<result column="PAYTIME" property="payTime" jdbcType="TIMESTAMP" />
+		<result column="SENDSTATUS" property="sendStatus" jdbcType="VARCHAR" />
+		<result column="SENDTIME" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="SENDCOUNT" property="sendCount" jdbcType="INTEGER" />
+		<result column="TAKESTATUS" property="takeStatus" jdbcType="VARCHAR" />
+		<result column="TAKETIME" property="takeTime" jdbcType="TIMESTAMP" />
+		<result column="TAKEUSERID" property="takeUserId" jdbcType="INTEGER" />
+		<result column="LEAVEMESSAGE" property="leaveMessage" jdbcType="VARCHAR" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, RETAILERID, PROVIDERID, USERID, TYPECODE, STATUSCODE, CHANNELCODE, 
+		ORDERCOUNT, TOTALAMOUNT, TRANSFERFEE, DELIVERYMODE, BESTTIME, CREATETIME, CREATEUSERID, 
+		PROVINCECODE, CITYCODE, COUNTYCODE, PAYTYPECODE, PAYTIME, SENDSTATUS, SENDTIME, 
+		SENDCOUNT, TAKESTATUS, TAKETIME, TAKEUSERID, LEAVEMESSAGE, NOTE
+	</sql>
+
+	<insert id="save" parameterType="com.yilidi.o2o.core.sharding.model.ShardingOperationModel">
+		insert into ${shardingTableNameMap.saleOrderShardingTableName} (
+		ID, SALEORDERNO, RETAILERID, PROVIDERID, USERID, TYPECODE, STATUSCODE, CHANNELCODE, 
+		ORDERCOUNT, TOTALAMOUNT, TRANSFERFEE, DELIVERYMODE, BESTTIME, CREATETIME, CREATEUSERID, 
+		PROVINCECODE, CITYCODE, COUNTYCODE, PAYTYPECODE, PAYTIME, SENDSTATUS, SENDTIME, 
+		SENDCOUNT, TAKESTATUS, TAKETIME, TAKEUSERID, LEAVEMESSAGE, NOTE
+		)
+		values (#{operationArgumentMap.saleOrder.id,jdbcType=INTEGER}, #{operationArgumentMap.saleOrder.saleOrderNo,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.retailerId,jdbcType=INTEGER}, 
+		#{operationArgumentMap.saleOrder.providerId,jdbcType=INTEGER},
+		#{operationArgumentMap.saleOrder.userId,jdbcType=INTEGER},
+		#{operationArgumentMap.saleOrder.typeCode,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.statusCode,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.channelCode,jdbcType=VARCHAR},
+		#{operationArgumentMap.saleOrder.orderCount,jdbcType=INTEGER}, #{operationArgumentMap.saleOrder.totalAmount,jdbcType=BIGINT},
+		#{operationArgumentMap.saleOrder.transferFee,jdbcType=BIGINT}, #{operationArgumentMap.saleOrder.deliveryMode,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.bestTime,jdbcType=VARCHAR},
+		#{operationArgumentMap.saleOrder.createTime,jdbcType=TIMESTAMP}, #{operationArgumentMap.saleOrder.createUserId,jdbcType=INTEGER},
+		#{operationArgumentMap.saleOrder.proviceCode,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.cityCode,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.countyCode,jdbcType=VARCHAR},
+		#{operationArgumentMap.saleOrder.payTypeCode,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.payTime,jdbcType=TIMESTAMP},
+		#{operationArgumentMap.saleOrder.sendStatus,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.sendTime,jdbcType=TIMESTAMP}, #{operationArgumentMap.saleOrder.sendCount,jdbcType=INTEGER},
+		#{operationArgumentMap.saleOrder.takeStatus,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.takeTime,jdbcType=TIMESTAMP}, #{operationArgumentMap.saleOrder.takeUserId,jdbcType=INTEGER},
+		#{operationArgumentMap.saleOrder.leaveMessage,jdbcType=VARCHAR}, #{operationArgumentMap.saleOrder.note,jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="loadBySaleOrderNo" resultMap="BaseResultMap" parameterType="com.yilidi.o2o.core.sharding.model.ShardingOperationModel">
+		select 
+		<include refid="Base_Column_List" />
+		from ${shardingTableNameMap.saleOrderShardingTableName}
+		where SALEORDERNO = #{operationArgumentMap.saleOrderNo,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updatePriceBySaleOrderNo" parameterType="com.yilidi.o2o.core.sharding.model.ShardingOperationModel">
+		update ${shardingTableNameMap.saleOrderShardingTableName}
+		<set>
+			<if test="operationArgumentMap.totalAmount != null">
+				TOTALAMOUNT = #{operationArgumentMap.totalAmount, jdbcType=BIGINT},
+			</if>
+			<if test="operationArgumentMap.transferFee != null">
+				TRANSFERFEE = #{operationArgumentMap.transferFee, jdbcType=BIGINT},
+			</if>
+		</set>
+		where SALEORDERNO = #{operationArgumentMap.saleOrderNo,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="shardingByCreateTime" parameterType="com.yilidi.o2o.core.sharding.model.ShardingOperationModel">
+		insert into ${shardingTableNameMap.saleOrderShardingTableName} (
+		ID, SALEORDERNO, RETAILERID, PROVIDERID, USERID, TYPECODE, STATUSCODE, CHANNELCODE, 
+		ORDERCOUNT, TOTALAMOUNT, TRANSFERFEE, DELIVERYMODE, BESTTIME, CREATETIME, CREATEUSERID, 
+		PROVINCECODE, CITYCODE, COUNTYCODE, PAYTYPECODE, PAYTIME, SENDSTATUS, SENDTIME, 
+		SENDCOUNT, TAKESTATUS, TAKETIME, TAKEUSERID, LEAVEMESSAGE, NOTE
+		)
+		select
+		ID, SALEORDERNO, RETAILERID, PROVIDERID, USERID, TYPECODE, STATUSCODE, CHANNELCODE, 
+		ORDERCOUNT, TOTALAMOUNT, TRANSFERFEE, DELIVERYMODE, BESTTIME, CREATETIME, CREATEUSERID, 
+		PROVINCECODE, CITYCODE, COUNTYCODE, PAYTYPECODE, PAYTIME, SENDSTATUS, SENDTIME, 
+		SENDCOUNT, TAKESTATUS, TAKETIME, TAKEUSERID, LEAVEMESSAGE, NOTE
+		from ${shardingTableNameMap.saleOrderShardingTableName_1}
+		<where>
+			<choose>
+				<when test="operationArgumentMap.beginIntervalMonths &lt; 12">
+					CREATETIME &lt;= DATE_SUB(now(),interval #{operationArgumentMap.beginIntervalMonths,jdbcType=INTEGER} month) and CREATETIME &gt; DATE_SUB(now(),interval #{operationArgumentMap.endIntervalMonths,jdbcType=INTEGER} month)
+				</when>
+				<otherwise>
+					CREATETIME &lt;= DATE_SUB(now(),interval #{operationArgumentMap.beginIntervalMonths,jdbcType=INTEGER} month) 
+				</otherwise>
+			</choose>
+		</where>
+	</insert>
+	
+	<delete id="deleteByCreateTimeForSharding" parameterType="com.yilidi.o2o.core.sharding.model.ShardingOperationModel">
+		delete from ${shardingTableNameMap.saleOrderShardingTableName_1} 
+		<where>
+			<choose>
+				<when test="operationArgumentMap.beginIntervalMonths &lt; 12">
+					CREATETIME &lt;= DATE_SUB(now(),interval #{operationArgumentMap.beginIntervalMonths,jdbcType=INTEGER} month) and CREATETIME &gt; DATE_SUB(now(),interval #{operationArgumentMap.endIntervalMonths,jdbcType=INTEGER} month)
+				</when>
+				<otherwise>
+					CREATETIME &lt;= DATE_SUB(now(),interval #{operationArgumentMap.beginIntervalMonths,jdbcType=INTEGER} month) 
+				</otherwise>
+			</choose>
+		</where>
+	</delete>
+	
+	<select id="findSaleOrders" resultMap="BaseResultMap" parameterType="com.yilidi.o2o.core.sharding.model.ShardingOperationModel">
+		select
+		<include refid="Base_Column_List" />
+		from ${shardingTableNameMap.saleOrderShardingTableName} 
+		<where>
+			<if test="operationArgumentMap.saleOrderQuery.saleOrderNo != null">
+			SALEORDERNO = #{operationArgumentMap.saleOrderQuery.saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.userId != null">
+			and USERID = #{operationArgumentMap.saleOrderQuery.userId,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.retailerId != null">
+			and RETAILERID = #{operationArgumentMap.saleOrderQuery.retailerId,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.providerId != null">
+			and PROVIDERID = #{operationArgumentMap.saleOrderQuery.providerId,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.typeCode != null">
+			and TYPECODE = #{operationArgumentMap.saleOrderQuery.typeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.typeCode != null">
+			and STATUSCODE = #{operationArgumentMap.saleOrderQuery.statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.channelCode != null">
+			and CHANNELCODE = #{operationArgumentMap.saleOrderQuery.channelCode,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.payTypeCode != null">
+			and PAYTYPECODE = #{operationArgumentMap.saleOrderQuery.payTypeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.startOrderDate != null">
+			and CREATETIME &gt;= #{operationArgumentMap.saleOrderQuery.startOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.endOrderDate != null">
+			and CREATETIME &lt;= #{operationArgumentMap.saleOrderQuery.endOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.startSendDate != null">
+			and SENDTIME &gt;= #{operationArgumentMap.saleOrderQuery.startSendDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.endSendDate != null">
+			and SENDTIME &lt;= #{operationArgumentMap.saleOrderQuery.endSendDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.startTakeDate != null">
+			and TAKETIME &gt;= #{operationArgumentMap.saleOrderQuery.startTakeDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.endTakeDate != null">
+			and TAKETIME &lt;= #{operationArgumentMap.saleOrderQuery.endTakeDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.proviceCode != null">
+			and PROVINCECODE = #{operationArgumentMap.saleOrderQuery.proviceCode,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.cityCode != null">
+			and CITYCODE = #{operationArgumentMap.saleOrderQuery.cityCode,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.countyCode != null">
+			and COUNTYCODE = #{operationArgumentMap.saleOrderQuery.countyCode,jdbcType=INTEGER}
+			</if>
+		</where>
+			order by CREATETIME desc
+	</select>
+	
+	<select id="listSaleOrders" resultMap="BaseResultMap" parameterType="com.yilidi.o2o.core.sharding.model.ShardingOperationModel">
+		select
+		<include refid="Base_Column_List" />
+		from ${shardingTableNameMap.saleOrderShardingTableName} 
+		<where>
+			<if test="operationArgumentMap.saleOrderQuery.saleOrderNo != null">
+			SALEORDERNO = #{operationArgumentMap.saleOrderQuery.saleOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.userId != null">
+			and USERID = #{operationArgumentMap.saleOrderQuery.userId,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.retailerId != null">
+			and RETAILERID = #{operationArgumentMap.saleOrderQuery.retailerId,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.providerId != null">
+			and PROVIDERID = #{operationArgumentMap.saleOrderQuery.providerId,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.typeCode != null">
+			and TYPECODE = #{operationArgumentMap.saleOrderQuery.typeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.typeCode != null">
+			and STATUSCODE = #{operationArgumentMap.saleOrderQuery.statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.channelCode != null">
+			and CHANNELCODE = #{operationArgumentMap.saleOrderQuery.channelCode,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.payTypeCode != null">
+			and PAYTYPECODE = #{operationArgumentMap.saleOrderQuery.payTypeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.startOrderDate != null">
+			and CREATETIME &gt;= #{operationArgumentMap.saleOrderQuery.startOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.endOrderDate != null">
+			and CREATETIME &lt;= #{operationArgumentMap.saleOrderQuery.endOrderDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.startSendDate != null">
+			and SENDTIME &gt;= #{operationArgumentMap.saleOrderQuery.startSendDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.endSendDate != null">
+			and SENDTIME &lt;= #{operationArgumentMap.saleOrderQuery.endSendDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.startTakeDate != null">
+			and TAKETIME &gt;= #{operationArgumentMap.saleOrderQuery.startTakeDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.endTakeDate != null">
+			and TAKETIME &lt;= #{operationArgumentMap.saleOrderQuery.endTakeDate,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.proviceCode != null">
+			and PROVINCECODE = #{operationArgumentMap.saleOrderQuery.proviceCode,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.cityCode != null">
+			and CITYCODE = #{operationArgumentMap.saleOrderQuery.cityCode,jdbcType=INTEGER}
+			</if>
+			<if test="operationArgumentMap.saleOrderQuery.countyCode != null">
+			and COUNTYCODE = #{operationArgumentMap.saleOrderQuery.countyCode,jdbcType=INTEGER}
+			</if>
+		</where>
+			order by CREATETIME desc
+	</select>
+
+</mapper>

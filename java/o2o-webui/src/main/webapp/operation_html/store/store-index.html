@@ -1,0 +1,633 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet"  />
+<script type="text/javascript">
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+var sid = null;
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()}
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){showBox('提示信息','您输入的页码超出正常范围','alert');}
+		else{ showBox('提示信息','当前已经是第一页','alert');}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){showBox('提示信息','您输入的页码超出正常范围','alert');}
+		else{showBox('提示信息','当前已经是最后一页','alert');}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+function dataSubmit(pageNo,businessType){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	$('#businessType').val(businessType);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			showBox('提示信息','提交数据失败，请稍后再试','alert');
+		},
+		url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/listStore',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				
+				var html = '';
+				var dataList = data.entity.resultList;
+				var id = getUrlParam('id');
+				if(null != dataList && dataList.length > 0){
+				for(var i=0,j=dataList.length;i<j;i++){
+					html += '<tr';
+					if(id == dataList[i].id){
+						html += ' name="selrow" bgcolor="#c8e3f8"';
+					}
+					if(null != sid && sid == dataList[i].id){
+						html += ' name="selrow" bgcolor="#c8e3f8"';
+					}
+					html += '><td>';
+					html += ((param.currentPage-1)*(param.pageSize)+i+1);
+					html += '</td><td>';
+					html += dataList[i].storeCode;
+					html += '</td><td>';
+					html += dataList[i].storeName;
+					html += '</td><td>';
+					html += dataList[i].contact;
+					html += '</td><td>';
+					html += dataList[i].storeTypeName;
+					html += '</td><td>';
+					html += dataList[i].stockShareName;
+					html += '</td><td>';
+					html += dataList[i].mobile;
+					html += '</td><td>';
+					html += dataList[i].addressDetail;
+					html += '</td><td>';
+					html += dataList[i].cityCode;
+					html += '-';
+					html += dataList[i].countyCode;
+					html += '</td><td>';
+					html += dataList[i].storeStatusName;
+					html += '</td><td>';
+					html += dataList[i].userDto.statusCode == "USERSTATUS_ON"?'启用':'冻结';
+					html += '</td><td>';
+					html += null == dataList[i].invitationCode ? '---' : dataList[i].invitationCode;
+					html += '</td><td>';
+					html += '<permission code="FUNCTION_LIST_PRODUCT_STORE_MANAGEMENT">';
+					html += '<a href="/product/saleproduct-index.html?refId=store&storeId='+dataList[i].storeId+'&storeType='+dataList[i].storeType+'" class="ablue">商家商品</a>&nbsp;&nbsp;&nbsp;';
+					html += '</permission><br>';
+					html += '<permission code="FUNCTION_DELIVERY_STORE_MANAGEMENT">';
+					html += '<a href="/user/seller-childAccount-index.html?s_storeCode='+dataList[i].storeCode+'&s_storeName='+decodeURIComponent(dataList[i].storeName)+'&storeId='+dataList[i].storeId+'" class="ablue">接单员</a>&nbsp;&nbsp;&nbsp;';
+					html += '</permission><br>';
+					html += '<permission code="FUNCTION_ASSOCIATE_COMMUNITY_STORE_MANAGEMENT">';
+					html += '<a href="javascript:void(0)" onclick="selectCommunity(\''+dataList[i].strCommunityIds+'\','+dataList[i].storeId+','+dataList[i].id+')" class="ablue">关联小区</a>&nbsp;&nbsp;&nbsp;';
+					html += '</permission><br>';
+					if(dataList[i].storeType == 'STORETYPE_PARTNER' || dataList[i].storeType == 'STORETYPE_EXPERIENCE_STORE'){
+						html += '<permission code="FUNCTION_ASSOCIATE_WAREHOUSE_STORE_MANAGEMENT">';
+						html += '<a href="javascript:void(0)" onclick="selectWarehouse('+dataList[i].warehouseId+','+dataList[i].storeId+','+dataList[i].id+')" class="ablue">关联微仓</a>&nbsp;&nbsp;&nbsp;';
+						html += '</permission><br>';
+					} 
+					if(dataList[i].storeType == 'STORETYPE_MICROWAREHOUSE'){
+						html += '<permission code="FUNCTION_SELECT_ROLE_STORE_MANAGEMENT">';
+						html += '<a href="javascript:void(0)" onclick="roleBinding('+dataList[i].userDto.id+','+dataList[i].id+')" class="ablue">角色绑定</a>&nbsp;&nbsp;&nbsp;';
+						html += '</permission><br>';
+						html += '<permission code="FUNCTION_LIST_PARTNER_STORE_MANAGEMENT">';
+						html += '<a href="javascript:void(0)" onclick="listPartners('+dataList[i].id+','+dataList[i].storeId+')" class="ablue">查看门店</a>&nbsp;&nbsp;&nbsp;';
+						html += '</permission><br>';
+					}
+					html += '<permission code="FUNCTION_DETAIL_STORE_MANAGEMENT">';
+					html += '<a href="javascript:void(0)" onclick="detailStore('+dataList[i].id+')" class="ablue">查看</a>&nbsp;&nbsp;&nbsp;';
+					html += '</permission><br>';
+					html += '<permission code="FUNCTION_EDIT_STORE_MANAGEMENT">';
+					html += '<a href="javascript:void(0)" onclick="editStore('+dataList[i].id+')" class="ablue">编辑</a>&nbsp;&nbsp;&nbsp;';
+					html += '</permission><br>';
+					if(dataList[i].userDto.statusCode=="USERSTATUS_ON"){
+						html += '<a href="javascript:void(0)" onclick="freezeAccount('+dataList[i].userDto.id+',\'USERSTATUS_OFF\')" class="ablue">冻结</a>&nbsp;&nbsp;&nbsp;';
+					}else{
+						html += '<a href="javascript:void(0)" onclick="freezeAccount('+dataList[i].userDto.id+',\'USERSTATUS_ON\')" class="ablue">启用</a>&nbsp;&nbsp;&nbsp;';
+					}
+					html += '';
+					html += '</td></tr>';
+					}
+				}else {
+					html += '<tr><td colspan="12">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	}); 
+}
+
+function freezeAccount(id,statusCode){
+	console.log(statusCode)
+	if((id == null || id == "") || (statusCode == null || statusCode == "")){
+		showBox("提示信息","数据有误","alert");
+		return;
+	}
+	var statusStr = "";
+	if(statusCode == "USERSTATUS_OFF"){
+		statusStr = "冻结";
+	}else{
+		statusStr = "启用";
+	}
+	showBox("提示信息","确定要"+statusStr+"吗?","confirm",function(){
+		$.ajax({
+			url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + "/"+id+"/"+statusCode+"/childAccount/updateUserStatusCode",
+			type:"post",
+			contentType:'application/json',
+			dataType:"json",
+			success:function(data){
+				showBox("提示信息",data.msg,"alert");
+				if(data.msgCode == 1){
+					setTimeout(function(){
+						window.location.reload();
+					}, 3000);
+				}
+			},
+			error:function(data){
+				showBox("提示信息","请求失败","alert");
+			}
+		}); 
+	})
+}
+
+function selectCommunity(strCommunityIds,storeId,storeProfileId){
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + storeId  + '/listAllOptionalCommunity',
+		type:'post',
+		dataType:'json',
+		cache:false,
+		async:false,
+		data:'',
+		success:function(data){
+			st=data.entity;	
+			if(null == st){
+				showBox('提示信息','该商家附近没有可供关联的小区','alert');
+				return;
+			}
+			if(st.length > 0){
+				var message = '选择小区';
+				if(null == strCommunityIds || '' == strCommunityIds){
+					showBox(message,'/store/select-community.html?width=700&height=400&storeId='+storeId+'&storeProfileId='+storeProfileId);
+				}else{
+					showBox(message,'/store/select-community.html?width=700&height=400&communityIds='+strCommunityIds+'&storeId='+storeId+'&storeProfileId='+storeProfileId);
+				}
+			}else{
+				showBox('提示信息','该商家附近没有可供关联的小区','alert');
+			}
+		}
+	});		
+}
+
+function selectWarehouse(warehouseId,storeId,storeProfileId){
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + storeId  + '/listAllOptionalWarehouse',
+		type:'post',
+		dataType:'json',
+		cache:false,
+		async:false,
+		data:'',
+		success:function(data){
+			st=data.entity;	
+			if(st.length > 0){
+				var message = '选择微仓';
+				if(null == warehouseId || '' == warehouseId){
+					showBox(message,'/store/select-warehouse.html?width=700&height=400&storeId='+storeId+'&storeProfileId='+storeProfileId);
+				}else{
+					showBox(message,'/store/select-warehouse.html?width=700&height=400&warehouseId='+warehouseId+'&storeId='+storeId+'&storeProfileId='+storeProfileId);
+				}
+			}else{
+				showBox('提示信息','该门店附近没有可供关联的微仓','alert');
+			}
+		}
+	});		
+}
+
+function addStore(){
+	locationHref('/store/store-mng.html?method=add&'+getParamValue());
+}
+function editStore(id){
+	locationHref('/store/store-mng.html?method=edit&id='+id+'&'+getParamValue());
+}
+function detailStore(id){
+	locationHref('/store/store-mng.html?method=detail&id='+id+'&'+getParamValue());
+}
+function listPartners(id,storeId){
+	locationHref('/store/warehouse-detail.html?id='+id+'&storeId='+storeId+'&'+getParamValue());
+}
+
+/*导出报表开始*/
+function exportSearchStore(){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/exportSearchStore',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$("#store_down").attr("href",DOWNLOAD_FILE_TEMP_URL+data.entity.reportFilePath);
+				$("#store_down").show();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+/*加载广东省下面的地市菜单*/
+function loadCity() {
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/440000/getAreaDictsByParentCode', 
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var listCity = data.entity;
+			var html = '';
+			html += '<option value="">--请选择--</option>';
+			for (var i = 0; i < listCity.length; i++) {
+				var city = listCity[i];
+				html += '<option value="' + city.id + '">' + city.text + '</option>';
+			}
+			
+			$("#cityCode").html(html);
+		}
+	});
+}
+
+/*加载县区菜单*/
+function loadCounty(val,childval){
+	$("#countyCode").html("");
+	$("#countyCode").html('<option value="">--请选择--</option>'); 
+	$.ajax({
+		url:TERMINAL_URL+OPERATION_SYSTEM_IDENTITY+'/'+val+'/getAreaDictsByParentCode', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var html = '';
+			var county = data.entity;
+			html='<option value="">--请选择--</option>';
+			if(null != county && county.length > 0){
+				var len = county.length;
+				for(var i=0;i<len;i++){
+					var countyTemp = county[i];
+					if(childval==countyTemp.id){
+						html += '<option selected value="'+countyTemp.id+'">';
+						html += countyTemp.text;
+						html +='</option>'
+					}else{
+						html += '<option value="'+countyTemp.id+'">';
+						html += countyTemp.text;
+						html +='</option>'
+					}
+					
+				}
+			}
+			$("#countyCode").html(html);
+		}
+	});
+}
+
+//用户角色绑定
+function roleBinding(userId,storeProfileId) {
+	var strRoleIds = "";
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + userId  + '/getUserRoles',
+		type : 'post',
+		dataType : 'json',
+		error : function() {
+			alert("用户ID不存在！")
+		},
+		success : function(data) {
+			if (data.msgCode != 1) {
+				return;
+			}
+			var objectList = [];
+			objectList = data.entity;
+			for (var i = 0; i < objectList.length; i++) {
+				if (i == objectList.length - 1) {
+					strRoleIds = strRoleIds + objectList[i].roleId;
+				} else {
+					strRoleIds = strRoleIds + objectList[i].roleId
+							+ "_";
+				}
+			}
+			var message = '选择角色';
+			//商家角色列表
+			parent.ligerDialogSelectHandle = parent.showBox(message,
+					'/store/select-role.html?width=600&height=400&roleIds=' + strRoleIds + '&userId='+userId+'&storeProfileId='+storeProfileId+'&customerType=CUSTOMERTYPE_SELLER');
+			parent.ligerDialogSelectWindow = window;
+		}
+	});
+}
+
+/*获取返回页面的上次查询条件*/
+function setParamValue(){
+	$('#storeCode').val(getUrlParam('storeCode'));
+	$('#storeName').val(decodeURIComponent(getUrlParam('storeName')));
+	$('#mobile').val(getUrlParam('mobile'));
+	$('#cityCode').val(getUrlParam('cityCode'));
+	$('#countyCode').val(getUrlParam('countyCode'));
+	$('#storeStatus').val(getUrlParam('storeStatus'));
+	if("" != getUrlParam('pageSize') && "" != getUrlParam('start') ){
+		param.pageSize = getUrlParam('pageSize');
+		param.currentPage = getUrlParam('start');
+	}
+}
+function getParamValue(){
+	var passParam = [];
+	var storeCode = $.trim($("#storeCode").val());	
+	var storeName = $.trim($("#storeName").val());	
+	var mobile = $.trim($("#mobile").val());
+	var cityCode = $.trim($("#cityCode").val());	
+	var countyCode = $.trim($("#countyCode").val());	
+	var storeStatus = $.trim($("#storeStatus").val());	
+	var start = $.trim($("#start").val());
+	var pageSize = $.trim($("#pageSize").val());
+	
+	passParam.push('storeCode='+storeCode);
+	passParam.push('storeName='+storeName);
+	passParam.push('mobile='+mobile);
+	passParam.push('cityCode='+cityCode);
+	passParam.push('countyCode='+countyCode);
+	passParam.push('storeStatus='+storeStatus);
+	passParam.push('start=' + start);
+	passParam.push('pageSize=' + pageSize);
+	return passParam.join('&');
+}
+//加载商家类型
+function listStoreTypeList(val){
+	var systemDictType = 'STORETYPE';
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+		type:'post',
+		async:false,
+		dataType:'json',
+		error:function(){return;}, 
+		success:function(data){
+			if(data.msgCode!=1){return;}
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			
+			var mapList = data.entity;
+			var html = '';
+			if(mapList != null && mapList.length >0){
+				html='<option value="">--请选择--</option>';
+				for(var i=0,length=mapList.length;i<length;i++){
+					if(val == mapList[i].id){
+						html += '<option selected value="'+mapList[i].id+'">';
+						html += mapList[i].name;
+						html +='</option>'
+					}else{
+						html += '<option value="'+mapList[i].id+'">';
+						html += mapList[i].name;
+						html +='</option>'
+					}
+				}
+			}
+			$('#storeType').html(html);
+		}
+	});
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	loadCity();
+	setParamValue();
+	listStoreTypeList();
+	dataSubmit();
+	
+});
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 商家管理 &gt; <span>商家管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">商家管理</div>
+				<div class="complaint_main">
+					<form method="get" id="dataForm">
+						<input type="hidden" id="strRoleIds" name="strRoleIds" /> 
+						<input type="hidden" id="userId" name="userId" /> 
+						<div class="main_search">
+							<dl>
+								<dt>商家编号：</dt>
+								<dd><input type="text" class="txt grid-12" id="storeCode" name="storeCode" /></dd>
+							</dl>
+							<dl>
+								<dt>商家名称：</dt>
+								<dd><input type="text" class="txt grid-12" id="storeName" name="storeName" /></dd>
+							</dl>
+							<dl>
+								<dt>服务热线：</dt>
+								<dd><input type="text" class="txt grid-12" id="mobile" name="mobile" /></dd>
+							</dl>
+							<dl>
+								<dt>所在地区：</dt>
+								<dd>
+									<select class="select grid-12" id="cityCode" name="cityCode" onChange="loadCounty(this.value)">
+										<option value="" selected>--请选择--</option>
+									</select>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<select class="select grid-12" id="countyCode" name="countyCode">
+										<option value="" selected>--请选择--</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<dt>商家类型：</dt>
+								<dd>
+									<select class="select" style="width:133px" id="storeType" name="storeType"></select>
+								</dd>
+							</dl>
+							<dl>
+								<dt>营业状态：</dt>
+								<dd>
+									<select class="select" style="width:133px" id="storeStatus" name="storeStatus">
+										<option value="" selected>--全部--</option>
+										<option value="STORESTATUS_OPEN">已营业</option>
+										<option value="STORESTATUS_CLOSED">未营业</option>
+									</select>
+								</dd>
+							</dl>
+							<input type="hidden"  id="start" name="start" />
+							<input type="hidden"  id="pageSize" name="pageSize" />	
+							<input type="hidden"  id="businessType" name="businessType" />	
+							<p class="main_search_btn">
+							<permission code="FUNCTION_SEARCH_STORE_MANAGEMENT">
+								<input type="button" value="查询" class="btn_sure" id="storeSearch" onClick="dataSubmit(1)" /> 
+							</permission>
+							<input type="reset" id="reset" class="btn_gray" value="重置" />
+							<permission code="FUNCTION_ADD_STORE_MANAGEMENT">
+								<input type="button" value="新增商家" class="btn_sure" onClick="addStore()" />
+							</permission>
+							<permission code="FUNCTION_LIST_OPEN_STORE_MANAGEMENT">
+								<input type="button" value="正在营业的商家" class="btn_sure" onClick="dataSubmit(1,'open')" />
+							</permission>
+							<permission code="FUNCTION_LIST_SPAM_STORE_MANAGEMENT">
+								<input type="button" value="暂停营业的商家" class="btn_sure" onClick="dataSubmit(1,'spam')" />
+							</permission>
+							<permission code="FUNCTION_EXPORT_STORE_MANAGEMENT">
+								<input type="button" value="导出" class="btn_sure" onClick="javascript:exportSearchStore();" />
+								<a hidden id="store_down" style="COLOR:red; TEXT-DECORATION:underline"><span style="color:red">点击下载</span></a>
+							</permission>
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="40">序号</th>
+									<th width="90">商家编码</th>
+									<th width="160">商家名称</th>
+									<th width="70">联系人</th>
+									<th width="70">商家类型</th>
+									<th width="90">是否共享库存</th>
+									<th width="90">服务热线</th>
+									<th width="180">商家地址</th>
+									<th width="100">所在地区</th>
+									<th width="60">营业状态</th>
+									<th width="60">账号状态</th>
+									<th width="60">邀请码</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onClick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onClick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onKeyUp="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onClick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

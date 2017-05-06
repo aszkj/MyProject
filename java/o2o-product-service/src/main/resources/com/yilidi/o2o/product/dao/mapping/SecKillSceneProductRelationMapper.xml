@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SecKillSceneProductRelationMapper">
+	<resultMap id="BaseResultMap" type="SecKillSceneProductRelation">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SECKILLSCENEID" property="secKillSceneId" jdbcType="INTEGER" />
+		<result column="SECKILLPRODUCTID" property="secKillProductId" jdbcType="INTEGER" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSERID" property="updateUserId" jdbcType="INTEGER" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, SECKILLSCENEID, SECKILLPRODUCTID,STATUSCODE,
+		CREATEUSERID,CREATETIME,UPDATEUSERID,UPDATETIME
+	</sql>
+
+	<insert id="save" parameterType="SecKillSceneProductRelation" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_SECKILL_SCENE_PRODUCT_RELATION (
+		SECKILLSCENEID,
+		SECKILLPRODUCTID,
+		STATUSCODE,
+		CREATEUSERID, CREATETIME,
+		UPDATEUSERID,UPDATETIME)
+		values(
+		#{secKillSceneId,jdbcType=INTEGER},
+		#{secKillProductId,jdbcType=INTEGER},
+		#{statusCode,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{updateUserId,jdbcType=INTEGER},
+		#{updateTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<insert id="batchSave" parameterType="java.util.List">
+		insert into
+		P_SECKILL_SCENE_PRODUCT_RELATION (
+		SECKILLSCENEID,
+		SECKILLPRODUCTID,
+		STATUSCODE,
+		CREATEUSERID, CREATETIME,
+		UPDATEUSERID,UPDATETIME)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.secKillSceneId,jdbcType=INTEGER},
+			#{item.secKillProductId,jdbcType=INTEGER},
+			#{item.statusCode,jdbcType=VARCHAR},
+			#{item.createUserId,jdbcType=INTEGER},
+			#{item.createTime,jdbcType=TIMESTAMP},
+			#{item.updateUserId,jdbcType=INTEGER},
+			#{item.updateTime,jdbcType=TIMESTAMP}
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from
+		P_SECKILL_SCENE_PRODUCT_RELATION
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE_PRODUCT_RELATION
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="loadBySceneIdAndSecKillProductId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE_PRODUCT_RELATION
+		where
+		SECKILLSCENEID = #{secKillSceneId,jdbcType=INTEGER}
+		and SECKILLPRODUCTID =
+		#{secKillProductId,jdbcType=INTEGER}
+	</select>
+	<select id="loadBySceneIdAndProductId" resultMap="BaseResultMap">
+		select
+		PSSPR.ID, PSSPR.SECKILLSCENEID,
+		PSSPR.SECKILLPRODUCTID,PSSPR.STATUSCODE,
+		PSSPR.CREATEUSERID,PSSPR.CREATETIME,PSSPR.UPDATEUSERID,PSSPR.UPDATETIME
+		from
+		P_SECKILL_SCENE_PRODUCT_RELATION PSSPR
+		left join
+		P_SECKILL_PRODUCT PSP on PSSPR.SECKILLPRODUCTID = PSP.ID
+		where
+		PSSPR.SECKILLSCENEID = #{secKillSceneId,jdbcType=INTEGER}
+		and
+		PSP.PRODUCTID =
+		#{productId,jdbcType=INTEGER}
+	</select>
+	<select id="listBySceneId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_SCENE_PRODUCT_RELATION
+		where
+		SECKILLSCENEID = #{secKillSceneId,jdbcType=INTEGER}
+	</select>
+	<select id="loadBySceneIdAndProductIdNoCache" resultMap="BaseResultMap">
+		select
+		PSSPR.ID, PSSPR.SECKILLSCENEID,
+		PSSPR.SECKILLPRODUCTID,PSSPR.STATUSCODE,
+		PSSPR.CREATEUSERID,PSSPR.CREATETIME,PSSPR.UPDATEUSERID,PSSPR.UPDATETIME
+		from
+		P_SECKILL_SCENE_PRODUCT_RELATION PSSPR
+		left join
+		P_SECKILL_PRODUCT PSP on PSSPR.SECKILLPRODUCTID = PSP.ID
+		where
+		PSSPR.SECKILLSCENEID = #{secKillSceneId,jdbcType=INTEGER}
+		and
+		PSP.PRODUCTID =
+		#{productId,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteBySceneIdAndSecKillProductId">
+		delete from
+		P_SECKILL_SCENE_PRODUCT_RELATION
+		where SECKILLSCENEID = #{secKillSceneId,jdbcType=INTEGER}
+		and
+		SECKILLPRODUCTID =
+		#{secKillProductId,jdbcType=INTEGER}
+	</delete>
+	<update id="updateStatusCodeBySceneIdAndSecKillProductId">
+		update P_SECKILL_SCENE_PRODUCT_RELATION
+		set STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+		UPDATEUSERID =
+		#{updateUserId,jdbcType=INTEGER},
+		UPDATETIME = #{updateTime,jdbcType=TIMESTAMP}
+		where SECKILLSCENEID =
+		#{secKillSceneId,jdbcType=INTEGER}
+		and
+		SECKILLPRODUCTID =
+		#{secKillProductId,jdbcType=INTEGER}
+	</update>
+</mapper>

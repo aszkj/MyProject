@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SiteMessageHistoryMapper" >
+  <resultMap id="BaseResultMap" type="SiteMessageHistory" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="SITEMESSAGEID" property="siteMessageId" jdbcType="INTEGER" />
+    <result column="SUBJECT" property="subject" jdbcType="VARCHAR" />
+    <result column="SENDID" property="sendId" jdbcType="INTEGER" />
+    <result column="RECEIVE" property="receive" jdbcType="VARCHAR" />
+    <result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+    <result column="MESSAGETYPE" property="messageType" jdbcType="VARCHAR" />
+    <result column="SENDCOUNT" property="sendCount" jdbcType="INTEGER" />
+    <result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+    <result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+    <result column="CONTENT" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, SITEMESSAGEID, SUBJECT, SENDID, RECEIVE, STATUSCODE, MESSAGETYPE, SENDCOUNT, 
+    OPERATETIME, OPERATEUSERID, OPERATETYPE, CONTENT
+  </sql>
+  
+  
+  <insert id="insert" parameterType="SiteMessageHistory" >
+    insert into S_SITE_MESSAGE_HISTORY (SITEMESSAGEID, SUBJECT, 
+      SENDID, RECEIVE, STATUSCODE, 
+      MESSAGETYPE, SENDCOUNT, OPERATETIME, 
+      OPERATEUSERID, OPERATETYPE, CONTENT
+      )
+    values (#{siteMessageId,jdbcType=INTEGER}, #{subject,jdbcType=VARCHAR}, 
+      #{sendId,jdbcType=INTEGER}, #{receive,jdbcType=VARCHAR}, #{statusCode,jdbcType=VARCHAR}, 
+      #{messageType,jdbcType=VARCHAR}, #{sendCount,jdbcType=INTEGER}, #{operateTime,jdbcType=TIMESTAMP}, 
+      #{operateUserId,jdbcType=INTEGER}, #{operateType,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  
+  <select id="list" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_SITE_MESSAGE_HISTORY
+  </select>
+  
+  <select id="listBySiteMessageId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select 
+    <include refid="Base_Column_List" />
+    from S_SITE_MESSAGE_HISTORY
+    where SITEMESSAGEID = #{siteMessageId, jdbcType=INTEGER}
+  </select>
+ 
+</mapper>

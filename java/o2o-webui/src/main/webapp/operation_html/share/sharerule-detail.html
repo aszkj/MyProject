@@ -1,0 +1,745 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/lang/zh_CN.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.box-mask {
+	position: fixed;
+	width: 600px;
+	height: auto;
+	ovflow: hidden;
+	z-index: 9999999;
+	left: 50%;
+	top: 0;
+	margin-left: -300px;
+}
+
+.mask_close {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size: 16px;
+	color: red;
+	background: #fff;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+}
+
+.sharerule_img li {
+	float: left;
+	margin: 0 6px 0 0
+}
+
+.sharerule_img .img {
+	display: block;
+	width: 400px;
+	height: 100px;
+	border: 1px dashed #e3e4e4;
+	text-align: center;
+	line-height: 100px;
+}
+
+.sharerule_img a.img {
+	background: #fcfcfc url(/static-resource/images/base/image_bg.gif)
+		no-repeat center center;
+	overflow: hidden;
+	text-align: left;
+	text-indent: -1000px;
+	cursor: pointer
+}
+
+.sharerule_img .img img {
+	max-width: 400px;
+	max-height: 100px;
+	_height: expression(this.height > 100 ? "100" : true);
+	_width: expression(this.width > 400 ? "400" : true);
+	line-height: 100px;
+}
+
+.sharerule_img p {
+	text-align: center;
+	line-height: 24px
+}
+
+.sharerule_img p label {
+	padding: 0 8px 0 2px;
+}
+
+.sharerule_img p input {
+	vertical-align: -2px;
+}
+
+.backgroundimage_note {
+	line-height: 22px;
+	overflow: hidden;
+	padding: 10px 0 0;
+}
+
+.backgroundimage_note em {
+	color: #E94B01;
+	float: left;
+	text-align: right;
+}
+
+.backgroundimage_note p {
+	color: #DF9067;
+	margin: 0 0 0 400px;
+}
+</style>
+<script type="text/javascript">
+//默认加载出优惠券包数据
+var packageData = [];
+//动态加载券包数据
+function loadPackData(){
+	var grantWay = 'COUPONSGRANTWAY_SHARE_GIFT';
+	$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' +grantWay + '/listAvailableCouponPackage',
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1){
+				return;
+			}
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			packageData = data.entity;
+		},
+		error:function(){
+			return;
+		}
+	});
+}
+
+	var ruleId = getUrlParam("shareRuleId");
+	function detail(id) {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/sharerule/' + id
+					+ '/detail',
+			data : '',
+			dataType : 'json',//非必须.默认text
+			error : function() {
+			}, //非必须
+			success : function(data) {
+				/* checkJsonRight(data); */
+				if (data.msgCode == 1) {
+					var shareRule = data.entity;
+					$("#shareRuleName").val(shareRule.shareRuleName);
+					$("#strStartValidTime").val(shareRule.startValidTime);
+					$("#strEndValidTime").val(shareRule.endValidTime);
+					$("#roleType").val(shareRule.roleType);
+					var invitedConditionType = shareRule.invitedConditionType
+							|| "";
+					$("#invitedConditionType").val(invitedConditionType);
+					if (invitedConditionType == "SHARERULEINVITEDCONDITIONTYPE_PRODUCT") {
+						var productIds = shareRule.invitedUseProduct.split(",");
+						$("#invitedSelectedProduct").show();
+						$("#invitedSelectedProductCount").html(
+								productIds.length);
+						$("#invitedSelectedProductText").html(
+								shareRule.invitedUseProductName || "");
+						$("#invitedSelectedProductInput").val(
+								shareRule.invitedUseProduct);
+					}
+					var invitedAwardTypeValue = shareRule.invitedAwardType
+							|| "";
+					$("#invitedAwardType").val(invitedAwardTypeValue);
+					if (invitedAwardTypeValue == "") {
+						$(".invitedAwardType").hide();
+						$("#invited").hide();
+					} else {
+						initAwardTypeValue(0,shareRule);
+						$(".invitedAwardType." + invitedAwardTypeValue).show();
+						$("#invited").show();
+					}
+					var inviterConditionType = shareRule.inviterConditionType
+							|| "";
+					$("#inviterConditionType").val(inviterConditionType);
+					if (inviterConditionType == "SHARERULEINVITERCONDITIONTYPE_PRODUCT") {
+						var productIds = shareRule.inviterUseProduct.split(",");
+						$("#inviterSelectedProduct").show();
+						$("#inviterSelectedProductCount").html(
+								productIds.length);
+						$("#inviterSelectedProductText").html(
+								shareRule.inviterUseProductName || "");
+						$("#inviterSelectedProductInput").val(
+								shareRule.inviterUseProduct);
+					}
+					var inviterAwardTypeValue = shareRule.inviterAwardType
+							|| "";
+					$("#inviterAwardType").val(inviterAwardTypeValue);
+					if (inviterAwardTypeValue == "") {
+						$(".inviterAwardType").hide();
+						$("#inviter").hide();
+					} else {
+						initAwardTypeValue(1,shareRule);
+						$(".inviterAwardType." + inviterAwardTypeValue).show();
+						$("#inviter").show();
+					}
+					var html = [];
+					var backgroundImageUrl = data.entity.backgroundImageUrl;
+					var fullBackgroundImageUrl = data.entity.fullBackgroundImageUrl;
+					if (backgroundImageUrl != null && backgroundImageUrl != '') {
+						html
+								.push('<span class="img"><a href="javascript:void(0)" onclick="showShareRuleImg(\''
+										+ fullBackgroundImageUrl
+										+ '\')" title="点击查看大图"><img src="');
+						html.push(fullBackgroundImageUrl);
+						html
+								.push('" alt="" width="400" height="100" border="0"/></a></span><p>');
+						$('#uploadLi').html(html.join(''));
+					}
+					$("#backgroundImageUrl").val(backgroundImageUrl);
+					$("#h5DrawUrl").val(data.entity.h5DrawUrl || '');
+					$("#descriptionUrl").val(data.entity.descriptionUrl || '');
+					$("#smsContent").val(data.entity.smsContent || '');
+					$("#friendTitle").val(data.entity.friendTitle || '');
+					$("#friendContent").val(data.entity.friendContent || '');
+					$("#avatarHeight").val(data.entity.avatarHeight || '');
+					$("#mobileHeight").val(data.entity.mobileHeight || '');
+					$("#qrCodeHeight").val(data.entity.qrCodeHeight || '');
+					$("#shareRuleId").val(id);
+					$(".editable-class").attr("disabled", true);
+				} else {
+					showBox('提示信息', data.msg, 'alert');
+				}
+			}//非必须
+		});
+	}
+	function comeback() {
+		locationHref('/share/sharerule-index.html');
+	}
+	function showShareRuleImg(path) {
+		showBox("查看广告图片",
+				"<img src='"+path+"' alt='' width='600' height='300' />");
+	}
+	function listSelectList(val, type, el) {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + type
+					+ '/getSystemDictInfoList',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						if (val == mapList[i].id) {
+							html += '<option selected="selected" value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						} else {
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						}
+					}
+				}
+				var elArr = el.split(",");
+				for (var i = 0; i < elArr.length; i++) {
+					$('#' + elArr[i]).html(html);
+				}
+			}
+		});
+	}
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#strStartValidTime').datetimepicker({
+			minDateTime : new Date()
+		});
+		$('#strEndValidTime').datetimepicker({
+			minDateTime : new Date()
+		});
+	}
+	function initAwardTypeValue(type,shareRule) {
+		if (type == 0) {
+			if(shareRule != null && shareRule.invitedAwardType != null && shareRule.invitedAwardType != ""){
+				if(shareRule.invitedAwardType == "SHARERULEAWARDTYPE_CASH"){
+					$("#invitedCash").val(shareRule.invitedAward);
+				}else if(shareRule.invitedAwardType == "SHARERULEAWARDTYPE_POINTS"){
+					$("#invitedPoints").val(shareRule.invitedAward);
+				}else if(shareRule.invitedAwardType == "SHARERULEAWARDTYPE_COUPON"){
+					if(shareRule.invitedCouponInfos != null &&　shareRule.invitedCouponInfos.length>0){
+						var html = '';
+						$.each(shareRule.invitedCouponInfos,function(i,item){
+							html = createInvitedCouponInfoHtml(item);
+							$(".invitedAwardType." + shareRule.invitedAwardType).append(html);
+							console.log()
+							loadCouponData($(".invitedAwardType." + shareRule.invitedAwardType).children("div:last").find('.invitedPackageId'), item);
+						});
+					}
+				}
+			}else{
+				$("#invitedCash").val("");
+				$("#invitedPoints").val("");
+				$("#invitedAward").val("");
+			}
+		} else {
+			if(shareRule != null && shareRule.inviterAwardType != null && shareRule.inviterAwardType != ""){
+				if(shareRule.inviterAwardType == "SHARERULEAWARDTYPE_CASH"){
+					$("#inviterCash").val(shareRule.inviterAward);
+				}else if(shareRule.inviterAwardType == "SHARERULEAWARDTYPE_POINTS"){
+					$("#inviterPoints").val(shareRule.inviterAward);
+				}else if(shareRule.inviterAwardType == "SHARERULEAWARDTYPE_COUPON"){
+					if(shareRule.inviterCouponInfos != null &&　shareRule.inviterCouponInfos.length>0){
+						var html = '';
+						$.each(shareRule.inviterCouponInfos,function(i,item){
+							html = createInviterCouponInfoHtml(item);
+							$(".inviterAwardType." + shareRule.inviterAwardType).append(html);
+							loadCouponData($(".inviterAwardType." + shareRule.inviterAwardType).children("div:last").find('.inviterPackageId'), item);
+							
+						});
+					}
+				}
+			}else{
+				$("#inviterCash").val("");
+				$("#inviterPoints").val("");
+				$("#inviterAward").val("");
+			}
+			
+		}
+	}
+	function loadCouponData(obj,obj1) {
+		var couponId = obj1.couponId;
+		$.ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + obj.val() + '/listCouponForShareRule',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			contentType : "application/json",
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						var couponName = mapList[i].conName + "(发放时间:"
+								+ mapList[i].grantTime + ",第"+ mapList[i].stageNo+"阶段)"
+						if (mapList[i].conId == couponId) {
+							html += '<option value="'+mapList[i].conId+'" selected="selected">';
+						} else { 
+							html += '<option value="'+mapList[i].conId+'">';
+						}
+						html += couponName;
+						html += '</option>'
+					}
+				}
+				obj.parent().find('.couponSelect').html(html);
+			}
+		});
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		loadPackData(); //加载优惠券包数据
+		loadTimeInput();
+		listSelectList('SHARERULEROLETYPE_BUYER', 'SHARERULEROLETYPE',
+				'roleType');
+		listSelectList(null, 'SHARERULEINVITEDCONDITIONTYPE',
+				'invitedConditionType');
+		listSelectList(null, 'SHARERULEINVITERCONDITIONTYPE',
+				'inviterConditionType');
+		listSelectList(null, 'SHARERULEAWARDTYPE',
+				'invitedAwardType,inviterAwardType');
+		detail(ruleId);
+	});
+	
+	//被邀请人
+	function createInvitedCouponInfoHtml(obj1){
+		var conPackId = obj1.conPackId;
+		var invitedCouponInfoHtml = '<div style="margin: 10px 10px;" class="invitedCouponInfo">';
+		invitedCouponInfoHtml+='<span style="width: 80px; text-align: right; display: inline-block;">被邀请人：</span>';
+		invitedCouponInfoHtml+='<select class="editable-class select invitedPackageId">';
+		invitedCouponInfoHtml+='<option value="">--请选择--</option>';
+		if(packageData != null && packageData.length > 0){
+			$.each(packageData,function(i,item){
+				if(conPackId == item.id){
+					invitedCouponInfoHtml+='<option value="'+item.id+'" selected="selected">'+item.conName+'</option>';
+				}else{
+					invitedCouponInfoHtml+='<option value="'+item.id+'">'+item.conName+'</option>';
+				}
+			});
+		}
+		invitedCouponInfoHtml+='</select>';
+		invitedCouponInfoHtml+='<select class="editable-class select invitedCouponId couponSelect">';
+		invitedCouponInfoHtml+='<option value="">--请选择--</option>';
+		invitedCouponInfoHtml+='</select>'; 
+		invitedCouponInfoHtml+='<input type="number" class="select grid-7 editable-class couponNumber invitedCouponNumber" value="'+obj1.couponNumber+'"/>&nbsp;&nbsp;张';
+		invitedCouponInfoHtml+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span sp="invitedCouponMsg"></span>';
+		invitedCouponInfoHtml+='</div>';
+		return invitedCouponInfoHtml;
+	}
+	
+	//邀请人
+	function createInviterCouponInfoHtml(obj1){
+		var conPackId = obj1.conPackId;
+		var inviterCouponInfoHtml = '<div style="margin: 10px 10px;" class="inviterCouponInfo">';
+		inviterCouponInfoHtml+='<span style="width: 80px; text-align: right; display: inline-block;">邀请人：</span>';
+		inviterCouponInfoHtml+='<select class="editable-class select inviterPackageId">';
+		inviterCouponInfoHtml+='<option value="">--请选择--</option>';
+		if(packageData != null && packageData.length > 0){
+			$.each(packageData,function(i,item){
+				if(conPackId == item.id){
+					inviterCouponInfoHtml+='<option value="'+item.id+'" selected="selected">'+item.conName+'</option>';
+				}else{
+					inviterCouponInfoHtml+='<option value="'+item.id+'">'+item.conName+'</option>';
+				}
+			});
+		}
+		inviterCouponInfoHtml+='</select>';
+		inviterCouponInfoHtml+='<select class="editable-class select inviterCouponId couponSelect">';
+		inviterCouponInfoHtml+='<option value="">--请选择--</option>';
+		inviterCouponInfoHtml+='</select>';  
+		inviterCouponInfoHtml+='<input type="number" class="select grid-7 editable-class couponNumber inviterCouponNumber" value="'+obj1.couponNumber+'"/>&nbsp;&nbsp;张';
+		inviterCouponInfoHtml+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span sp="inviterCouponMsg"></span>';
+		inviterCouponInfoHtml+='</div>';
+		return inviterCouponInfoHtml;
+	}
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt;分享管理 &gt; <span id="breadName">分享规则详细</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">分享规则详细</div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<dl>
+								<dt>
+									<em class="cred">*</em>规则名称：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-13 editable-class"
+										name="shareRuleName" id="shareRuleName" /> <span
+										id="shareRuleNameMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>活动时间：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-13 editable-class"
+										id="strStartValidTime" name="strStartValidTime" /> 至 <input
+										type="text" class="txt grid-13 editable-class"
+										id="strEndValidTime" name="strEndValidTime" /> <span
+										id="validTimeMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>角色类型：
+								</dt>
+								<dd>
+									<select class="select grid-13 editable-class" id="roleType"
+										name="roleType"></select> <span id="roleTypeMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>被邀请人条件设置：</dt>
+								<dd>
+									<select class="select grid-13 editable-class"
+										id="invitedConditionType" name="invitedConditionType"></select>
+									<span id="invitedConditionTypeMsg"></span>
+								</dd>
+								<dd class="hide" style="margin-top: 5px;"
+									id="invitedSelectedProduct">
+									已选择商品(共<span id="invitedSelectedProductCount">0</span>个):<span
+										id="invitedSelectedProductText"></span> <input type="hidden"
+										name="invitedUseProduct" class="editable-class"
+										id="invitedSelectedProductInput" value="" />
+								</dd>
+							</dl>
+							<dl>
+								<dt>被邀请人奖励设置：</dt>
+								<dd>
+									<select class="select grid-13 editable-class"
+										id="invitedAwardType" name="invitedAwardType"></select> <span
+										id="invitedAwardTypeMsg"></span>
+								</dd>
+								<dd>
+									<div id="invited" class="hide" style="border: 1px solid #66CCFF; margin: 10px 0;">
+										<input type="hidden" id="invitedAward" name="invitedAward">
+										<!-- 现金 -->
+										<div class="hide invitedAwardType SHARERULEAWARDTYPE_CASH">
+											<div style="margin: 10px 10px;">
+												<span
+													style="width: 80px; text-align: right; display: inline-block;">被邀请人：</span>
+												<input type="text" class="editable-class select grid-7" id="invitedCash"
+													name="invitedCash" />&nbsp;&nbsp;元 <span
+													id="invitedCashMsg"></span>
+											</div>
+										</div>
+										<!-- 优惠券 -->
+										<div class="hide invitedAwardType SHARERULEAWARDTYPE_COUPON">
+										</div>
+										<!-- 积分 -->
+										<div class="hide invitedAwardType SHARERULEAWARDTYPE_POINTS">
+											<div style="margin: 10px 10px;">
+												<span
+													style="width: 80px; text-align: right; display: inline-block;">被邀请人：</span>
+												<input type="number" class="editable-class select grid-7"
+													id="invitedPoints" name="invitedPoints" />&nbsp;&nbsp;积分<span
+													id="invitedPointsMsg"></span>
+											</div>
+										</div>
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>邀请人条件设置：</dt>
+								<dd>
+									<select class="select grid-13 editable-class"
+										id="inviterConditionType" name="inviterConditionType"></select>
+									<span id="inviterConditionTypeMsg"></span>
+								</dd>
+								<dd class="hide" style="margin-top: 5px;"
+									id="inviterSelectedProduct">
+									已选择商品(共<span id="inviterSelectedProductCount">0</span>个):<span
+										id="inviterSelectedProductText"></span> <input type="hidden"
+										name="inviterUseProduct" id="inviterSelectedProductInput"
+										class="editable-class" value="" />
+								</dd>
+							</dl>
+							<dl>
+								<dt>邀请人奖励设置：</dt>
+								<dd>
+									<select class="select grid-13 editable-class"
+										id="inviterAwardType" name="inviterAwardType"></select> <span
+										id="inviterAwardTypeMsg"></span>
+								</dd>
+								<dd>
+									<div id="inviter" class="hide" style="border: 1px solid #66CCFF; margin: 10px 0;">
+										<input type="hidden" id="inviterAward" name="inviterAward">
+										<!-- 现金 -->
+										<div class="hide inviterAwardType SHARERULEAWARDTYPE_CASH">
+											<div style="margin: 10px 10px;">
+												<span
+													style="width: 80px; text-align: right; display: inline-block;">邀请人：</span>
+												<input type="text" class="editable-class select grid-7" id="inviterCash"
+													name="inviterCash" />&nbsp;&nbsp;元 <span
+													id="inviterCashMsg"></span>
+											</div>
+										</div>
+										<!-- 优惠券 -->
+										<div class="hide inviterAwardType SHARERULEAWARDTYPE_COUPON">
+											<div style="margin: 10px 10px;"></div>
+										</div>
+										<!-- 积分 -->
+										<div class="hide inviterAwardType SHARERULEAWARDTYPE_POINTS">
+											<div style="margin: 10px 10px;">
+												<span
+													style="width: 80px; text-align: right; display: inline-block;">邀请人：</span>
+												<input type="number" class="editable-class select grid-7"
+													id="inviterPoints" name="inviterPoints" />&nbsp;&nbsp;积分 <span
+													id="inviterPointsMsg"></span>
+											</div>
+										</div>
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>分享领取H5页面：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-30 editable-class"
+										name="h5DrawUrl" placeholder="分享活动领取h5页面url" id="h5DrawUrl" />
+									<span id="h5DrawUrlMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>分享规则页面：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-30 editable-class"
+										name="descriptionUrl" placeholder="分享活动规则说明页面"
+										id="descriptionUrl" /> <span id="descriptionUrlMsg"></span>
+								</dd>
+							</dl>
+							<div
+								style="height: 30px; text-indent: 2em; line-height: 30px; background-color: #CCCCCC; margin-top: 10px; margin-bottom: 5px;">
+								<span>朋友圈分享内容设置</span>
+							</div>
+							<dl>
+								<dt>
+									<em class="cred">*</em>背景图片上传：
+								</dt>
+								<input type="hidden" id="backgroundImageUrl"
+									class="editable-class" name="backgroundImageUrl" />
+								<dd>
+									<ul class="sharerule_img img editable-class">
+										<li id="uploadLi" class="pr "></li>
+									</ul>
+									<div class="backgroundimage_note agray">
+										<em>温馨提示：</em>
+										<p style="color: #DF9067; margin: 0 0 0 0; padding: 0px">
+											请上传图片大小≤3M的图片！ <span id="backgroundImageUrlMsg">&nbsp;</span><br>图片格式：.jpg、.jpeg、.gif或.png<br>
+										</p>
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>头像高度：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-20 editable-class"
+										name="avatarHeight" id="avatarHeight" /> <span
+										id="avatarHeightMsg" class="gray">单位：像素</span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>手机号码高度：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-20 editable-class"
+										name="mobileHeight" id="mobileHeight" /> <span
+										id="mobileHeightMsg" class="gray">单位：像素</span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>二维码高度：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-20 editable-class"
+										name="qrCodeHeight" id="qrCodeHeight" /> <span
+										id="qrCodeHeightMsg" class="gray">单位：像素</span>
+								</dd>
+							</dl>
+							<div
+								style="height: 30px; text-indent: 2em; line-height: 30px; background-color: #CCCCCC; margin-top: 10px; margin-bottom: 5px;">
+								<span>分享短信内容设置</span>
+							</div>
+							<dl>
+								<dt>
+									<em class="cred">*</em>短信内容：
+								</dt>
+								<dd>
+									<textarea type="text" class="txt grid-46 editable-class"
+										id="smsContent" placeholder="请输入短信内容" name="smsContent"
+										rows="8" maxlength="200"></textarea>
+									&nbsp;&nbsp; <span id="smsContentMsg" class="cred"></span>
+								</dd>
+							</dl>
+							<div
+								style="height: 30px; text-indent: 2em; line-height: 30px; background-color: #CCCCCC; margin-top: 10px; margin-bottom: 5px;">
+								<span>微信好友分享内容设置</span>
+							</div>
+							<dl>
+								<dt>
+									<em class="cred">*</em>标题：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-20 editable-class"
+										name="friendTitle" id="friendTitle" /> <span
+										id="friendTitleMsg" class="red"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>内容简称：
+								</dt>
+								<dd>
+									<textarea type="text" class="txt grid-46 editable-class"
+										id="friendContent" placeholder="请输入内容简称" name="friendContent"
+										rows="8" maxlength="200"></textarea>
+									&nbsp;&nbsp; <span id="friendContentMsg" class="cred"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" id="goBack" class="btn_gray" value="返回"
+											onClick="javascript:comeback();" /> <span id="promptMessage"
+											class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

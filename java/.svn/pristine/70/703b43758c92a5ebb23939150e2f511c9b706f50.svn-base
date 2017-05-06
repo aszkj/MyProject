@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleProductPriceHistoryMapper">
+	<resultMap id="BaseResultMap" type="SaleProductPriceHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTPRICEID" property="saleProductPriceId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="ORIPROMOTIONALPRICE" property="oriPromotionalPrice" jdbcType="BIGINT" />
+		<result column="PROMOTIONALPRICE" property="promotionalPrice" jdbcType="BIGINT" />
+		<result column="ORIRETAILPRICE" property="oriRetailPrice" jdbcType="BIGINT" />
+		<result column="RETAILPRICE" property="retailPrice" jdbcType="BIGINT" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+		<result column="ORICOMMISSIONPRICE" property="oriCommissionPrice" jdbcType="BIGINT" />
+		<result column="COMMISSIONPRICE" property="commissionPrice" jdbcType="BIGINT" />
+		<result column="ORICOSTPRICE" property="oriCostPrice" jdbcType="BIGINT" />
+		<result column="COSTPRICE" property="costPrice" jdbcType="BIGINT" />
+		<result column="ORIVIPCOMMISSIONPRICE" property="oriVipCommissionPrice" jdbcType="BIGINT" />
+		<result column="VIPCOMMISSIONPRICE" property="vipCommissionPrice" jdbcType="BIGINT" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEPRODUCTPRICEID, SALEPRODUCTID, ORIPROMOTIONALPRICE, PROMOTIONALPRICE, ORIRETAILPRICE, RETAILPRICE,
+		CHANNELCODE, OPERATEUSERID, OPERATETIME, OPERATETYPE, ORICOMMISSIONPRICE, COMMISSIONPRICE, ORICOSTPRICE,
+		COSTPRICE,
+		ORIVIPCOMMISSIONPRICE, VIPCOMMISSIONPRICE
+	</sql>
+
+	<insert id="saveSaleProductPriceHistory" parameterType="SaleProductPriceHistory">
+		insert
+		into
+		P_SALE_PRODUCT_PRICE_HISTORY (
+		SALEPRODUCTPRICEID,
+		SALEPRODUCTID,
+		ORIPROMOTIONALPRICE,
+		PROMOTIONALPRICE, ORIRETAILPRICE,
+		RETAILPRICE,
+		CHANNELCODE,
+		OPERATEUSERID, OPERATETIME,
+		OPERATETYPE, ORICOMMISSIONPRICE, COMMISSIONPRICE, ORICOSTPRICE,
+		COSTPRICE, ORIVIPCOMMISSIONPRICE, VIPCOMMISSIONPRICE
+		)
+		values
+		(
+		#{saleProductPriceId,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER},
+		#{oriPromotionalPrice,jdbcType=BIGINT},
+		#{promotionalPrice,jdbcType=BIGINT},#{oriRetailPrice,jdbcType=BIGINT},
+		#{retailPrice,jdbcType=BIGINT},
+		#{channelCode,jdbcType=VARCHAR},
+		#{operateUserId,jdbcType=INTEGER},#{operateTime,jdbcType=TIMESTAMP},
+		#{operateType,jdbcType=VARCHAR},#{oriCommissionPrice,jdbcType=BIGINT},
+		#{commissionPrice,jdbcType=BIGINT},#{oriCostPrice,jdbcType=BIGINT},
+		#{costPrice,jdbcType=BIGINT},#{oriVipCommissionPrice,jdbcType=BIGINT},
+		#{vipCommissionPrice,jdbcType=BIGINT}
+		)
+	</insert>
+
+	<select id="listSaleProductPriceHistoryBySaleProductPriceId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_PRICE_HISTORY
+		where SALEPRODUCTPRICEID =
+		#{saleProductPriceId,jdbcType=INTEGER}
+	</select>
+
+	<select id="listSaleProductPriceHistoryBySaleProductIdAndChannel" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_PRICE_HISTORY
+		where SALEPRODUCTID =
+		#{saleProductId, jdbcType=INTEGER}
+		and CHANNELCODE = #{channelCode,
+		jdbcType=VARCHAR}
+	</select>
+
+	<select id="listSaleProductPriceHistoryBySaleProductId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_PRICE_HISTORY
+		where SALEPRODUCTID =
+		#{saleProductId, jdbcType=INTEGER}
+	</select>
+
+</mapper>

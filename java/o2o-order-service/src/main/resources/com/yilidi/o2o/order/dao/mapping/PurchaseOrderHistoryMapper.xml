@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.PurchaseOrderHistoryMapper">
+	<resultMap id="BaseResultMap" type="PurchaseOrderHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PURCHASEORDERNO" property="purchaseOrderNo" jdbcType="VARCHAR" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+		<result column="PURCHASESTATUS" property="purchaseStatus" jdbcType="VARCHAR" />
+		<result column="OPERATIONDESC" property="operationDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PURCHASEORDERNO, OPERATETIME, OPERATEUSERID, PURCHASESTATUS, OPERATIONDESC
+	</sql>
+
+	<insert id="save" parameterType="PurchaseOrderHistory" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_PURCHASE_ORDER_HISTORY (
+		PURCHASEORDERNO, OPERATETIME, OPERATEUSERID,
+		PURCHASESTATUS, OPERATIONDESC
+		)
+		values(
+		#{purchaseOrderNo,jdbcType=VARCHAR},
+		#{operateTime,jdbcType=TIMESTAMP},
+		#{operateUserId,jdbcType=INTEGER},
+		#{purchaseStatus,jdbcType=VARCHAR},
+		#{operationDesc,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="listPurchaseOrderHistorys" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_PURCHASE_ORDER_HISTORY
+		where PURCHASEORDERNO = #{purchaseOrderNo,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.RecommendCustomerStoreMapper">
+	<resultMap id="BaseResultMap" type="RecommendCustomerStore">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="RECOMMENDCUSTOMERID" property="recommendCustomerId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,RECOMMENDCUSTOMERID,STOREID,CREATETIME,CREATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="RecommendCustomerStore" useGeneratedKeys="true" keyProperty="id">
+		insert into U_RECOMMENDCUSTOMER_STORE
+		(RECOMMENDCUSTOMERID,STOREID,CREATETIME,CREATEUSERID)
+		values
+		(#{recommendCustomerId,jdbcType=INTEGER},#{storeId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},#{createUserId,jdbcType=INTEGER})
+	</insert>
+
+	<delete id="deleteByRecommendCustomerId" parameterType="java.lang.Integer">
+		delete from U_RECOMMENDCUSTOMER_STORE
+		where RECOMMENDCUSTOMERID = #{recommendCustomerId,jdbcType=INTEGER}
+	</delete>
+
+	<select id="listRecommendCustomerIdsByStoreId" resultType="integer">
+		SELECT RECOMMENDCUSTOMERID FROM U_RECOMMENDCUSTOMER_STORE WHERE STOREID =
+		#{storeId,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadStoreIdByRecommendCustomerId" resultType="integer">
+		SELECT STOREID FROM U_RECOMMENDCUSTOMER_STORE WHERE RECOMMENDCUSTOMERID =
+		#{recommendCustomerId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

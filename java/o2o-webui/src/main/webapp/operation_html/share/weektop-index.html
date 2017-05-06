@@ -1,0 +1,566 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.tmpl.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style type="text/css">
+a:HOVER {
+	text-decoration: none;
+}
+
+.top-item {
+	border-bottom: 1px solid black;
+}
+
+input {
+	text-align: center;
+}
+
+.phone-input {
+	width: 120px;
+	text-align: center;
+}
+
+.count-input {
+	width: 50px;
+}
+
+.input-readonly {
+	border: none;
+}
+
+.span-normal {
+	display: inline-block;
+	text-align: center;
+	padding: 5px;
+}
+
+.sn-span {
+	width: 10px;
+}
+
+.phone-span {
+	width: 100px;
+}
+
+.count-span {
+	width: 80px;
+}
+</style>
+<script type="text/javascript">
+	var nowTime = new Date();
+	var param = {
+		currentPage : 1,
+		pageSize : 10,
+		pageCount : 0,
+		totalCount : 0
+	};
+	function dataSubmit(pageNo) {
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(pageNo))) {
+			param.currentPage = pageNo;
+		}
+		$('#start').val(param.currentPage);
+		$('#pageSize').val(param.pageSize);
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$.ajax({
+			type : 'post',
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			error : function() {
+				showBox('提示信息', '提交数据失败，请稍后再试', 'alert');
+			},
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/usershare/weektoplist',
+			beforeSubmit : function() {
+			},
+			success : function(data) {
+				//响应返回的业务处理  
+				if (data.msgCode == 1) {
+					//特殊处理 尖括号
+					var temp = JSON.stringify(data);
+					temp = encodeString(temp);
+					data = JSON.parse(temp);
+					$("#curWeekTopsParentDiv").html("");
+					$("#historyWeekTopsDiv").html("");
+					$("#curWeekTopTmpl").tmpl(data.entity).appendTo(
+							"#curWeekTopsParentDiv");
+					$("#firstRevisionWeekTopTmpl").tmpl(data.entity).appendTo(
+							"#curWeekTopsParentDiv");
+					$("#sndRevisionWeekTopTmpl").tmpl(data.entity).appendTo(
+							"#curWeekTopsParentDiv");
+					$("#thirdRevisionWeekTopTmpl").tmpl(data.entity).appendTo(
+							"#curWeekTopsParentDiv");
+					$("#firstWeekTopTmpl").tmpl(data.entity).appendTo(
+							"#historyWeekTopsDiv");
+					$("#sndWeekTopTmpl").tmpl(data.entity).appendTo(
+							"#historyWeekTopsDiv");
+					$("#thirdWeekTopTmpl").tmpl(data.entity).appendTo(
+							"#historyWeekTopsDiv");
+					$("#fourthWeekTopTmpl").tmpl(data.entity).appendTo(
+							"#historyWeekTopsDiv");
+					disposeFunctionPermissions();
+				} else {
+					showBox('提示信息', data.msg, 'alert');
+				}
+			}
+		});
+	}
+	function viewMore(year, month, week) {
+		locationHref('/share/weektop-more.html?year=' + year + '&month='
+				+ month + '&weekNumber=' + week);
+	}
+	/*获取返回页面的上次查询条件*/
+	function setParamValue() {
+		$('#year').val(getUrlParam('year'));
+		$('#month').val(getUrlParam('month'));
+	}
+	function getParamValue() {
+		var passParam = [];
+		var year = $.trim($("#year").val());
+		var month = $.trim($("#month").val());
+		passParam.push('year=' + year);
+		passParam.push('month=' + month);
+		return passParam.join('&');
+	}
+	function initYear() {
+		var year = nowTime.getFullYear();
+		for (var i = (year - 5); i <= year; i++) {
+			if (i < 2016) {
+				continue;
+			}
+			var opEl = $('<option value="' + i + '">' + i + '年</option>');
+			$("#year").append(opEl);
+		}
+		$("#year").val(year);
+		initMonth();
+	}
+	function initMonth(month) {
+		var curMonth = nowTime.getMonth() + 1;
+		month = month || curMonth;
+		var selectedY = $("#year").val();
+		var maxMonth = 12;
+		if (selectedY == nowTime.getFullYear()) {
+			maxMonth = curMonth;
+		}
+		$("#month").html("");
+		for (var i = 0; i < maxMonth; i++) {
+			var opEl = $('<option value="' + (i + 1) + '">' + (i + 1)
+					+ '月</option>');
+			$("#month").append(opEl);
+		}
+		$("#month").val(month);
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		initYear();
+		dataSubmit();
+		$("#year").change(function() {
+			initMonth();
+		});
+	});
+	function fillTopItem(targetSize) {
+		var curCount = $("div.top-item").length;
+		targetSize = targetSize || 0;
+		if (curCount >= targetSize) {
+			return;
+		}
+		for (var i = 0; i < targetSize - curCount; i++) {
+			var itemEl = $('<div class="top-item fill-item"></div>');
+			var snSpanEl = $('<span  class="span-normal sn-span"></span>');
+			snSpanEl.html(i + 1 + curCount);
+			var phoneSpanEl = $('<span  class="span-normal phone-span"></span>');
+			phoneSpanEl
+					.html('<input type="text" name="userName" class="phone-input" maxlength="11" readonly value=""/>');
+			var countSpanEl = $('<span  class="span-normal count-span"></span>');
+			countSpanEl
+					.html('<input type="number" name="inviterCount" class="count-input" value=""/>人');
+			itemEl.append(snSpanEl).append(phoneSpanEl).append(countSpanEl);
+			$("div.curWeekOperationDiv").before(itemEl);
+		}
+	}
+	//人工干预
+	function intervention(year, month, weekNum) {
+		fillTopItem(10);
+		$("div.top-item").find("input").each(function() {
+			$(this).attr("readonly", false);
+			$(this).removeClass("input-readonly");
+		})
+		$("#saveDataBtn").show();
+		$("#cancelSaveDataBtn").show();
+		$("#interventionBtn").hide();
+		$("#modifyYear").val(year);
+		$("#modifyMonth").val(month);
+		$("#modifyWeekNumber").val(weekNum);
+	}
+	//取消
+	function cancelSave() {
+		$("div.top-item").find("input").each(function() {
+			$(this).attr("readonly", true);
+			$(this).addClass("input-readonly");
+			$("#saveDataBtn").show();
+			$("#cancelSaveDataBtn").show();
+			$("#interventionBtn").hide();
+		})
+		$("div.top-item.fill-item").remove();
+		$("#saveDataBtn").hide();
+		$("#cancelSaveDataBtn").hide();
+		$("#interventionBtn").show();
+	}
+	function closeTip() {
+		$(".error").html("").removeClass("error");
+	}
+	//保存修改
+	function saveData() {
+		if (!validateData()) {
+			return;
+		}
+		var url = OPERATION_SYSTEM_IDENTITY + '/usershare/modifyweektop';
+		if (!validateData()) {
+			return;
+		}
+		var weekTopDataStr = "";
+		$("#curWeekTopsDiv div.top-item").each(function() {
+			var phone = $(this).find("span.phone-span input").val();
+			var inviterCount = $(this).find("span.count-span input").val();
+			if (weekTopDataStr.length > 0) {
+				weekTopDataStr += ";"
+			}
+			weekTopDataStr += phone + "," + inviterCount;
+		});
+		$("#weekTopDataStr").val(weekTopDataStr);
+		var formJsonStr = JSON.stringify(iTsai.form
+				.serialize($('#modifyWeekTopForm')));
+		$.ajax({
+			type : 'post',
+			url : TERMINAL_URL + url,
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			cache : false,
+			error : function() {
+				$('#validateMsg').text('保存数据失败，请稍后再试').attr('class', 'error');
+				setTimeout(closeTip, 3000);
+			},
+			beforeSubmit : function() {
+			},
+			success : function(data) {
+				//响应返回的业务处理  
+				if (data.msgCode == 1) {
+					$('#validateMsg').text('保存成功').attr('class', 'error');
+					setTimeout(closeTip, 3000);
+					dataSubmit();
+				} else {
+					$('#validateMsg').text(data.msg).attr('class', 'error');
+					setTimeout(closeTip, 3000);
+				}
+			}
+		});
+	}
+	function validateData() {
+		var flag = true;
+		var $validateMsg = $("#validateMsg");
+		var isRepeat = false;
+		var curUserName = "";
+		$("div.top-item").find("span.phone-span input").each(function() {
+			var $value = $(this).val() || "";
+			if ($value == "") {
+				$validateMsg.html('手机号码不能为空').attr('class', 'error');
+				setTimeout(closeTip, 3000);
+				flag = false;
+				return;
+			}
+			var mobileReg = /^1(3|4|5|7|8)\d{9}$/;
+			if (!mobileReg.test($value)) {
+				$validateMsg.html('请填写合法手机号码').attr('class', 'error');
+				setTimeout(closeTip, 3000);
+				flag = false;
+				return;
+			}
+			if (curUserName == $value) {
+				isRepeat = true;
+				flag = false;
+				return;
+			}
+			curUserName = $value;
+		});
+		if (isRepeat) {
+			$validateMsg.html('手机号码不能重复').attr('class', 'error');
+			setTimeout(closeTip, 3000);
+			return false;
+		}
+		if (!flag) {
+			return false;
+		}
+		$("div.top-item").find("span.count-span input").each(function() {
+			var $value = $(this).val() || "";
+			if ($value == "") {
+				$validateMsg.html('邀请人数不能为空').attr('class', 'error');
+				setTimeout(closeTip, 3000);
+				flag = false;
+				return;
+			}
+			var legalNumberReg = /^[1-9]\d{0,9}$/;
+			if (!legalNumberReg.test($value)) {
+				$validateMsg.html('请填写合法邀请人数').attr('class', 'error');
+				setTimeout(closeTip, 3000);
+				flag = false;
+				return;
+			}
+		});
+		return flag;
+	}
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 分享管理 &gt; <span>排行榜管理</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">邀请排行榜</div>
+					<div class="complaint_main">
+						<form method="get" id="dataForm">
+							<div class="main_search">
+								<dl>
+									<dt>选择年月:&nbsp;&nbsp;</dt>
+									<dt>
+										<select id="year" name="year">
+										</select>
+									</dd>
+									<dt>&nbsp;&nbsp;</dt>
+									<dt>
+										<select id="month" name="month">
+										</select>
+									</dd>
+								</dl>
+								<input type="hidden" id="start" name="start" /> <input
+									type="hidden" id="pageSize" name="pageSize" />
+								<p class="main_search_btn">
+									<permission code="FUNCTION_SEARCH_SHAREWEEKTOP_MANAGEMENT">
+									<input type="button" value="查找" class="btn_sure" id="search"
+										onClick="dataSubmit(1)" /> </permission>
+								</p>
+							</div>
+
+							<!--搜索结束-->
+						</form>
+						<div class="order_index">
+							<div id="curWeekTopsParentDiv"
+								style="border-bottom: 1px solid black; margin: 10px 10px; width: 100%; float: left;">
+								<!-- 
+								<div
+									style="height: 300px; width: 2px; display: inline-block; background-color: red;">&nbsp;</div>
+									 -->
+							</div>
+							<div id="historyWeekTopsDiv"
+								style="border-bottom: 1px solid black; margin: 10px 10px; width: 100%;">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<form id="modifyWeekTopForm" method="post">
+		<input type="hidden" name="weekTopDataStr" id="weekTopDataStr"
+			value="" /> <input type="hidden" name="year" id="modifyYear"
+			value="" /> <input type="hidden" name="month" id="modifyMonth"
+			value="" /> <input type="hidden" name="weekNumber"
+			id="modifyWeekNumber" value="" />
+	</form>
+	<div id="footerId"></div>
+	<script id="curWeekTopTmpl" type="text/x-jquery-tmpl">
+	{{if $data.curWeekTops && $data.curWeekTops.length > 0}}
+	<div id="curWeekTopsDiv" style="width: 240px; margin: 5px 5px; border-color: #797979; border: 1px solid #797979; float: left;">
+		<div style="width: 100%; height: 50px; background-color: #66CCFF; color: white; line-height: 50px;">
+			<span style="padding-left: 5px;">${$data.year}年${$data.month}月第${$data.curWeekNumber}周用户邀请排行榜</span>
+			{{if $data.cureWeekTopsCount > 10}}
+				<a style="float: right; padding-right: 5px;" href="javascript:viewMore(${$data.year},${$data.month},${$data.curWeekNumber});">更多</a>
+			{{/if}}
+		</div>
+		{{each(i,v) ($data.curWeekTops ? $data.curWeekTops : [])}}
+		<div class="top-item">
+			<span  class="span-normal sn-span">${i+1}</span>
+			<span  class="span-normal phone-span"><input type="text" name="userName" class="phone-input input-readonly" maxlength="11" readonly value="${v.userName}"/></span>
+			<span  class="span-normal count-span"><input type="number" name="inviterCount" class="count-input input-readonly" readonly value="${v.revisionInviterCount ? v.revisionInviterCount : v.inviterCount}"/>人</span>
+		</div>
+		{{/each}}
+		<div class="curWeekOperationDiv" style="text-align:center;margin:10px 0;">
+			{{if !($data.firsRevisionWeekTops.length > 0 && $data.sndRevisionWeekTops.length > 0&& $data.thirdRevisionWeekTops.length > 0)}}
+				<permission code="FUNCTION_MANUALOPERATION_SHAREWEEKTOP_MANAGEMENT">
+					<button id="interventionBtn" style="border:none;color:white;background-color:#FFCC99;height:40px;line-height:40px;width:150px;" onclick="javascript:intervention(${$data.year},${$data.month},${$data.curWeekNumber});">人工干预</button>
+				</permission>
+			{{/if}}
+			<button id="cancelSaveDataBtn" class="hide" style="background-color:white;border-radius:8px;border: 1px solid #797979;height:40px;line-height:40px;width:80px;" onclick="javascript:cancelSave();">取消</button>
+			<button id="saveDataBtn"  class="hide" style="color:#FF9900;background-color:white; border-radius:8px;border: 1px solid #FF9900;height:40px;line-height:40px;width:80px;" onclick="javascript:saveData();">保存</button>
+			<br/><span id="validateMsg"></span>
+		</div>
+	</div>
+{{/if}}
+	</script>
+	<script id="firstRevisionWeekTopTmpl" type="text/x-jquery-tmpl">
+	{{if $data.firsRevisionWeekTops && $data.firsRevisionWeekTops.length > 0}}
+		<div style="width: 240px; margin: 5px 5px; border-color: #797979; border: 1px solid #797979; float: left;">
+			<span style="text-align: center; display: block;">第一次修改</span>
+			<div style="width: 100%; height: 50px; background-color: #66CCFF; color: white; line-height: 50px;">
+				<span style="text-align: center; display: block;">${$data.year}年${$data.month}月第${$data.curWeekNumber}周用户邀请排行榜</span>
+			</div>
+		{{each(i,v) ($data.firsRevisionWeekTops ? $data.firsRevisionWeekTops : [])}}
+		<div class="top-item">
+			<span class="span-normal sn-span">${i+1}</span>
+			<span  class="span-normal phone-span">${v.userName}</span>
+			<span class="span-normal count-span">${v.revisionInviterCount ? v.revisionInviterCount : v.inviterCount}人</span>
+		</div>
+		{{/each}}
+	{{/if}}
+	</script>
+	<script id="sndRevisionWeekTopTmpl" type="text/x-jquery-tmpl">
+	{{if $data.sndRevisionWeekTops && $data.sndRevisionWeekTops.length > 0}}
+		<div style="width: 240px; margin: 5px 5px; border-color: #797979; border: 1px solid #797979; float: left;">
+			<span style="text-align: center; display: block;">第二次修改</span>
+			<div style="width: 100%; height: 50px; background-color: #66CCFF; color: white; line-height: 50px;">
+				<span style="text-align: center; display: block;">${$data.year}年${$data.month}月第${$data.curWeekNumber}周用户邀请排行榜</span>
+			</div>
+		{{each(i,v) ($data.sndRevisionWeekTops ? $data.sndRevisionWeekTops : [])}}
+		<div class="top-item">
+			<span class="span-normal sn-span">${i+1}</span>
+			<span  class="span-normal phone-span">${v.userName}</span>
+			<span class="span-normal count-span">${v.revisionInviterCount ? v.revisionInviterCount : v.inviterCount}人</span>
+		</div>
+		{{/each}}
+	{{/if}}
+	</script>
+	<script id="thirdRevisionWeekTopTmpl" type="text/x-jquery-tmpl">
+	{{if $data.thirdRevisionWeekTops && $data.thirdRevisionWeekTops.length > 0}}
+		<div style="width: 240px; margin: 5px 5px; border-color: #797979; border: 1px solid #797979; float: left;">
+			<span style="text-align: center; display: block;">第三次修改</span>
+			<div style="width: 100%; height: 50px; background-color: #66CCFF; color: white; line-height: 50px;">
+				<span style="text-align: center; display: block;">${$data.year}年${$data.month}月第${$data.curWeekNumber}周用户邀请排行榜</span>
+			</div>
+		{{each(i,v) ($data.thirdRevisionWeekTops ? $data.thirdRevisionWeekTops : [])}}
+		<div class="top-item">
+			<span class="span-normal sn-span">${i+1}</span>
+			<span  class="span-normal phone-span">${v.userName}</span>
+			<span class="span-normal count-span">${v.revisionInviterCount ? v.revisionInviterCount : v.inviterCount}人</span>
+		</div>
+		{{/each}}
+	{{/if}}
+	</script>
+	<script id="firstWeekTopTmpl" type="text/x-jquery-tmpl">
+	{{if $data.firstWeekTops && $data.firstWeekTops.length > 0}}
+		<div style="width: 240px; margin: 5px 5px; border-color: #797979; border: 1px solid #797979; float: left;">
+			<div style="width: 100%; height: 50px; background-color: #66CCFF; color: white; line-height: 50px;">
+				<span style="text-align: center; display: block;">${$data.year}年${$data.month}月第一周用户邀请排行榜</span>
+			{{if $data.firsWeekTopsCount > 10}}
+				<a style="float: right; padding-right: 5px;" href="javascript:viewMore(${$data.year},${$data.month},1);">更多</a>
+			{{/if}}
+			</div>
+		{{each(i,v) ($data.firstWeekTops ? $data.firstWeekTops : [])}}
+		<div class="top-item">
+			<span class="span-normal sn-span">${i+1}</span>
+			<span  class="span-normal phone-span">${v.userName}</span>
+			<span class="span-normal count-span">${v.revisionInviterCount ? v.revisionInviterCount : v.inviterCount}人</span>
+		</div>
+		{{/each}}
+	{{/if}}
+	</script>
+	<script id="sndWeekTopTmpl" type="text/x-jquery-tmpl">
+	{{if $data.sndWeekTops && $data.sndWeekTops.length > 0}}
+		<div style="width: 240px; margin: 5px 5px; border-color: #797979; border: 1px solid #797979; float: left;">
+			<div style="width: 100%; height: 50px; background-color: #66CCFF; color: white; line-height: 50px;">
+				<span style="text-align: center; display: block;">${$data.year}年${$data.month}月第二周用户邀请排行榜</span>
+			{{if $data.sndWeekTopsCount > 10}}
+				<a style="float: right; padding-right: 5px;" href="javascript:viewMore(${$data.year},${$data.month},2);">更多</a>
+			{{/if}}
+			</div>
+		{{each(i,v) ($data.sndWeekTops ? $data.sndWeekTops : [])}}
+		<div class="top-item">
+			<span class="span-normal sn-span">${i+1}</span>
+			<span  class="span-normal phone-span">${v.userName}</span>
+			<span class="span-normal count-span">${v.revisionInviterCount ? v.revisionInviterCount : v.inviterCount}人</span>
+		</div>
+		{{/each}}
+	{{/if}}
+	</script>
+	<script id="thirdWeekTopTmpl" type="text/x-jquery-tmpl">
+	{{if $data.thirdWeekTops && $data.thirdWeekTops.length > 0}}
+		<div style="width: 240px; margin: 5px 5px; border-color: #797979; border: 1px solid #797979; float: left;">
+			<div style="width: 100%; height: 50px; background-color: #66CCFF; color: white; line-height: 50px;">
+				<span style="text-align: center; display: block;">${$data.year}年${$data.month}月第三周用户邀请排行榜</span>
+			{{if $data.thirdWeekTopsCount > 10}}
+				<a style="float: right; padding-right: 5px;" href="javascript:viewMore(${$data.year},${$data.month},3);">更多</a>
+			{{/if}}
+			</div>
+		{{each(i,v) ($data.thirdWeekTops ? $data.thirdWeekTops : [])}}
+		<div class="top-item">
+			<span class="span-normal sn-span">${i+1}</span>
+			<span  class="span-normal phone-span">${v.userName}</span>
+			<span class="span-normal count-span">${v.revisionInviterCount ? v.revisionInviterCount : v.inviterCount}人</span>
+		</div>
+		{{/each}}
+	{{/if}}
+	</script>
+	<script id="fourthWeekTopTmpl" type="text/x-jquery-tmpl">
+	{{if $data.fourthWeekTops && $data.fourthWeekTops.length > 0}}
+		<div style="width: 240px; margin: 5px 5px; border-color: #797979; border: 1px solid #797979; float: left;">
+			<div style="width: 100%; height: 50px; background-color: #66CCFF; color: white; line-height: 50px;">
+				<span style="text-align: center; display: block;">${$data.year}年${$data.month}月第四周用户邀请排行榜</span>
+			{{if $data.fourthWeekTopsCount > 10}}
+				<a style="float: right; padding-right: 5px;" href="javascript:void(0);">更多</a>
+			{{/if}}
+			</div>
+		{{each(i,v) ($data.fourthWeekTops ? $data.fourthWeekTops : [])}}
+		<div class="top-item">
+			<span class="span-normal sn-span">${i+1}</span>
+			<span class="span-normal phone-span">${v.userName}</span>
+			<span class="span-normal count-span">${v.revisionInviterCount ? v.revisionInviterCount : v.inviterCount}人</span>
+		</div>
+		{{/each}}
+	{{/if}}
+	</script>
+</body>
+</html>

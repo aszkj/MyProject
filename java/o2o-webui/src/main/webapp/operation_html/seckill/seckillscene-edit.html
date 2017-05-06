@@ -1,0 +1,250 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/lang/zh_CN.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var sceneId = getUrlParam("sceneId") || "";
+	function dataEditSubmit() {
+		var url = OPERATION_SYSTEM_IDENTITY + '/seckillscene/edit';
+		if (!validateData()) {
+			return;
+		}
+		var strStartTime = $("#strStartTime").val();
+		$("#strStartTime").val(strStartTime + ":00");
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					url : TERMINAL_URL + url,
+					contentType : 'application/json',
+					data : formJsonStr,
+					dataType : 'json',
+					cache : false,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					},
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window.setTimeout(function() {
+								comeback();
+							}, 1000);
+						} else {
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							$('#promptMessage').text(data.msg);
+							$("#strStartTime").val(strStartTime);
+						}
+					}
+				});
+	}
+	function loadDetail(sceneId) {
+		var url = OPERATION_SYSTEM_IDENTITY + '/seckillscene/detail/' + sceneId;
+		$.ajax({
+			type : 'post',
+			url : TERMINAL_URL + url,
+			contentType : 'application/json',
+			dataType : 'json',
+			cache : false,
+			success : function(data) {
+				//响应返回的业务处理  
+				var scene = data.entity;
+				if (data.msgCode == 1) {
+					$("#activityId").val(scene.activityId);
+					$("#sceneName").val(scene.sceneName);
+					$("#strStartTime").val(
+							scene.startTime.substring(0, scene.startTime
+									.lastIndexOf(":")));
+					//if ("SECKILLSCENESTATUSCODE_NOTSTART" == scene.statusCode) {
+					//loadTimeInput();
+					//}
+					$(
+							"input[type=radio][name=repeatType][value="
+									+ scene.repeatType + "]").attr("checked",
+							"checked");
+				}
+			}
+		});
+	}
+	var validate = (function() {
+		return {
+			validateSceneName : function() {
+				var sceneName = $.trim($('#sceneName').val());
+				$sceneNameMsg = $('#sceneNameMsg');
+				if (!sceneName) {
+					$sceneNameMsg.html('请输入场次名称').attr('class', 'error');
+					return false;
+				}
+				$sceneNameMsg.html('').attr('class', 'right');
+				$('#sceneName').val(sceneName);
+				return true;
+			},
+			validateRepeatType : function() {
+				var repeatType = $.trim($(
+						'input:radio[name="repeatType"]:checked').val());
+				$repeatTypeMsg = $('#repeatTypeMsg');
+				if (!repeatType) {
+					$repeatTypeMsg.html('请选择重复开启时间').attr('class', 'error');
+					return false;
+				}
+				$repeatTypeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateStartTime : function() {
+				var strStartTime = $.trim($('#strStartTime').val());
+				$strStartTimeMsg = $('#strStartTimeMsg');
+				if (!strStartTime) {
+					$strStartTimeMsg.html('请输入开始时间').attr('class', 'error');
+					return false;
+				}
+				$strStartTimeMsg.html('').attr('class', 'right');
+				$('#strStartTime').val(strStartTime);
+				return true;
+			}
+		}
+	})();
+	function validateData() {
+		if (!validate.validateSceneName()) {
+			return false;
+		}
+		if (!validate.validateStartTime()) {
+			return false;
+		}
+		if (!validate.validateRepeatType()) {
+			return false;
+		}
+		return true;
+	}
+
+	function comeback() {
+		var urlParam = window.location.search;
+		locationHref('/seckill/seckillscene-index.html' + urlParam);
+	}
+
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#strStartTime').datetimepicker({
+			showSecond : false,
+			second : 0,
+			timeFormat : 'HH:mm',
+			constrainInput : true
+		});
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		loadTimeInput();
+		loadDetail(sceneId);
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 秒杀管理 &gt; <span id="breadName">编辑场次</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<input type="hidden" class="txt grid-20" id="activityId"
+								name="activityId" value="" />
+							<dl>
+								<dt>
+									<em class="cred">*</em>场次名称：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-20" id="sceneName"
+										name="sceneName" /><span id="sceneNameMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>开始时间：</dt>
+								<dd>
+									<input type="text" class="txt grid-20" id="strStartTime"
+										name="strStartTime" /> <span id="strStartTimeMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<em class="cred">*</em>重复开启时间：
+								</dt>
+								<dd>
+									<input type="radio" class="txt grid-3"
+										value="SECKILLSCENEREPEATTYPE_NOTREPEAT" name="repeatType" />不重复
+									&nbsp;&nbsp;<input type="radio" class="txt grid-3"
+										name="repeatType" value="SECKILLSCENEREPEATTYPE_REPEAT" />重复<span
+										id="repeatTypeMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit(method)" /> <input type="reset"
+											id="reset" class="btn_gray" value="重置" /> <input
+											type="button" id="goBack" class="btn_gray" value="取消"
+											onClick="javascript:comeback();" /> <span id="promptMessage"
+											class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

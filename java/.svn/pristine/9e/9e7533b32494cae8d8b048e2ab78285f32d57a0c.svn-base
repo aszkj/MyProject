@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SmsNotifyMessageMapper">
+	<resultMap id="BaseResultMap" type="SmsNotifyMessage">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="TOUSER" property="toUser" jdbcType="VARCHAR" />
+		<result column="SMSMSGTYPE" property="smsMsgType" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="SENDTIME" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="MESSAGESTATUS" property="messageStatus" jdbcType="VARCHAR" />
+		<result column="REPORTSTATUS" property="reportStatus" jdbcType="VARCHAR" />
+		<result column="REMOTEIPADDR" property="remoteIpAddr" jdbcType="VARCHAR" />
+		<result column="SMSPROVIDETYPE" property="smsProvideType" jdbcType="VARCHAR" />
+		<result column="SMSJOBID" property="smsJobId" jdbcType="VARCHAR" />
+		<result column="REPORTTIME" property="reportTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SMSMSGTYPE, TOUSER, CONTENT, SENDTIME,
+		MESSAGESTATUS,
+		REPORTSTATUS, REMOTEIPADDR, SMSPROVIDETYPE, SMSJOBID,
+		REPORTTIME
+	</sql>
+
+	<insert id="save" parameterType="SmsNotifyMessage" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		S_SMS_NOTIFY_MESSAGE
+		(SMSMSGTYPE,
+		TOUSER, CONTENT,
+		SENDTIME, MESSAGESTATUS,
+		REPORTSTATUS,
+		REMOTEIPADDR, SMSPROVIDETYPE,
+		SMSJOBID, REPORTTIME)
+		values (
+		#{smsMsgType,jdbcType=VARCHAR},
+		#{toUser,jdbcType=VARCHAR},
+		#{content,jdbcType=VARCHAR},
+		#{sendTime,jdbcType=TIMESTAMP},
+		#{messageStatus,jdbcType=VARCHAR},
+		#{reportStatus,jdbcType=VARCHAR},
+		#{remoteIpAddr,jdbcType=VARCHAR},
+		#{smsProvideType,jdbcType=VARCHAR},
+		#{smsJobId,jdbcType=VARCHAR},
+		#{reportTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<insert id="saveBatch" parameterType="java.util.List">
+		insert into S_SMS_NOTIFY_MESSAGE
+		(SMSMSGTYPE,
+		TOUSER, CONTENT,
+		SENDTIME,
+		MESSAGESTATUS,
+		REPORTSTATUS,
+		REMOTEIPADDR,
+		SMSPROVIDETYPE, SMSJOBID,
+		REPORTTIME)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.smsMsgType,jdbcType=VARCHAR},
+			#{item.toUser,jdbcType=VARCHAR},
+			#{item.content,jdbcType=VARCHAR},
+			#{item.sendTime,jdbcType=TIMESTAMP},
+			#{item.messageStatus,jdbcType=VARCHAR},
+			#{item.reportStatus,jdbcType=VARCHAR},
+			#{item.remoteIpAddr,jdbcType=VARCHAR},
+			#{item.smsProvideType,jdbcType=VARCHAR},
+			#{item.smsJobId,jdbcType=VARCHAR},
+			#{item.reportTime,jdbcType=TIMESTAMP}
+			)
+		</foreach>
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from
+		S_SMS_NOTIFY_MESSAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_SMS_NOTIFY_MESSAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listByReciever" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from S_SMS_NOTIFY_MESSAGE
+		where TOUSER = #{toUser,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findSmsNotifyMessages" resultMap="BaseResultMap" parameterType="SmsNotifyMessageQuery">
+		select
+		<include refid="Base_Column_List" />
+		from S_SMS_NOTIFY_MESSAGE
+		<where>
+			<if test="toUser != null">
+				and TOUSER = #{toUser,jdbcType=VARCHAR}
+			</if>
+			<if test="startSendDate != null">
+				and SENDTIME &gt;= #{startSendDate, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endSendDate != null">
+				and SENDTIME &lt;= #{endSendDate, jdbcType=TIMESTAMP}
+			</if>
+			<if test="messageStatus != null">
+				and MESSAGESTATUS = #{messageStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="startReportDate != null">
+				and REPORTTIME &gt;= #{startReportDate, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endReportDate != null">
+				and REPORTTIME &lt;= #{endReportDate, jdbcType=TIMESTAMP}
+			</if>
+			<if test="reportStatus != null">
+				and REPORTSTATUS = #{reportStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="remoteIpAddr != null">
+				and REMOTEIPADDR = #{remoteIpAddr,jdbcType=VARCHAR}
+			</if>
+			<if test="smsMsgType != null">
+				and SMSMSGTYPE = #{smsMsgType,jdbcType=VARCHAR}
+			</if>
+			<if test="smsProvideType != null">
+				and SMSPROVIDETYPE = #{smsProvideType,jdbcType=VARCHAR}
+			</if>
+			<if test="smsJobId != null">
+				and SMSJOBID = #{smsJobId,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by SENDTIME DESC
+	</select>
+
+	<update id="updateSendStatus">
+		update
+		S_SMS_NOTIFY_MESSAGE set
+		MESSAGESTATUS =
+		#{smsNotifyMessage.messageStatus,jdbcType=VARCHAR},
+		SMSJOBID =
+		#{smsNotifyMessage.smsJobId,jdbcType=VARCHAR}
+		where ID =
+		#{smsNotifyMessage.id,jdbcType=INTEGER}
+		and MESSAGESTATUS =
+		#{sendStatus, jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateReportStatus">
+		update
+		S_SMS_NOTIFY_MESSAGE set
+		REPORTSTATUS =
+		#{smsNotifyMessage.reportStatus,jdbcType=VARCHAR},
+		REPORTTIME =
+		#{smsNotifyMessage.reportTime,jdbcType=TIMESTAMP}
+		where SMSJOBID =
+		#{smsNotifyMessage.smsJobId,jdbcType=VARCHAR}
+		and TOUSER =
+		#{smsNotifyMessage.toUser,jdbcType=VARCHAR}
+		and REPORTSTATUS =
+		#{reportStatus, jdbcType=VARCHAR}
+	</update>
+
+	<select id="dailySendSmsCountWithOneUser" resultType="integer">
+		select
+		COUNT(ID)
+		from S_SMS_NOTIFY_MESSAGE
+		where TOUSER =
+		#{toUser,jdbcType=VARCHAR}
+		and (MESSAGESTATUS = #{massageStatusInit, jdbcType=VARCHAR} or MESSAGESTATUS =
+		#{massageStatusSucceed, jdbcType=VARCHAR})
+		and SENDTIME &gt;= #{todayStartDate,jdbcType=TIMESTAMP}
+		and SENDTIME &lt;=
+		#{todayEndDate,jdbcType=TIMESTAMP}
+	</select>
+
+</mapper>

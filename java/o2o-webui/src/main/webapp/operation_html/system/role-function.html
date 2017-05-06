@@ -1,0 +1,426 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<link type="text/css" href="/static-resource/plugin/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<script type="text/javascript" src="/static-resource/js/jquery-1.5.2.min.js"></script>
+<script type="text/javascript" src="/static-resource/plugin/ligerUI/js/ligerui.all.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<style>
+.btn_sure,.btn_gray{padding:6px 15px;border-radius:3px;display:inline-block;font-size:12px;color:#fff;cursor:pointer}
+.btn_sure{border:1px solid #63ADEE;background-color:#63ADEE}
+.btn_gray{border:1px solid #666;background-color:#666}
+</style>
+<script type="text/javascript">
+var g_boxId = $.trim(getUrlParam("boxId"));
+var g_roleId=$.trim(getUrlParam('roleId'));
+var g_roleName = $.trim(getUrlParam('roleName'));
+var g_customerType;
+var systemMenuIdss="";
+var systemFunctionIdss="";
+$(function(){
+    getRole(g_roleId);
+	getRoleInfo1(g_roleId);
+	getRoleInfo2(g_roleId);
+	getList(g_customerType,systemMenuIdss,systemFunctionIdss);
+});
+function getList(menuType,systemMenuIds,systemFunctionIds){
+    systemMenuIds=systemMenuIds.split(',');
+	var g_systemMenuIds={};
+	for(var i=0,length=systemMenuIds.length;i<length;i++){
+		g_systemMenuIds[systemMenuIds[i]]=true;		
+	}	
+	systemFunctionIds=systemFunctionIds.split(',');
+	var g_systemFunctionIds={};
+	for(var i=0,length=systemFunctionIds.length;i<length;i++){
+		g_systemFunctionIds[systemFunctionIds[i]]=true;		
+	}
+	var stMenu=getMenuList(menuType);
+	var stSecondMenu=getSecondMenuList(menuType);
+	var stFunction=getFunctionList(menuType);
+	var html=[];
+	for(var i=0,iLength=stMenu.length;i<iLength;i++){
+		var secondMenu=stSecondMenu[stMenu[i].id];
+		if(!secondMenu)secondMenu=[];
+		var jLength=secondMenu.length;
+		html.push('<div align="left" style="margin-left:8px;line-height:20px;" class="firstMenuBox"><span style="cursor:pointer" onclick="showSecondMenu(this)">');
+		html.push(stMenu[i].permissionName+'('+jLength+')');
+		html.push('</span><div class="secondMenuBox" align="left" style="line-height:10px;margin-left:12px;display:none">');
+		for(var j=0;j<jLength;j++){
+			var funs=stFunction[secondMenu[j].id];
+			if(!funs)funs=[];
+			kLength=funs.length
+			html.push('<div align="left" style="line-height:20px"><input class="menu_checkbox" ');
+			if(g_systemMenuIds[secondMenu[j].id])html.push(' checked="checked" ');
+			html.push(' onclick="onSecondMenuClick(this)" id="selectSecondMenu');
+			html.push(secondMenu[j].id);
+			html.push('" value="');
+			html.push(secondMenu[j].id);
+			html.push('" type="checkbox" /><span class="secondMenuName right_secondmenu');
+			html.push(secondMenu[j].id);
+			html.push('" onclick="showThirdMenu(this)" style="margin-left:2px;cursor:pointer;color:#0000FF">');
+			html.push(secondMenu[j].permissionName+'('+kLength+')');
+			html.push('</span><div class="thirdMenuBox right_secondmenu');
+			html.push(secondMenu[j].id);
+			html.push('" align="left" style="line-height:10px;margin-left:15px;display:none">');
+			for(var k=0;k<kLength;k++){
+				html.push('<div align="left" style="line-height:20px" class="functionMenuName right_functionmenu');
+				html.push(funs[k].id);
+				html.push('"><input class="function_checkbox" ');
+				if(g_systemFunctionIds[funs[k].id])html.push(' checked="checked" ');
+				html.push(' onclick="onThirdMenuClick(this)" id="selectThirdMenu');
+				html.push(funs[k].id);
+				html.push('" value="');
+				html.push(funs[k].id);
+				html.push('" type="checkbox" /><label for="selectThirdMenu');
+				html.push(funs[k].id);
+				html.push('" style="margin-left:2px;color:#FF0000">');
+				html.push(funs[k].permissionName);
+				html.push('</label></div>');
+			}
+			html.push('</div></div>');
+		}
+		html.push('</div></div>');
+	}
+	var sHTML=html.join('');
+	$('#functionListBox').html(sHTML);
+	sHTML=sHTML.replace(/<input.*?\/>/ig,'');
+	sHTML=sHTML.replace(/for=".*?"/ig,'');
+	$('#selectFunctionListBox').html(sHTML);
+	updateRightTree();
+}
+//显示二级菜单
+function showSecondMenu(ob){
+	var b=ob.style.fontWeight.toLowerCase();
+	if(b=='bold')ob.style.fontWeight='';
+	else ob.style.fontWeight='bold';
+	$('.secondMenuBox',ob.parentNode).toggle();
+}
+//二级菜单复选框单击
+function onSecondMenuClick(ob){
+	if(!ob.checked){
+		$('.function_checkbox',ob.parentNode).attr('checked',false);
+	}else{
+		$('.function_checkbox',ob.parentNode).attr('checked',true);
+	}
+	updateRightTree();
+}
+//显示三级级菜单
+function showThirdMenu(ob){
+	var b=ob.style.fontWeight.toLowerCase();
+	if(b=='bold')ob.style.fontWeight='';
+	else ob.style.fontWeight='bold';
+	$('.thirdMenuBox',ob.parentNode).toggle();
+}
+//三级菜单复选框单击
+function onThirdMenuClick(ob){
+	var has=false;
+	var st=$('.function_checkbox',ob.parentNode.parentNode);
+	for(var i=0,length=st.length;i<length;i++){
+		if(st[i].checked){
+			has=true;
+			break;
+		}	
+	}
+	$('.menu_checkbox',ob.parentNode.parentNode.parentNode).attr('checked',has);
+	updateRightTree();
+}
+//更新右边预览菜单
+function updateRightTree(){
+	//单击二级复选框响应
+	var st=$('#functionListBox .menu_checkbox');
+	for(var i=0,length=st.length;i<length;i++){
+		var menuId=parseInt(st[i].value);
+		if(isNaN(menuId)||menuId<=0)continue;
+		if(st[i].checked){
+			$('#selectFunctionListBox span.right_secondmenu'+menuId).show();
+		}else{
+			$('#selectFunctionListBox .right_secondmenu'+menuId).hide();	
+		}	
+	}
+	//单击三级复选框响应
+	var st=$('#functionListBox .function_checkbox');
+	for(var i=0,length=st.length;i<length;i++){
+		var menuId=parseInt(st[i].value);
+		if(isNaN(menuId)||menuId<=0)continue;
+		if(st[i].checked){
+			$('#selectFunctionListBox .right_functionmenu'+menuId).show();
+		}else{
+			$('#selectFunctionListBox .right_functionmenu'+menuId).hide();	
+		}	
+	}
+	//二级检索,响应一级显示
+	var stFirst=$('#selectFunctionListBox .firstMenuBox');
+	for(var i=0,iLength=stFirst.length;i<iLength;i++){
+		var stSecond=$('.secondMenuName',stFirst[i]);
+		var isShow=false;
+		var showCount=0;
+		for(var j=0,jLength=stSecond.length;j<jLength;j++){
+			var display=stSecond[j].style.display.toLowerCase();
+			if(display!='none'){
+				isShow=true;
+				showCount++;
+			}	
+		}
+		if(stFirst[i].firstChild){
+			var name=$.trim(stFirst[i].firstChild.innerHTML);
+			name=name.replace(/\(\d+\)/g,'');
+			stFirst[i].firstChild.innerHTML=name+'('+showCount+')';
+		}
+		if(!isShow)stFirst[i].style.display='none';
+		else stFirst[i].style.display='';
+	}
+	//三级检索,响应二级显示
+	var stSecond=$('#selectFunctionListBox .thirdMenuBox');
+	for(var i=0,iLength=stSecond.length;i<iLength;i++){
+		var stThird=$('.functionMenuName',stSecond[i]);
+		var isShow=false;
+		var showCount=0;
+		for(var j=0,jLength=stThird.length;j<jLength;j++){
+			var display=stThird[j].style.display.toLowerCase();
+			if(display!='none'){
+				isShow=true;
+				showCount++;
+			}
+		}
+		if(stSecond[i].parentNode&&stSecond[i].parentNode.firstChild){
+			var name=$.trim(stSecond[i].parentNode.firstChild.innerHTML);
+			name=name.replace(/\(\d+\)/g,'');
+			stSecond[i].parentNode.firstChild.innerHTML=name+'('+showCount+')';
+		}
+		if(!isShow)stSecond[i].style.display='none';
+		else {
+			var className=stSecond[i].className.replace(/thirdMenuBox|\s/g,'');
+			var b=$('#selectFunctionListBox span.'+className)[0].style.fontWeight.toLowerCase();
+			if(b=='bold')stSecond[i].style.display='';
+			else stSecond[i].style.display='none';
+		}
+	}
+}
+//得到所有一级菜单
+function getMenuList(customerType){
+	var st=[];
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + customerType  + '/getFirstMenuList',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode!=1)return;
+			st=data.entity;
+		}
+	});
+	return st;
+}
+//得到所有二级菜单
+function getSecondMenuList(customerType){
+	var stArray=[];
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + customerType  +  '/getSecondMenuList',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode!=1)return;
+			stArray=data.entity;
+		}
+	});	
+	var stObject={};
+	for(var i=0,length=stArray.length;i<length;i++){
+		var menuId=stArray[i].parentId;
+		if(!stObject[menuId])stObject[menuId]=[];
+		stObject[menuId].push(stArray[i]);	
+	}
+	return stObject;
+}
+//得到所有三级菜单
+function getFunctionList(customerType){
+	var stArray=[];
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + customerType  +  '/getFunctionList',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode!=1)return;
+			stArray=data.entity;
+		}
+	});	
+	var stObject={};
+	for(var i=0,length=stArray.length;i<length;i++){
+		var menuId=stArray[i].parentId;
+		if(!stObject[menuId])stObject[menuId]=[];
+		stObject[menuId].push(stArray[i]);	
+	}
+	return stObject;
+}
+//得到角色信息
+function getRoleInfo1(roleId){
+	roleId=parseInt(roleId);
+	if(isNaN(roleId)||roleId<=0)return false;
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + roleId  +  '/getAllRolePermissions',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode!=1)return;
+			var menuList=[];
+				menuList= data.entity;
+				for(var i=0;i<menuList.length;i++){
+				   if(i==menuList.length-1){
+				     systemMenuIdss=systemMenuIdss+menuList[i].permissionId;
+				   }else{
+				     systemMenuIdss=systemMenuIdss+menuList[i].permissionId+",";
+				   }
+				}
+		}
+	})
+}
+
+//得到角色信息
+function getRoleInfo2(roleId){
+	roleId=parseInt(roleId);
+	if(isNaN(roleId)||roleId<=0)return false;
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + roleId  + '-' + 'PERMISSIONLEVEL_FUNCTION' +  '/getRoleFunctionPermissions',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode!=1)return;
+			var menuList=[];
+				menuList= data.entity;
+				for(var i=0;i<menuList.length;i++){
+				   if(i==menuList.length-1){
+				     systemFunctionIdss=systemFunctionIdss+menuList[i].permissionId;
+				   }else{
+				     systemFunctionIdss=systemFunctionIdss+menuList[i].permissionId+",";
+				   }
+				}
+		}
+	})
+}
+
+//得到角色信息
+function getRole(roleId){
+	roleId=parseInt(roleId);
+	if(isNaN(roleId)||roleId<=0)return false;
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + roleId + '/searchRole',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode!=1)return;
+			var roleId=parseInt(data.entity.id);
+			var customerType=data.entity.customerType;
+			g_customerType=customerType;
+			var roleName=$.trim(data.entity.roleName);
+			var customerTypeText='';
+			if(customerType=='CUSTOMERTYPE_OPERATOR'){
+				customerTypeText='运营平台';
+			}else if(customerType=='CUSTOMERTYPE_BUYER'){
+				customerTypeText='终端用户';
+			}else{
+				customerTypeText='门店';
+			}
+			$('#roleId').val(roleId);
+			$('#customerType').val(customerType);
+			$('#customerTypeText').html(customerTypeText);
+			$('#roleName').html(roleName);
+		}
+	})
+}
+function selectFunctionSubmit(){
+	var st=$('.menu_checkbox');
+	var st1=$('.function_checkbox');
+	var result=[];
+	var result1=[];
+	for(var i=0,length=st.length;i<length;i++){
+		if(st[i].checked)result.push(st[i].value);
+	}
+	for(var i=0,length=st1.length;i<length;i++){
+		if(st1[i].checked)result1.push(st1[i].value);	
+	}
+	var roleId=parseInt($('#roleId').val());
+	var menuIds=$.trim(result.join(','));
+	var functionIds=$.trim(result1.join(','));
+	if(isNaN(roleId)||roleId<=0)return;
+	if(result.length<=0){
+		$.ligerDialog.error('请选择需要分配的功能!');	
+		return;
+	}
+	var data=[];
+	var menuIdString;
+	if(functionIds!=null&&functionIds!=""){
+	    menuIdString=menuIds+","+functionIds;
+	}else{
+	    menuIdString=menuIds;
+	}
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + roleId  + '-' + menuIdString +  '/createRolePermissions',
+		type:'post',
+		dataType:'json',
+		error:function(data){
+			alert('功能划分失败!');	
+		},
+		success:function(data){
+			if(data.msgCode!=1)return;
+			    $('#prompt').text('功能划分成功');
+			    parent.$('#rId').val(g_roleId);
+				window.setTimeout(function(){
+					parent.dataSubmit();
+					closeBox();		
+				},1000);
+		}
+	})
+}
+function closeBox(){
+ if(g_boxId!=''&&parent&&parent.closeBox)parent.closeBox(g_boxId);
+}
+</script>
+</head>
+<body style="padding:10px;">
+<form name="form1" method="post" id="form1" onsubmit="selectFunctionSubmit();return false">
+<div>用户类型：<input type="hidden" id="roleId" /><input type="hidden" id="customerType" /><span id="customerTypeText"></span>　角色名称：<span id="roleName"></span></div>
+<table border="1" bordercolor="#CCCCCC" style="border-collapse:collapse;width:560px;">
+	<tr>
+		<td style="height:20px" align="center" valign="middle">可分配功能</td>
+		<td style="height:20px" align="center" valign="middle">已分配功能</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+			<div id="functionListBox" style="height:280px;width:265px;overflow:auto;"></div>
+		</td>
+		<td align="center" valign="top">
+			<div id="selectFunctionListBox" style="height:280px;width:265px;overflow:auto"></div>
+		</td>
+	</tr>
+</table>
+<div align="center" style="padding:2px">
+	<input type="submit" value="提交" style="width:auto;display:inline" class="btn_sure"/>　　　　
+	<input type="reset" value="取消" onclick="closeBox()" style="width:auto;display:inline" class="btn_gray"/>
+    <span id="prompt" class="cred"></span>
+</div>
+    </form>
+</body>
+</html>

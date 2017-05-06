@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.InvitedUserShareAwardMapper">
+	<resultMap id="BaseResultMap" type="InvitedUserShareAward">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SHARECODE" property="shareCode" jdbcType="VARCHAR" />
+		<result column="SHAREUSERID" property="shareUserId" jdbcType="INTEGER" />
+		<result column="INVITEDUSERID" property="invitedUserId" jdbcType="INTEGER" />
+		<result column="SHARERULEID" property="shareRuleId" jdbcType="INTEGER" />
+		<result column="AWARDPOINTS" property="awardPoints" jdbcType="INTEGER" />
+		<result column="AWARDCASH" property="awardCash" jdbcType="BIGINT" />
+		<result column="AWARDCOUPONID" property="awardCouponId" jdbcType="INTEGER" />
+		<result column="AWARDCOUPONCOUNT" property="awardCouponCount" jdbcType="INTEGER" />
+		<result column="AWARDCOUPONAMOUNT" property="awardCouponAmount" jdbcType="BIGINT" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, SHARECODE, SHAREUSERID,INVITEDUSERID, SHARERULEID,AWARDPOINTS,AWARDCASH,AWARDCOUPONID,AWARDCOUPONCOUNT,
+		CREATETIME, CREATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="InvitedUserShareAward" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		U_INVITEDUSER_SHARE_AWARD
+		(
+		SHARECODE,SHAREUSERID, INVITEDUSERID,
+		SHARERULEID,AWARDPOINTS,AWARDCASH,AWARDCOUPONID,AWARDCOUPONCOUNT,AWARDCOUPONAMOUNT,CREATETIME, CREATEUSERID
+		)
+		values
+		(
+		#{shareCode,jdbcType=VARCHAR},
+		#{shareUserId,jdbcType=INTEGER},
+		#{invitedUserId,jdbcType=INTEGER},
+		#{shareRuleId,jdbcType=INTEGER},
+		#{awardPoints,jdbcType=INTEGER},
+		#{awardCash,jdbcType=BIGINT},
+		#{awardCouponId,jdbcType=INTEGER},
+		#{awardCouponCount,jdbcType=INTEGER},
+		#{awardCouponAmount,jdbcType=BIGINT},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}
+		)
+	</insert>
+	
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITEDUSER_SHARE_AWARD
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByInvitedUserIdAndShareRuleId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITEDUSER_SHARE_AWARD
+		where
+		INVITEDUSERID=#{invitedUserId,jdbcType=INTEGER}
+		AND
+		SHARERULEID=#{shareRuleId,jdbcType=INTEGER}
+		limit 1
+	</select>
+	<select id="findInvitedUserShareAwardsByShareUserId" resultMap="BaseResultMap" parameterType="InvitedUserShareAwardQuery">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITEDUSER_SHARE_AWARD
+		<where>
+			<if test="shareCode != null">
+				and SHARECODE = #{shareCode, jdbcType=VARCHAR}
+			</if>
+			<if test="shareUserId != null">
+				and SHAREUSERID = #{shareUserId, jdbcType=INTEGER}
+			</if>
+			<if test="shareRuleId != null">
+				and SHARERULEID = #{shareRuleId, jdbcType=INTEGER}
+			</if>
+			<if test="startTime != null">
+				and createTime &gt;= #{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+				and createTime &lt;= #{endTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by CREATETIME desc
+	</select>
+	<resultMap id="InviterUserStatisticInfoResultMap" type="InviterUserStatisticInfo">
+		<result column="SHARECODE" property="shareCode" jdbcType="VARCHAR" />
+		<result column="SHAREUSERID" property="shareUserId" jdbcType="INTEGER" />
+		<result column="SHAREUSERNAME" property="shareUserName" jdbcType="VARCHAR" />
+		<result column="INVITERCOUNT" property="inviterCount" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="findInviterStatisticsCounts" resultMap="InviterUserStatisticInfoResultMap" parameterType="InvitedUserShareAwardQuery">
+		select
+		UI.SHARECODE as SHARECODE,
+		UI.SHAREUSERID AS SHAREUSERID,
+		UU.USERNAME AS SHAREUSERNAME,
+		count(1) as INVITERCOUNT
+		from
+		U_INVITEDUSER_SHARE_AWARD UI
+		INNER JOIN U_USER UU ON UI.SHAREUSERID = UU.ID
+		<where>
+			<if test="shareUserId != null">
+				and UI.SHAREUSERID = #{shareUserId, jdbcType=INTEGER}
+			</if>
+			<if test="shareUserName != null">
+				and UU.USERNAME = #{shareUserName, jdbcType=VARCHAR}
+			</if>
+			<if test="startTime != null">
+				and UI.CREATETIME &gt;= #{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+				and UI.CREATETIME &lt;= #{endTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		group by SHAREUSERID
+		order by INVITERCOUNT desc
+	</select>
+	<select id="getInviterStatisticsCount" resultType="int" parameterType="InvitedUserShareAwardQuery">
+		select
+		count(1)
+		from
+		U_INVITEDUSER_SHARE_AWARD UI
+		INNER JOIN U_USER UU ON UI.SHAREUSERID = UU.ID
+		<where>
+			<if test="shareUserId != null">
+				and UI.SHAREUSERID = #{shareUserId, jdbcType=INTEGER}
+			</if>
+			<if test="shareUserName != null">
+				and UU.USERNAME = #{shareUserName, jdbcType=VARCHAR}
+			</if>
+			<if test="startTime != null">
+				and UI.CREATETIME &gt;= #{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+				and UI.CREATETIME &lt;= #{endTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+	<select id="loadStatisticsCountByShareUserIdAndTime" resultMap="InviterUserStatisticInfoResultMap">
+		select
+		SHARECODE,
+		SHAREUSERID,
+		count(1) as INVITERCOUNT
+		from U_INVITEDUSER_SHARE_AWARD
+		<where>
+			and SHAREUSERID = #{shareUserId, jdbcType=INTEGER}
+			<if test="startTime != null">
+				and CREATETIME &gt;= #{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+				and CREATETIME &lt;= #{endTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		group by SHAREUSERID
+	</select>
+	<select id="loadChampionByTime" resultType="java.lang.Integer">
+		select
+		SHAREUSERID
+		from U_INVITEDUSER_SHARE_AWARD
+		<where>
+			<if test="startTime != null">
+				and CREATETIME &gt;= #{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+				and CREATETIME &lt;= #{endTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		group by SHAREUSERID
+		order by count(1) desc limit 1
+	</select>
+	<select id="getInviterCountByShareUserIdAndTime" resultType="java.lang.Integer">
+		select
+		count(1)
+		from U_INVITEDUSER_SHARE_AWARD
+		<where>
+			<if test="shareUserId != null">
+				and SHAREUSERID = #{shareUserId,jdbcType=INTEGER}
+			</if>
+			<if test="startTime != null">
+				CREATETIME &gt;= #{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+				and CREATETIME &lt;= #{endTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		group by SHAREUSERID
+	</select>
+	<select id="findInvitedUserShareAwards" resultMap="BaseResultMap" parameterType="InvitedUserShareAwardQuery">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITEDUSER_SHARE_AWARD
+		<where>
+			<if test="startCreateTime != null">
+				and CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by CREATETIME desc
+	</select>
+	<select id="listInviterStatisticsCountsByTime" resultMap="InviterUserStatisticInfoResultMap">
+		select
+		UI.SHARECODE as SHARECODE,
+		UI.SHAREUSERID AS SHAREUSERID,
+		UU.USERNAME AS SHAREUSERNAME,
+		count(1) as INVITERCOUNT
+		from
+		U_INVITEDUSER_SHARE_AWARD UI
+		LEFT JOIN U_USER UU ON UI.SHAREUSERID = UU.ID
+		<where>
+			<if test="startTime != null">
+				and UI.CREATETIME &gt;= #{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+				and UI.CREATETIME &lt;= #{endTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		group by SHAREUSERID
+		order by INVITERCOUNT desc
+	</select>
+</mapper>

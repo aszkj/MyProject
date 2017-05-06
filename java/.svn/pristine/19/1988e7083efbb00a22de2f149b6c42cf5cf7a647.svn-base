@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p id="messageTitle">消息</p>
+    </div>
+</header>
+<section  style="padding: 1.2rem .2rem 0 .2rem" id="messageItemWrap">
+</section>
+</body>
+<script type="text/javascript">
+    var msgId=getUrlParam("msgId");
+    $(function(){
+        messageItemsTmpl();
+    });
+    function messageItemsTmpl(){
+        var param= new Object();
+        param.msgId=msgId;
+        ajax("/message/messagedetail",param,function(data){
+            console.log(data);
+            $("#messageTitle").html(data.msgTitle);
+            $("#messageItemTmpl").tmpl(data).appendTo("#messageItemWrap");
+        },function (msg) {
+            alert(msg);
+        });
+    }
+</script>
+<script id="messageItemTmpl" type="text/x-jquery-tmpl">
+        <div class="messageDetail bg">
+           <p>${msgAbstract}</p>
+           <img src="${msgImage}">
+           <p>${msgContent}</p>
+        </div>
+</script>
+</html>

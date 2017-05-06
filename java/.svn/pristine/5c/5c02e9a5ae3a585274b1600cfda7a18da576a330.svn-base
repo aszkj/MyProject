@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.CommissionClearupMapper">
+	<resultMap id="BaseResultMap" type="CommissionClearup">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="TOTALAMOUNT" property="totalAmount" jdbcType="BIGINT" />
+		<result column="TRANSFERFEE" property="transferFee" jdbcType="BIGINT" />
+		<result column="PAYTIME" property="payTime" jdbcType="TIMESTAMP" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CLEARAMOUNT" property="clearAmount" jdbcType="BIGINT" />
+		<result column="CLEARTYPE" property="clearType" jdbcType="VARCHAR" />
+		<result column="CLEAROPERTYPE" property="clearOperType" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CLEARTIME" property="clearTime" jdbcType="TIMESTAMP" />
+		<result column="CLEARUSERID" property="clearUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, STOREID, TOTALAMOUNT, TRANSFERFEE, PAYTIME,
+		CREATETIME, CLEARAMOUNT, CLEARTYPE, CLEAROPERTYPE,
+		STATUSCODE, CLEARTIME, CLEARUSERID
+	</sql>
+
+	<insert id="save" parameterType="CommissionClearup">
+		insert into T_COMMISSION_CLEARUP (ID, SALEORDERNO, STOREID,
+		TOTALAMOUNT, TRANSFERFEE, PAYTIME, CREATETIME, CLEARAMOUNT,
+		CLEARTYPE, CLEAROPERTYPE, STATUSCODE, CLEARTIME, CLEARUSERID)
+		values
+		(#{id,jdbcType=VARCHAR}, #{saleOrderNo,jdbcType=VARCHAR}, #{storeId,jdbcType=INTEGER},
+		#{totalAmount,jdbcType=BIGINT}, #{transferFee,jdbcType=BIGINT},
+		#{payTime,jdbcType=TIMESTAMP},
+		#{createTime,jdbcType=TIMESTAMP}, #{clearAmount,jdbcType=BIGINT},
+		#{clearType,jdbcType=VARCHAR}, #{clearOperType,jdbcType=VARCHAR}, #{statusCode,jdbcType=VARCHAR},
+		#{clearTime,jdbcType=TIMESTAMP},
+		#{clearUserId,jdbcType=INTEGER})
+	</insert>
+
+
+	<update id="updateClearupMonthly">
+		update T_COMMISSION_CLEARUP
+		set
+		CLEARAMOUNT = TOTALAMOUNT * #{rate,jdbcType=INTEGER} / 1000,
+		CLEARTYPE = '0',
+		STATUSCODE = '1',
+		CLEARTIME = CURRENT_TIME,
+		CLEARUSERID = #{userId,jdbcType=INTEGER}
+		where
+		STOREID = #{storeId,jdbcType=INTEGER}
+		and PAYTIME &gt;= #{startDate, jdbcType=TIMESTAMP}
+		and PAYTIME &lt;= #{endDate, jdbcType=TIMESTAMP}
+	</update>
+
+
+	<select id="listBySaleOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_COMMISSION_CLEARUP
+		where SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+	</select>
+
+
+	<select id="listClearupReport" resultType="CommissionReport">
+		select sum(TMP.TOTALAMOUNT) as SALEAMOUNT, count(*) as SALEORDERCOUNT, TMP.STOREID, TMP.STATUSCODE
+		from
+		(
+		select CC.TOTALAMOUNT, CC.CLEARAMOUNT, CC.STOREID, CC.STATUSCODE, CC.SALEORDERNO, CC.PAYTIME
+		from T_COMMISSION_CLEARUP CC
+		group by CC.SALEORDERNO having count(*) = 1
+		) as TMP
+		<where>
+			<if test="statusCode != null">
+				TMP.STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeId != null">
+				and TMP.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="startDate != null">
+				and TMP.PAYTIME &gt;= #{startDate, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endDate != null">
+				and TMP.PAYTIME &lt;= #{endDate, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		group by TMP.STOREID
+
+	</select>
+
+</mapper>

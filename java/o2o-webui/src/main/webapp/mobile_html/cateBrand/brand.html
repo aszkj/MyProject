@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<title>一里递</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<link rel="stylesheet" href="../static-resource/css/iscroll.css" />
+<link rel="stylesheet" href="../static-resource/css/brandSort.css" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+        document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+                + Math.random() + "'><\/script>");
+</script>
+</head>
+<body>
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p>品牌分类</p>
+    </div>
+</header>
+<div id="letter" ></div>
+<div class="sort_box">
+
+</div>
+<div class="initials">
+    <ul>
+    </ul>
+</div>
+<!--loading-->
+<section id="pageloading" class="hide">
+    <img src="../static-resource/images/loading.png">
+</section>
+
+</body>
+<script type="text/javascript">
+    $(function() {
+        allBrandTmpl();
+        showCartNum();
+    });
+    function allBrandTmpl() {
+        var params = new Object();
+        params.type = "all";
+        params.storeId=getSessionStorage(sessionStorageStoreKey).storeId;
+        ajax("/brand/searchbrand", params, function(data) {
+            $("#allBrandTmpl").tmpl(data).appendTo(".sort_box");
+            brandSort();
+        }, function(msg) {
+            alert(msg);
+        });
+    }
+    function toBrandProducts(brandCode,brandName) {
+        window.location.href = 'brandProducts.html?brandCode=' + brandCode+ "&brandName=" +brandName;
+    }
+</script>
+<script id="allBrandTmpl" type="text/x-jquery-tmpl">
+      <div class="sort_list" onclick="toBrandProducts('${brandCode}','${brandName}')">
+        <div class="num_logo">
+            <img src="${brandLogoImageUrl}" onerror="setErrorDefaultImg(this)">
+        </div>
+        <div class="num_name">${brandName}</div>
+    </div>
+</script>
+<script type="text/javascript" src="../static-resource/js/jquery.charfirst.pinyin.js"></script>
+<script type="text/javascript" src="../static-resource/js/sort.js"></script>
+</html>

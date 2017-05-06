@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.InvitedUserShareRecordMapper">
+	<resultMap id="BaseResultMap" type="InvitedUserShareRecord">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SHARECODE" property="shareCode" jdbcType="VARCHAR" />
+		<result column="SHAREUSERID" property="shareUserId" jdbcType="INTEGER" />
+		<result column="INVITEDUSERID" property="invitedUserId" jdbcType="INTEGER" />
+		<result column="SHARERULEID" property="shareRuleId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, SHARECODE,SHAREUSERID,INVITEDUSERID ,
+		SHARERULEID,CREATETIME,CREATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="InvitedUserShareRecord" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		U_INVITEDUSER_SHARE_RECORD
+		(
+		SHARECODE,SHAREUSERID,INVITEDUSERID,SHARERULEID,CREATETIME,
+		CREATEUSERID
+		)
+		values
+		(
+		#{shareCode,jdbcType=VARCHAR},
+		#{shareUserId,jdbcType=INTEGER},
+		#{invitedUserId,jdbcType=INTEGER},
+		#{shareRuleId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}
+		)
+	</insert>
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITEDUSER_SHARE_RECORD
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByShareCodeAndShareRuleId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITEDUSER_SHARE_RECORD
+		where
+		SHARECODE = #{shareCode,jdbcType=VARCHAR}
+		and SHARERULEID =
+		#{shareRuleId,jdbcType=INTEGER}
+	</select>
+	<select id="loadByInvitedUserIdAndShareRuleId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITEDUSER_SHARE_RECORD
+		where
+		INVITEDUSERID = #{invitedUserId,jdbcType=INTEGER}
+		and SHARERULEID =
+		#{shareRuleId,jdbcType=INTEGER}
+	</select>
+</mapper>

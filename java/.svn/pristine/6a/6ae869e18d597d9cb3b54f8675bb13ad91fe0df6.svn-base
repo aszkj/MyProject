@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<!-- **************************** 以下是配置消息生产者 **************************** -->
+
+	<!-- 定义userShareAward主题 -->
+	<bean id="userShareAwardTopic" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="o2o.userShareAward" />
+	</bean>
+
+	<!-- userShareAwardTopicSendJmsTemplate send jms模板 -->
+	<bean id="userShareAwardTopicSendJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory"></property>
+		<property name="defaultDestination" ref="userShareAwardTopic" />
+		<property name="messageConverter" ref="o2oMessageConverter" />
+		<property name="pubSubDomain" value="true" />
+		<property name="deliveryMode" value="2" />
+	</bean>
+
+	<!-- 消息发送方 -->
+	<bean id="userShareAwardMessageSender" class="com.yilidi.o2o.system.jms.sender.UserShareAwardMessageSender" parent="abstractSender" />
+
+	<!-- **************************** 以下是配置消息消费者 **************************** -->
+
+	<!-- 消息接收方 -->
+	<bean id="userShareAwardMessageReceiver" class="com.yilidi.o2o.system.jms.receiver.UserShareAwardMessageReceiver"
+		parent="abstractReceiver" />
+
+	<!-- 主题消息监听容器 -->
+	<bean id="userShareAwardListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="pubSubDomain" value="true" />
+		<property name="destination" ref="userShareAwardTopic" />
+		<property name="subscriptionDurable" value="true" />
+		<property name="clientId" value="clientId_userShareAward" />
+		<property name="messageListener" ref="userShareAwardMessageReceiver" />
+		<property name="sessionTransacted" value="true" />
+	</bean>
+
+</beans>

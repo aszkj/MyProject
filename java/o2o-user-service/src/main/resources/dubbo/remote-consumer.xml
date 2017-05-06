@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+    
+    <!--关闭所有服务启动时检查依赖的服务是否可用 -->
+    <dubbo:consumer check="false" />
+ 
+    <dubbo:reference id="messageProxyService" interface="com.yilidi.o2o.system.proxy.IMessageProxyService" />
+    <dubbo:reference id="areaDictProxyService" interface="com.yilidi.o2o.system.proxy.IAreaDictProxyService" />
+    <dubbo:reference id="systemParamsProxyService" interface="com.yilidi.o2o.system.proxy.ISystemParamsProxyService" />
+    <dubbo:reference id="systemDictProxyService" interface="com.yilidi.o2o.system.proxy.ISystemDictProxyService" />
+    <dubbo:reference id="systemLogCrossDomainProxyService" interface="com.yilidi.o2o.system.proxy.crossdomain.ISystemLogCrossDomainProxyService" />
+ 	<dubbo:reference id="systemParamsCrossDomainProxyService" interface="com.yilidi.o2o.system.proxy.crossdomain.ISystemParamsCrossDomainProxyService" />
+ 	<dubbo:reference id="userRoleProxyService" interface="com.yilidi.o2o.system.proxy.IUserRoleProxyService" />
+ 	<dubbo:reference id="roleProxyService" interface="com.yilidi.o2o.system.proxy.IRoleProxyService" />
+ 	<dubbo:reference id="orderProxyService" interface="com.yilidi.o2o.order.proxy.IOrderProxyService" />
+ 	<dubbo:reference id="productProxyService" interface="com.yilidi.o2o.product.proxy.IProductProxyService" />
+ 	<dubbo:reference id="userCouponProxyService" interface="com.yilidi.o2o.order.proxy.IUserCouponProxyService" />
+	<dubbo:reference id="couponProxyService" interface="com.yilidi.o2o.order.proxy.ICouponProxyService" />
+
+</beans>

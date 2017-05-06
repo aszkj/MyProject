@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<title>关联手机号</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript" src="../static-resource/js/resize.js"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+<script type="text/javascript" src="../static-resource/js/angular.js"></script>
+<script type="text/javascript" src="../static-resource/js/controller.js"></script>
+</head>
+<body ng-app="bindTele" ng-controller="bindNumController">
+	<div class="top-bg-img">
+		<img src="../static-resource/images/register/bg.png">
+		<div class="bind-top">
+			<span class="bindTopBg">为了您的账号安全，请先关联手机</span>
+		</div>
+	</div>
+	<div class="bot-con">
+		<form name="bindForm" class="bindForm">
+			<label> 手机号: <input class="checkCode send-code" type="button" id="btn" ng-disabled="bindForm.teleNumber.$invalid" value="发送验证码" /> <input type="tel" name="teleNumber"
+				class="teleNumber" id="tele" placeholder="请输入您的手机号" ng-model="user.teleNumber" onKeyUp="showBtn(tele,clearBtn);" required ng-maxlength="11" ng-minlength="11">
+				<div class="clean" id="clearBtn" onClick="clearText(tele,clearBtn);" style="right:2.2rem;">
+					<img src="../static-resource/images/register/clean.png">
+				</div>
+			</label>
+			<div role="alert">
+				<span class="error" error-msg="tele" id="errorTipForTele"></span>
+			</div>
+			<label> 验证码: <input id="vcode" type="text" name="vcode" placeholder="请输入验证码" ng-model="user.vcode" required ng-minlength="4">
+			</label> <label class="input-last password"> 密&nbsp;&nbsp;&nbsp;&nbsp;码: <input id="password" type="password" name="password" class="password" placeholder="请输入密码"
+				ng-model="userdata.password" required ng-minlength="6">
+				<div class="eye eye-close">
+					<img src="../static-resource/images/register/eyeclose.png">
+				</div>
+				<div class="eye eye-open">
+					<img src="../static-resource/images/register/eyeopen.png">
+				</div>
+			</label>
+			<div role="alert">
+				<span class="error" error-msg="password" id="errorTipForPassword"></span>
+			</div>
+			<div class="sub-btn">
+				<button type="submit" id="reg-btn" ng-disabled="bindForm.$invalid">确定</button>
+			</div>
+		</form>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var flag = getUrlParam("flag");
+	$(function() {
+		$("#btn").click(function() {
+			checkCodeTime();
+		});
+		$("#reg-btn").click(function() {
+			toBind();
+		});
+	});
+	function checkCodeTime() {
+		var param = new Object();
+		param.mobile = $("#tele").val();
+		param.type = 5; //绑定手机
+		ajax("/system/sendcaptcha", param, function(data) {
+			if (!data)
+				return;
+			resetInterval(data.remainClock, "btn");
+		}, function(msg) {
+			alert(msg);
+		});
+	}
+	function toBind() {
+		var param = new Object();
+		param.mobile = $("#tele").val();
+		param.password = $("#password").val();
+		param.code = $("#vcode").val();
+		ajax("/oauth2/user/bind", param, function(data) {
+			if (!data)
+				return;
+			saveUserInfo(data);
+			sychronizedcart();
+		}, function(msg) {
+			alert(msg);
+		}, true)
+	}
+	function sychronizedcart() {
+		var params = new Object();
+		if(getSessionStorage(sessionStorageStoreKey))
+		params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		var cartInfoParam = [];
+		var cartInfo = getSessionStorage(localStorageCartInfoKey);
+		for ( var saleProductId in cartInfo) {
+			var cartParam = new Object();
+			cartParam.saleProductId = saleProductId;
+			cartParam.cartNum = cartInfo[saleProductId].cartNum;
+			cartInfoParam.push(cartParam);
+		}
+		params.cartInfo = cartInfoParam;
+		ajax("/cart/synchronouscart", params, function(data) {
+			setCartInfo(data);
+			if (!flag)
+				window.location.replace(document.referrer);
+			else
+				history.go(-3);
+		}, function(data) {
+			if (!flag)
+				window.location.replace(document.referrer);
+			else
+				history.go(-3);
+		}, true);
+	}
+	angular.module('bindTele', []).controller('bindNumController',
+			function($scope) {
+				$scope.telemsg = function() {
+					return checkMobile($("#tele").val());
+				};
+			});
+</script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/verify.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+</html>

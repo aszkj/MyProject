@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductDictMapper">
+	<resultMap id="BaseResultMap" type="ProductDict">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode"
+			jdbcType="VARCHAR" />
+		<result column="DICTNAME" property="dictName" jdbcType="VARCHAR" />
+		<result column="DICTCODE" property="dictCode" jdbcType="VARCHAR" />
+		<result column="DICTTYPE" property="dictType" jdbcType="VARCHAR" />
+		<result column="DICTTYPENAME" property="dictTypeName" jdbcType="VARCHAR" />
+		<result column="DICTDESC" property="dictDesc" jdbcType="VARCHAR" />
+		<result column="SORT" property="sort" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PRODUCTCLASSCODE, DICTNAME, DICTCODE, DICTTYPE, DICTTYPENAME,
+		DICTDESC, SORT,
+		CREATEUSERID, CREATETIME, MODIFYUSERID, MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="ProductDict">
+		insert into P_PRODUCT_DICT (ID, PRODUCTCLASSCODE, DICTNAME,
+		DICTCODE, DICTTYPE, DICTTYPENAME,
+		DICTDESC, SORT, CREATEUSERID,
+		CREATETIME
+		)
+		values (#{id,jdbcType=INTEGER}, #{productClassCode,jdbcType=VARCHAR},
+		#{dictName,jdbcType=VARCHAR},
+		#{dictCode,jdbcType=VARCHAR}, #{dictType,jdbcType=VARCHAR}, #{dictTypeName,jdbcType=VARCHAR},
+		#{dictDesc,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<update id="updateDictNameByDictCode">
+		update
+		DICTNAME = #{dictName,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = CURRENT_TIME
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateDictNameById">
+		update P_PRODUCT_DICT
+		set
+		DICTNAME = #{dictName,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = CURRENT_TIME
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_DICT
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+
+	<select id="loadByDictCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_DICT
+		where DICTCODE = #{dictCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="listByDictName" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_DICT
+		<if test="dictName != null">
+			where DICTNAME 
+			like CONCAT('%',#{dictName,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<select id="list" resultMap="BaseResultMap" >
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_DICT
+		<where>
+			<if test="productClass != null">
+				PRODUCTCLASSCODE = #{productClassCode,jdbcType=VARCHAR},
+			</if>
+			<if test="dictType != null">
+				and DICTTYPE = #{dictType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

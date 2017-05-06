@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.OrderRefundStatusHistoryMapper">
+	<resultMap id="BaseResultMap" type="OrderRefundStatusHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="OPERATEUSERID" property="operateUserId"
+			jdbcType="INTEGER" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="OPERATIONDESC" property="operationDesc"
+			jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, OPERATEUSERID, OPERATETIME, STATUS,
+		OPERATIONDESC,CREATEUSERID,
+		CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="OrderRefundStatusHistory">
+		insert into
+		T_ORDER_REFUND_STATUS_HISTORY
+		(
+		SALEORDERNO, OPERATEUSERID, OPERATETIME,
+		STATUS, OPERATIONDESC,CREATEUSERID,
+		CREATETIME
+		)
+		values
+		(#{saleOrderNo,jdbcType=VARCHAR},
+		#{operateUserId,jdbcType=INTEGER},
+		#{operateTime,jdbcType=TIMESTAMP},
+		#{status,jdbcType=VARCHAR},
+		#{operationDesc,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<select id="listBySaleOrderNo" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_ORDER_REFUND_STATUS_HISTORY
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		order by OPERATETIME
+	</select>
+
+</mapper>

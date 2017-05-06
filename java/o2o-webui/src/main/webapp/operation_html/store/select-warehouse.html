@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>一里递运营中心</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.btn_sure,.btn_gray{padding:6px 15px;border-radius:3px;display:inline-block;font-size:12px;color:#fff;cursor:pointer}
+.btn_sure{border:1px solid #63ADEE;background-color:#63ADEE}
+.btn_gray{border:1px solid #666;background-color:#666}
+</style>
+<script type="text/javascript">
+  var warehouseId=$.trim(getUrlParam('warehouseId'));
+  var storeId=$.trim(getUrlParam('storeId'));
+  var storeProfileId=$.trim(getUrlParam('storeProfileId')); 
+  var g_boxId = $.trim(getUrlParam("boxId"));
+$(function(){
+	getWarehouseList();
+	initSelectWarehouse();
+});
+function initSelectWarehouse(){
+	if(null != warehouseId && '' != warehouseId){
+		$('#selectWarehouse'+warehouseId).attr('checked',true);
+		showSelectWarehouseList();
+	}
+}
+/*关闭弹框*/
+function close_box(){
+	if(g_boxId!=''&&parent&&parent.closeBox)parent.closeBox(g_boxId);
+}
+function getWarehouseList(){
+	var st=[];
+	var html='';
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + storeId  + '/listAllOptionalWarehouse',
+		type:'post',
+		dataType:'json',
+		cache:false,
+		async:false,
+		data:'',
+		success:function(data){
+			st=data.entity;			
+		}
+	});			
+	for(var i=0,length=st.length;i<length;i++){
+		html +=" <div align='left' style='width:260px;height:20px' ><input onclick='showSelectWarehouseList(this)' id='selectWarehouse"+st[i].storeId +"' value='"+st[i].storeId+"' type='checkbox' />";
+		html += " <label style='margin-left:2px;' for='selectWarehouse'"+st[i].storeId+"'> "+st[i].storeName+ "</label></div> ";
+	}
+	$('#warehouseListBox').html(html);
+}
+function showSelectWarehouseList(obj){
+	var st=$('#warehouseListBox input');
+	var st1=$('#warehouseListBox label');
+	var html='';
+	for(var i=0,length=st.length;i<length;i++){
+		if(st[i].checked){
+			html+= " <div align='left' style='width:260px;height:20px' ><input value='"+st[i].value+"' type='hidden' />";
+			html+= " <label>"+st1[i].innerHTML+"</label></div>";	
+		}else{
+			if(undefined == obj){
+				st[i].disabled = true;
+			}else{
+				if(obj.checked){
+					st[i].disabled = true;
+				}else{
+					st[i].disabled = false;
+				}
+			}
+		}	
+	}	
+	$('#selectWarehouseListBox').html(html);
+}
+function selectWarehouseSubmit(){
+	var st=$('#selectWarehouseListBox input');
+	var result="";
+	if(st.length == 1){
+		result = st[0].value;
+	}
+	ajax({
+		type : 'post',
+		contentType : 'application/json',
+		dataType : 'json',
+		error : function() {
+			$('#promptMessage').text('保存数据失败，请稍后再试');
+			$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + storeId + '-' + result + '/saveStoreWarehouseRelations',
+		beforeSubmit : function() {
+		},
+		success : function(data) {
+			//响应返回的业务处理  
+			if (data.msgCode == 1) {
+				$('#promptMessage').text('保存成功');
+				setTimeout(function(){
+				    if(parent){ 
+				    	 if(storeProfileId!=null&&storeProfileId!=''){
+				    		 parent.sid = storeProfileId;
+				    	 }
+				    	parent.dataSubmit();
+				    }
+					close_box();
+				},1000);
+			} else {
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+				$('#promptMessage').text(data.msg);
+			}
+		}
+	}); 
+}
+function closeBox(){
+	close_box();
+}
+</script>
+</head>
+<body style="padding:10px;">
+<form name="form1" method="post" id="form1" onsubmit="selectWarehouseSubmit();return false">
+<table border="1" bordercolor="#CCCCCC" style="border-collapse:collapse;width:660px;">
+	<tr>
+		<td style="height:20px" align="center" valign="middle">可选择微仓</td>
+		<td style="height:20px" align="center" valign="middle">已选择微仓</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+			<div id="warehouseListBox" style="height:300px;width:330px;overflow:auto;"></div>
+		</td>
+		<td align="center" valign="top">
+			<div id="selectWarehouseListBox" style="height:300px;width:330px;overflow:auto"></div>
+		</td>
+	</tr>
+</table>
+<div align="center" style="padding:2px">
+	<input type="submit" id="submit" value="提交" style="width:auto;display:inline;align:center" class="btn_sure"/>　　　　
+	<input type="reset" value="取消" onclick="closeBox()" style="width:auto;display:inline;align:center" class="btn_gray"/>
+	</br>
+	<span id="promptMessage" class="cred"></span> 
+</div>
+    </form>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.StockOutImeiMapper">
+	<resultMap id="BaseResultMap" type="StockOutImei">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOCKOUTITEMID" property="stockOutItemId" jdbcType="INTEGER" />
+		<result column="IMEINO" property="imeiNo" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, STOCKOUTITEMID, IMEINO
+	</sql>
+
+	<insert id="save" parameterType="StockOutImei">
+		insert into T_STOCKOUT_IMEI (
+			ID, STOCKOUTITEMID, IMEINO
+		)
+		values (
+			#{id,jdbcType=INTEGER}, #{stockOutItemId,jdbcType=INTEGER}, #{imeiNo,jdbcType=VARCHAR}
+		)
+	</insert>
+
+</mapper>

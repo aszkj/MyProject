@@ -1,0 +1,1675 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style>
+.box-mask {
+	position: fixed;
+	width: 600px;
+	height: auto;
+	ovflow: hidden;
+	z-index: 9999999;
+	left: 50%;
+	top: 0;
+	margin-left: -300px;
+}
+
+.mask_close {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size: 16px;
+	color: red;
+	background: #fff;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+}
+</style>
+<script type="text/javascript">
+	var method = getUrlParam("method");
+	var selectedProductDatas = {};
+	var selectedRewardProductDatas = {};
+	var selectedCouponDatas = {};
+	function loadBuyRewardActivityInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id
+						+ '/loadByAuditBuyRewardActivityId',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+					listDictType('valueMethod', 'BUYREWARDACTIVITYVALUEMETHOD',
+							data.entity.valueMethod);
+					listDictType('giftType', 'BUYREWARDACTIVITYGIFTTYPE',
+							data.entity.giftType);
+					$('#activityName').val(data.entity.activityName);
+					$('#activityBegin').val(data.entity.activityBegin);
+					$('#activityEnd').val(data.entity.activityEnd);
+					$('#statusCode').val(data.entity.statusCode);
+					$('#auditStatus').val(data.entity.auditStatus);
+					paramsetDivDisplay(data.entity.valueMethod);
+					var mainPoducts = data.entity.buyRewardActivityMappingDtoList ? data.entity.buyRewardActivityMappingDtoList
+							: [];
+					var rewardProducts = (data.entity.buyRewardActivityMappingDtoList && data.entity.buyRewardActivityMappingDtoList.length > 0) ? data.entity.buyRewardActivityMappingDtoList[0].rewardProductDtos
+							: [];
+					var giftFlag = isGift(data.entity.giftType);
+					if (!giftFlag) {
+						rewardProducts = (data.entity.buyRewardActivityMappingDtoList && data.entity.buyRewardActivityMappingDtoList.length > 0) ? data.entity.buyRewardActivityMappingDtoList[0].couponProxyDtos
+								: [];
+					}
+					initMainProductDatas(mainPoducts);
+					initRewardProductDatas(rewardProducts, giftFlag);
+					createProductList(selectedProductDatas, 0);
+					if (giftFlag) {
+						createProductList(selectedRewardProductDatas, 1);
+					} else {
+						createProductList(selectedCouponDatas, 2);
+					}
+					var mainProductMap = getMainProductMap(mainPoducts);
+					var rewardProductMap = getRewardProductMap(
+							data.entity.buyRewardActivityMappingDtoList,
+							giftFlag);
+					createProductSettingDom(0, mainProductMap);
+					createProductSettingDom(giftFlag ? 1 : 2, rewardProductMap);
+					initDisplay(method);
+					$("#id").val(id);
+					if (data.entity.auditStatus == "BUYREWARDACTIVITYAUDITSTATUS_FINAL_AUDIT_REJECTED") {
+						$("#rejectSpan").show();
+						$("#rejectType").html("审批驳回原因：");
+						$("#rejectReason")
+								.html(
+										data.entity.finalAuditRejectReason ? data.entity.finalAuditRejectReason
+												: "无");
+					} else {
+						$("#rejectSpan").hide();
+					}
+				}
+			});
+
+		}
+	}
+
+	function editActivityTime() {
+		var url = "";
+		var param = "";
+		url = "/updateActivityTime";
+		var id = $("#id").val();
+		var statusCode = $("#statusCode").val();
+		if (statusCode == "BUYREWARDACTIVITYSTATUSCODE_STARTED") {
+			var activityEnd = $.trim($('#activityEnd').val()), $timeMsg = $('#timeMsg');
+			if (!activityEnd) {
+				$timeMsg.html('请选择买赠活动结束有效时间！').attr('class', 'error');
+				return;
+			}
+			param = id + "_" + activityEnd;
+		} else if (statusCode == "BUYREWARDACTIVITYSTATUSCODE_NOTSTART") {
+			var activityBegin = $.trim($('#activityBegin').val()), $timeMsg = $('#timeMsg');
+			if (!activityBegin) {
+				$timeMsg.html('请选择买赠活动开始有效时间！').attr('class', 'error');
+				return;
+			}
+			var activityEnd = $.trim($('#activityEnd').val());
+			if (!activityEnd) {
+				$timeMsg.html('请选择买赠活动结束有效时间！').attr('class', 'error');
+				return;
+			}
+			var startTime = new Date($('#activityBegin').val().replace(/-/g,
+					"/"));
+			var endTime = new Date($('#activityEnd').val().replace(/-/g, "/"));
+			if (startTime >= endTime) {
+				$timeMsg.html('买赠活动结束有效时间必须大于买赠活动开始有效时间！').attr('class',
+						'error');
+				return;
+			}
+			param = id + "_" + activityBegin + "_" + activityEnd;
+		}
+		$('#editTime').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在修改...');
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + param + url,
+			method : 'get',
+			dataType : 'json',
+			success : function(data) {
+				if (data.msgCode == 3) {
+					$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					loginError(data.msg);
+				} else if (data.msgCode == 2) {
+					$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					showBox('提示', data.msg, 'alert')
+				} else if (data.msgCode == 1) {
+					$('#promptMessage').text('修改成功');
+					window
+							.setTimeout(
+									function() {
+										var urlParam = window.location.search;
+										locationHref("/buyrewardactivity/buyrewardactivity-audit-index.html"
+												+ urlParam);
+									}, 1000);
+				} else {
+					$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					$('#promptMessage').text(data.msg);
+				}
+			}
+		});
+	}
+
+	function comebackList() {
+		var urlParam = window.location.search;
+
+		if (method == 'final') {
+			locationHref('/buyrewardactivity/buyrewardactivity-finalaudit-index.html'
+					+ urlParam);
+		} else {
+			var returnType = getUrlParam("returnType");
+			if (returnType == 'final') {
+				locationHref('/buyrewardactivity/buyrewardactivity-finalaudit-index.html'
+						+ urlParam);
+			} else if (method == 'update' || method == 'add') {
+				locationHref('/buyrewardactivity/buyrewardactivity-audit-index.html'
+						+ urlParam);
+			} else {
+				locationHref('/buyrewardactivity/buyrewardactivity-audit-index.html'
+						+ urlParam);
+			}
+		}
+	}
+
+	function finalAuditPass(id) {
+		showBox(
+				'确认信息',
+				"确认审核通过吗？",
+				'confirm',
+				function() {
+					ajax({
+						url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+								+ id + '/doFinalAuditActivityPass',
+						method : 'get',
+						dataType : 'json',
+						success : function(data) {
+							if (data.msgCode == 3) {
+								loginError(data.msg);
+							} else if (data.msgCode == 2) {
+								showBox('提示', data.msg, 'alert')
+							} else if (data.msgCode == 1) {
+								$('#auditMessage').text(
+										'审核成功，正在跳转到审批列表页.......');
+								window
+										.setTimeout(
+												function() {
+													locationHref("/buyrewardactivity/buyrewardactivity-finalaudit-index.html");
+												}, 1000);
+							}
+						}
+					});
+				})
+	}
+	function finalAuditNoPass(id) {
+		showBox(
+				'审批驳回',
+				'/buyrewardactivity/buyrewardactivity-auditnopass.html?width=500&height=200&id='
+						+ id + '&method=' + method);
+	}
+
+	function getRewardProductMap(data, giftFlag) {
+		data = data || [];
+		var result = {};
+		if (data.length <= 0) {
+			return result;
+		}
+		var product = new Object();
+		if (giftFlag) {
+			product = data[0].rewardProductDtos;
+		} else {
+			product = data[0].couponProxyDtos;
+		}
+		var rewardGifts = data[0].rewardGifts;
+		var rewardGiftAmount = data[0].giftAmount;
+		for (var i = 0; i < product.length; i++) {
+			var obj = new Object();
+			var id = null;
+			if (giftFlag) {
+				id = product[i].id;
+			} else {
+				id = product[i].conId;
+			}
+			obj.id = id;
+			obj.rewardGifts = rewardGifts;
+			obj.giftAmount = rewardGiftAmount;
+			result[id] = obj;
+		}
+		return result;
+	}
+
+	function getMainProductMap(datas) {
+		datas = datas || [];
+		var result = {};
+		for (var i = 0; i < datas.length; i++) {
+			var product = datas[i].mainProduct;
+			result[product.id] = datas[i];
+		}
+		return result;
+	}
+	function initMainProductDatas(datas) {
+		datas = datas || []
+		var selectedDatas = {};
+		for (var i = 0; i < datas.length; i++) {
+			var product = datas[i].mainProduct;
+			var obj = createProductObj(product);
+			selectedDatas[product.id] = obj;
+		}
+		selectedProductDatas = selectedDatas
+	}
+	function initRewardProductDatas(datas, giftFlag) {
+		datas = datas || [];
+		var selectedDatas = {};
+		for (var i = 0; i < datas.length; i++) {
+			var obj = datas[i];
+			var newObj = new Object();
+			var id = null;
+			if (giftFlag) {
+				newObj = createProductObj(obj);
+				id = obj.id;
+			} else {
+				newObj = createCouponObj(obj);
+				id = obj.conId;
+			}
+			selectedDatas[id] = newObj;
+		}
+		if (giftFlag) {
+			selectedRewardProductDatas = selectedDatas;
+		} else {
+			selectedCouponDatas = selectedDatas;
+		}
+	}
+	function createCouponObj(coupon) {
+		var pObj = new Object();
+		pObj.id = coupon.conId;
+		pObj.conPackName = coupon.conName;
+		pObj.grantTime = coupon.grantTime;
+		pObj.useRangeCodeName = coupon.useRangeCodeName;
+		return pObj
+	}
+	function createProductObj(product) {
+		var pObj = new Object();
+		pObj.id = product.id;
+		pObj.productName = product.productName;
+		pObj.barCode = product.barCode;
+		pObj.productSpec = product.productProfileDto.productSpec;
+		return pObj
+	}
+	//提交保存事件
+	function dataEditSubmit() {
+		if (method != 'add' && method != 'edit') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		if (!validateData()) {
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url = OPERATION_SYSTEM_IDENTITY + '/createAuditBuyRewardActivity';
+		} else if (method == 'edit') {
+			url = OPERATION_SYSTEM_IDENTITY + '/updateAuditBuyRewardActivity';
+		} else {
+			return;
+		}
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		setProductFormValue();
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					contentType : 'application/json',
+					dataType : 'json',
+					data : formJsonStr,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					},
+					url : TERMINAL_URL + url,
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window
+									.setTimeout(
+											function() {
+												var urlParam = window.location.search;
+												locationHref("/buyrewardactivity/buyrewardactivity-audit-index.html"
+														+ urlParam);
+											}, 1000);
+						} else {
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							if ('商品条形码不存在！' == data.msg) {
+								$('#promptMessage').text('');
+								var $barCodeMsg = $('#barCodeMsg');
+								$barCodeMsg.html(data.msg).attr('class',
+										'error');
+							} else {
+								$('#promptMessage').text(data.msg);
+							}
+						}
+					}
+				});
+	}
+
+	var validate = (function() {
+		return {
+			validateactivityName : function() {
+				var activityName = $.trim($('#activityName').val());
+				$activityNameMsg = $('#activityNameMsg');
+				if (!activityName) {
+					$activityNameMsg.html('请填写买赠活动名称！').attr('class', 'error');
+					return false;
+				}
+				$activityNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateValueMethod : function() {
+				var valueMethod = $.trim($('#valueMethod').val());
+				$valueMethodeMsg = $('#valueMethodMsg');
+				if (!valueMethod) {
+					$valueMethodeMsg.html('请选择取值方式！').attr('class', 'error');
+					return false;
+				}
+				$valueMethodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateGiftType : function() {
+				var giftType = $.trim($('#giftType').val());
+				$giftTypeMsg = $('#giftTypeMsg');
+				if (!giftType) {
+					$valueMethodeMsg.html('请选择赠品类型！').attr('class', 'error');
+					return false;
+				}
+				$giftTypeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateActivityBegin : function() {
+				var activityBegin = $.trim($('#activityBegin').val()), $timeMsg = $('#timeMsg');
+				if (!activityBegin) {
+					$timeMsg.html('请选择买赠活动开始有效时间！').attr('class', 'error');
+					return false;
+				}
+				$timeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateActivityEnd : function() {
+				var activityEnd = $.trim($('#activityEnd').val()), $timeMsg = $('#timeMsg');
+				if (!activityEnd) {
+					$timeMsg.html('请选择买赠活动结束有效时间！').attr('class', 'error');
+					return false;
+				}
+				var startTime = new Date($('#activityBegin').val().replace(
+						/-/g, "/"));
+				var endTime = new Date($('#activityEnd').val().replace(/-/g,
+						"/"));
+				if (startTime >= endTime) {
+					$timeMsg.html('买赠活动结束有效时间必须大于买赠活动开始有效时间！').attr('class',
+							'error');
+					return false;
+				}
+				$timeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateMainProduct : function() {
+				if (Object.keys(selectedProductDatas).length <= 0) {
+					showBox('提示信息', '请选择主商品', 'alert');
+					return false;
+				}
+				return true;
+			},
+			validateRewardProduct : function() {
+				var tipMsg = "请选择赠品";
+				var length = Object.keys(selectedRewardProductDatas).length;
+				if (!isGift()) {
+					tipMsg = "请选择优惠券";
+					length = Object.keys(selectedCouponDatas).length
+				}
+				if (length <= 0) {
+					showBox('提示信息', tipMsg, 'alert');
+					return false;
+				}
+				return true;
+			},
+			validateMainProductSetting : function() {
+				if (isIntervalMethod()) {
+					return this.validateMainProductInterval();
+				} else {
+					return this.validateMainProductMultipe();
+				}
+			},
+			validateMainProductMultipe : function() {
+				var tbodyId = getDomId(0);
+				var result = true;
+				$("#" + tbodyId + " tr")
+						.each(
+								function() {
+									if (!result) {
+										return;
+									}
+									var _this = $(this);
+									var tdSize = _this.children("td.tdinput").length;
+									for (var i = 0; i < tdSize; i++) {
+										var curDom = _this.children(
+												"td.tdinput").eq(i);
+										var inputValue = $.trim(curDom
+												.children("input").eq(0).val()) || 0;
+										if (parseInt(inputValue) <= 0) {
+											showBox('提示信息', '请填写正整数', 'alert');
+											result = false;
+											return;
+										}
+									}
+								});
+				return result;
+			},
+			validateMainProductInterval : function() {
+				var tbodyId = getDomId(0);
+				var result = true;
+				var lastEndFlag = false;
+				$("#" + tbodyId + " tr")
+						.each(
+								function() {
+									if (!result) {
+										return;
+									}
+									var _this = $(this);
+									var tdSize = _this.children("td.tdinput").length;
+									for (var i = 0; i < tdSize; i++) {
+										var curDom = _this.children(
+												"td.tdinput").eq(i);
+										var start = $.trim(curDom.children(
+												"input").eq(0).val());
+										var end = $.trim(curDom.children(
+												"input").eq(1).val());
+										if (end && !start) {
+											showBox('提示信息', '请输入有效开始区间值',
+													'alert');
+											result = false;
+											return;
+										}
+										if (i == 0) {
+											if (!start || start <= 0) {
+												showBox('提示信息', '请输入有效开始区间值',
+														'alert');
+												result = false;
+												return;
+											}
+										}
+										var prevDom = null;
+										var nextDom = null;
+										if (i > 0) {
+											prevDom = _this.children(
+													"td.tdinput").eq(i - 1);
+										}
+										if (i > 0 && i < tdSize - 1) {
+											nextDom = _this.children(
+													"td.tdinput").eq(i + 1);
+										}
+										if (prevDom) {
+											var prevStart = $.trim(prevDom
+													.children("input").eq(0)
+													.val()) || 0;
+											var prevEnd = $.trim(prevDom
+													.children("input").eq(1)
+													.val());
+											if (!prevEnd) {
+												if (start || end) {
+													showBox('提示信息', '请输入有效区间值',
+															'alert');
+													result = false;
+													return;
+												}
+											} else {
+												if (prevStart > parseInt(prevEnd)) {
+													showBox('提示信息', '请输入有效区间值',
+															'alert');
+													result = false;
+													return;
+												}
+												if (start) {
+													if (parseInt(prevEnd) + 1 != (parseInt(start))) {
+														showBox(
+																'提示信息',
+																'区间起始值应为上个区间的上限值+1！',
+																'alert');
+														result = false;
+														return;
+													}
+												}
+											}
+										}
+										if (i == tdSize - 1) {
+											if (end) {
+												showBox(
+														'提示信息',
+														'最后一个区间，上限值应为空(代表无穷大)！',
+														'alert');
+												result = false;
+												return;
+											} else if (start) {
+												lastEndFlag = true;
+											}
+										} else if (start) {
+											var allBlank = true;
+											for (var k = i + 1; k < tdSize; k++) {
+												var curDom = _this.children(
+														"td.tdinput").eq(k);
+												var start1 = $.trim(curDom
+														.children("input")
+														.eq(0).val());
+												var end1 = $.trim(curDom
+														.children("input")
+														.eq(1).val());
+												if (start1 || end1) {
+													allBlank = false;
+												}
+											}
+											if (allBlank && end) {
+												showBox(
+														'提示信息',
+														'最后一个区间，上限值应为空(代表无穷大)！',
+														'alert');
+												result = false;
+												return;
+											}
+											if (!allBlank && !end) {
+												showBox('提示信息', '请输入合法的区间值',
+														'alert');
+												result = false;
+												return;
+											}
+										}
+										if (start && end) {
+											if (parseInt(start) > parseInt(end)) {
+												showBox('提示信息', '请输入合法的区间值',
+														'alert');
+												result = false;
+												return;
+											}
+										}
+									}
+								});
+				if (!lastEndFlag && result) {
+					showBox('提示信息', '请删除多余的区间', 'alert');
+					result = false;
+				}
+				return result;
+			},
+			validateRewardProductInterval : function() {
+				var tbodyId = getDomId(1);
+				var result = true;
+				$("#" + tbodyId + " tr")
+						.each(
+								function() {
+									if (!result) {
+										return;
+									}
+									var _this = $(this);
+									var tdSize = _this.children("td.tdinput").length;
+									for (var i = 0; i < tdSize; i++) {
+										var curDom = _this.children(
+												"td.tdinput").eq(i);
+										var inputValue = $.trim(curDom
+												.children("input").eq(0).val()) || 0;
+										if (parseInt(inputValue) <= 0) {
+											showBox('提示信息', '请填写正整数', 'alert');
+											result = false;
+											return;
+										}
+									}
+								});
+				return result;
+			}
+		}
+	})();
+
+	function validateData() {
+		if (!validate.validateactivityName()) {
+			return false;
+		}
+		if (!validate.validateValueMethod()) {
+			return false;
+		}
+		if (!validate.validateGiftType()) {
+			return false;
+		}
+		if (!validate.validateActivityBegin()) {
+			return false;
+		}
+		if (!validate.validateActivityEnd()) {
+			return false;
+		}
+		if (!validate.validateMainProduct()) {
+			return false;
+		}
+		if (!validate.validateRewardProduct()) {
+			return false;
+		}
+		if (!validate.validateMainProductSetting()) {
+			return false;
+		}
+		if (!validate.validateRewardProductInterval()) {
+			return false;
+		}
+		return true;
+	}
+
+	function closeme() {
+		$(".box-mask").remove();
+	}
+	//去除提示
+	function showErr(errorType) {
+		if (errorType == 'activityName') {
+			$('#activityNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'valueMethod') {
+			$('#valueMethodMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'giftType') {
+			$('#giftTypeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+
+		if (errorType == 'activityBegin') {
+			$('#timeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'activityEnd') {
+			$('#timeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+	}
+
+	/* function comebackList() {
+		var urlParam = window.location.search;
+		locationHref('/buyrewardactivity/buyrewardactivity-audit-index.html'
+				+ urlParam);
+	} */
+
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#activityBegin').datetimepicker({
+			minDateTime : new Date(),
+			hour : new Date().getHours(),
+			minute : new Date().getMinutes(),
+			second : new Date().getSeconds()
+		});
+		$('#activityEnd').datetimepicker({
+			minDateTime : new Date(),
+			hour : new Date().getHours(),
+			minute : new Date().getMinutes(),
+			second : new Date().getSeconds()
+		});
+	}
+	//选商品
+	function selectProducts() {
+		showBox("选择商品",
+				'/buyrewardactivity/buyrewardactivity-select-product.html?width=800&height=600');
+	}
+	//选赠品
+	function selectRewardProducts() {
+		$("#rewardProductMsg").html('').removeClass('right');
+		if (Object.keys(selectedProductDatas).length <= 0) {
+			showBox('提示信息', "请选择商品", 'alert');
+			return;
+		}
+		showBox(
+				"选择赠品",
+				'/buyrewardactivity/buyrewardactivity-select-rewardproduct.html?width=800&height=600');
+	}
+	function selectRewardCoupons() {
+		if (Object.keys(selectedProductDatas).length <= 0) {
+			showBox('提示信息', "请选择商品", 'alert');
+			return;
+		}
+		showBox("选择优惠券",
+				'/buyrewardactivity/buyrewardactivity-select-coupon.html?width=800&height=650');
+	}
+	function deleteProductItem(type, productId) {
+		var selectProducts = getSelectedProductDatas(type);
+		var tipMsg = "请至少选择一个商品";
+		if (type == 2) {
+			tipMsg = "请至少选择一张优惠券";
+		}
+		if (Object.keys(selectProducts).length <= 1) {
+			showBox('提示信息', tipMsg, 'alert');
+			return;
+		}
+		delete selectProducts[productId];
+		var productTrId = getProductListTrId(type, productId);
+		$("#" + productTrId).remove();
+		createProductSettingDom(type);
+	}
+
+	//选定商品事件
+	function selectProductsSure() {
+		var productIdsStr = "";
+		var splitStr = ",";
+		$("#tbody tr", "#selectedProductDiv").each(function() {
+			var arr = $(this).attr("title").split(":");
+			productIdsStr += arr[0].trim() + splitStr;
+		})
+		if (productIdsStr.length > 0) {
+			var len = productIdsStr.length;
+			productIdsStr = productIdsStr.substring(0, len - 1);
+		}
+	}
+
+	//区间数初始值
+	var intervalNum = 1;
+	function isProductSettingDomExists(productId, type) {
+		type = type || 0;
+		var tbodyId = getDomId(type);
+		var flag = false;
+		$("#" + tbodyId + " tr").each(function() {
+			var dataProductId = $(this).attr("data-productid");
+			if (dataProductId == productId) {
+				flag = true;
+			}
+		});
+		return flag;
+	}
+	function isProductExists(productId, type) {
+		type = type || 0;
+		var tbodyId = getDomId(type);
+		var flag = false;
+		var selectProducts = getSelectedProductDatas(type);
+		for ( var key in selectProducts) {
+			var product = selectProducts[key];
+			if (productId == product.id) {
+				flag = true;
+			}
+		}
+		return flag;
+	}
+	function getSelectedProductDatas(type) {
+		type = type || 0;
+		if (type == 0) {
+			return selectedProductDatas;
+		}
+		if (type == 2) {
+			return selectedCouponDatas;
+		}
+		return selectedRewardProductDatas;
+	}
+	function createProductSettingDom(type, valMap) {
+		type = type || 0;
+		valMap = valMap || {};
+		var mainIntervalId = getDomId(type);
+		var selectProducts = getSelectedProductDatas(type);
+		$("#" + mainIntervalId + " tr").each(function() {
+			var dataProductId = $(this).attr("data-productid");
+			if (!isProductExists(dataProductId, type)) {
+				$(this).remove();
+			}
+		});
+		for ( var key in selectProducts) {
+			var product = selectProducts[key];
+			var productValue = valMap[product.id];
+			if (!isProductSettingDomExists(product.id, type)) {
+				appendIntervalTr(product, $("#" + mainIntervalId), type,
+						productValue);
+			}
+		}
+		$("#setConditions").show();
+	}
+	function updateProductSettingNum(num, type, product) {
+		type = type || 0;
+		num = num || 0;
+		var mainIntervalId = getDomId(type);
+		$("#" + mainIntervalId + " tr").each(function() {
+			var dataProductId = $(this).attr("data-productid");
+			if (num < 0) {
+				if (intervalNum == 0) {
+					intervalNum = intervalNum - num;
+					showBox('提示信息', '至少需要设一个区间', 'alert');
+				} else {
+					$("td:eq(" + (intervalNum + 1) + ")", this).remove();
+				}
+			} else {
+				appendIntervalTd(num, $(this), type, product);
+			}
+		});
+	}
+	function appendIntervalTr(product, el, type, productValue) {
+		var countTd = 0;
+		var defaultValueArr = [];
+		if (productValue) {
+			var giftAmount = productValue.giftAmountList ? productValue.giftAmountList
+					: [];
+			if (giftAmount.length > 0) {
+				countTd = giftAmount[0].split(",").length;
+			}
+			if (type == 0) {
+				var defaultValue = productValue.rewardConditions ? productValue.rewardConditions
+						: '';
+				defaultValueArr = defaultValue.split(",");
+			} else {
+				var rewardGifts = productValue.rewardGifts || '';
+				var rewardGiftArr = rewardGifts.split(",");
+				var giftAmount = productValue.giftAmount ? productValue.giftAmount
+						: '';
+				var giftAmountArr = giftAmount.split("||");
+				if (rewardGiftArr.length > 0) {
+					for (var i = 0; i < rewardGiftArr.length; i++) {
+						if (product.id == rewardGiftArr[i]) {
+							defaultValueArr = giftAmountArr[i].split(",");
+						}
+					}
+				}
+			}
+		}
+		if (countTd > 0) {
+			intervalNum = countTd;
+		}
+		var intervalTrDom = $('<tr id="' + getTRId(type, product.id)
+				+ '" data-productid="' + product.id + '"></tr>');
+		var intervalTd = '<td width="90px">';
+		if (type == 2) {
+			intervalTd += product.conPackName + " " + product.grantTime;
+		} else {
+			intervalTd += product.productName;
+		}
+		intervalTd += '</td>';
+		intervalTrDom.append(intervalTd);
+		if (isIntervalMethod()) {
+			appendIntervalTd(intervalNum, intervalTrDom, type, defaultValueArr);
+		} else {
+			appendIntervalTd(1, intervalTrDom, type, defaultValueArr);
+		}
+		el.append(intervalTrDom);
+	}
+	function appendIntervalTd(num, el, type, defaultValueArr) {
+		num = num || 0;
+		type = type || 0;
+		defaultValueArr = defaultValueArr ? defaultValueArr : [];
+		if (num <= 0) {
+			return;
+		}
+		for (var i = 0; i < num; i++) {
+			var valueParam = '';
+			if (defaultValueArr.length > 0 && i < (defaultValueArr.length)) {
+				valueParam = defaultValueArr[i];
+			}
+			var tdContent = createTdContent(type, intervalNum - num + i + 1,
+					valueParam);
+			el.append(tdContent);
+		}
+	}
+	function isIntervalMethod() {
+		var valueMethod = $("#valueMethod").val();
+		if (valueMethod == 'BUYREWARDACTIVITYVALUEMETHOD_INTERVAL') {
+			return true;
+		}
+		return false;
+	}
+	function isGift(giftType) {
+		if ('BUYREWARDACTIVITYGIFTTYPE_COUPON' == giftType) {
+			return false;
+		}
+		var valueMethod = $("#giftType").val();
+		if (valueMethod == 'BUYREWARDACTIVITYGIFTTYPE_PRODUCT') {
+			return true;
+		}
+		return false;
+	}
+	function createTdContent(type, index, dVal) {
+		dVal = dVal || '';
+		type = type || 0;
+		index = index || 1;
+		var tdClass = "tdinput";
+		var intervalTd = "";
+		if (isIntervalMethod()) {
+			if (type == 0) { //主商品
+				var vals = dVal.split('~');
+				var start = '';
+				var end = '';
+				start = vals[0];
+				if (vals.length > 1) {
+					end = vals[1];
+				}
+				intervalTd = '<td class="' + tdClass + '" align="left">区间'
+						+ index
+						+ ':<input type="number" value="' + start + '" style="width:40px">'
+						+ '&nbsp;至&nbsp;<input type="number" value="' + end + '" style="width:40px" type="text"></td>';
+			} else {
+				intervalTd = '<td class="' + tdClass + '" align="left">'
+						+ '区间'
+						+ index
+						+ ':<input type="number" value="' + dVal + '" style="width:60px">'
+						+ '</td>';
+			}
+		} else {
+			if (type == 0) { //主商品
+				intervalTd = '<td class="' + tdClass + '" align="left">'
+						+ '基数：<input type="number" value="' + dVal + '" style="width:60px"></td>'
+			} else {
+				intervalTd = '<td class="' + tdClass + '" align="left">'
+						+ '<input type="number" value="' + dVal + '" style="width:60px"></td>';
+			}
+		}
+		return intervalTd;
+	}
+	function getTRId(type, productId) {
+		var domId = "";
+		if (isIntervalMethod()) {
+			if (type == 0) { //主商品
+				domId = "interval_mainproduct_" + productId;
+			} else {
+				domId = "interval_rewardproduct_" + productId;
+			}
+		} else {
+			if (type == 0) { //主商品
+				domId = "multipe_mainproduct_" + productId;
+			} else {
+				domId = "multipe_rewardproduct_" + productId;
+			}
+		}
+		return domId;
+	}
+	function getDomId(type) {
+		var domId = "";
+		if (isIntervalMethod()) {
+			if (type == 0) { //主商品区间
+				domId = "interval_mainProductBody";
+			} else {
+				domId = "interval_rewardProductBody";
+			}
+		} else {
+			if (type == 0) { //主商品区间
+				domId = "multipe_mainProductBody";
+			} else {
+				domId = "multipe_rewardProductBody";
+			}
+		}
+		return domId;
+	}
+	function getProductListTrId(type, productId) {
+		return type + "_" + productId;
+	}
+	function operationInterval(num) {
+		num = num || 0;
+		var mainIntervalId = getDomId(0);
+		var rewardIntervalId = getDomId(1);
+		var prow = 0;
+		var rrow = 0;
+		if (intervalNum == 0) {
+			showBox('提示信息', '至少需要设一个区间', 'alert');
+			return;
+		}
+		if (intervalNum + num > 6) {
+			showBox('提示信息', '增加区间超过限制数量', 'alert');
+			return;
+		}
+		intervalNum = intervalNum + num;
+		updateProductSettingNum(num, 0);
+		updateProductSettingNum(num, 1);
+	}
+
+	function setProductFormValue() {
+		var mainProductInfoStr = getMainProductInfoStr();
+		$("#mainProductInfo").val(mainProductInfoStr);
+		var rewardProductInfoStr = getRewardProductInfoStr();
+		$("#rewardInfo").val(rewardProductInfoStr);
+	}
+
+	function getMainProductInfoStr() {
+		var tbodyId = getDomId(0);
+		var mainProductIdStr = "";
+		var mainProductInterval = "";
+		var commaSplit = ",";
+		var doubleUnderLine = "__";
+		var doubleVerticalLint = "||";
+		var interSplit = "~";
+		var result = "";
+		$("#" + tbodyId + " tr").each(function() {
+			var _this = $(this);
+			var tdSize = _this.children("td.tdinput").length;
+			if (mainProductIdStr.length > 0) {
+				mainProductIdStr += commaSplit;
+			}
+			mainProductIdStr += _this.attr("data-productid");
+			if (mainProductInterval.length > 0) {
+				mainProductInterval += doubleVerticalLint;
+			}
+			var intervalStr = "";
+			for (var i = 0; i < tdSize; i++) {
+				var curDom = _this.children("td.tdinput").eq(i);
+				var start = $.trim(curDom.children("input").eq(0).val());
+				var end = $.trim(curDom.children("input").eq(1).val());
+				if (start) {
+					if (intervalStr.length > 0) {
+						intervalStr += commaSplit;
+					}
+					if (isIntervalMethod()) {
+						intervalStr += (start + interSplit + end);
+					} else {
+						intervalStr += start
+					}
+				}
+			}
+			mainProductInterval += intervalStr;
+		});
+		result = mainProductIdStr + doubleUnderLine + mainProductInterval;
+		return result;
+	}
+	function getRewardProductInfoStr() {
+		var tbodyId = getDomId(1);
+		var rewardProductIdStr = "";
+		var rewardProductInterval = "";
+		var commaSplit = ",";
+		var doubleUnderLine = "__";
+		var doubleVerticalLint = "||";
+		var interSplit = "~";
+		var result = "";
+		$("#" + tbodyId + " tr").each(function() {
+			var _this = $(this);
+			var tdSize = _this.children("td.tdinput").length;
+			if (rewardProductIdStr.length > 0) {
+				rewardProductIdStr += commaSplit;
+			}
+			rewardProductIdStr += _this.attr("data-productid");
+			if (rewardProductInterval.length > 0) {
+				rewardProductInterval += doubleVerticalLint;
+			}
+			var intervalStr = "";
+			for (var i = 0; i < tdSize; i++) {
+				var curDom = _this.children("td.tdinput").eq(i);
+				var start = $.trim(curDom.children("input").eq(0).val());
+				if (intervalStr.length > 0) {
+					intervalStr += commaSplit;
+				}
+				intervalStr += start;
+			}
+			rewardProductInterval += intervalStr;
+		});
+		result = rewardProductIdStr + doubleUnderLine + rewardProductInterval;
+		console.log("result:" + result);
+		return result;
+	}
+	//更改赠品类型事件
+	function changeType(val) {
+		paramsetDivDisplay();
+		createProductList(selectedProductDatas, 0);
+		if (!isGift()) {
+			createProductList(selectedCouponDatas, 2);
+			createProductSettingDom(2);
+		} else {
+			createProductList(selectedRewardProductDatas, 1);
+			createProductSettingDom(1);
+		}
+		if (val == 'BUYREWARDACTIVITYGIFTTYPE_PRODUCT') {
+			$("#chooseProduct").css("display", "block");
+			$("#selectRewardProduct").css("display", "inline");
+			$("#selectRewardCoupon").css("display", "none");
+		}
+		if (val == 'BUYREWARDACTIVITYGIFTTYPE_COUPON') {
+			$("#chooseProduct").css("display", "block");
+			$("#selectRewardProduct").css('display', 'none');
+			$("#selectRewardCoupon").css("display", "inline");
+		}
+		if (val == '') {
+			$("#chooseProduct").css("display", "none");
+			$("#selectRewardProduct").css('display', 'none');
+			$("#selectRewardCoupon").css("display", "none");
+		}
+		$("#giftType").val(val);
+	}
+	//更改取值方式事件
+	function valueMethodChange(val) {
+		createProductList(selectedProductDatas, 0);
+		createProductSettingDom(0);
+		if (isGift()) {
+			createProductList(selectedRewardProductDatas, 1);
+			createProductSettingDom(1);
+		} else {
+			createProductList(selectedCouponDatas, 2);
+			createProductSettingDom(2);
+		}
+		paramsetDivDisplay();
+		//changeType();
+	}
+	function createProductList(selectedProducts, type) {
+		selectedProducts = selectedProducts || {};
+		type = type || 0;
+		var html = "";
+		var i = 1;
+		for ( var key in selectedProducts) {
+			var product = selectedProducts[key];
+			var trId = getProductListTrId(type, product.id);
+			html += '<tr id="' + trId + '" title="' + product.id+' : '+product.productName + '" data-productid="' + product.id + '">';
+			if (type == 2) {
+				html += '<td>';
+				html += i++;
+				html += '</td><td>';
+				html += product.conPackName;
+				html += '</td><td>';
+				html += product.grantTime;
+				html += '</td><td>';
+				html += product.useRangeCodeName;
+				html += '</td><td>';
+				html += '<input type="button" class="btn_sure" value="删除" onClick="deleteProductItem('
+						+ type + ',' + product.id + ');" />';
+			} else {
+				html += '<td>';
+				html += i++;
+				html += '</td><td>';
+				html += product.productName;
+				html += '</td><td>';
+				html += product.barCode;
+				html += '</td><td>';
+				html += product.productSpec;
+				html += '</td><td>';
+				html += '<input type="button" class="btn_sure" value="删除" onClick="deleteProductItem('
+						+ type + ',' + product.id + ');" />';
+			}
+			html += '</td></tr>';
+		}
+		if (type == 0) {
+			$("#tbody", "#selectedProductDiv").html(html);
+			$("#selectedProductDiv").removeClass("disn");
+		} else {
+			var divId = type + "_selectedRewardProductDiv";
+			$("#tbody", "#" + divId).html(html);
+			displaySelectedReward();
+		}
+	}
+	function initDisplay(methodParam) {
+		methodParam = methodParam || '';
+		var valueMethod = $("#valueMethod").val();
+		var giftType = $("#giftType").val();
+		if (valueMethod) {
+			$("#chooseProduct").css('display', 'block');
+		}
+		if (isGift()) {
+			$("#selectRewardCoupon").hide();
+			$("#selectRewardProduct").show();
+		} else {
+			$("#selectRewardCoupon").show();
+			$("#selectRewardProduct").hide();
+		}
+		if ('add' != methodParam) {
+			productDivDisplay(true);
+		} else {
+			productDivDisplay(false);
+		}
+		if ('view' == methodParam) {
+			$("td.tdinput").children("input").attr("disabled", true);
+		}
+	}
+	function productDivDisplay(flag) {
+		flag = flag || true;
+		if (flag) {
+			$("#selectedProductDiv").show();
+			displaySelectedReward();
+			$("#setConditions").css("display", "block");
+		} else {
+			$("#selectedProductDiv").hide();
+			displaySelectedReward(false);
+		}
+	}
+	function displaySelectedReward(display) {
+		display = display || true;
+		$(".giftTypeDiv").hide();
+		if (!display) {
+			return;
+		}
+		if (isGift()) {
+			$("#1_selectedRewardProductDiv").show();
+		} else {
+			$("#2_selectedRewardProductDiv").show();
+		}
+	}
+	function paramsetDivDisplay(dValue) {
+		$("div.paramsetting").hide();
+		var valueMethod = dValue ? dValue : $("#valueMethod").val();
+		if (valueMethod) {
+			$("#" + valueMethod).show();
+		}
+	}
+	function listDictType(domId, dicType, defaultValue) {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + dicType
+					+ '/getSystemDictInfoList',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						if (defaultValue == mapList[i].id) {
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						} else {
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						}
+					}
+				}
+				$('#' + domId).html(html);
+			}
+		});
+	}
+	$(document)
+			.ready(
+					function(e) {
+						loadHtml("headerId", "/include/header.html");
+						loadHtml("left_menu_content", "/include/leftmenu.html");
+						loadHtml("footerId", "/include/footer.html");
+						loadTimeInput();
+						if (method == 'edit') {
+							$("#breadName").html('修改买赠活动');
+							$("#pageTitle").html('修改买赠活动');
+							loadBuyRewardActivityInfo();
+							var statusCode = $("#statusCode").val();
+							if (statusCode == 'BUYREWARDACTIVITYSTATUSCODE_STARTED') {
+								$('input:text').attr('disabled', true)//将input输入框元素设置为禁用 
+								$('input:button').css("display", "none")//将input按钮元素设置为隐藏 
+								$('#goBack').css("display", "inline");
+								$('#submit').css("display", "inline");
+								$('#activityEnd').removeAttr("disabled");
+							}
+							if (statusCode == 'BUYREWARDACTIVITYSTATUSCODE_EXPIRED') {
+								$('input:text').attr('disabled', true);
+								$('input:button').css("display", "none");
+								$('#giftType').attr('disabled', true);
+								$('#goBack').css("display", "inline");
+								$('#submit').hide();
+							}
+						} else if (method == 'add') {
+							$("#breadName").html('新增买赠活动');
+							$("#pageTitle").html('新增买赠活动');
+							listDictType('valueMethod',
+									'BUYREWARDACTIVITYVALUEMETHOD');
+							listDictType('giftType',
+									'BUYREWARDACTIVITYGIFTTYPE');
+						} else {
+							$("#breadName").html('查看买赠活动');
+							$("#pageTitle").html('查看买赠活动');
+							changeType($(giftType).val());
+							loadBuyRewardActivityInfo();
+							$("#chooseProduct").css('display', 'none');
+							$('#valueMethod').attr('disabled', true);
+							$('#giftType').attr('disabled', true);
+							$('#submit').hide();
+							$('input:text').attr('disabled', true);
+							$("td.tdinput").children("input").attr("disabled",
+									true);
+							$('input:button').css("display", "none");
+							$('#goBack').css("display", "inline");
+							if (method == 'final') {
+								var id = $("#id").val();
+								var html = '';
+								html += '<input type="button" class="btn_sure" value="审批通过" onClick="finalAuditPass('
+										+ id + ')">';
+								html += '&nbsp;&nbsp;&nbsp;&nbsp;';
+								html += '<input type="button" class="btn_sure" value="审批不通过" onClick="finalAuditNoPass('
+										+ id + ')">';
+								$('#auditSpan').html(html);
+							}
+							if (method == 'edittime') {
+								var id = $("#id").val();
+								var statusCode = $("#statusCode").val();
+								if (statusCode == 'BUYREWARDACTIVITYSTATUSCODE_STARTED') {
+									$('#activityEnd').removeAttr("disabled");
+								} else if (statusCode == 'BUYREWARDACTIVITYSTATUSCODE_NOTSTART') {
+									$('#activityEnd').removeAttr("disabled");
+									$('#activityBegin').removeAttr("disabled");
+								}
+								var html = '';
+								html += '&nbsp;&nbsp;&nbsp;&nbsp;';
+								html += '<input type="button" id="editTime" style="display:inline;" class="btn_sure" value="确认修改" onClick="editActivityTime('
+										+ id + ')">';
+								$('#goBack').after(html);
+							}
+						}
+					});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 买赠活动管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<div id="userInfo">
+								<input type="hidden" id="mainProductInfo" name="productInfo" />
+								<input type="hidden" id="rewardInfo" name="rewardInfo" /> <span
+									id="rejectSpan">
+									<dl>
+										<dt id="rejectType" class="cred" style="font-weight: bold"></dt>
+										<dd id="rejectReason" class="cred" style="font-weight: bold"></dd>
+									</dl>
+								</span>
+								<dl>
+									<dt>
+										<span class="cred">*</span>活动名称：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-39" id="activityName"
+											name="activityName" onmousedown="showErr('activityName')" />&nbsp;&nbsp;
+										<span class="cred" id="activityNameMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<em class="cred">*</em>活动时间：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-17" id="activityBegin"
+											name="activityBegin" onmousedown="showErr('activityBegin')"
+											onkeydown="return false;" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										至&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text"
+											class="txt grid-17" id="activityEnd" name="activityEnd"
+											onmousedown="showErr('activityEnd')"
+											onkeydown="return false;" /> <span class="cred" id="timeMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>取值方式：
+									</dt>
+									<dd>
+										<select class="select grid-40" id="valueMethod"
+											name="valueMethod" onchange="valueMethodChange()"
+											onmousedown="showErr('valueMethod')"></select>&nbsp;&nbsp; <span
+											class="cred" id="valueMethodMsg"></span>
+									</dd>
+								</dl>
+								<dl id="chooseRewardType">
+									<dt>
+										<span class="cred">*</span>赠品类型：
+									</dt>
+									<dd>
+										<select class="select grid-40" id="giftType" name="giftType"
+											onchange="changeType(this.value);"
+											onmousedown="showErr('giftType')"></select>&nbsp;&nbsp; <span
+											class="cred" id="giftTypeMsg"></span>
+									</dd>
+								</dl>
+								<dl id="chooseProduct">
+									<dt>
+										<em class="cred">*</em>商品选择：
+									</dt>
+									<dd>
+										<input id="selectProduct" type="button" class="btn_sure"
+											value="选择商品" onClick="selectProducts();" /><span
+											id="productIdMsg"></span>&nbsp;&nbsp;&nbsp;&nbsp; <input
+											id="selectRewardProduct" type="button" class="btn_sure"
+											value="选择赠品" style="display: none"
+											onClick="selectRewardProducts();" /><span
+											id="rewardProductMsg"></span> <input id="selectRewardCoupon"
+											type="button" class="btn_sure" value="选择优惠券"
+											style="display: none" onClick="selectRewardCoupons();" /><span
+											id="couponMsg"></span> &nbsp;&nbsp;&nbsp;&nbsp;<span
+											id="conditionMsg"></span>
+
+									</dd>
+								</dl>
+								<dl>
+									<dd>
+										<input type="hidden" id="productIds" />
+										<div id="selectedProductDiv" class="disn">
+											<div
+												style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px;">
+												<span style="margin: 10px 10px;">已选择商品</span>
+											</div>
+											<div style="max-height: 200px; overflow: auto;">
+												<table class="simple_table" cellpadding="0" cellspacing="0"
+													width="100%">
+													<thead>
+														<tr>
+															<th width="40" style="background-color: #63ADEE;">序号</th>
+															<th width="120" style="background-color: #63ADEE;">产品名称</th>
+															<th width="80" style="background-color: #63ADEE;">产品条形码</th>
+															<th width="80" style="background-color: #63ADEE;">产品规格</th>
+															<th width="80" style="background-color: #63ADEE;">操作</th>
+														</tr>
+													</thead>
+													<tbody id="tbody"></tbody>
+												</table>
+											</div>
+										</div>
+									</dd>
+								</dl>
+								<dl>
+									<dd>
+										<div id="1_selectedRewardProductDiv" class="disn giftTypeDiv">
+											<div
+												style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px;">
+												<span style="margin: 10px 10px;">已选择赠品</span>
+											</div>
+											<div style="max-height: 200px; overflow: auto;">
+												<table class="simple_table" cellpadding="0" cellspacing="0"
+													width="100%">
+													<thead>
+														<tr>
+															<th width="40" style="background-color: #B0E0E6;">序号</th>
+															<th width="120" style="background-color: #B0E0E6;">赠品名称</th>
+															<th width="80" style="background-color: #B0E0E6;">赠品条形码</th>
+															<th width="80" style="background-color: #B0E0E6;">赠品规格</th>
+															<th width="80" style="background-color: #B0E0E6;">操作</th>
+														</tr>
+													</thead>
+													<tbody id="tbody"></tbody>
+												</table>
+											</div>
+										</div>
+										<div id="2_selectedRewardProductDiv" class="disn giftTypeDiv">
+											<div
+												style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px;">
+												<span style="margin: 10px 10px;">已选择优惠券</span>
+											</div>
+											<div style="max-height: 200px; overflow: auto;">
+												<table class="simple_table" cellpadding="0" cellspacing="0"
+													width="100%">
+													<thead>
+														<tr>
+															<th width="40" style="background-color: #B0E0E6;">序号</th>
+															<th width="120" style="background-color: #B0E0E6;">优惠券包名称</th>
+															<th width="80" style="background-color: #B0E0E6;">发放时间</th>
+															<th width="80" style="background-color: #B0E0E6;">使用范围</th>
+															<th width="80" style="background-color: #B0E0E6;">操作</th>
+														</tr>
+													</thead>
+													<tbody id="tbody"></tbody>
+												</table>
+											</div>
+										</div>
+									</dd>
+								</dl>
+								<dl id="setConditions" style="display: none; margin-top: 30px;">
+									<dt>
+										<em class="cred">*</em>参数设定：
+									</dt>
+									<dd>
+										<div id="BUYREWARDACTIVITYVALUEMETHOD_INTERVAL"
+											class="disn paramsetting">
+											<div>
+												<div
+													style="height: 40px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px;">
+													<span style="margin: 10px 10px;">主商品区间设定</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+													<input type="button" id="delInterval" class="btn_sure"
+														value="删除区间" onClick="operationInterval(-1);" />
+													&nbsp;&nbsp;&nbsp; <input type="button" id="addIntervals"
+														class="btn_sure" value="添加区间"
+														onClick="operationInterval(1);" />
+												</div>
+												<div style="max-height: 200px; overflow: auto;">
+													<table class="simple_table" cellpadding="0" cellspacing="0"
+														width="100%">
+														<tbody class="productIntervalSet"
+															id="interval_mainProductBody">
+
+														</tbody>
+													</table>
+												</div>
+											</div>
+											<div>
+												<div class="title"
+													style="height: 40px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px;">
+													<span style="margin: 5px 10px;">赠品设定</span>
+												</div>
+												<div style="max-height: 200px; overflow: auto;">
+													<table class="simple_table" cellpadding="0" cellspacing="0"
+														width="100%">
+														<tbody id="interval_rewardProductBody" class="rewardSet">
+
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div id="BUYREWARDACTIVITYVALUEMETHOD_MULTIPLE"
+											class="disn paramsetting">
+											<div>
+												<div class="title"
+													style="height: 40px; width: 50%; line-height: 30px; background-color: #F2F2F2; margin-top: 10px;">
+													<span style="margin: 10px 10px;">主商品买赠基数设定</span>
+												</div>
+												<div style="max-height: 200px; overflow: auto;">
+													<table class="simple_table" cellpadding="0" cellspacing="0"
+														width="50%">
+														<tbody id="multipe_mainProductBody"
+															class="productMultipleSet">
+
+														</tbody>
+													</table>
+												</div>
+											</div>
+											<div>
+												<div class="title"
+													style="height: 30px; width: 50%; line-height: 30px; background-color: #F2F2F2; margin-top: 10px;">
+													<span style="margin: 20px 10px;">赠品设定</span>
+												</div>
+												<div style="max-height: 200px; overflow: auto;">
+													<table class="simple_table" cellpadding="0" cellspacing="0"
+														width="50%">
+														<tbody id="multipe_rewardProductBody"
+															class="multipleRewardSet">
+
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</dd>
+								</dl>
+							</div>
+
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											style="text-align: center;" onClick="dataEditSubmit(method)">&nbsp;&nbsp;&nbsp;<input
+											type="button" id="goBack" class="btn_gray" value="返回"
+											onclick="javascript:comebackList();"> <span
+											id="promptMessage" class="cred"></span>
+									</p>
+									<p align="center">
+										<span id="auditSpan"></span> </br> <span id="auditMessage"
+											class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden" id="id" name="id" /> <input type="hidden"
+								id="statusCode" name="statusCode" /><input type="hidden"
+								id="auditStatus" name="auditStatus" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SystemAnnouncementHistoryMapper" >
+  <resultMap id="BaseResultMap" type="SystemAnnouncementHistory" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="ANNOUNCEID" property="announceId" jdbcType="INTEGER" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="SORT" property="sort" jdbcType="INTEGER" />
+    <result column="STATECODE" property="stateCode" jdbcType="VARCHAR" />
+    <result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+    <result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+    <result column="NOTE" property="note" jdbcType="VARCHAR" />
+    <result column="CONTENT" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, ANNOUNCEID, TITLE, SORT, STATECODE, OPERATETIME, OPERATEUSERID, OPERATETYPE, 
+    NOTE, CONTENT
+  </sql>
+  
+  <insert id="save" parameterType="SystemAnnouncementHistory" >
+    insert into S_SYSTEM_ANNOUNCEMENT_HISTORY (ANNOUNCEID, TITLE, 
+      SORT, STATECODE, OPERATETIME, 
+      OPERATEUSERID, OPERATETYPE, NOTE, 
+      CONTENT)
+    values (#{announceId,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, 
+      #{sort,jdbcType=INTEGER}, #{stateCode,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, 
+      #{operateUserId,jdbcType=INTEGER}, #{operateType,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+
+  <select id="list" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_SYSTEM_ANNOUNCEMENT_HISTORY
+  </select>
+  
+  <select id="listByAnnounceId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_SYSTEM_ANNOUNCEMENT_HISTORY
+    where ANNOUNCEID = #{announceId,jdbcType=INTEGER}
+  </select>
+  
+ 
+  
+</mapper>

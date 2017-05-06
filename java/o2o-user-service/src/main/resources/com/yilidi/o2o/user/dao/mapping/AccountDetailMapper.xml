@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.AccountDetailMapper">
+	<resultMap id="BaseResultMap" type="AccountDetail">
+		<id column="ACCOUNTDETAILID" property="accountDetailId" jdbcType="INTEGER" />
+		<result column="SERIALNO" property="serialNo" jdbcType="VARCHAR" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="DETAILTYPE" property="detailType" jdbcType="VARCHAR" />
+		<result column="CHANGETYPE" property="changeType" jdbcType="VARCHAR" />
+		<result column="TOTALACCOUNTAMOUNT" property="totalAccountAmount" jdbcType="BIGINT" />
+		<result column="CASHACCOUNTAMOUNT" property="cashAccountAmount" jdbcType="BIGINT" />
+		<result column="COUPONACCOUNTAMOUNT" property="couponAccountAmount" jdbcType="BIGINT" />
+		<result column="LOGISTICSACCOUNTAMOUNT" property="logisticsAccountAmount" jdbcType="BIGINT" />
+		<result column="PRODUCTACCOUNTAMOUNT" property="productAccountAmount" jdbcType="BIGINT" />
+		<result column="REFUNDTYPE" property="refundType" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="USEDESC" property="useDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="AccountDetailRelatedInfoResultMap" type="AccountDetailRelatedInfo">
+		<id column="ACCOUNTDETAILID" property="accountDetailId" jdbcType="INTEGER" />
+		<result column="SERIALNO" property="serialNo" jdbcType="VARCHAR" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="DETAILTYPE" property="detailType" jdbcType="VARCHAR" />
+		<result column="CHANGETYPE" property="changeType" jdbcType="VARCHAR" />
+		<result column="TOTALACCOUNTAMOUNT" property="totalAccountAmount" jdbcType="BIGINT" />
+		<result column="CASHACCOUNTAMOUNT" property="cashAccountAmount" jdbcType="BIGINT" />
+		<result column="COUPONACCOUNTAMOUNT" property="couponAccountAmount" jdbcType="BIGINT" />
+		<result column="LOGISTICSACCOUNTAMOUNT" property="logisticsAccountAmount" jdbcType="BIGINT" />
+		<result column="PRODUCTACCOUNTAMOUNT" property="productAccountAmount" jdbcType="BIGINT" />
+		<result column="REFUNDTYPE" property="refundType" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="USEDESC" property="useDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="AccountDetailCountInfoResultMap" type="AccountDetailCountInfo">
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="CASHSUBSIDY" property="cashSubsidy" jdbcType="BIGINT" />
+		<result column="PRICESUBSIDY" property="priceSubsidy" jdbcType="BIGINT" />
+		<result column="COUPONSUBSIDY" property="couponSubsidy" jdbcType="BIGINT" />
+		<result column="LOGISTICSSUBSIDY" property="logisticsSubsidy" jdbcType="BIGINT" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ACCOUNTDETAILID,SERIALNO,USERID,DETAILTYPE,CHANGETYPE,TOTALACCOUNTAMOUNT,
+		CASHACCOUNTAMOUNT,COUPONACCOUNTAMOUNT,LOGISTICSACCOUNTAMOUNT,PRODUCTACCOUNTAMOUNT,
+		REFUNDTYPE,CREATETIME,USEDESC
+	</sql>
+
+	<insert id="save" parameterType="AccountDetail">
+		insert into U_ACCOUNT_DETAIL
+		(SERIALNO,USERID,DETAILTYPE,CHANGETYPE,TOTALACCOUNTAMOUNT,CASHACCOUNTAMOUNT,
+		COUPONACCOUNTAMOUNT,LOGISTICSACCOUNTAMOUNT,PRODUCTACCOUNTAMOUNT,
+		REFUNDTYPE,CREATETIME,USEDESC)
+		values
+		(#{serialNo,jdbcType=VARCHAR},
+		#{userId,jdbcType=INTEGER},
+		#{detailType,jdbcType=VARCHAR},
+		#{changeType,jdbcType=VARCHAR},
+		#{totalAccountAmount,jdbcType=BIGINT},
+		#{cashAccountAmount,jdbcType=BIGINT},
+		#{couponAccountAmount,jdbcType=BIGINT},
+		#{logisticsAccountAmount,jdbcType=BIGINT},
+		#{productAccountAmount,jdbcType=BIGINT},
+		#{refundType,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{useDesc,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_ACCOUNT_DETAIL
+		where ACCOUNTDETAILID = #{id,jdbcType=INTEGER}
+	</select>
+		
+	<select id="findAccountDetails" resultMap="AccountDetailRelatedInfoResultMap" parameterType="AccountDetailQuery">
+		SELECT A.ACCOUNTDETAILID,A.USERID,B.CUSTOMERTYPE,D.STORECODE,B.CUSTOMERNAME AS STORENAME,A.SERIALNO,
+		A.TOTALACCOUNTAMOUNT,A.CASHACCOUNTAMOUNT,A.PRODUCTACCOUNTAMOUNT,A.COUPONACCOUNTAMOUNT,A.LOGISTICSACCOUNTAMOUNT,
+		A.DETAILTYPE,A.CHANGETYPE,A.REFUNDTYPE,A.CREATETIME,A.USEDESC,C.USERNAME FROM U_ACCOUNT_DETAIL A
+		LEFT JOIN U_CUSTOMER B ON B.ID = A.USERID
+		LEFT JOIN U_USER C ON  B.MASTERUSERID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON D.STOREID = A.USERID
+		<where>
+			1=1
+			<if test="userId != null">
+				and A.USERID = #{userId, jdbcType=INTEGER}
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="serialNo != null">
+				and A.SERIALNO = #{serialNo, jdbcType=VARCHAR}
+			</if>
+			<if test="detailType != null">
+				and A.DETAILTYPE = #{detailType, jdbcType=VARCHAR}
+			</if>
+			<if test="changeType != null">
+				and A.CHANGETYPE = #{changeType, jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;=#{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;=#{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="customerType != null">
+				and B.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and C.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<select id="listDataForExportAccountDetails" resultMap="AccountDetailRelatedInfoResultMap">
+		SELECT A.ACCOUNTDETAILID,A.USERID,B.CUSTOMERTYPE,D.STORECODE,B.CUSTOMERNAME AS STORENAME,A.SERIALNO,
+		A.TOTALACCOUNTAMOUNT,A.CASHACCOUNTAMOUNT,A.PRODUCTACCOUNTAMOUNT,A.COUPONACCOUNTAMOUNT,A.LOGISTICSACCOUNTAMOUNT,
+		A.DETAILTYPE,A.CHANGETYPE,A.REFUNDTYPE,A.CREATETIME,A.USEDESC,C.USERNAME FROM U_ACCOUNT_DETAIL A
+		LEFT JOIN U_CUSTOMER B ON B.ID = A.USERID
+		LEFT JOIN U_USER C ON  B.MASTERUSERID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON D.STOREID = A.USERID
+		<where>
+			1=1
+			<if test="accountDetailQuery.storeCode != null">
+				and D.STORECODE = #{accountDetailQuery.storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{accountDetailQuery.storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="accountDetailQuery.serialNo != null">
+				and A.SERIALNO = #{accountDetailQuery.serialNo, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.userId != null">
+				and A.USERID = #{accountDetailQuery.userId, jdbcType=INTEGER}
+			</if>
+			<if test="accountDetailQuery.detailType != null">
+				and A.DETAILTYPE = #{accountDetailQuery.detailType, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.changeType != null">
+				and A.CHANGETYPE = #{accountDetailQuery.changeType, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.startCreateTime != null">
+				and A.CREATETIME &gt;=#{accountDetailQuery.startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="accountDetailQuery.endCreateTime != null">
+				and A.CREATETIME &lt;=#{accountDetailQuery.endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="accountDetailQuery.customerType != null">
+				and B.CUSTOMERTYPE = #{accountDetailQuery.customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.userName != null">
+				and C.USERNAME = #{accountDetailQuery.userName, jdbcType=VARCHAR}
+			</if>
+			<if test="accountDetailQuery.order != null">
+				order by ${accountDetailQuery.order}
+				<if test="accountDetailQuery.sort != null">
+					${accountDetailQuery.sort}
+				</if>
+			</if>
+		</where>
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCountsForExportAccountDetails" parameterType="AccountDetailQuery" resultType="java.lang.Long">
+		SELECT COUNT(*) FROM U_ACCOUNT_DETAIL A
+		LEFT JOIN U_CUSTOMER B ON B.ID = A.USERID
+		LEFT JOIN U_USER C ON  B.MASTERUSERID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON D.STOREID = A.USERID
+		<where>
+			1=1
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="serialNo != null">
+				and A.SERIALNO = #{serialNo, jdbcType=VARCHAR}
+			</if>
+			<if test="userId != null">
+				and A.USERID = #{userId, jdbcType=INTEGER}
+			</if>
+			<if test="detailType != null">
+				and A.DETAILTYPE = #{detailType, jdbcType=VARCHAR}
+			</if>
+			<if test="changeType != null">
+				and A.CHANGETYPE = #{changeType, jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;=#{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;=#{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="customerType != null">
+				and B.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and C.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<!-- 统计每个用户/门店账本(资金变化状态：订单支付和订单退款等状态)总金额，(买家:欧币数量，门店：现金+商品补贴+优惠补贴+物流补贴) -->
+	<select id="countsAccountDetailsAmount" parameterType="AccountDetailQuery" resultType="java.lang.Long">
+		SELECT SUM(A.TOTALACCOUNTAMOUNT) FROM U_ACCOUNT_DETAIL A
+		<where>
+			1=1
+			<if test="userId != null">
+				and A.USERID = #{userId, jdbcType=INTEGER}
+			</if>
+			<if test="changeType != null">
+				and A.CHANGETYPE = #{changeType, jdbcType=VARCHAR}
+			</if>
+		</where>
+		 GROUP BY A.USERID
+	</select>
+
+	<select id="findCountSellerAccountsDetail" resultMap="AccountDetailCountInfoResultMap" parameterType="CustomerBalanceQuery">
+		SELECT A.STOREID,C.STORECODE,B.CUSTOMERNAME AS STORENAME,SUM(A.CASHSUBSIDY) AS CASHSUBSIDY,SUM(A.PRICESUBSIDY) AS PRICESUBSIDY,
+		SUM(A.COUPONSUBSIDY) AS COUPONSUBSIDY,SUM(A.LOGISTICSSUBSIDY) AS LOGISTICSSUBSIDY,COUNT(A.SALEORDERNO) AS SUBSIDYORDERNUM
+		FROM U_STORE_SUBSIDY_RECORD A
+		LEFT JOIN U_CUSTOMER B ON A.STOREID = B.ID
+		LEFT JOIN U_STORE_PROFILE C ON A.STOREID = C.STOREID
+		<where>
+			1=1
+			<if test="storeId != null">
+				and A.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeCode != null">
+				and C.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+		GROUP BY A.STOREID
+	</select>
+	
+	<select id="listDataForExportCountAccountDetails" resultMap="AccountDetailCountInfoResultMap">
+		SELECT A.STOREID,C.STORECODE,B.CUSTOMERNAME AS STORENAME,SUM(A.CASHSUBSIDY) AS CASHSUBSIDY,SUM(A.PRICESUBSIDY) AS PRICESUBSIDY,
+		SUM(A.COUPONSUBSIDY) AS COUPONSUBSIDY,SUM(A.LOGISTICSSUBSIDY) AS LOGISTICSSUBSIDY,COUNT(A.SALEORDERNO) AS SUBSIDYORDERNUM
+		FROM U_STORE_SUBSIDY_RECORD A
+		LEFT JOIN U_CUSTOMER B ON A.STOREID = B.ID
+		LEFT JOIN U_STORE_PROFILE C ON A.STOREID = C.STOREID
+		<where>
+			1=1
+			<if test="customerBalanceQuery.storeId != null">
+				and A.STOREID = #{customerBalanceQuery.storeId, jdbcType=INTEGER}
+			</if>
+			<if test="customerBalanceQuery.storeCode != null">
+				and C.STORECODE = #{customerBalanceQuery.storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="customerBalanceQuery.storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{customerBalanceQuery.storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="customerBalanceQuery.order != null">
+				order by ${customerBalanceQuery.order}
+				<if test="customerBalanceQuery.sort != null">
+					${customerBalanceQuery.sort}
+				</if>
+			</if>
+		</where>
+		GROUP BY A.STOREID
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCountsForExportCountAccountDetails" parameterType="CustomerBalanceQuery"  resultType="java.lang.Long">
+		SELECT COUNT(*) FROM (SELECT A.STOREID,C.STORECODE,B.CUSTOMERNAME AS STORENAME FROM U_STORE_SUBSIDY_RECORD A
+		LEFT JOIN U_CUSTOMER B ON A.STOREID = B.ID
+		LEFT JOIN U_STORE_PROFILE C ON A.STOREID = C.STOREID
+		<where>
+			1=1
+			<if test="storeId != null">
+				and A.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeCode != null">
+				and C.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+		GROUP BY A.STOREID) D
+	</select>
+
+</mapper>

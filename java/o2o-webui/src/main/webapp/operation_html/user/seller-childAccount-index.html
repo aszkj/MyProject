@@ -1,0 +1,397 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet"  />
+<script type="text/javascript">
+var urlParam = window.location.search;
+
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()}
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){showBox('提示信息','您输入的页码超出正常范围','alert');}
+		else{ showBox('提示信息','当前已经是第一页','alert');}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){showBox('提示信息','您输入的页码超出正常范围','alert');}
+		else{showBox('提示信息','当前已经是最后一页','alert');}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			showBox('提示信息','提交数据失败，请稍后再试','alert');
+		},
+		url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY +'/childAccount/getChildAccountList',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				var id = getUrlParam('id');
+				if(null != dataList && dataList.length > 0){
+				for(var i=0,j=dataList.length;i<j;i++){
+					html += '<tr';
+					if(id == dataList[i].id){
+						html += ' name="selrow" bgcolor="#c8e3f8"';
+					}
+					html += '><td>';
+					html += ((param.currentPage-1)*(param.pageSize)+i+1);
+					html += '<input type="hidden" class="id" value="'+dataList[i].id+'">';
+					html += '</td><td>';
+					html += dataList[i].userName;
+					html += '</td><td>';
+					html += dataList[i].realName;
+					html += '</td><td>';
+					html += dataList[i].phone;
+					html += '</td><td>';
+					if(dataList[i].statusCode == 'USERSTATUS_ON'){
+						html += '启用';
+					}else if(dataList[i].statusCode == 'USERSTATUS_OFF'){
+						html += '冻结';
+					}else{
+						html += '未知';
+					}
+					html += '</td><td>';
+					html += dataList[i].createTime;
+					html += '</td><td>';
+					html += dataList[i].freezeTime==null ? "--" :dataList[i].freezeTime;
+					html += '</td><td>';
+					/* html += '<permission code="">'; */
+					html += '<a href="javascript:void(0)" class="ablue queryOrder">订单记录查看</a><br>';
+					/* html += '</permission>';
+					html += '<permission code="">'; */
+					html += '<a href="javascript:void(0)" class="ablue resetPassword">密码重置</a><br>';
+					/* html += '</permission>';
+					html += '<permission code="">'; */
+					if(dataList[i].statusCode == 'USERSTATUS_ON'){
+						html += '<a href="javascript:void(0)" class="ablue accountStatus">冻结';
+						html += '<input type="hidden" class="accountStatusCode" value="USERSTATUS_OFF"><br>';
+						html += '</a>';
+					}else{
+						html += '<a href="javascript:void(0)" class="ablue accountStatus">启用';
+						html += '<input type="hidden" class="accountStatusCode" value="USERSTATUS_ON"><br>';
+						html += '</a>';
+					}
+					/* html += '</permission>'; */
+					html += '</td></tr>';
+				}
+				}else {
+					html += '<tr><td colspan="8">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	}); 
+}
+
+function addAccept(){
+	locationHref('/user/seller-childAccount-edit.html?method=add&'+getParamValue());
+}
+function editAccept(id){
+	locationHref('/user/seller-childAccount-edit.html?method=edit&id='+id+'&'+getParamValue());
+}
+function returnStore(){
+	locationHref('/store/store-index.html?'+urlParam);
+}
+
+/*获取返回页面的上次查询条件*/
+function setParamValue(){
+	if(getUrlParam('storeId') != null && getUrlParam('storeId') != ""){
+		$('#storeId').val(getUrlParam('storeId'));
+		$('#storeCode').attr("disabled","disabled");
+		$('#storeName').attr("disabled","disabled");
+	}else{
+		$('#returnBut').hide();
+	}
+	if(getUrlParam('s_storeCode') != null && getUrlParam('s_storeCode') != ""){
+		$('#storeCode').val(getUrlParam('s_storeCode'));
+	}else{
+		$('#storeCode').val(getUrlParam('c_storeCode'));
+	}
+	if(decodeURIComponent(getUrlParam('s_storeName')) != null && decodeURIComponent(getUrlParam('s_storeName')) != ""){
+		$('#storeName').val(decodeURIComponent(getUrlParam('s_storeName')));		
+	}else{
+		$('#storeName').val(decodeURIComponent(getUrlParam('c_storeName')));
+		
+	}
+	$('#statusCode').val(getUrlParam('c_statusCode'));
+	if("" != getUrlParam('pageSize') && "" != getUrlParam('start') ){
+		param.pageSize = getUrlParam('pageSize');
+		param.currentPage = getUrlParam('start');
+	}
+}
+function getParamValue(){
+	var passParam = [];
+	var storeCode = $.trim($("#storeCode").val());	
+	var storeName = $.trim($("#storeName").val());	
+	var statusCode = $.trim($("#statusCode").val());
+	var storeId = $.trim($("#storeId").val());
+	var start = $.trim($('#start').val());
+	var pageSize = $.trim($('#pageSize').val());
+	
+	passParam.push('c_storeCode='+storeCode);
+	passParam.push('c_storeName='+storeName);
+	passParam.push('c_statusCode='+statusCode);
+	passParam.push('storeId='+storeId);
+	passParam.push('start=' + start);
+	passParam.push('pageSize=' + pageSize);
+	return passParam.join('&');
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	setParamValue();
+	dataSubmit();
+	
+	//重置密码
+	$("#tbody").on("click",".resetPassword",function(){
+		var id=$(this).parent("td").parent("tr").find(".id").val();
+		if(id == null || id == ""){
+			showBox("提示信息","数据有误","alert");
+			return;
+		}
+		showBox("提示信息","确定要重置密码吗?","confirm",function(){
+			$.ajax({
+				url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + "/"+id+"/childAccount/updateUserPassword",
+				type:"post",
+				contentType:'application/json',
+				dataType:"json",
+				success:function(data){
+					showBox("提示信息",data.msg,"alert");
+				},
+				error:function(data){
+					showBox("提示信息","请求失败","alert");
+				}
+			}); 
+		})
+	});
+	
+	//重置密码
+	$("#tbody").on("click",".accountStatus",function(){
+		var id=$(this).parent("td").parent("tr").find(".id").val();
+		var statusCode=$(this).find(".accountStatusCode").val();
+		if((id == null || id == "") || (statusCode == null || statusCode == "")){
+			showBox("提示信息","数据有误","alert");
+			return;
+		}
+		var statusStr = "";
+		if(statusCode == "USERSTATUS_OFF"){
+			statusStr = "冻结";
+		}else{
+			statusStr = "启用";
+		}
+		showBox("提示信息","确定要"+statusStr+"吗?","confirm",function(){
+			$.ajax({
+				url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + "/"+id+"/"+statusCode+"/childAccount/updateUserStatusCode",
+				type:"post",
+				contentType:'application/json',
+				dataType:"json",
+				success:function(data){
+					showBox("提示信息",data.msg,"alert");
+					if(data.msgCode == 1){
+						setTimeout(function(){
+							window.location.reload();
+						}, 3000);
+					}
+				},
+				error:function(data){
+					showBox("提示信息","请求失败","alert");
+				}
+			}); 
+		})
+	});
+	
+	$("#tbody").on("click",".queryOrder",function(){
+		var id=$(this).parent("td").parent("tr").find(".id").val();
+		locationHref("/user/seller-childAccount-order.html?id="+id+'&'+getParamValue());
+	});
+	
+});
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 商家管理&gt; <span>门店接单员管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">接单员管理</div>
+				<div class="complaint_main">
+					<form method="get" id="dataForm">
+						<div class="main_search">
+						<input type="hidden" id="storeId" name="storeId">
+							<dl>
+								<dt>门店编号：</dt>
+								<dd><input type="text" class="txt grid-12" id="storeCode" name="storeCode" /></dd>
+							</dl>
+							<dl>
+								<dt>门店名称：</dt>
+								<dd><input type="text" class="txt grid-12" id="storeName" name="storeName" /></dd>
+							</dl>
+							<dl>
+								<dt>状态：</dt>
+								<dd>
+									<select class="select grid-12" id="statusCode" name="statusCode">
+										<option value="" selected>--全部--</option>
+										<option value="USERSTATUS_ON">启用</option>
+										<option value="USERSTATUS_OFF">冻结</option>
+									</select>
+								</dd>
+							</dl>
+							<input type="hidden"  id="start" name="start"/>
+							<input type="hidden"  id="pageSize" name="pageSize" />	
+							<p class="main_search_btn">
+								<input type="button" value="查询" class="btn_sure" onClick="dataSubmit(1)" />
+								<input type="button" value="新增接单员" class="btn_sure" onClick="addAccept()" />
+								<input type="button" value="返回" class="btn_sure" onClick="returnStore()" id="returnBut"/>
+								<!-- <permission code="">
+								<input type="button" value="查询" class="btn_sure" onClick="dataSubmit(1)" /> 
+								</permission>
+								<permission code="">
+								<input type="button" value="新增接单员" class="btn_sure" onClick="addAccept()" />
+								</permission> -->
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="">序号</th>
+									<th width="">接单员登录账号</th>
+									<th width="">联系人姓名</th>
+									<th width="">接单员手机号</th>
+									<th width="">状态</th>
+									<th width="">创建时间</th>
+									<th width="">冻结时间</th>
+									<th width="">操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onClick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onClick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onKeyUp="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onClick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

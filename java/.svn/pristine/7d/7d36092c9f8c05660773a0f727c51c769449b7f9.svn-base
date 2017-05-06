@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductFavoriteMapper">
+	<resultMap id="BaseResultMap" type="ProductFavorite">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, USERID, PRODUCTID, CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="ProductFavorite">
+		insert into P_PRODUCT_FAVORITE
+		(ID, USERID, PRODUCTID,
+		CREATETIME)
+		values (#{id,jdbcType=INTEGER},
+		#{userId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from
+		P_PRODUCT_FAVORITE
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteByByProductIdAndUserId">
+		delete from P_PRODUCT_FAVORITE
+		where
+		USERID =
+		#{userId,jdbcType=INTEGER}
+		and
+		PRODUCTID =
+		#{productId,jdbcType=INTEGER}
+	</delete>
+
+	<select id="listByUserId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_FAVORITE
+		where USERID = #{userId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="loadProductFavoriteByUserIdAndProductId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_FAVORITE
+		where
+		USERID =
+		#{userId,jdbcType=INTEGER}
+		and
+		PRODUCTID =
+		#{productId,jdbcType=INTEGER}
+	</select>
+
+	<select id="findProductFavorites" parameterType="ProductFavoriteQuery"
+		resultMap="BaseResultMap">
+		select
+		F.ID, F.USERID, F.PRODUCTID, F.CREATETIME
+		from P_PRODUCT_FAVORITE F LEFT JOIN P_PRODUCT P ON F.PRODUCTID = P.ID
+		<where>
+			P.BARCODE IS NOT NULL
+			<if test="userId != null">
+				and F.USERID = #{userId,jdbcType=INTEGER}
+			</if>
+			<if test="productId != null">
+				and F.PRODUCTID = #{productId,jdbcType=INTEGER}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+</mapper>

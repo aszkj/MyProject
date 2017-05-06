@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../../static-resource/css/main.css" />
+<script type="text/javascript" src="../../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/checkLogin.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/productCart.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/main.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+<script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.0.0.js'></script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header id="orderTopCommunity">
+		<!--顶部标题-->
+		<div class="top-big-tit">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<p id="communityNameInOrder"></p>
+		</div>
+	</header>
+	<div class="opt">
+		<div id="orderDetailTab">
+			<ul>
+				<li><a href="#tabStatus" data-index="0" class="orderTab">订单状态</a></li>
+				<li><a href="#tabDetail" data-index="1" class="orderTab actInOrderDetail">订单详情</a></li>
+			</ul>
+			<div class="clearfix"></div>
+		</div>
+		<!--订单详情-->
+		<div class="orderDetailBox"></div>
+	</div>
+	<!--支付弹框-->
+	<div class="confirmConBox hide" id="chooseCon">
+		<div class="changeStoreCon confirmCon">
+			<h3>请选择</h3>
+			<div class="btnBox">
+				<!--<button class="zhiBtn">选择支付宝支付方式</button>-->
+				<button class="wxBtn">选择微信支付方式</button>
+				<button class="noPayBtn" onclick="noPay()">取消</button>
+			</div>
+		</div>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../../static-resource/images/loading.png">
+	</section>
+	<script type="text/javascript">
+		//选项卡切换
+		$(".opt ul li a").click(function(e) {
+			$(".content").hide();
+			var x = $(this).attr("href");
+			$(x).fadeIn();
+			$(".opt ul li a").removeClass("actInOrderDetail");
+			$(this).addClass("actInOrderDetail");
+			return false;
+		});
+		$(function() {
+			orderDetailTmpl();
+			wxInit();
+		});
+		function cancelOrderDetail(saleOrderNo) {
+			if (confirm("您确定要取消订单吗?")) {
+				var params = new Object();
+				params.saleOrderNo = saleOrderNo;
+				ajax("/order/cancel", params, function(data) {
+					window.location.reload();
+				}, function(data) {
+					alert(data);
+				}, true);
+			}
+		}
+		function receiptOrderDetail(saleOrderNo) {
+			var params = new Object();
+			params.saleOrderNo = saleOrderNo;
+			ajax("/order/confirm", params, function(data) {
+				window.location.reload();
+			}, function(data) {
+				alert(data);
+			}, true);
+		}
+		/*去评价操作*/
+		function toEvaluate(saleOrderNo){
+			window.location.href="/comment/comment.html?saleOrderNo="+saleOrderNo;
+		}
+		function orderDetailTmpl() {
+			var params = new Object();
+			params.saleOrderNo = getUrlParam("saleOrderNo");
+			ajax("/order/orderdetail", params, function(data) {
+				$("#orderDetailTmpl").tmpl(data).prependTo(".orderDetailBox");
+				$("#communityNameInOrder").html(data.storeInfo.storeName);
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		/*去支付操作*/
+		function toPayOrder(saleOrderNo) {
+			$("#chooseCon").removeClass("hide");
+			$(".wxBtn").click(function() {
+				wexinPay(saleOrderNo);
+				$("#chooseCon").addClass("hide");
+			});
+		}
+		/*取消支付*/
+		function noPay() {
+			$("#chooseCon").addClass("hide");
+		}
+		/*微信支付相关函数*/
+		function wexinPay(saleOrderNo) {
+			var params = new Object();
+			params.saleOrderNo = saleOrderNo;
+			params.tradeType = "JSAPI";
+			ajax("/pay/wxpayapporderparam", params, function(data) {
+				if (!data)
+					directOrderList();
+				wexinConfig(data);
+			}, function(msg) {
+				alert(msg);
+				directOrderList();
+			}, true);
+		}
+		function wxInit() {
+			var param = new Object();
+			param.url = location.href.split('#')[0];
+			ajax("/wxsdk/wxsignbyurl", param, function(data) {
+				if (!data)
+					return;
+				wx.config({
+					debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+					appId : data.appId, // 必填，公众号的唯一标识
+					timestamp : data.timestamp, // 必填，生成签名的时间戳
+					nonceStr : data.nonceStr, // 必填，生成签名的随机串
+					signature : data.signature,// 必填，签名
+					jsApiList : [ 'chooseWXPay' ]
+				// 必填，需要使用的JS接口列表，所有JS接口列表
+				});
+			}, function(msg) {
+			}, true);
+		}
+		function wexinConfig(data) {
+			wx.chooseWXPay({
+				appId : data.appId,
+				timestamp : data.timeStamp, // 支付签名时间戳
+				nonceStr : data.nonceStr, // 支付签名随机串，不长于 32 位
+				package : 'prepay_id=' + data.prepayId, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***
+				signType : 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+				paySign : data.sign, // 支付签名
+				success : function(res) {
+					// 支付成功后的回调函数
+					if (res.errMsg == "chooseWXPay:ok") {
+						// 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回 ok，但并不保证它绝对可靠。
+						paySuccess();
+					} else {
+						payFailure();
+					}
+				},
+				cancel : function(res) {
+					//支付取消
+					payCancel();
+				}
+			});
+		}
+		function paySuccess() {
+			alert("您的支付已经成功！");
+			location.reload();
+		}
+		function payFailure() {
+			alert("您的支付未成功!\n如果您确认已经支付了,因支付过程可能会较为缓慢，请稍后刷新该订单查看是否成功，如遇见其他问题请联系我们的客服！")
+		}
+		function payCancel() {
+			alert("您取消了支付");
+		}
+	</script>
+	<script id="orderDetailTmpl" type="text/x-jquery-tmpl">
+    <div class="orderDetail content" id="tabDetail">
+       <div class="bg receiverBox">
+           <p>收货码：<span class="receiverCode">${receiveNo}</span></p>
+       </div>
+       <!--收货地址-->
+       <div class="deliBox">
+       <div class="deliveryMsg ${orderBaseInfo.deliveryModeCode==1 ? 'show' : 'hide'}">
+           <span class="receiverName">${consigneeAddressBean.consigneeName}</span>
+           <span class="teleNum">${consigneeAddressBean.phoneNo}</span>
+           <p class="reAddress">${consigneeAddressBean.address}</p>
+       </div>
+       <div class="storeMsg ${orderBaseInfo.deliveryModeCode==2 ? 'show' : 'hide'}">
+           <p class="storeName">自提门店：${storeInfo.storeName}</p>
+           <p class="openTime">营业时间：${storeInfo.businessHoursBegin}-${storeInfo.businessHoursEnd}</p>
+           <p class="storeAddress">自提地址：${storeInfo.addressDetail}</p></div>
+       </div>
+       <div class="orderDetailPro">
+           <div class="tit bg">
+               <p>商品明细</p>
+           </div>
+           <!--商品列表-->
+           {{each saleOrderItemList}}
+           <div class="orderDetailProItem bg">
+                <div class="proImg">
+                    <img src="${saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+                </div>
+               <div class="proDet">
+                   <p class="proName">${saleProductName}</p>
+                   <p class="proSize">${saleProductSpec}</p>
+                   <span class="proNumber">×<span>${cartNum}</span></span>
+                   <span  class="price">￥<span>${toCenti(orderPrice,2)}</span></span>
+               </div>
+               <div class="clearfix"></div>
+           </div>
+             {{/each}}
+           <!--金额-->
+           <div class="orderMoney bg">
+               <div class="orderMoneyLeft">
+                   <p>商品金额:￥<span>${toCenti(orderFeeInfo.totalAmount,2)}</span></p>
+                   <p>优惠金额:<span class="discount">￥<span>${toCenti(orderFeeInfo.preferentialAmt,2)}</span></span></p>
+                   <p>配送金额:<span class="delFee">￥<span>${toCenti(orderFeeInfo.transferFee,2)}</span></span></p>
+               </div>
+               <div class="orderMoneyRight">
+                   <p>实付金额</p>
+                   <p class="payTotal">￥<span>${toCenti(orderFeeInfo.payableAmount,2)}</span></p>
+               </div>
+               <div class="clearfix"></div>
+           </div>
+       </div>
+       <!--订单情况-->
+       <div class="orderIns bg">
+           <div class="tit">
+               <p>订单详情</p>
+           </div>
+           <div class="orderInsItem">
+               <p>订单编号</p><p>${orderBaseInfo.saleOrderNo}</p>
+           </div>
+           <div class="orderInsItem">
+               <p>下单时间</p><p>${orderBaseInfo.createTime}</p>
+           </div>
+           <div class="orderInsItem">
+               <p>支付方式</p><p>${orderBaseInfo.payTypeName}</p>
+           </div>
+           <div class="orderInsItem">
+               <p>配送方式</p><p>${orderBaseInfo.deliveryModeName}</p>
+           </div>
+           <div class="orderInsItem noBorder">
+               <p>订单备注</p><p>${orderBaseInfo.note}</p>
+           </div>
+       </div>
+        <!--订单未付款时-->
+       <div class="botBox ${orderBaseInfo.statusCode==1 ? 'show' : 'hide'}">
+       <div class="emptyBox"></div>
+       <div class="orderDetailBot bg">
+           <div><a href="#" class="cancel" onclick="cancelOrderDetail('${orderBaseInfo.saleOrderNo}')">取消订单</a></div>
+           <div><a href="#" class="payBtn" onclick="wexinPay('${orderBaseInfo.saleOrderNo}')">去支付</a></div>
+       </div>
+       </div>
+            <!--订单已付款时-->
+           <div class="botBox ${orderBaseInfo.statusCode==2 ? 'show' : 'hide'}">
+           <div class="emptyBox"></div>
+               <div class="orderDetailBot cancelFull bg">
+                   <a href="#" class="cancel" onclick="cancelOrderDetail('${orderBaseInfo.saleOrderNo}')">取消订单</a>
+               </div>
+           </div>
+           <!--订单待收货时-->
+           <div class="botBox ${orderBaseInfo.statusCode==4 ? 'show' : 'hide'}">
+           <div class="emptyBox"></div>
+               <div class="orderDetailBot cancelFull bg">
+                   <a href="#" class="cancel" onclick="receiptOrderDetail('${orderBaseInfo.saleOrderNo}')">确认收货</a>
+               </div>
+           </div>
+            <!--订单待评价时-->
+           <div class="botBox ${((orderBaseInfo.statusCode==5&&orderBaseInfo.isEvaluated==0)) ? 'show' : 'hide'}">
+           <div class="emptyBox"></div>
+               <div class="orderDetailBot cancelFull bg">
+                   <a href="#" class="cancel" onclick="toEvaluate('${orderBaseInfo.saleOrderNo}')">去评价</a>
+               </div>
+           </div>
+       </div>
+     <div class="orderStatus content" id="tabStatus">
+        {{each(i,v) orderStatusList}}
+        <div class="statusItem bg ${ i==0 ? 'statusItemLast' : 'statusItemPrevious'}">
+        {{if i==orderStatusList.length-1 && orderStatusList.length!=1}}
+        <div class="borderBgPrevious"></div>
+        {{/if}}
+        {{if i!=orderStatusList.length-1 && i!=0 && orderStatusList.length!=1}}
+         <div class="borderBgMiddle"></div>
+        {{/if}}
+         {{if i==0 && orderStatusList.length!=1}}
+         <div class="borderBgLast"></div>
+        {{/if}}
+        <div class="${ i==0 ? 'circleBgLast' : 'circleBgPrevious'}"></div>
+            <h4 class="statusTit">${v.statusCodeName}</h4>
+            <p class="statusText">${v.statusNote}</p>
+            <h4 class="time">${v.statusTime}</h4>
+        </div>
+        {{/each}}
+        <div class="custom">
+               <div class="customTel"><a href="tel:4001116366" style="color:#2b95ed;">400-111-6366</a></div>
+               <div><p>如有任何问题，请在收货后24小时内联系客服处理</p></div>
+        </div>
+         <!--订单未付款时-->
+       <div class="botBox ${orderBaseInfo.statusCode==1 ? 'show' : 'hide'}">
+       <div class="emptyBox"></div>
+       <div class="orderDetailBot bg">
+           <div><a href="#" class="cancel" onclick="cancelOrderDetail('${orderBaseInfo.saleOrderNo}')">取消订单</a></div>
+           <div><a href="#" class="payBtn" onclick="">去支付</a></div>
+       </div>
+       </div>
+            <!--订单已付款时-->
+           <div class="botBox ${orderBaseInfo.statusCode==2 ? 'show' : 'hide'}">
+           <div class="emptyBox"></div>
+               <div class="orderDetailBot cancelFull bg">
+                   <a href="#" class="cancel" onclick="cancelOrderDetail('${orderBaseInfo.saleOrderNo}')">取消订单</a>
+               </div>
+           </div>
+           <!--订单待收货时-->
+           <div class="botBox ${orderBaseInfo.statusCode==4 ? 'show' : 'hide'}">
+           <div class="emptyBox"></div>
+               <div class="orderDetailBot cancelFull bg">
+                   <a href="#" class="cancel" onclick="receiptOrderDetail('${orderBaseInfo.saleOrderNo}')">确认收货</a>
+               </div>
+           </div>
+            <!--订单待评价时-->
+           <div class="botBox ${((orderBaseInfo.statusCode==5&&orderBaseInfo.isEvaluated==0)) ? 'show' : 'hide'}">
+           <div class="emptyBox"></div>
+               <div class="orderDetailBot cancelFull bg">
+                   <a href="#" class="cancel" onclick="toEvaluate('${orderBaseInfo.saleOrderNo}')">去评价</a>
+               </div>
+           </div>
+     </div>
+</script>
+</body>
+</html>

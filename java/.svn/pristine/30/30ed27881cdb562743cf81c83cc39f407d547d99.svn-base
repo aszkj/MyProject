@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SiteMessageMapper">
+	<resultMap id="BaseResultMap" type="SiteMessage">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SUBJECT" property="subject" jdbcType="VARCHAR" />
+		<result column="SENDID" property="sendId" jdbcType="INTEGER" />
+		<result column="RECEIVE" property="receive" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="LONGVARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="MESSAGETYPE" property="messageType" jdbcType="VARCHAR" />
+		<result column="SENDCOUNT" property="sendCount" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, SUBJECT, SENDID, RECEIVE, CONTENT, STATUSCODE, MESSAGETYPE,
+		SENDCOUNT, CREATETIME,
+		CREATEUSERID, MODIFYTIME, MODIFYUSERID
+	</sql>
+
+	<insert id="save" parameterType="SiteMessage">
+		insert into S_SITE_MESSAGE (SUBJECT, SENDID,
+		RECEIVE, CONTENT, STATUSCODE, MESSAGETYPE,
+		SENDCOUNT, CREATETIME, CREATEUSERID, CONTENT
+		)
+		values (#{subject,jdbcType=VARCHAR},
+		#{sendId,jdbcType=INTEGER},
+		#{receive,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}, #{statusCode,jdbcType=VARCHAR},
+		#{messageType,jdbcType=VARCHAR},
+		#{sendCount,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=INTEGER},
+		#{content,jdbcType=LONGVARCHAR}
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from S_SITE_MESSAGE
+		where ID = #{id, jdbcType=INTEGER}
+	</delete>
+
+
+	<update id="updateByIdSelective" parameterType="SiteMessage">
+		update S_SITE_MESSAGE
+		<set>
+			<if test="subject != null">
+				SUBJECT = #{subject,jdbcType=VARCHAR},
+			</if>
+			<if test="sendId != null">
+				SENDID = #{sendId,jdbcType=INTEGER},
+			</if>
+			<if test="receive != null">
+				RECEIVE = #{receive,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				CONTENT = #{content,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="statusCode != null">
+				STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+			</if>
+			<if test="messageType != null">
+				MESSAGETYPE = #{messageType,jdbcType=VARCHAR},
+			</if>
+			<if test="sendCount != null">
+				SENDCOUNT = #{sendCount,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="SiteMessage">
+		update S_SITE_MESSAGE
+		set SUBJECT = #{subject,jdbcType=VARCHAR},
+		SENDID = #{sendId,jdbcType=INTEGER},
+		RECEIVE = #{receive,jdbcType=VARCHAR},
+		STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+		MESSAGETYPE = #{messageType,jdbcType=VARCHAR},
+		SENDCOUNT = #{sendCount,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		CONTENT = #{content,jdbcType=LONGVARCHAR}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_SITE_MESSAGE
+		where ID = #{id, jdbcType=INTEGER}
+	</select>
+
+	<select id="list" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from S_SITE_MESSAGE
+		ORDER BY ID DESC
+	</select>
+</mapper>

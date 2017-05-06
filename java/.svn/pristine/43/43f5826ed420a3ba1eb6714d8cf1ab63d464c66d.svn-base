@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p id="messageTitle">消息</p>
+    </div>
+</header>
+<section  style="padding-top: .9rem" id="messageItemWrap">
+</section>
+</body>
+<script type="text/javascript">
+    var typeValue=getUrlParam("typeValue");
+    $(function(){
+        messageTitle();
+        messageItemsTmpl();
+    });
+    function messageTitle(){
+        switch(typeValue){
+            case '1':
+                $("#messageTitle").html("优惠消息");
+                break;
+            case '2':
+                $("#messageTitle").html("退款消息");
+                break;
+            case '3':
+                $("#messageTitle").html("活动消息");
+                break;
+        }
+    }
+    function messageItemsTmpl(){
+        var param= new Object();
+        param.typeValue=typeValue;
+        ajax("/message/usermessagesbytype",param,function(data){
+            console.log(data);
+            $("#messageItemTmpl").tmpl(data).appendTo("#messageItemWrap");
+        },function (msg) {
+            alert(msg);
+        });
+    }
+    function toMessageDetail(msgId,directType,directCode){
+        if(directType==0){//消息详情
+            window.location.href='messageDetail.html?msgId='+msgId;
+            return;
+        }
+        if(directType==1){//优惠券
+            window.location.href='../wallet/myWallet.html';
+            return;
+        }
+        if(directType==2)//订单
+            window.location.href='refundDetail.html?directCode='+directCode;
+        if(directType==3)//专题
+            window.location.href='../floor-detail/floor-detail.html?zoneCode='+directCode;
+    }
+</script>
+<script id="messageItemTmpl" type="text/x-jquery-tmpl">
+{{if (list && list.length > 0)}}
+    {{each(i,v) list}}
+        <div class="messageContent" onclick="toMessageDetail(${msgId},${directType},'${directCode}')" >
+            <div class="mcTime">
+                <p>${msgTime}</p>
+            </div>
+            <div class="mc">
+                <h3 class="mcTit">${msgTitle}</h3>
+                <p class="mcIns">${msgAbstract}</p>
+            </div>
+        </div>
+    {{/each}}
+    {{else}}
+    <div class="noMessage">
+        <img src="/static-resource/images/messgae/nomessage.png">
+        <p>没有消息哦~</p>
+    </div>
+{{/if}}
+</script>
+</html>

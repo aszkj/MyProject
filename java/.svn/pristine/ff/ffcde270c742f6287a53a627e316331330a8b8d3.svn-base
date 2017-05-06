@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+	<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+	<title>一里递</title>
+	<link rel="stylesheet" href="static-resource/css/reset.css" />
+	<link rel="stylesheet" href="static-resource/css/slide.css" />
+	<link rel="stylesheet" href="static-resource/css/main.css?2.0" />
+	<link rel="stylesheet" href="static-resource/css/swiper-3.4.1.min.css" />
+	<script type="text/javascript" src="static-resource/js/base.js"></script>
+	<script type="text/javascript" src="static-resource/js/swiper-3.4.1.jquery.min.js"></script>
+	<script type="text/javascript">
+		document
+				.write("<script type='text/javascript' src='static-resource/js/local-data-storage.js?"
+						+ Math.random() + "'><\/script>");
+		document
+				.write("<script type='text/javascript' src='static-resource/js/slide.js?"
+						+ Math.random() + "'><\/script>");
+		document
+				.write("<script type='text/javascript' src='static-resource/js/productCart.js?"
+						+ Math.random() + "'><\/script>");
+		document
+				.write("<script type='text/javascript' src='static-resource/js/redirecting.js?"
+						+ Math.random() + "'><\/script>");
+	</script>
+	<script src="http://api.map.baidu.com/api?v=2.0&ak=SI4AOIBz771trCVjGV0XRzlr" type="text/javascript"></script>
+	<script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.0.0.js'></script>
+</head>
+<body>
+<header>
+	<!--头部banner-->
+	<div class="block_home_slider">
+		<div id="home_slider" class="flexslider bannerBox">
+			<ul class="slides">
+			</ul>
+		</div>
+		<div class="index-top-con">
+			<div class="index-top-inner">
+				<!--扫码购-->
+				<div class="code-buy hide" onclick="qrcode()">
+					<img src="static-resource/images/sys.png">
+				</div>
+				<!--定位-->
+				<div class="location" onclick="window.location.href='address/allAddress.html'">
+					<div class="loc-img1">
+						<img src="static-resource/images/dd.png" style="width: .25rem; height: .25rem;">
+					</div>
+					<span class="loc-name"></span>
+					<div class="loc-img2">
+						<img src="static-resource/images/cc.png" style="width: .24rem; height: .14rem;">
+					</div>
+				</div>
+				<!--搜索按钮-->
+				<div class="search" onclick="toSearchProducts()">
+					<img src="static-resource/images/search.png">
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<section>
+	<div class="big-cate">
+		<div class="big-cate-icon" onclick="window.location.href='buyer/market.html';">
+			<img src="static-resource/images/upgrade.png">
+			<p>升级VIP</p>
+		</div>
+		<div class="big-cate-icon" onclick="javascript:void(0);">
+			<img src="static-resource/images/redpaper.png">
+			<p>抢红包</p>
+		</div>
+		<div class="big-cate-icon" onclick="window.location.href='recommend/recommend.html'">
+			<img src="static-resource/images/recomend.png">
+			<p>每周推荐</p>
+		</div>
+		<div class="big-cate-icon" onclick="javascript:void(0);">
+			<img src="static-resource/images/categlory.png">
+			<p>里米商城</p>
+		</div>
+	</div>
+	<div class="clearfix"></div>
+	<div class="secAdvBox">
+		<div class="secKill" onclick="window.location.href='/seckill/secKill.html'">
+			<img class="clockp" src="/static-resource/images/seckill/clockp.png">
+			<p>专治剁手癌</p>
+			<div class="secClock secClockIndex" id="clockbox"><span class="hour">00</span><div class="clockBg"></div> <span class="minute">00</span><div class="clockBg"></div><span class="second">00</span></div>
+			<div class="clearfix"></div>
+			<div class="secSlideImg">
+				<div id="sec_slider" class="flexslider bannerBox">
+					<ul class="slides">
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bord"></div>
+	<!--楼层-->
+	<div class="floor"></div>
+</section>
+<section>
+	<!--本区域无门店-->
+	<div class="noStore hide">
+		<img src="static-resource/images/nostore.png">
+		<h3>敬请期待</h3>
+		<h4>本区域暂无门店，我们正在加紧拓展，抱歉给您带来的不便</h4>
+		<h5>
+			客服联系方式：<a href="#" style="color: #2b95ed;">400-111-6366</a>
+		</h5>
+	</div>
+</section>
+<!--loading-->
+<section id="pageloading" class="hide">
+	<img src="static-resource/images/loading.png">
+</section>
+<section id="dayang" class="hide">
+	<p>
+		现在下单预计明日<i id="delBeginTime"></i>点后配送
+	</p>
+	<p>我们会通知老板准时送达</p>
+	<span id="sure" onclick="hideStorePause()">确定</span>
+</section>
+<footer>
+	<!--底部tab-->
+	<div class="tabPadDiv"></div>
+	<div class="footer-tab">
+		<div class="tab1 current" onclick="javascript:void(0);">
+			<img src="static-resource/images/index2.png">
+			<p>首页</p>
+		</div>
+		<div class="tab1" onclick="javascript:locationHref('cateBrand/cateBrand.html')">
+			<img src="static-resource/images/cate1.png">
+			<p>分类</p>
+		</div>
+		<div class="tab1 cart-btn" onclick="window.location.href='cart/cart.html'">
+			<input class="cart-pro-number  cartNumInTab" id="cartProNumber" readonly="readonly" value="" /> <img id="end" src="static-resource/images/cart1.png">
+			<p>购物车</p>
+		</div>
+		<div class="tab1" onclick="window.location.href='my/my.html'">
+			<img src="static-resource/images/my1.png">
+			<p>我的</p>
+		</div>
+	</div>
+</footer>
+<script type="text/javascript">
+	var wxCode = getUrlParam("code");
+	$(function() {
+		if (isLogin()) {
+			setCookie("YiLiDiSessionID", getSessionId(), 30);
+		}
+		var community = getSessionStorage(sessionStorageCommunityKey);
+		var isTokeBySelf = getSessionStorage(sessionStorageTokeBySelfKey);
+		var storeInfo = getSessionStorage(sessionStorageStoreKey);
+		// 如果小区不存在且不是自提模式的情况下，或者自提模式情况下店铺不存在时，使用定位查询
+		if ((isTokeBySelf && !storeInfo) || (!isTokeBySelf && !community))
+			BDlocation();
+		else
+			changeStoreSuccess();
+		getHomeBannerList();//banner
+		getAppIcons();//首页图标
+		getSecImgList();//秒殺廣告
+		getSecKillTime();//秒杀倒计时
+		getSeminarList();//多位置廣告
+		showCartNum();
+		removeSessionStorage(sessionStorageAddressOfCartKey);//移除购物车地址选择
+		wxInit();
+	});
+	function BDlocation() {
+		var geolocation = new BMap.Geolocation();
+		geolocation.getCurrentPosition(function(r) {
+			if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+				findStore(r.point.lng, r.point.lat);
+			} else {
+				alert("无法获取到您当前的定位信息，请在网络良好的情况下重试");
+			}
+		}, {
+			enableHighAccuracy : true
+		});
+	}
+	function findStore(longitude, latitude) {
+		var params = new Object();
+		params.longitude = longitude;
+		params.latitude = latitude;
+		ajax("/user/location", params, function(data) {
+			if (!data || !data.storeInfo) {
+				$("div.noStore").show();
+				return;
+			}
+			changeStoreByCommunity(data, changeStoreSuccess);
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	function changeStoreSuccess() {
+		var storeInfo = getSessionStorage(sessionStorageStoreKey);
+		$(".loc-name").html(getLocationName());
+		if (!storeInfo) {
+			$("div.noStore").show();
+		} else {
+			// 判断店铺是否暂停营业
+			if (!isStoreOn()&&storeInfo.storeStatus == 1) {
+				showStorePause();
+			}
+			homefloorsList();
+		}
+	}
+	//显示店铺打烊信息
+	function showStorePause() {
+		var storeInfo = getSessionStorage(sessionStorageStoreKey);
+		if (getSessionStorage(storeInfo.storeId) != 1) {
+			$("#dayang").removeClass("hide");
+			setSessionStorage(storeInfo.storeId, 1);
+		}
+	}
+	//点击确定隐藏店铺打烊信息
+	function hideStorePause() {
+		$("#dayang").addClass("hide");
+	}
+	function homefloorsList() {
+		var param = new Object();
+		param.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		ajax(
+				"/product/homefloors",
+				param,
+				function(data) {
+					if (!data) {
+						$(".noStore").show();
+						return;
+					}
+					for ( var index in data) {
+						if (!data[index].floorInfo
+								|| !data[index].floorInfo.floorProductList)
+							continue;
+						calculateProductCart(data[index].floorInfo.floorProductList);
+					}
+					$("#floorTmpl").tmpl(data).prependTo(".floor");
+					if (!getSessionStorage(localStorageUserInfoKey))
+						loginByCode(wxCode);
+				}, function(msg) {
+					alert(msg)
+					if (!getSessionStorage(localStorageUserInfoKey))
+						loginByCode(wxCode);
+				}, true);
+	}
+	function getLocationName() {
+		var community = getSessionStorage(sessionStorageCommunityKey);
+		if (community && community != "undefined") {
+			return community.communityName;
+		}
+		var locationName = "请选择小区...";
+		var store = getSessionStorage(sessionStorageStoreKey);
+		if (store && store != "undefined") {
+			locationName = store.storeName;
+		}
+		return "自提门店：" + locationName;
+	}
+	//跳转到搜索商品页面
+	function toSearchProducts() {
+		window.location.href = "search/search.html";
+	}
+	//banner图片未加载时候显示默认图片
+	function setErrorDefaultImgBanner(e) {
+		$(e).attr("src", "static-resource/images/bannerDefault.png");
+	}
+	function loginByCode(code) {
+		if (!code)
+			return;
+		var params = new Object();
+		params.code = code;
+		params.tradeType = "JSAPI";
+		ajax("/user/weixinlogin", params, function(data) {
+			setSessionStorage(sessionStorageWXCodeKey, code);
+			saveUserInfo(data);
+			if (isLogin()) {
+				synchroCart();
+			}
+		}, function(msg) {
+		});
+	}
+	function synchroCart() {
+		var params = new Object();
+		params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		params.cartInfo = [];
+		ajax("/cart/synchronouscart", params, function(data) {
+			setCartInfo(data);
+			showCartNum();
+		}, function(msg) {
+		}, true);
+	}
+	function getReduceToCart(doc, productInfo) {
+		if (reduceOperation(doc, productInfo)) {
+			showCartNum();
+		}
+	}
+	function getAddToCartPosition(obj, e) {
+		var x = $(e).offset().left;
+		var y = $(e).offset().top;
+		var start = new Array();
+		start.push(x);
+		start.push(y);
+		validCartToAdd(obj, addCartSuccess, start, e);
+	}
+	function addCartSuccess(productInfo, startLocation, doc) {
+		addOperation(doc, productInfo);
+		showCartNum();
+		/*//商品加入购物车动画
+		var cart = $('#end');
+		var imgtodrag = $(doc).parent().parent().parent().children().find(
+				'img');
+		if (imgtodrag) {
+			var imgclone = imgtodrag.clone().offset({
+				top : imgtodrag.offset().top,
+				left : imgtodrag.offset().left
+			}).css({
+				'opacity' : '0.5',
+				'position' : 'absolute',
+				'height' : '3.32rem',
+				'width' : '3.32rem',
+				'z-index' : '19941112'
+			}).appendTo($('body')).animate({
+				'top' : cart.offset().top + 10,
+				'left' : cart.offset().left + 10,
+				'width' : 75,
+				'height' : 75
+			}, 800, 'easeInCubic');
+
+			imgclone.animate({
+				'width' : 0,
+				'height' : 0
+			}, function() {
+				$(this).detach()
+			});
+		}*/
+	}
+	function getHomeBannerList() {
+		var bannerInfos = getSessionStorage(sessionStorageBannerInfoKey);
+		if (!bannerInfos || bannerInfos.length <= 0){
+			bannerRequest();
+			return;
+		}
+		$("#home_slider ul").html();
+		$("#homeBannerTmpl").tmpl(bannerInfos).prependTo("#home_slider ul");
+		bannerAnim();
+	}
+	function bannerRequest() {
+		var params = new Object();
+		params.type = 'ADVERTISEMENTTYPE_HOMEBANNER';
+		ajax("/system/getimagerotate", params, function(data) {
+			if (!data || data.length <= 0)
+				return;
+			setSessionStorage(sessionStorageBannerInfoKey, data);
+			$("#homeBannerTmpl").tmpl(data).prependTo("#home_slider ul");
+			bannerAnim();
+		});
+	}
+	function bannerAnim() {
+		$("#home_slider").flexslider({
+			animation : 'slide',
+			controlNav : true,
+			directionNav : true,
+			animationLoop : true,
+			slideshowSpeed : 3000,
+			slideshow : true,
+			useCSS : false
+		});
+	}
+	//秒殺廣告
+	function getSecImgList() {
+		var secImg = getSessionStorage(sessionStorageSecImgKey);
+		if (!secImg || secImg.length <= 0)
+		{
+			secImgRequest();
+			return
+		}
+		$("#sec_slider ul").html();
+		$("#secImgTmpl").tmpl(secImg).appendTo("#sec_slider ul");
+		secImgAnim();//秒杀轮播图片动画
+	}
+	function secImgRequest() {
+		var params = new Object();
+		params.type = 'ADVERTISEMENTTYPE_SECKILL';
+		ajax("/system/getimagerotate", params, function(data) {
+			if (!data || data.length <= 0)
+				return;
+			setSessionStorage(sessionStorageSecImgKey, data);
+			$("#secImgTmpl").tmpl(data).appendTo("#sec_slider ul");
+			secImgAnim();
+		});
+	}
+	//秒杀轮播图片动画
+	function secImgAnim() {
+		$("#sec_slider").flexslider({
+			animation : 'fade',
+			controlNav : false,
+			directionNav : false,
+			animationLoop : true,
+			slideshowSpeed : 3000,
+			slideshow : true,
+			useCSS : false
+		});
+	}
+	//获取首页秒杀活动时间并倒计时
+	function getSecKillTime() {
+		var param = new Object();
+		//param.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		ajax("/activity/activityseckillinfo", param, function(data) {
+			if (!data) {
+				return;
+			}
+			countDown(data.endTime,"#clockbox",data.systemTime);
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	//倒计时函数
+	function countDown(endTime,id,systemTime){
+		var hour_elem = $(id).find('.hour');
+		var minute_elem = $(id).find('.minute');
+		var second_elem = $(id).find('.second');
+		var end_time = new Date(Date.parse(endTime.replace(/-/g,"/"))).getTime(),//月份是实际月份-1
+				sys_second = (end_time-new Date(Date.parse(systemTime.replace(/-/g,"/"))).getTime())/1000;
+		var timer = setInterval(function(){
+			if (sys_second > 1) {
+				sys_second -= 1;
+				var hour = Math.floor(sys_second / 3600);
+				var minute = Math.floor((sys_second / 60) % 60);
+				var second = Math.floor(sys_second % 60);
+				if(hour>99)
+					hour=99;
+				$(hour_elem).text(hour<10?"0"+hour:hour);//计算小时
+				$(minute_elem).text(minute<10?"0"+minute:minute);//计算分钟
+				$(second_elem).text(second<10?"0"+second:second);//计算秒杀
+			} else {
+				clearInterval(timer);
+			}
+		}, 1000);
+	}
+	//首页多位置广告
+	function getSeminarList() {
+		var seminar = getSessionStorage(sessionStorageSeminarKey);
+		if (!seminar || seminar.length <= 0)
+			seminarRequest();
+		else{
+			seminar = getSessionStorage(sessionStorageSeminarKey);
+			$("#seminarTmpl").tmpl(seminar).appendTo(".secAdvBox");
+			moveNav('#moveNav', 0);
+		}
+	}
+	function seminarRequest() {
+		var params = new Object();
+		params.type = 'ADVERTISEMENTTYPE_SEMINAR';
+		ajax("/system/getimagerotate", params, function(data) {
+			if (!data || data.length <= 0)
+				return;
+			var rendData={};
+			if(data.length>0)
+				rendData.firstImg = data[0];
+			if(data.length>1)
+				rendData.sndImg = data[1];
+			if(data.length>2)
+				rendData.moreImg = data.slice(2,data.length);
+			setSessionStorage(sessionStorageSeminarKey, rendData);
+			$("#seminarTmpl").tmpl(rendData).appendTo(".secAdvBox");
+			moveNav('#moveNav', 0);
+		});
+	}
+	function isStoreOn() {
+		var store = getSessionStorage(sessionStorageStoreKey);
+		if (!store || !store.storeStatus || store.storeStatus == 0)
+			return false;
+		var beginTime = getLongTime(store.businessHoursBegin);
+		var endTime = getLongTime(store.businessHoursEnd);
+		var date = getLongTime(new Date().toTimeString().split(" ")[0]);
+		var delBeginTime = getDelBeginTime(store.businessHoursBegin);
+		$("#delBeginTime").html(delBeginTime);
+		if (beginTime < endTime)
+			return beginTime < date && date < endTime;
+		if (endTime < beginTime)
+			return beginTime < date || date < endTime;
+	}
+	function getLongTime(time) {
+		var times = time.split(":");
+		return 3600 * times[0] + 60 * times[1] + times[2];
+	}
+	function getDelBeginTime(time) {
+		var times = time.split(":");
+		var DelBeginTime = Math.ceil(times[0]) + 1;
+		return DelBeginTime;
+	}
+	// 扫一扫
+	function wxInit() {
+		var param = new Object();
+		param.url = location.href.split('#')[0];
+		ajax("/wxsdk/wxsignbyurl", param, function(data) {
+			if (!data)
+				return;
+			wx.config({
+				debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				appId : data.appId, // 必填，公众号的唯一标识
+				timestamp : data.timestamp, // 必填，生成签名的时间戳
+				nonceStr : data.nonceStr, // 必填，生成签名的随机串
+				signature : data.signature,// 必填，签名
+				jsApiList : [ 'scanQRCode' ]
+				// 必填，需要使用的JS接口列表，所有JS接口列表
+			});
+		}, function(msg) {
+		});
+	}
+	wx.ready(function() {
+		$(".code-buy").show();
+	});
+	function qrcode() {
+		wx.scanQRCode({
+			needResult : 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+			scanType : [ "qrCode", "barCode" ], // 可以指定扫二维码还是一维码，默认二者都有
+			success : function(res) {
+				var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+				if (!result)
+					return;
+				if (result.indexOf(",") >= 0)
+					result = result.split(",")[1];
+				findProductByQRCode(result);
+			}
+		});
+	}
+	function findProductByQRCode(code) {
+		var param = new Object();
+		param.barCode = code;
+		param.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		ajax("/product/productbybarcode", param, function(data) {
+			if (!data) {
+				alert("无法查询该商品信息，请重新扫描条形码");
+				return;
+			}
+			location.href = "/pro-detail/pro-detail.html?saleProductId="
+					+ data.saleProductId;
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	var swiper = null;
+	//多位置广告第三张后处理
+	function moveNav(box,n){
+		var oBox = document.querySelector(box);
+		if (!oBox) {return};
+		var index = n || 0;
+		var initialSlide = index>=3 ? index-3 : 0;
+		swiper = new Swiper(box, {
+			pagination: '',
+			slidesPerView: 2,/*显示的导航数量*/
+			centeredSlides: false,
+			paginationClickable: true,
+			spaceBetween: 0,
+			initialSlide : initialSlide,
+			grabCursor : true,
+			roundLengths : true
+		});
+		oBox.addEventListener('click',function(e){
+			var tag = e.target;
+			if (tag.nodeName == 'A' && tag.className.indexOf('on')<0) {
+				_hmt.push(['_trackEvent',tag.innerHTML,'click'])
+			};
+		},false)
+		function navSwiper(){
+			var iW = document.documentElement.clientWidth||document.body.clientWidth;
+			if (iW>540) {
+				iW=540;
+			};
+			oBox.style.width =  iW+'px';
+			swiper.onResize();
+		}
+		var timer = null;
+		window.addEventListener('resize', function(e){
+			clearTimeout(timer);
+			timer = setTimeout(function(){
+				navSwiper();
+			},300)
+		},false);
+	}
+	function appIconsRequest() {
+		var params = new Object();
+		ajax("/home/appicons", params, function(data) {
+			if (!data || data.length <= 0)
+				return;
+			setSessionStorage(sessionStorageAppiconsKey, data);
+			$(".big-cate-icon").each(function(i){
+				$(this).children("img").attr("src",data[i].imageUrl);
+			});
+		});
+	}
+	function getAppIcons(){
+		var appIcons=getSessionStorage(sessionStorageAppiconsKey);
+		if(!appIcons){
+			appIconsRequest();
+			return
+		}
+		$(".big-cate-icon").each(function(i){
+			$(this).children("img").attr("src",appIcons[i].imageUrl);
+		});
+	}
+</script>
+<script id="floorTmpl" type="text/x-jquery-tmpl">
+			{{if $data.floorInfo}}
+            <div class="tit">
+                <div class="tit-img-wrap"><span class="tit-img"><img src="${$data.floorInfo.floorImageUrl}"></span></div>
+                <span class="floor-name">${$data.floorInfo.floorName}</span>
+                <span class="more" onclick="moreRedirect(${$data.floorInfo.linkType}, '${$data.floorInfo.linkData}', '${$data.floorInfo.floorName}')">+更多</span>
+            </div>
+			{{/if}}
+            <!--楼层banner-->
+			{{if $data.advertisementInfo}}
+            <div class="floor-adv"  onclick="normalRedirect(${$data.advertisementInfo.linkType},'${$data.advertisementInfo.linkData}')">
+                <img src="${$data.advertisementInfo.imageUrl}">
+            </div>
+			{{/if}}
+            <div class="bordMin"></div>
+            <!--楼层商品列表-->
+            <div class="floor-pro floor-pro-index-bg">
+       {{each(i,v) ($data.floorInfo ? $data.floorInfo.floorProductList : [])}}
+        <div class="floor-pro-item ${getClass(i)}">
+            <div class="floor-pro-img"  onclick="javascript:location.href='../pro-detail/pro-detail.html?saleProductId=${v.saleProductId}'">
+                <img src="${v.saleProductImageUrl}" onerror="setErrorDefaultImg(this)">
+            </div>
+            <div class="pro-det"  onclick="javascript:location.href='../pro-detail/pro-detail.html?saleProductId=${v.saleProductId}'">
+                <p class="floor-pro-name">
+                    ${v.saleProductName}
+                </p>
+                <p class="floor-pro-size ">
+                    ${v.saleProductSpec}
+                </p>
+                <p class="floor-pro-normal-price ">
+                    普通￥<span>${toCenti(v.retailPrice,2)}</span>
+                </p>
+                <p class="floor-pro-vip-price">
+                    VIP￥<span>${toCenti(v.promotionalPrice,2)}</span>
+                </p>
+            </div>
+            <div class="countBox">
+            <div class="count">
+                <div class="reduce ${getShowClass(v.saleProductId)}" name="" type="button" onclick="getReduceToCart(this,${JSON.stringify(v)})"></div>
+                <input class="pro-number ${getShowClass(v.saleProductId)}" name="" readonly="readonly" type="text" value="${getCartNum(v.saleProductId)}"/>
+                <div class="add ${getBtnClass(v.saleProductId,v.stockNum,v.limitCount)}" name="" type="button" onclick="getAddToCartPosition(${JSON.stringify(v)},this)"></div>
+            </div>
+            </div>
+        </div>
+        {{/each}}
+        <div class="clearfix"></div>
+        </div>
+    </script>
+<script id="homeBannerTmpl" type="text/x-jquery-tmpl">
+			<li>
+				<div class="slide">
+				   <img src="${imageUrl}" onerror="setErrorDefaultImgBanner(this)" alt="${titleName}"
+								onclick="normalRedirect(${linkType},'${linkData}')"/>
+				</div>
+			</li>
+	</script>
+<script id="secImgTmpl" type="text/x-jquery-tmpl">
+			<li>
+				<div class="slide">
+				<img src="${imageUrl}" onerror="setErrorDefaultImg(this)" onclick="window.location.href='/seckill/secKill.html'"/>
+				</div>
+			</li>
+	</script>
+<script id="seminarTmpl" type="text/x-jquery-tmpl">
+      {{if $data.firstImg}}
+			<div class="advImg advImg1">
+				<img src="${$data.firstImg.imageUrl}" onerror="setErrorDefaultImgBanner(this)" onclick="normalRedirect(${$data.firstImg.linkType},'${$data.firstImg.linkData}')">
+			</div>
+	  {{/if}}
+	  {{if $data.sndImg}}
+			<div class="advImg advImg2">
+				<img src="${$data.sndImg.imageUrl}" onerror="setErrorDefaultImgBanner(this)" onclick="normalRedirect(${$data.sndImg.linkType},'${$data.sndImg.linkData}')">
+			</div>
+	  {{/if}}
+            <div class="clearfix"></div>
+			<div class="advBotImg">
+			<div class="swiper-container moveNav" id="moveNav">
+			<div class="swiper-wrapper">
+				{{if $data.moreImg}}
+				{{each(i,v) $data.moreImg}}
+				<a class="swiper-slide advImg3" href="javascript:void(0)">
+					<img src="${v.imageUrl}" onerror="setErrorDefaultImgBanner(this)" onclick="normalRedirect(${v.linkType},'${v.linkData}')">
+				</a>
+				{{/each}}
+				{{/if}}
+			</div>
+			</div>
+			</div>
+	</script>
+</body>
+<script type="text/javascript">
+	//顶部栏样式控制
+	$(window).scroll(function() {
+		var height = document.getElementById("home_slider").offsetHeight;
+		var scrollTop = $(document).scrollTop();
+		if (scrollTop >= height) {
+			$(".index-top-con").addClass("indexTopFixed");
+		} else {
+			$(".index-top-con").removeClass("indexTopFixed");
+		}
+	});
+</script>
+</html>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SystemParamsMapper">
+	<resultMap id="BaseResultMap" type="SystemParams">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PARAMSCODE" property="paramsCode" jdbcType="VARCHAR" />
+		<result column="PARAMNAME" property="paramName" jdbcType="VARCHAR" />
+		<result column="PARAMVALUE" property="paramValue" jdbcType="VARCHAR" />
+		<result column="PARAMSTATUS" property="paramStatus" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PARAMSCODE, PARAMNAME, PARAMVALUE, PARAMSTATUS, CREATETIME, CREATEUSERID, MODIFYTIME, MODIFYUSERID, NOTE
+	</sql>
+	
+	<insert id="save" parameterType="SystemParams" useGeneratedKeys="true" keyProperty="id">
+		insert into S_SYSTEM_PARAMS (
+		PARAMSCODE, 
+		PARAMNAME, 
+		PARAMVALUE, 
+		PARAMSTATUS,
+		CREATETIME, 
+		CREATEUSERID,
+		NOTE)
+		values (
+		#{paramsCode,jdbcType=VARCHAR},
+		#{paramName,jdbcType=VARCHAR},
+		#{paramValue,jdbcType=VARCHAR},
+		#{paramStatus,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{note,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="updateByIdSelective" parameterType="SystemParams">
+		update S_SYSTEM_PARAMS
+		<set>
+			<if test="paramName != null">
+				PARAMNAME = #{paramName,jdbcType=VARCHAR},
+			</if>
+			<if test="paramValue != null">
+				PARAMVALUE = #{paramValue,jdbcType=VARCHAR},
+			</if>
+			<if test="paramStatus != null">
+				PARAMSTATUS = #{paramStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+			<if test="note != null">
+				NOTE = #{note,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateById" parameterType="SystemParams">
+		update S_SYSTEM_PARAMS
+		set PARAMNAME = #{paramName,jdbcType=VARCHAR},
+		PARAMVALUE = #{paramValue,jdbcType=VARCHAR},
+		PARAMSTATUS = #{paramStatus,jdbcType=VARCHAR},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		NOTE = #{note,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_PARAMS
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="loadByParamsCode" resultMap="BaseResultMap" parameterType="string">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_PARAMS
+		where PARAMSCODE = #{paramsCode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="loadByParamName" resultMap="BaseResultMap" parameterType="string">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_PARAMS
+		where PARAMNAME = #{paramName,jdbcType=VARCHAR}
+	</select>
+
+	<select id="listByParamStatus" resultMap="BaseResultMap" parameterType="string">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_PARAMS
+		where PARAMSTATUS = #{paramStatus,jdbcType=VARCHAR}
+		order by CREATETIME desc
+	</select>
+	
+	<select id="findSystemParams" resultMap="BaseResultMap" parameterType="SystemParamsQuery">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_PARAMS
+		<where>
+			<if test="paramsCode != null">
+				and PARAMSCODE = #{paramsCode,jdbcType=VARCHAR}
+			</if>
+			<if test="paramName != null">
+				and PARAMNAME like CONCAT('%',#{paramName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="paramStatus != null">
+				and PARAMSTATUS = #{paramStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+			order by CREATETIME desc
+	</select>
+	
+	<select id="getSystemParamByParamsCode" parameterType="SystemParams" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_PARAMS
+		<where>
+			<if test="paramsCode != null">
+				and PARAMSCODE = #{paramsCode,jdbcType=VARCHAR}
+			</if>
+			<if test="paramStatus != null">
+				and PARAMSTATUS = #{paramStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

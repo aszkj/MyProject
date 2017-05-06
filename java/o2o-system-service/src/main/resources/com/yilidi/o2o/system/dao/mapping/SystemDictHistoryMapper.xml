@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SystemDictHistoryMapper">
+	<resultMap id="BaseResultMap" type="SystemDictHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<id column="DICTID" property="dictId" jdbcType="INTEGER" />
+		<result column="DICTNAME" property="dictName" jdbcType="VARCHAR" />
+		<result column="DICTCODE" property="dictCode" jdbcType="VARCHAR" />
+		<result column="DICTTYPE" property="dictType" jdbcType="VARCHAR" />
+		<result column="TYPENAME" property="typeName" jdbcType="VARCHAR" />
+		<result column="DICTDESC" property="dictDesc" jdbcType="VARCHAR" />
+		<result column="SORT" property="sort" jdbcType="INTEGER" />
+		<result column="DICTSTATUS" property="dictStatus" jdbcType="VARCHAR" />
+    	<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+    	<result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+    	<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, DICTID, DICTNAME, DICTCODE, DICTTYPE, TYPENAME, DICTDESC, 
+		SORT, DICTSTATUS, OPERATETIME, OPERATEUSERID, OPERATETYPE
+	</sql>
+
+	<insert id="save" parameterType="SystemDict">
+		insert into S_SYSTEM_DICT_HISTORY (
+		DICTID, 
+		DICTNAME, 
+		DICTCODE,
+		DICTTYPE, 
+		TYPENAME, 
+		DICTDESC,
+		SORT, 
+		DICTSTATUS,
+		OPERATETIME,
+		OPERATEUSERID, 
+		OPERATETYPE)
+		values (
+		#{dictId,jdbcType=INTEGER},
+		#{dictName,jdbcType=VARCHAR},
+		#{dictCode,jdbcType=VARCHAR},
+		#{dictType,jdbcType=VARCHAR},
+		#{typeName,jdbcType=VARCHAR},
+		#{dictDesc,jdbcType=VARCHAR},
+		#{sort,jdbcType=INTEGER},
+		#{dictStatus,jdbcType=VARCHAR},
+		#{operateTime,jdbcType=TIMESTAMP}, 
+		#{operateUserId,jdbcType=INTEGER},
+		 #{operateType,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="list" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_SYSTEM_DICT_HISTORY
+    </select>
+  
+    <select id="listByDictId" resultMap="BaseResultMap" >
+      select 
+      <include refid="Base_Column_List" />
+      from S_SYSTEM_DICT_HISTORY
+      where DICTID = #{dictId,jdbcType=INTEGER}
+    </select>
+
+</mapper>

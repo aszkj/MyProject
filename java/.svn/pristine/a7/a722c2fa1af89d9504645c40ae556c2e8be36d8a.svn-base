@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.AdvertisementMapper">
+	<resultMap id="AdvertisementResultMap" type="Advertisement">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="ADVERTISEMENTNAME" property="advertisementName" jdbcType="VARCHAR" />
+		<result column="TYPECODE" property="typeCode" jdbcType="VARCHAR" />
+		<result column="IMAGEURL" property="imageUrl" jdbcType="VARCHAR" />
+		<result column="LINKTYPE" property="linkType" jdbcType="VARCHAR" />
+		<result column="LINKDATA" property="linkData" jdbcType="VARCHAR" />
+		<result column="STARTTIME" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="ENDTIME" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="CLICKCOUNT" property="clickCount" jdbcType="INTEGER" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="SORT" property="sort" jdbcType="INTEGER" />
+		<result column="ADVERTISEMENTDESC" property="advertisementDesc"
+			jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, ADVERTISEMENTNAME, TYPECODE, IMAGEURL, 
+		LINKTYPE,LINKDATA, STARTTIME, ENDTIME, CLICKCOUNT,
+		STATUSCODE, SORT, ADVERTISEMENTDESC,
+		CREATEUSERID, CREATETIME, MODIFYUSERID, MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="Advertisement"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into P_ADVERTISEMENT (
+		ADVERTISEMENTNAME, TYPECODE, IMAGEURL,
+		LINKTYPE, LINKDATA, STARTTIME, ENDTIME,
+		CLICKCOUNT, STATUSCODE, SORT,
+		ADVERTISEMENTDESC, CREATEUSERID, CREATETIME
+		)
+		values(
+		#{advertisementName,jdbcType=VARCHAR},
+		#{typeCode,jdbcType=VARCHAR},
+		#{imageUrl,jdbcType=VARCHAR},
+		#{linkType,jdbcType=VARCHAR},
+		#{linkData,jdbcType=VARCHAR},
+		#{startTime,jdbcType=TIMESTAMP},
+		#{endTime,jdbcType=TIMESTAMP},
+		#{clickCount,jdbcType=INTEGER},
+		#{statusCode,jdbcType=VARCHAR},
+		#{sort,jdbcType=INTEGER},
+		#{advertisementDesc,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<update id="updateByIdSelective" parameterType="Advertisement">
+		update P_ADVERTISEMENT
+		<set>
+			<if test="advertisementName != null">
+				ADVERTISEMENTNAME = #{advertisementName,jdbcType=VARCHAR},
+			</if>
+			<if test="typeCode != null">
+				TYPECODE = #{typeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="imageUrl != null">
+				IMAGEURL = #{imageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="linkType != null">
+				LINKTYPE = #{linkType,jdbcType=VARCHAR},
+			</if>
+			<if test="linkData != null">
+				LINKDATA = #{linkData,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null">
+				STARTTIME = #{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null">
+				ENDTIME = #{endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="clickCount != null">
+				CLICKCOUNT = #{clickCount,jdbcType=INTEGER},
+			</if>
+			<if test="statusCode != null">
+				STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				SORT = #{sort,jdbcType=INTEGER},
+			</if>
+			<if test="advertisementDesc != null">
+				ADVERTISEMENTDESC = #{advertisementDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateStatus" parameterType="Advertisement">
+		update P_ADVERTISEMENT
+		set 
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = NOW()
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateClickCount">
+		update P_ADVERTISEMENT
+		set
+		CLICKCOUNT =
+		CLICKCOUNT + 1
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+
+	<select id="loadById" resultMap="AdvertisementResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_ADVERTISEMENT
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="listByTypeCode" resultMap="AdvertisementResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from P_ADVERTISEMENT
+		where TYPECODE = #{typeCode, jdbcType=VARCHAR}
+		order by SORT
+	</select>
+
+	<select id="list" resultMap="AdvertisementResultMap"
+		parameterType="AdvertisementQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_ADVERTISEMENT
+		<where>
+			<if test="advertisementName != null">
+				ADVERTISEMENTNAME like
+				CONCAT('%',#{advertisementName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="typeCode != null">
+				TYPECODE = #{typeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+			<if test="startTime != null">
+				and STARTTIME &lt;= #{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+				and ENDTIME &gt;= #{endTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by TYPECODE, SORT
+	</select>
+	
+	<select id="findAdvertisements" resultMap="AdvertisementResultMap"
+		parameterType="AdvertisementQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_ADVERTISEMENT
+		<where>
+			<if test="advertisementName != null">
+				ADVERTISEMENTNAME like
+				CONCAT('%',#{advertisementName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="typeCode != null">
+				and TYPECODE = #{typeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+			<if test="startTime != null">
+				and STARTTIME &gt;= #{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+				and ENDTIME &lt;= #{endTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by TYPECODE, SORT
+	</select>
+
+</mapper>

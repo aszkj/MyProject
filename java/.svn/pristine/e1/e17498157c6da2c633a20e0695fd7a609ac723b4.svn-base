@@ -1,0 +1,104 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/login.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+var storeId = getUrlParam("storeId");
+var storeType = getUrlParam("storeType");
+function uploadSubmit(){
+		ajax({
+			uploadForm:'uploadForm',
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + "/uploadToTempForSaleProductOther?storeId="+storeId+'&storeType='+storeType,
+			dataType:'json',//非必须.默认text
+			async:false,
+			error:function(){
+			}, //非必须
+			success:function(data){
+				 if(data.msgCode != 1){
+					 if(data.entity != null){
+						 var list = data.entity;
+						 var html = "";
+						 for(var o in list){  
+						        html += "<p style='white-space:nowrap;'>"+list[o]+"</p>";
+						 }
+						 $("#promptMessage").html(html);
+					 }else{
+						 showBox('提示!',data.msg,'alert');
+					 }
+				 }else{
+					 $('#promptMessage').text('操作成功');
+					 window.setTimeout(function(){
+						 parent.location.reload();
+					},1000);
+				 }
+				}//非必须
+			})
+		};
+function change(e){
+    var src=e.target || window.event.srcElement;
+    var filepath=src.value;
+    var filename=filepath.substring(filepath.lastIndexOf('\\')+1);
+    $('.txta').val(filename);
+}
+
+$(document).ready(function(e) {
+    $("#saleproductother_template").attr("href",DOWNLOAD_FILE_URL+DOWNLOAD_REPORT_TEMPLATE_RELATIVE_PATH+"/saleproductother_template.xlsx");
+});
+</script>
+<style type="text/css">
+		html, body {
+			background:#fff;
+		}
+</style>
+</head>
+<body id="bodyId">
+<p style="height:30px;line-height:30px">
+	<span style="padding-left: 20px;">点击下载模板：</span> 
+	<a class="blue" style="color:blue" id="saleproductother_template">其他商品导入模板.xls</a>
+</p>
+<form id="uploadForm"  enctype="multipart/form-data" onsubmit="uploadSubmit();return false;">
+	<div class="box-dva" style="background:#fff;">
+		<input type="text" class="txta">
+		<p class="box-upa">
+			<input id="uploadFile"  class="filea" name="file1" type="file" onchange="change(event);" />
+			<span class="btn_sure">选择文件</span>
+		</p>
+		<div>
+       	 <input type="submit"  value="确定" class="btn_sure" id="uploadBtn"/>
+       	 <input type="button" id="goBack" class="btn_gray" value="返回" onclick="javascript:history.go(0);">
+      	</div><br>
+      	<div id="promptMessage" class="cred" style="width:auto"></div>
+	</div>
+</form>       
+</body>
+</html>

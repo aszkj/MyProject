@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.SaleOrderItemMapper">
+	<resultMap id="BaseResultMap" type="SaleOrderItem">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSNAME" property="productClassName"
+			jdbcType="VARCHAR" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode"
+			jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTID" property="saleProductId"
+			jdbcType="INTEGER" />
+		<result column="BRANDNAME" property="brandName" jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="QUANTITY" property="quantity" jdbcType="INTEGER" />
+		<result column="ORDERPRICE" property="orderPrice" jdbcType="BIGINT" />
+		<result column="TOTALPRICE" property="totalPrice" jdbcType="BIGINT" />
+		<result column="PREFERENTIALAMT" property="preferentialAmt" jdbcType="BIGINT" />
+		<result column="GIFTFLAG" property="giftFlag" jdbcType="VARCHAR" />
+		<result column="SENDCOUNT" property="sendCount" jdbcType="INTEGER" />
+		<result column="COMMISSIONPRICE" property="commissionPrice"
+			jdbcType="BIGINT" />
+		<result column="SPECIFICATIONS" property="specifications"
+			jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTIMAGEURL3" property="productImageUrl3"
+			jdbcType="VARCHAR" />
+		<result column="ACTIVITYID" property="activityId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, STOREID, PRODUCTCLASSNAME,PRODUCTCLASSCODE, SALEPRODUCTID, QUANTITY, ORDERPRICE, TOTALPRICE,PREFERENTIALAMT,
+		GIFTFLAG,
+		SENDCOUNT, COMMISSIONPRICE, SPECIFICATIONS, PRODUCTNAME, BRANDNAME,BRANDCODE, BARCODE, PRODUCTIMAGEURL3,ACTIVITYID
+	</sql>
+
+	<insert id="save" parameterType="SaleOrderItem">
+		insert into T_SALE_ORDER_ITEM (
+		SALEORDERNO, STOREID, PRODUCTCLASSNAME,PRODUCTCLASSCODE, SALEPRODUCTID,
+		QUANTITY, ORDERPRICE,
+		TOTALPRICE, PREFERENTIALAMT,GIFTFLAG, SENDCOUNT, COMMISSIONPRICE, SPECIFICATIONS, PRODUCTNAME,
+		BRANDNAME,BRANDCODE, BARCODE,
+		PRODUCTIMAGEURL3,ACTIVITYID
+		)
+		values (#{saleOrderNo,jdbcType=VARCHAR},
+		#{storeId,jdbcType=INTEGER},
+		#{productClassName,jdbcType=VARCHAR},
+		#{productClassCode,jdbcType=VARCHAR},
+		#{saleProductId,jdbcType=INTEGER}, #{quantity,jdbcType=INTEGER},
+		#{orderPrice,jdbcType=BIGINT},
+		#{totalPrice,jdbcType=BIGINT},
+		#{preferentialAmt,jdbcType=BIGINT},
+		#{giftFlag,jdbcType=VARCHAR}, #{sendCount,jdbcType=INTEGER},
+		#{commissionPrice,jdbcType=BIGINT},
+		#{specifications,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR},
+		#{brandName,jdbcType=VARCHAR},#{brandCode,jdbcType=VARCHAR}, #{barCode,jdbcType=VARCHAR},
+		#{productImageUrl3,jdbcType=VARCHAR}
+		,#{activityId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<update id="updateOrderPrice">
+		update T_SALE_ORDER_ITEM
+		set
+		ORDERPRICE =
+		#{orderPrice,jdbcType=BIGINT},
+		TOTALPRICE =
+		#{totalPrice,jdbcType=BIGINT}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_ORDER_ITEM
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listBySaleOrderNo" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_ORDER_ITEM
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		order by SALEPRODUCTID
+	</select>
+	<select id="listBySaleOrderNos" resultMap="BaseResultMap"
+		parameterType="java.util.List">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_ORDER_ITEM
+		where
+		SALEORDERNO IN
+		<foreach item="item" index="index" collection="saleOrderNos"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="listSaleOrderItemsBySaleOrderNos" resultMap="BaseResultMap"
+		parameterType="java.util.List">
+		select
+		SALEORDERNO,PRODUCTIMAGEURL3
+		from T_SALE_ORDER_ITEM
+		where
+		SALEORDERNO IN
+		<foreach item="item" index="index" collection="saleOrderNos"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<resultMap id="SaleOrderInfoMap" type="SaleDailyStatisticsInfo">
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId"
+			jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSNAME" property="productClassName"
+			jdbcType="VARCHAR" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode"
+			jdbcType="VARCHAR" />
+		<result column="BRANDNAME" property="brandName" jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="SALECOUNT" property="saleCount" jdbcType="VARCHAR" />
+		<result column="AMOUNT" property="amount" jdbcType="VARCHAR" />
+		<result column="SALEDATE" property="saleDate" jdbcType="DATE" />
+	</resultMap>
+	<select id="listSaleDailyStatistictsByTakeTime" resultMap="SaleOrderInfoMap">
+		SELECT
+		DATE(SO.TAKETIME) AS SALEDATE,
+		SO.STOREID AS
+		STOREID,
+		SOI.SALEPRODUCTID AS SALEPRODUCTID,
+		SOI.PRODUCTNAME AS
+		PRODUCTNAME,
+		SOI.BRANDNAME AS BRANDNAME,
+		SOI.BRANDCODE AS BRANDCODE,
+		SOI.PRODUCTCLASSNAME AS
+		PRODUCTCLASSNAME,
+		SOI.PRODUCTCLASSCODE AS
+		PRODUCTCLASSCODE,
+		SUM(SOI.QUANTITY) AS SALECOUNT,
+		SUM(SOI.TOTALPRICE - IFNULL(SOI.PREFERENTIALAMT, 0)) AS AMOUNT
+		FROM T_SALE_ORDER_ITEM SOI ,T_SALE_ORDER SO
+		WHERE
+		SOI.SALEORDERNO=SO.SALEORDERNO
+		AND
+		SO.STATUSCODE='SALEORDERSTATUS_FINISHED'
+		AND TAKETIME
+		&gt;=#{startTakeTime,jdbcType=TIMESTAMP}
+		AND TAKETIME
+		&lt;=#{endTakeTime,jdbcType=TIMESTAMP}
+		GROUP BY
+		DATE(SO.TAKETIME),SO.STOREID,SOI.SALEPRODUCTID
+	</select>
+	<resultMap id="ActivitySaleOrderItemCountInfoMap" type="ActivitySaleOrderItemCountInfo">
+		<result column="ACTIVITYID" property="activityId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId"
+			jdbcType="INTEGER" />
+		<result column="ORDERCOUNT" property="orderCount" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="loadByActivityIdAndSaleProductId" resultMap="ActivitySaleOrderItemCountInfoMap">
+		select
+		ACTIVITYID,SALEPRODUCTID,SUM(QUANTITY) AS ORDERCOUNT
+		from
+		T_SALE_ORDER_ITEM
+		where ACTIVITYID =
+		#{activityId,jdbcType=INTEGER}
+		and
+		SALEPRODUCTID=#{saleProductId,jdbcType=INTEGER}
+		group by
+		ACTIVITYID,SALEPRODUCTID
+	</select>
+	<select id="loadOrderCountByDeviceIdAndCustomerIdAndAddress"
+		resultType="java.lang.Integer">
+		select
+		SUM(QUANTITY) AS ORDERCOUNT
+		from
+		T_SALE_ORDER TSO
+		left join
+		T_SALE_ORDER_ITEM TSOI on TSO.SALEORDERNO = TSOI.SALEORDERNO
+		<if test="addressDetail != null">
+			left join
+			T_ORDER_CONSIGNEE_ADDRESS TOCA on
+			TOCA.SALEORDERNO = TSO.SALEORDERNO
+		</if>
+		<where>
+			TSO.DEVICEID = #{deviceId,jdbcType=VARCHAR}
+			and TSO.BUYERCUSTOMERID
+			=#{buyerCustomerId,jdbcType=INTEGER}
+			<if test="addressDetail != null">
+				TOCA.ADDRESSDETAIL = #{addressDetail,jdbcType=VARCHAR}
+			</if>
+			TSOI.ACTIVITYID =#{activityId,jdbcType=INTEGER}
+			and
+			TSOI.SALEPRODUCTID=#{saleProductId,jdbcType=INTEGER}
+		</where>
+	</select>
+
+
+	<!-- 订单销量begin -->
+	<select id="getOrderStatistics"
+		parameterType="com.yilidi.o2o.order.model.query.StatisticsParamQuery"
+		resultType="java.util.Map">
+		SELECT
+		SUM(IFNULL(ORDERCOUNT,0)) AS statisticsNumber,
+		SUM(IFNULL(TOTALAMOUNT,0) - IFNULL(PREFERENTIALAMT,0)) AS statisticsPrice,
+		SUM(IFNULL(TRANSFERFEE,0)) AS transferfee
+		FROM
+		T_SALE_ORDER
+		WHERE
+		STATUSCODE='SALEORDERSTATUS_FINISHED'
+		<if test="beginTime != null">
+			AND TAKETIME &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null">
+			AND TAKETIME &lt;= #{endTime}
+		</if>
+	</select>
+	<!-- 订单销量end -->
+	<!-- 商品销量，分类销量，店铺销量；共用sql begin -->
+	<sql id="getProductStatisticsSql">
+		SELECT
+			a.STOREID AS STOREID,
+			a.PRODUCTCLASSNAME AS PRODUCTCLASSNAME,
+			a.PRODUCTCLASSCODE AS PRODUCTCLASSCODE,
+			a.PRODUCTNAME AS PRODUCTNAME,
+			a.BARCODE AS BARCODE,
+			SUM(IFNULL(a.QUANTITY, 0)) AS SALECOUNT,
+			SUM(IFNULL(a.TOTALPRICE, 0) - IFNULL(a.PREFERENTIALAMT, 0)) AS AMOUNT
+		FROM
+		T_SALE_ORDER_ITEM a
+		JOIN T_SALE_ORDER b ON a.SALEORDERNO = b.SALEORDERNO
+		AND b.STATUSCODE
+		= 'SALEORDERSTATUS_FINISHED'
+		<if test="beginTime != null">
+			AND b.TAKETIME &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null">
+			AND b.TAKETIME &lt;= #{endTime}
+		</if>
+	</sql>
+	<select id="getProductStatistics"
+		parameterType="com.yilidi.o2o.order.model.query.StatisticsParamQuery"
+		resultMap="SaleOrderInfoMap">
+		SELECT
+		z.STOREID,
+		z.PRODUCTCLASSNAME,
+		z.PRODUCTCLASSCODE,
+		z.PRODUCTNAME,
+		z.BARCODE,
+		z.SALECOUNT,
+		z.AMOUNT
+		FROM
+		(
+		<include refid="getProductStatisticsSql" />
+		<where>
+			<if test="barCode != null and barCode != ''">
+				and a.BARCODE = #{barCode,jdbcType=VARCHAR}
+			</if>
+			<if test="classCodes != null">
+				and a.PRODUCTCLASSCODE in
+				<foreach item="item" index="index" collection="classCodes" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY ${groupParam}
+		) z
+		ORDER BY ${orderParam} DESC
+		limit #{size}
+	</select>
+	<select id="getProductStatisticsCount"
+		parameterType="com.yilidi.o2o.order.model.query.StatisticsParamQuery"
+		resultMap="SaleOrderInfoMap">
+		SELECT
+		z.STOREID,
+		z.PRODUCTCLASSNAME,
+		z.PRODUCTCLASSCODE,
+		z.PRODUCTNAME,
+		z.BARCODE,
+		SUM(z.SALECOUNT) AS SALECOUNT,
+		SUM(z.AMOUNT) AS AMOUNT
+		FROM
+		(
+		<include refid="getProductStatisticsSql" />
+		) z
+	</select>
+	<!-- 商品销量，分类销量，店铺销量；共用sql end -->
+</mapper>

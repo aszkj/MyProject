@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.OrderPaymentMapper">
+	<resultMap id="BaseResultMap" type="OrderPayment">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="PAYTYPECODE" property="payTypeCode" jdbcType="VARCHAR" />
+		<result column="ACCOUNTID" property="accountId" jdbcType="INTEGER" />
+		<result column="PAYAMOUNT" property="payAmount" jdbcType="BIGINT" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="SERIESNO" property="seriesNo" jdbcType="VARCHAR" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, PAYTYPECODE, ACCOUNTID, PAYAMOUNT, CREATETIME, CREATEUSERID,
+		SERIESNO, NOTE
+	</sql>
+
+	<insert id="save" parameterType="OrderPayment">
+		insert into T_ORDER_PAYMENT (
+		SALEORDERNO, PAYTYPECODE, ACCOUNTID, PAYAMOUNT,
+		CREATETIME, CREATEUSERID, SERIESNO, NOTE
+		)
+		values (
+		#{saleOrderNo,jdbcType=VARCHAR},
+		#{payTypeCode,jdbcType=VARCHAR},
+		#{accountId,jdbcType=INTEGER}, #{payAmount,jdbcType=BIGINT},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}, #{seriesNo,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="listBySaleOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_ORDER_PAYMENT
+		where SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.PurchaseOrderItemMapper">
+	<resultMap id="BaseResultMap" type="PurchaseOrderItem">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PURCHASEORDERNO" property="purchaseOrderNo" jdbcType="VARCHAR" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="SPECIFICATIONS" property="specifications" jdbcType="VARCHAR" />
+		<result column="PRODUCTCLASSNAME" property="productClassName" jdbcType="VARCHAR" />
+		<result column="QUANTITY" property="quantity" jdbcType="INTEGER" />
+		<result column="ORDERPRICE" property="orderPrice" jdbcType="BIGINT" />
+		<result column="TOTALPRICE" property="totalPrice" jdbcType="BIGINT" />
+		<result column="PRODUCTIMAGEURL3" property="productImageUrl3" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PURCHASEORDERNO, PRODUCTID, PRODUCTNAME, BARCODE,
+		SPECIFICATIONS, PRODUCTCLASSNAME, QUANTITY,ORDERPRICE,
+		TOTALPRICE,PRODUCTIMAGEURL3
+	</sql>
+
+	<insert id="save" parameterType="PurchaseOrderItem" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_PURCHASE_ORDER_ITEM (
+		PURCHASEORDERNO, PRODUCTID, PRODUCTNAME, BARCODE,
+		SPECIFICATIONS, PRODUCTCLASSNAME,
+		QUANTITY,
+		ORDERPRICE, TOTALPRICE, PRODUCTIMAGEURL3
+		)
+		values(
+		#{purchaseOrderNo,jdbcType=VARCHAR},
+		#{productId,jdbcType=INTEGER},
+		#{productName,jdbcType=VARCHAR},
+		#{barCode,jdbcType=VARCHAR},
+		#{specifications,jdbcType=VARCHAR},
+		#{productClassName,jdbcType=VARCHAR},
+		#{quantity,jdbcType=INTEGER},
+		#{orderPrice,jdbcType=BIGINT},
+		#{totalPrice,jdbcType=BIGINT},
+		#{productImageUrl3,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="listPurchaseOrderItems" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_PURCHASE_ORDER_ITEM
+		where PURCHASEORDERNO = #{purchaseOrderNo,jdbcType=VARCHAR}
+		order by PRODUCTID asc
+	</select>
+
+</mapper>

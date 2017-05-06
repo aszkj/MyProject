@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="format-detection" content="telephone=no" />
+<title>一里递</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/beforemain.css" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+<script type="text/javascript" src="../static-resource/js/cordova-import.js"></script>
+</head>
+<body>
+	<div class="topTitBox">
+		<div id="backBtn" onclick="backTo()">
+			<!--回退按钮-->
+		</div>
+		<div id="topTitText">
+			<p>送礼给好友</p>
+		</div>
+		<div id="shareBtn" class="rightTopBtn" onclick="shareToFriend()">
+			<!--分享按钮-->
+		</div>
+	</div>
+	<div class="share">
+		<header>
+			<div class="banner">
+				<img src="../static-resource/images/share/sharetopbg.png" /> <a href="javascript:void(0);" onclick="redirectRule();" class="toRule"></a>
+			</div>
+		</header>
+		<section>
+			<div class="shareContent">
+				<div id="canGetGift">
+					<p>好友注册且登录成功</p>
+					<p>
+						可得<span>100元</span>大礼包
+					</p>
+				</div>
+				<div class="shareMainConBox">
+					<div id="shareMainCon">
+						<div class="champion"></div>
+						<div class="opt">
+							<div id="rankTab">
+								<ul>
+									<li><a href="#tabRank" class="shareTab active firstTab" onclick="showRank()">邀请排行榜</a></li>
+									<li><a href="#tabMyInvite" class="shareTab secondTab" onclick="showMyInvite()">我的邀请</a></li>
+								</ul>
+							</div>
+							<div class="tabsContainer">
+								<div class="content" id="tabRank">
+									<ul class="inviteList" id="rankList">
+									</ul>
+								</div>
+								<div class="content" id="tabMyInvite">
+									<div class="myInviteResult hide"></div>
+									<ul id="myInviteFriends" class="inviteList hide">
+									</ul>
+									<div class="noInvite">
+										<img src="../static-resource/images/share/noinvite.png">
+										<h3>尚未赚取红包</h3>
+										<p>还不赶紧邀请好友</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	$(function() {
+		if (isJS) {
+			wxInit();
+			$(".topTitBox").hide();
+			$(".share").css("padding-top", "0");
+			wx.ready(function() {
+				wx.hideMenuItems({
+					menuList : [ "menuItem:share:qq",
+							"menuItem:share:weiboApp", "menuItem:share:QZone",
+							"menuItem:openWithSafari",
+							"menuItem:openWithQQBrowser" ]
+				// 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
+				});
+				shareToWx();
+			});
+			requestMyInvite();
+		}
+		getShareActInfo();
+		$(".opt ul li a").click(function(e) {
+			$(".opt ul li a").removeClass("active");
+			$(this).addClass("active");
+			return false;
+		});
+	});
+	//点击显示排行榜和我的邀请
+	var isClicked = 0;
+	function showRank() {
+		if (isClicked == 1) {
+			isClicked = 0;
+			$(".content").hide();
+			$("#tabRank").fadeIn();
+		}
+	}
+	function showMyInvite() {
+		if (isClicked == 0) {
+			isClicked = 1;
+			$(".content").hide();
+			$("#tabMyInvite").fadeIn();
+		}
+	}
+	function corUserSessionId(context) {
+		//cordova调用设置cookie以用于登录
+		if (!context)
+			return;
+		context = context.trim();
+		var sessionId = context.split(";")[0];
+		setCookie("YiLiDiSessionID", sessionId, 30);
+		requestMyInvite();
+	}
+	function backTo() {
+		if (isJS)
+			history.back();
+		else
+			cordova.exec(corSuccess, corFail, "Operation", "backPressed", []);
+	}
+	function shareToFriend() {
+		if (isAndroid || isPhone) {
+			cordova.exec(corSuccess, corFail, "Share", "shareToAll", []);
+		}
+	}
+	function getShareActInfo() {
+		ajax("/share/shareactivityinfo", new Object(), function(data) {
+			if (!data) {
+				return;
+			}
+			if (data.championRewardInfo) {
+				addChampionInfo(data.championRewardInfo)
+			}
+			if (data.nextRewardInfo)
+				addNextChampionInfo(data.nextRewardInfo);
+			requestInviteTop();
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	function addChampionInfo(championInfo) {
+		var championHtml = "<p>恭喜<span>" + championInfo.period
+				+ "</span>冠军<span id='championTele'> "
+				+ championInfo.championName + "</span> 已获得<span>"
+				+ championInfo.rewardName + "</span>奖励！</p>";
+		$(".champion").prepend(championHtml);
+	}
+	function addNextChampionInfo(nextInfo) {
+		var championHtml = "<p><span>" + nextInfo.period
+				+ "</span>榜冠军可获得<span>" + nextInfo.rewardName
+				+ "</span>奖励！</p>";
+		$(".champion").append(championHtml);
+	}
+	//排行榜
+	function requestInviteTop() {
+		var param = new Object();
+		param.pageNum = 1;
+		param.pageSize = 10;
+		ajax("/share/invitetop", param, function(data) {
+			if (!data || !data.list)
+				return;
+			$("#rankListTmpl").tmpl(data.list).appendTo("#rankList");
+		}, function(msg) {
+		});
+	}
+	function requestMyInvite() {
+		ajax("/share/myinvitesummary", new Object(), function(data) {
+			var shown = !data || !data.inviteCount || data.inviteCount <= 0;
+			showMyInviteInfo(!shown, data);
+		}, function(msg) {
+		});
+	}
+	function showMyInviteInfo(shown, inviteInfo) {
+		if (shown) {
+			$(".myInviteResult").show();
+			$("#myInviteFriends").show();
+			$(".noInvite").hide();
+			var resultHtml = "<p>累计赚取</p><h4>" + inviteInfo.inviteRewardAmount
+					/ 1000 + "元</h4><p>已成功邀请<span>" + inviteInfo.inviteCount
+					+ "</span>位好友</p>";
+			$(".myInviteResult").html(resultHtml);
+			requestMyInviteList();
+		} else {
+			$(".myInviteResult").hide();
+			$("#myInviteFriends").hide();
+			$(".noInvite").show();
+		}
+	}
+	function requestMyInviteList() {
+		var param = new Object();
+		param.pageNum = 1;
+		param.pageSize = 10;
+		ajax("/share/myinvite", param,
+				function(data) {
+					$("#myInviteListTmpl").tmpl(data.list).appendTo(
+							"#myInviteFriends");
+				}, function(msg) {
+				});
+	}
+	function wxInit() {
+		var param = new Object();
+		param.url = location.href.split('#')[0];
+		ajax("/wxsdk/wxsignbyurl", param, function(data) {
+			if (!data)
+				return;
+			wx.config({
+				debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				appId : data.appId, // 必填，公众号的唯一标识
+				timestamp : data.timestamp, // 必填，生成签名的时间戳
+				nonceStr : data.nonceStr, // 必填，生成签名的随机串
+				signature : data.signature,// 必填，签名
+				jsApiList : [ 'onMenuShareTimeline', 'onMenuShareAppMessage',
+						'hideMenuItems' ]
+			// 必填，需要使用的JS接口列表，所有JS接口列表
+			});
+		}, function(msg) {
+		});
+	}
+	function shareToWx() {
+		/*点击分享给好友*/
+		ajax("/share/sharetoweixinfriends", new Object(), function(data) {
+			if (!data)
+				return;
+			wx.onMenuShareAppMessage({
+				title : data.title, // 分享标题
+				desc : data.content, // 分享描述
+				link : data.redirectUrl, // 分享链接
+				imgUrl : data.imageUrl, // 分享图标
+				success : function() {
+					// 用户确认分享后执行的回调函数
+					alert("分享成功！");
+				},
+				cancel : function() {
+					// 用户取消分享后执行的回调函数
+					alert("分享取消！");
+				}
+			});
+			wx.onMenuShareTimeline({
+				title : data.title, // 分享标题
+				desc : data.content, // 分享描述
+				link : data.redirectUrl, // 分享链接
+				imgUrl : data.imageUrl, // 分享图标
+				success : function() {
+					// 用户确认分享后执行的回调函数
+					alert("分享成功！");
+				},
+				cancel : function() {
+					// 用户取消分享后执行的回调函数
+					alert("分享取消！");
+				}
+			});
+		}, function(msg) {
+			alert(msg);
+			wx
+					.hideMenuItems({
+						menuList : [ "menuItem:share:appMessage",
+								"menuItem:share:timeline", "menuItem:share:qq",
+								"menuItem:share:weiboApp",
+								"menuItem:share:QZone",
+								"menuItem:openWithSafari",
+								"menuItem:openWithQQBrowser" ]
+					// 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
+					});
+		});
+	}
+	function redirectRule() {
+		var hurl = "/share/shareRule.html";
+		location.href = hurl;
+	}
+	function corSuccess(message) {
+	};
+	function corFail(message) {
+	};
+	function getInviteTime(inviteTime) {
+		var str = inviteTime;
+		return str.substr(0, 10);
+	}
+</script>
+<script id="rankListTmpl" type="text/x-jquery-tmpl">
+       <li class='rankItem'><span>${$index+1}</span>
+       <div class='rankImg'><img src="${userImageUrl}"></div>
+					<p class='rankTele'>${userName}</p>
+					<div class='rankIns'><h4>${inviteCount}人</h4>
+					<p>累计成功邀请</p></div></li>
+</script>
+<script id="myInviteListTmpl" type="text/x-jquery-tmpl">
+       <li class='rankItem'><span>${$index+1}</span>
+       <div class='rankImg'><img src="${userImageUrl}"></div>
+					<p class='rankTele'>${userName}</p>
+					<div class='rankIns'><h4>${getInviteTime(inviteTime)}</h4>
+					<p>邀请成功</p></div></li>
+</script>
+</html>

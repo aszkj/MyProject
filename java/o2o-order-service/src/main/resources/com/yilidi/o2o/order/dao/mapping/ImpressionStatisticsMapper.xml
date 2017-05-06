@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.ImpressionStatisticsMapper">
+	<resultMap id="BaseResultMap" type="ImpressionStatistics">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="LABELCODE" property="labelCode" jdbcType="VARCHAR" />
+		<result column="TOTALCOUNT" property="totalCount" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEPRODUCTID, LABELCODE, TOTALCOUNT
+	</sql>
+
+	<insert id="save" parameterType="ImpressionStatistics">
+		insert into T_IMPRESSION_STATISTICS (ID, SALEPRODUCTID, LABELCODE, TOTALCOUNT)
+		values (#{id,jdbcType=VARCHAR}, #{saleProductId,jdbcType=INTEGER},
+		#{labelCode,jdbcType=VARCHAR}, #{totalCount,jdbcType=INTEGER})
+	</insert>
+
+	<update id="updateBySaleProductId">
+		update T_IMPRESSION_STATISTICS
+		set
+		TOTALCOUNT = TOTALCOUNT + 1
+		where LABELCODE = #{labelCode,jdbcType=VARCHAR}
+		and SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</update>
+
+	<select id="listBySaleProductId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_IMPRESSION_STATISTICS
+		where SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</select>
+
+	<select id="checkSaleProduct" resultType="integer" >
+		select count(SALEPRODUCTID)
+		from T_IMPRESSION_STATISTICS
+		where LABELCODE = #{labelCode,jdbcType=VARCHAR}
+		and SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

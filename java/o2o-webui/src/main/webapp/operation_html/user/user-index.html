@@ -1,0 +1,495 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()} 
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页");}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listBuyerUser',
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr><td>';
+						html += '<input type="checkbox" class="id" class="tab_check" value="'+dataList[i].id+'"/>';
+						html += '</td><td>';
+						html += dataList[i].userName;
+						html += '</td><td>';
+						html += dataList[i].phone==null?'---':dataList[i].phone;
+						html += '</td><td>';
+						html += dataList[i].email==null?'---':dataList[i].email;
+						html += '</td><td>';
+						html += dataList[i].buyerLevelName==null?'---':dataList[i].buyerLevelName;
+						html += '</td><td>';
+						html += dataList[i].createTime==null?'---':dataList[i].createTime;
+						html += '</td><td>';
+						html += dataList[i].vipCreateTime==null?'---':dataList[i].vipCreateTime;
+						html += '</td><td>';
+						html += dataList[i].vipExpireDate==null?'---':dataList[i].vipExpireDate;
+						html += '</td><td>';
+						html += dataList[i].registerPlatform==null?'---':dataList[i].registerPlatform;
+						html += '</td><td>';
+						html += dataList[i].statusCode=='USERSTATUS_ON'?'有效':'失效';
+						html += '</td><td>';
+						html += '<permission code="FUNCTION_UPDATE_USER_STATUS">';
+						if(dataList[i].statusCode=='USERSTATUS_ON'){
+							html += '<a href="javascript:void(0)" onclick="changeState('+dataList[i].id+', 0)" class="ablue">停用</a>';
+				    	}else{
+				    	   	html += '<a href="javascript:void(0)" onclick="changeState('+dataList[i].id+', 1)" class="ablue">启用</a>';
+				    	}
+				    	html += '</permission>';
+				    	html += '&nbsp;&nbsp;';
+				    	html += '<permission code="FUNCTION_Detail_USER_INFO">';
+						html += '<a href="javascript:detailUser('+dataList[i].id+')" class="ablue">查看</a> ';
+						html += '</permission>';
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="11">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	});
+	$('#checkall').prop('checked',false);
+}
+
+function detailUser(id){
+	var message = '查看用户';
+	showBox(message,'/user/user-mng.html?width=500&height=350&userId='+id);
+}
+
+/*加载时间控件*/
+function loadTimeInput(){
+	$('#startCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#startVipCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endVipCreateTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#startVipExpireTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+	$('#endVipExpireTime').datepicker({dateFormat: 'yy-mm-dd',constrainInput:true});
+}
+
+function changeState(id,status){
+	var statusCode = 'USERSTATUS_ON';
+	if(status == 0){
+		statusCode = 'USERSTATUS_OFF';
+	}
+	showBox('提示！','确认进行操作？','confirm',function(){
+		ajax({
+			url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + '/' + id + '-' + statusCode + '/updateBuyerUserStatus',
+			type:'post',
+			dataType: 'json',
+			error: function(){},
+			success: function(data){
+			  if(data.msgCode != 1){ return; }
+			  showBox('系统提示',data.msg,'alert',function(){
+			  	dataSubmit();
+			  });
+			}
+		});
+	});
+}
+
+function selAll(o,idname){
+	var ids = $("input[type='checkbox'][class='"+idname+"']");
+	var checked = o.checked;
+	ids.each(function(){			
+		if(!checked){
+			$(this).prop("checked",false);
+		}else{
+			$(this).prop("checked",true);
+		}
+	});
+}
+function unselAll(){
+	$('body').on('click','.id',function(){
+		if(checkUnSel('id')){
+			$('#checkall').prop("checked",true);
+		}else{
+			$('#checkall').prop("checked",false);
+		}
+	})
+}
+function checkUnSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+function checkSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (!checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+
+/**
+ * 批量禁用用户状态
+ */
+function batchDisabledUserStatus(idname) {
+	if (checkSel(idname)) {
+		showBox('提示!',"请先选择要批量禁用的用户！",'alert');
+		return;
+	}		
+	showBox('确认信息',"确认要批量禁用用户吗？",'confirm',function(){
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1);
+		ajax({
+			url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + '/' + param + '/batchDisabledUserStatus',
+			type:'post',
+			dataType: 'json',
+			error: function(){},
+			success: function(data){
+			  if(data.msgCode != 1){ return; }
+			  showBox('系统提示',data.msg,'alert',function(){
+			  	dataSubmit();
+			  });
+			}
+		});
+	})
+}
+
+/**
+ * 批量启用用户状态
+ */
+function batchEnabledUserStatus(idname) {
+	if (checkSel(idname)) {
+		showBox('提示!',"请先选择要批量启用的用户！",'alert');
+		return;
+	}		
+	showBox('确认信息',"确认要批量启用用户吗？",'confirm',function(){
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1);
+		ajax({
+			url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY + '/' + param + '/batchEnabledUserStatus',
+			type:'post',
+			dataType: 'json',
+			error: function(){},
+			success: function(data){
+			  if(data.msgCode != 1){ return; }
+			  showBox('系统提示',data.msg,'alert',function(){
+			  	dataSubmit();
+			  });
+			}
+		});
+	})
+}
+
+function exportBuyerUser(){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/exportBuyerUser',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$("#download_link").attr("href",DOWNLOAD_FILE_TEMP_URL + data.entity.reportFilePath);
+				$("#download_link").show();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+
+function listBuyerLevelList(){
+	//绑定终端用户级别类型
+	var systemDictType = 'BUYERLEVEL';
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+		type:'post',
+		async:false,
+		dataType:'json',
+		error:function(){return;}, 
+		success:function(data){
+			if(data.msgCode!=1){return;}
+			var buyerLevelMapList = data.entity;
+			var buyerLevelMapHtml = [];
+			if(buyerLevelMapList != null && buyerLevelMapList.length >0){
+			buyerLevelMapHtml.push('<option value="">--请选择--</option>');
+				for(var i=0,length=buyerLevelMapList.length;i<length;i++){
+					buyerLevelMapHtml.push('<option value="'+buyerLevelMapList[i].id);
+					buyerLevelMapHtml.push('" name="'+buyerLevelMapList[i].name+'">'+buyerLevelMapList[i].name+'</option>');
+				}
+			}
+			$('#buyerLevelCode').html(buyerLevelMapHtml.join(''));
+		}
+	});
+}
+
+$(document).ready(function(e){
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	listBuyerLevelList();
+	dataSubmit();
+	loadTimeInput();
+	unselAll();
+	$('#checkall').prop('checked',false);
+});
+</script>
+</head>
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; <a href="/">系统管理</a> &gt;<span>终端用户管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">终端用户管理</div>
+				<div class="complaint_main">
+					<form method="get" id="dataForm">
+						<div class="main_search">
+							<dl>
+								<dt>用户名称：</dt>
+								<dd><input type="text" class="txt grid-9" id="userName" name="userName" /></dd>
+							</dl>
+							<dl>
+								<dt>手机号码：</dt>
+								<dd><input type="text" class="txt grid-9" id="telPhone" name="telPhone" /></dd>
+							</dl>
+							<dl>
+								<dt>邮箱：</dt>
+								<dd><input type="text" class="txt grid-9" id="email" name="email" /></dd>
+							</dl>
+							<dl>
+								<dt>用户类型：</dt>
+								<dd>
+									<select class="select" id="buyerLevelCode" name="buyerLevelCode"></select>
+								</dd>
+							</dl>
+							<dl>
+			                      <dt>创建时间：</dt>
+			                      <dd><input type="text" class="txt grid-9" id="startCreateTime" name="startCreateTime" /></dd>
+			                      <dt class="mlr5">至</dt>
+			                      <dd><input type="text" class="txt grid-9" id="endCreateTime" name="endCreateTime" /></dd>
+		                   	</dl>
+		                   	<dl>
+			                      <dt>会员开通时间：</dt>
+			                      <dd><input type="text" class="txt grid-9" id="startVipCreateTime" name="startVipCreateTime" /></dd>
+			                      <dt class="mlr5">至</dt>
+			                      <dd><input type="text" class="txt grid-9" id="endVipCreateTime" name="endVipCreateTime" /></dd>
+		                   	</dl>
+		                   	<dl>
+			                      <dt>会员到期时间：</dt>
+			                      <dd><input type="text" class="txt grid-9" id="startVipExpireTime" name="startVipExpireTime" /></dd>
+			                      <dt class="mlr5">至</dt>
+			                      <dd><input type="text" class="txt grid-9" id="endVipExpireTime" name="endVipExpireTime" /></dd>
+		                   	</dl>
+							<dl>
+								<dt>是否有效：</dt>
+								<dd>
+									<select class="select grid-10" id="statusCode" name="statusCode">
+										<option value="">--全部--</option>
+										<option value="USERSTATUS_ON">有效</option>
+										<option value="USERSTATUS_OFF">失效</option>
+									</select>
+								</dd>
+							</dl>
+							<p class="main_search_btn">
+								<permission code="FUNCTION_SEARCH_USER_INFO">
+									<input type="button" value="查询" class="btn_sure" id="orderSearch" onClick="dataSubmit()" />
+								</permission>
+								<permission code="FUNCTION_EXPORT_USER_INFO">
+									<input type="button" value="导出" class="btn_sure" onClick="javascript:exportBuyerUser();" />
+								</permission>
+			                    <a hidden id="download_link" style="color:red;text-decoration: underline;"><span style="color:red">点击下载</span></a>
+								<input type="hidden"  id="start" name="start" />
+								<input type="hidden"  id="pageSize" name="pageSize" />
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="10"></th>
+									<th width="80">用户名称</th>
+									<th width="60">手机号码</th>
+									<th width="80">用户邮箱</th>
+									<th width="60">用户类型</th>
+									<th width="80">创建时间</th>
+									<th width="80">会员开通时间</th>
+									<th width="80">会员到期时间</th>
+									<th width="60">注册平台</th>
+									<th width="60">状态</th>
+									<th width="80">操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<permission code="FUNCTION_UPDATE_USER_STATUS">
+							<input type="checkbox" class="tab_check"  id='checkall' onclick="javascript:selAll(this,'id');" />
+							<label for="">全选</label>
+							<input type="button" style="cursor:pointer;" id="btnBatchDelete" onclick="javascript:batchEnabledUserStatus('id');" title="" value="批量启用" class="btn_sure"/>
+							<input type="button" style="cursor:pointer;" id="btnBatchDelete" onclick="javascript:batchDisabledUserStatus('id');" title="" value="批量禁用" class="btn_gray"/>
+						</permission>
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营平台</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

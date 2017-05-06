@@ -1,0 +1,311 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style type="text/css">
+#allmap {
+	width: 600px;
+	height: 400px;
+	margin-top: 20px;
+}
+</style>
+<script type="text/javascript">
+	var code = getUrlParam("code");
+	
+	function loadFeedback() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+			ajax({
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/getBuyerFeedbackById/'+id,
+				data : '',
+				async : false,
+				dataType : 'json',
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					if (data.msgCode == 1) {
+						writeDate(data.entity);
+					}
+				}
+			});
+		}
+	}
+	
+	function writeDate(entity){
+		$("#id").val(entity.id);
+		if(entity.operateStatus=="FEEDBACKSTATIS_NODISPOSE"){
+			$("#operateStatus").text("未处理");
+		}else{
+			$("#operateStatus").text("已处理");
+		}
+		$("#userMobile").text(entity.userMobile);
+		$("#submitTime").text(entity.submitTime);
+		$("#operateName").text(entity.operateName);
+		$("#operateTime").text(entity.operateTime);
+		$("#content").text(entity.content);
+		if(null != entity.contentClassify && "" != entity.contentClassify){
+			var contentClassifys = entity.contentClassify.split(",");
+			var $this = null;
+			$('input[name="contype"]').each(function(){
+				$this = $(this);
+				$.each(contentClassifys,function(i,item){
+					if($this.val() == item){
+						$this.attr("checked","checked");
+					}
+				});
+			});
+		}
+	}
+	
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		if (code == "0") {
+			$("#breadName").html('处理反馈');
+			$("#pageTitle").html('处理反馈');
+			$(".d_operateName").hide();
+			$(".d_operateTime").hide();
+		} else if (code == "1") {
+			$("#breadName").html('查看反馈');
+			$("#pageTitle").html('查看反馈');
+			/* $(".d_operateName").show();
+			$(".d_operateTime").show(); */
+			$("#submit").hide();
+		}
+		//加载数据
+		buyerFeedbaceTypeList(code);
+	});
+	
+	function buyerFeedbaceTypeList(code){
+		//绑定终端用户级别类型
+		var systemDictType = 'FEEDBACKTYPE';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				var buyerLevelMapList = data.entity;
+				var buyerLevelMapHtml = [];
+				if(buyerLevelMapList != null && buyerLevelMapList.length >0){
+					for(var i=0,length=buyerLevelMapList.length;i<length;i++){
+						buyerLevelMapHtml.push('<input type="checkbox" name="contype" value="'+buyerLevelMapList[i].id+'" />&nbsp;'+buyerLevelMapList[i].name+'&nbsp;&nbsp;');
+					}
+				}
+				$('#contentClassifyDiv').html(buyerLevelMapHtml.join(''));
+				loadFeedback();
+				if(code == "1"){
+					no_checkbox();
+				}
+			}
+		});
+	}
+	
+	function no_checkbox(){
+		$("input[name='contype']").each(function(){
+			$(this).attr("disabled","disabled");
+		});
+	}
+	
+	function saveData(){
+		var contentClassify = "";
+		$("input[name='contype']:checked").each(function(){
+			contentClassify+=$(this).val()+",";
+		});
+		contentClassify = contentClassify.substring(0,contentClassify.length-1);
+		$("#contentClassify").val(contentClassify);
+		if(validataData()){
+			var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+			$("#promptMessage").text("正在处理中...");
+			$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+			var url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY+'/updateBuyerFeedback';
+			$.ajax({
+				url:url,
+				data:formJsonStr,
+				contentType:'application/json',
+				dataType:'json',
+				type:'post',
+				success:function(d){
+					$("#promptMessage").text(d.msg);
+					if(d.msgCode == 1){
+						window.setTimeout(
+							function() {
+								var urlParam=window.location.search;
+								locationHref("/feedback/buyerFeedback-index.html"+urlParam);
+							}, 1000);
+					}else{
+						$('#submit').removeClass().addClass('btn_disabled')[0].disabled = false;
+					}
+				},
+				error:function(e){
+					$("#promptMessage").text("请求有误，请 重试");
+					$('#submit').removeClass().addClass('btn_disabled')[0].disabled = false;
+					return;
+				}
+			}); 
+		}
+	}
+	
+	
+	function validataData(){
+		var contype = $("input[name='contype']:checked");
+		if(contype == null ||　contype.length == 0){
+			$("#contentClassifysErr").text("请选择反馈类型").attr("class","error");
+			return false;
+		}else{
+			$("#contentClassifysErr").text("").attr("class","right");
+			return true;
+		}
+	}
+	
+	function exitoper(){
+		var urlParam=window.location.search;
+		locationHref('/feedback/buyerFeedback-index.html'+urlParam);
+	}
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt;反馈管理&gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<div id="userInfo">
+							<input type="hidden" id="id" name="id" />
+								<dl>
+									<dt>
+										<span >处理状态：</span>
+									</dt>
+									<dd>
+										<span id="operateStatus"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span>用户手机号：</span>
+									</dt>
+									<dd>
+										<span id="userMobile"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span>提交时间：</span>
+									</dt>
+									<dd>
+										<span id="submitTime"></span>
+									</dd>
+								</dl>
+								<dl class="d_operateName">
+									<dt>
+										<span>处理人：</span>
+									</dt>
+									<dd>
+										<span id="operateName"></span>
+									</dd>
+								</dl>
+								<dl class="d_operateTime">
+									<dt>
+										<span>处理时间：</span>
+									</dt>
+									<dd>
+										<span id="operateTime"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span>用户吐槽内容：</span>
+									</dt>
+									<dd>
+										<span id="content"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span>吐槽内容归类(多选)：</span>
+									</dt>
+									<dd>
+										<span id="contentClassifyDiv">
+											<!-- <input type="checkbox" name="contentClassifys" value="FEEDBACKTYPE_COMPLAIN" />&nbsp;投诉商家&nbsp;&nbsp;
+											<input type="checkbox" name="contentClassifys" value="FEEDBACKTYPE_QUALITY" />&nbsp;商品质量问题&nbsp;&nbsp;
+											<input type="checkbox" name="contentClassifys" value="FEEDBACKTYPE_DISPATCH" />&nbsp;物流配送问题&nbsp;&nbsp;
+											<input type="checkbox" name="contentClassifys" value="FEEDBACKTYPE_SOFTWARE" />&nbsp;软件问题&nbsp;&nbsp;
+											<input type="checkbox" name="contentClassifys" value="FEEDBACKTYPE_IDEA" />&nbsp;意见&建议&nbsp;&nbsp;
+											<input type="checkbox" name="contentClassifys" value="FEEDBACKTYPE_LEAGUE" />&nbsp;加盟意向&nbsp;&nbsp;
+											<input type="checkbox" name="contentClassifys" value="FEEDBACKTYPE_OTHER" />&nbsp;其它&nbsp;&nbsp; -->
+										</span>
+										<input type="hidden" name="contentClassify" id="contentClassify">
+										<span id="contentClassifysErr"></span>
+									</dd>
+								</dl>
+							</div>
+
+							<dl>
+								<dt>
+								</dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit" onclick="saveData()">
+										<input type="button" class="btn_gray" value="返回" id="goBack" onclick="exitoper()"> 
+										<span id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

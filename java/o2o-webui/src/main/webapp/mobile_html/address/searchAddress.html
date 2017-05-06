@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部栏-->
+		<div class="top-big-tit" style="background-color: #ffc600;">
+			<div class="top-big-tit-btn whiteBackBtn" onclick="history.go(-1)"></div>
+			<p style="color:#fff;">深圳市</p>
+		</div>
+	</header>
+	<section>
+		<!--搜索地址框-->
+		<div class="searchBox">
+			<form onsubmit="searchWords();return false;">
+			<input type="search" class="searchAdd" id="searchAddInput" placeholder="请输入小区、写字楼、街道">
+			</form>
+		</div>
+		<!--搜索出来的地址-->
+		<div class="sadTit">
+			<p>附近位置</p>
+		</div>
+		<section>
+			<div class="contentWrap">
+					<div class="storeList sadList" style="padding-top: 2.68rem;"></div>
+				<div id="pullUp" class="hide">
+                <span class="loading">
+                    <span class="pullUpIcon"></span>
+                </span>
+					<span class="pullUpLabel">上拉加载更多...</span>
+				</div>
+			</div>
+		</section>
+	</section>
+	<div class="noMoreContent hide">
+		<p>没有更多内容了，别拉啦!</p>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var keywords = decodeURIComponent(getUrlParam("keywords"));
+	var origin = getUrlParam("origin");
+	var pageNum = 0;
+	var pageSize = 12;
+	var totalPages = 0;
+	$(function() {
+		searchAddressTmpl(keywords, 1);
+	});
+	function communityClick(community) {
+		addCommunityHisStorage(community);
+		if (!origin)
+			changeStoreByCommunity(community, changeStoreSuccess);
+		else
+			passCommunityInfoToAddress(community);
+	}
+	function changeStoreSuccess() {
+		returnIndex();
+	}
+	function passCommunityInfoToAddress(community) {
+		history.go(-2);
+		setSessionStorage(sessionEditCommunityInfoKey, community);
+	}
+	function searchWords() {
+		var keywords = $("#searchAddInput").val();
+		if (!keywords || keywords.trim() == "") {
+			alert("请输入您所需要搜索的信息");
+			return;
+		}
+		keywords = keywords.trim();
+		$(".storeList").html("");
+		searchAddressTmpl(keywords, 1);
+	}
+	function searchAddressTmpl(keywords, pageNumTemp) {
+		var params = new Object();
+		params.keywords = keywords;
+		params.pageNum = pageNumTemp;
+		params.pageSize = pageSize;
+		ajax("/user/communitysearch", params, function(data) {
+			totalPages = data.totalPages;
+			pageNum = data.pageNum;
+			if (pageNum == 1) {
+				$(".storeList").html("");
+			}
+			loadable = pageNum <=totalPages;
+			if(loadable||totalPages==0)
+			$("#searchAddressTmpl").tmpl(data.list).appendTo(".storeList");
+			$("#pullUp").addClass("hide");
+			//拉到最后一页时候提示
+			if(pageNum!=1&&!loadable){
+				$(".noMoreContent").removeClass("hide");
+				setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+			}
+		}, function(data) {
+			alert(data);
+		}, true);
+	}
+	/*分页加载*/
+	$(window).scroll(function(){
+		if($(".contentWrap").height()-$(window).scrollTop()<=document.documentElement.clientHeight){
+			$("#pullUp").removeClass("hide");
+			pageNum++;
+			searchAddressTmpl(keywords, pageNum);
+	}
+	});
+</script>
+<script id="searchAddressTmpl" type="text/x-jquery-tmpl">
+        {{if $data}}
+        <div class="storeItem" onclick="communityClick(${JSON.stringify($data)})">
+            <p class="storeName">${communityName}</p>
+            <p class="storeAddress">${addressDetail}</p>
+        </div>
+        {{/if}}
+</script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		var h = document.documentElement.clientHeight + "px";
+		$(".confirmConBox").css("height", h);
+	});
+</script>
+</html>

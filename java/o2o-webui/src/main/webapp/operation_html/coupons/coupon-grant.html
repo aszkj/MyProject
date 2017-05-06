@@ -1,0 +1,953 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<!--[endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+
+	var selectedProductDatas = {};
+	var conPackId = getUrlParam("id");
+	function loadCouponsInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/' + id + '/getCouponPackageDetail',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+					$("#conName").html(data.entity.conName);
+					$("#conPackId").val(id);
+				}//非必须
+			});
+
+		}
+	}
+	function dataSubmit() {
+		if (!validateData()) {
+				return;
+			}
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+ 		$.ajax({
+			type : 'post',
+			contentType:'application/json',
+			dataType : 'json',
+			data : formJsonStr,
+			error : function() {
+				$('#promptMessage').text('保存数据失败，请稍后再试');
+				$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+			},
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/grantCoupon',
+			beforeSubmit : function() {
+			},
+			success : function(data) {
+				//响应返回的业务处理  
+				if (data.msgCode == 1) {
+					$('#promptMessage').text('保存成功');
+					window.setTimeout(
+									function() {
+										var urlParam=window.location.search;
+										locationHref("/coupons/coupon-index.html"+urlParam);
+									}, 1000);
+				} else {
+					$('#submit').removeClass().addClass(
+							'btn_sure')[0].disabled = false;
+					$('#promptMessage').text(data.msg);
+				}
+			}
+		}); 
+	}
+	
+	var validate = (function() {
+		return {
+			validateValidTypeValue : function(){
+				var $validTypeValueMsg = $("#validTypeValueMsg");
+				var selectdatediv = $(".selectdatediv");
+				if(selectdatediv != null && selectdatediv.length >0){
+					var validTypeValue = "";
+					var validType = $('input[name="validType"]:checked').val();
+					if(validType == "COUPONVALIDTYPE_CUSTOMTYPE"){
+						selectdatediv.each(function(){
+							if($(this).find(".btime").val() != null && $(this).find(".btime").val() != "" && $(this).find(".etime").val() != null && $(this).find(".etime").val() != ""){
+								validTypeValue += $(this).find(".btime").val()+","+$(this).find(".etime").val()+"|";
+							}
+						});
+					} else if(validType == "COUPONVALIDTYPE_SYSTEMTYPE") {
+						selectdatediv.each(function(){
+							if($(this).find(".period").val() != null && $(this).find(".period").val() != ""){
+								validTypeValue += $(this).find(".period").val() + "|";
+							}
+						});
+					} 
+					if(validTypeValue != ""){
+						validTypeValue = validTypeValue.substring(0,validTypeValue.length-1);
+					}
+					$("#validTypeValue").val(validTypeValue);
+				}
+				
+				if($("#validTypeValue").val() != null && $("#validTypeValue").val() != "" && $("#validTypeValue").val().length >0){
+					return true;
+				}else{
+					$validTypeValueMsg.html('有效期时间不能为空!</br>').attr('class', 'error');
+					return false;
+				}
+			},
+			validateUseRangeProClass : function() {
+				var $useRangeProductClassMsg = $('#useRangeProductClassMsg');
+				if(getRadioValue('useRangeCode') =='COUPONSUSERANGE_PRODUCT_CLASS'){
+    				var isc = "";
+    				var obj = document.getElementsByName('proclassname');
+			   		 for(i = 0; i < obj.length; i++){
+			      			if(obj[i].checked == true){
+			       				isc += obj[i].value + ","; 
+			      			}
+			    		}
+    				if(isc.length > 0) {
+    					isc = isc.substring(0, isc.length - 1); //如果获取到,把最后一个逗号去掉
+    					$('#useRange').val(isc);
+    					$useRangeProductClassMsg.html('').attr('class', 'right');
+						return true;
+    				}else {
+    					$useRangeProductClassMsg.html('产品品类不能为空!</br>').attr('class', 'error');
+						return false;
+    				}
+				}
+				return true;
+			},
+			validateUseRangeProLabel : function() {
+				var $useRangeProductLabelMsg = $('#useRangeProductLabelMsg');
+				if(getRadioValue('useRangeCode') =='COUPONSUSERANGE_PRODUCT_LABEL'){
+    				var isc = "";
+    				var obj = document.getElementsByName('prolabelname');
+			   		 for(i = 0; i < obj.length; i++){
+			      			if(obj[i].checked == true){
+			       				isc += obj[i].value + ","; 
+			      			}
+			    		}
+    				if(isc.length > 0) {
+    					isc = isc.substring(0, isc.length - 1); //如果获取到,把最后一个逗号去掉
+    					$('#useRange').val(isc);
+    					$useRangeProductLabelMsg.html('').attr('class', 'right');
+						return true;
+    				}else {
+    					$useRangeProductLabelMsg.html('产品标示不能为空!</br>').attr('class', 'error');
+						return false;
+    				}
+				}
+				return true;
+			},
+			validateProductId : function() {
+				if(getRadioValue('useRangeCode') =='COUPONSUSERANGE_SINGLE_PRODUCT'){
+					var productId = $.trim($('#productId').val());
+					$useRangeProductIdMsg = $('#useRangeProductIdMsg');
+					if (!productId) {
+						$useRangeProductIdMsg.html('</br>请选择产品').attr('class', 'error');
+						return false;
+					}
+					$useRangeProductIdMsg.html('').attr('class', 'right');
+					$('#productId').val(productId);
+					$('#useRange').val(productId);
+				}
+				return true;
+			},
+			validateUserNames : function() {
+				var $userNamesMsg = $('#userNamesMsg');
+				var userNames = $.trim($('#userNames').val());
+				if(getRadioValue('grantRange') == 'COUPONSGRANTRANGE_SINGLE'){
+					if (!userNames) {
+						$userNamesMsg.html('请填写用户登录账号！').attr('class', 'error');
+						return false;
+					}else {
+						$userNamesMsg.html('输入多个登录账号,用英文逗号隔开').attr('class', 'right');
+					}
+				}
+				return true;
+			},
+			validateBuyerUserType : function() {
+				var buyerUserType = $.trim($('#buyerUserType').val()), $buyerUserTypeMsg = $('#buyerUserTypeMsg');
+				if(getRadioValue('grantRange') == 'COUPONSGRANTRANGE_BATCH'){
+					if (!buyerUserType) {
+						$buyerUserTypeMsg.html('请选择用户类型！').attr('class', 'error');
+						return false;
+					}
+					$buyerUserTypeMsg.html('').attr('class', 'right');
+				}
+				return true;
+			},
+			validateGrantWay : function() {
+				var $grantWayMsg = $('#grantWayMsg');
+				var isc = "";
+    				var obj = document.getElementsByName('grantWay');
+		   		for(i = 0; i < obj.length; i++){
+	      			if(obj[i].checked == true){
+	       				isc += obj[i].value + ","; 
+	      			}
+		    		}
+    				if(isc.length <= 0) {
+    					$grantWayMsg.html('</br>发放方式不能为空!').attr('class', 'error');
+						return false;
+    				}
+				return true;
+			},
+			validateRule : function() {
+				var rule = $.trim($('#rule').val()), $ruleMsg = $('#ruleMsg');
+				if (!rule) {
+					$ruleMsg.html('请填写规则说明！').attr('class', 'error');
+					return false;
+				}
+				$ruleMsg.html('').attr('class', 'right');
+				return true;
+			}
+		}
+	})();
+
+function getRadioValue(radioName){
+		if (radioName == 'useRangeCode') {
+			var obj = document.getElementsByName('useRangeCode');
+			for (i = 0; i < obj.length; i++) {
+				if (obj[i].checked == true) {
+					return obj[i].value;
+				}
+			}
+		}
+		if (radioName == 'grantRange') {
+			var obj = document.getElementsByName('grantRange');
+			for (i = 0; i < obj.length; i++) {
+				if (obj[i].checked == true) {
+					return obj[i].value;
+				}
+			}
+		}
+	}
+
+	function showErr(errorType) {
+		if (errorType == 'proType') {
+			$('#useRangeProductClassMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'proLabel') {
+			$('#useRangeProductLabelMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'userNames') {
+			$('#userNamesMsg').html('输入多个登录账号,用英文逗号隔开').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'buyerUserType') {
+			$('#buyerUserTypeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'grantWay') {
+			$('#grantWayMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'rule') {
+			$('#ruleMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+	}
+
+	function validateData() {
+		if(!validate.validateValidTypeValue()){
+			return false;
+		}
+		if (!validate.validateUseRangeProClass()) {
+			return false;
+		}
+		if (!validate.validateUseRangeProLabel()) {
+			return false;
+		}
+		if (!validate.validateProductId()) {
+			return false;
+		}
+		if (!validate.validateUserNames()) {
+			return false;
+		}
+		if (!validate.validateBuyerUserType()) {
+			return false;
+		}
+		if (!validate.validateGrantWay()) {
+			return false;
+		}
+		if (!validate.validateRule()) {
+			return false;
+		}
+		return true;
+	}
+
+	function getGrantRange(a) {
+		var validType = $('input[name="validType"]:checked').val();
+		var obj = document.getElementsByName('grantWay');
+		if (a == 2) {
+			$('#level').hide();
+			$('#userInfo').show();
+	   		for(i = 0; i < obj.length; i++){
+      			if(obj[i].value == 'COUPONSGRANTWAY_AUTO_RELEASE'){
+      				obj[i].checked = true; 
+      			}else{
+      				obj[i].disabled = true; 
+      			}
+	    	}
+		} else if (a == 1) {
+			$('#level').show();
+			$('#userNames').val('');
+			$('#userInfo').hide();
+			var obj = document.getElementsByName('grantWay');
+	   		for(i = 0; i < obj.length; i++){
+	   			if(validType == 'COUPONVALIDTYPE_CUSTOMTYPE'){
+	   				if(obj[i].value == 'COUPONSGRANTWAY_AUTO_RELEASE'){
+	      				obj[i].checked = true; 
+	      			}else{
+	      				obj[i].disabled = true; 
+	      			}
+				}else{
+	      			obj[i].disabled = false; 
+	      			obj[i].checked = false; 
+				}
+	    	}
+		}
+	}
+
+	function getUseRange(a) {
+		if (a == 1) {
+			$('#productClassDiv').hide();
+			$('#productClassDiv').html('');
+			$('#useRangeProductClassMsg').html('').attr('class', '');
+			$('#productLabelSpan').hide();
+			$('#productLabel').html('');
+			$('#useRangeProductLabelMsg').html('').attr('class', '');
+			$('#productId').val(null);
+			$('#productInField').addClass("disn");
+			$('#useRangeProductIdMsg').html('').attr('class', '');
+			$('#useRange').val(null);
+		}
+		if (a == 2) {
+			getList();
+			$('#productLabelSpan').hide();
+			$('#productLabel').html('');
+			$('#useRangeProductLabelMsg').html('').attr('class', '');
+			$('#productId').val(null);
+			$('#productInField').addClass("disn");
+			$('#useRangeProductIdMsg').html('').attr('class', '');
+		}
+		if (a == 3) {
+			loadProductLabels();
+			$('#productClassDiv').hide();
+			$('#productClassDiv').html('');
+			$('#useRangeProductClassMsg').html('').attr('class', '');
+			$('#productId').val(null);
+			$('#productInField').addClass("disn");
+			$('#useRangeProductIdMsg').html('').attr('class', '');
+		}
+		if (a == 4) {
+			selectProduct();
+			$('#productClassDiv').hide();
+			$('#productClassDiv').html('');
+			$('#useRangeProductClassMsg').html('').attr('class', '');
+			$('#productLabelSpan').hide();
+			$('#productLabel').html('');
+			$('#useRangeProductLabelMsg').html('').attr('class', '');
+		}
+	}
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('.btime').datetimepicker({
+			showHour: false,
+			showMinute: false,
+			showSecond:false,
+			hour: 0,
+			minute: 0,
+			second: 0,
+			constrainInput : true
+		});
+		$('.etime').datetimepicker({
+			showHour: false,
+			showMinute: false,
+			showSecond:false,
+			hour: 23,
+			minute: 59,
+			second: 59,
+			constrainInput : true
+		});
+	}
+
+	function comebackList() {
+		var urlParam=window.location.search;
+		locationHref('/coupons/coupon-index.html'+urlParam);
+	}
+
+	/*加载产品标示*/
+	function loadProductLabels(){
+		var systemDictType = 'PRODUCTLABEL';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					for(var i=1,length=mapList.length+1;i<length;i++){
+						html += '<span style="margin : 0 0 0 5px; display:block; float:left; width:150px;"><input type="checkbox" id="select'+mapList[i-1].id+'" name="prolabelname" value="'+mapList[i-1].id+'" onmousedown=showErr("proLabel")><label style="margin-left:5px;" for="selectRole'+mapList[i-1].id+'">'+mapList[i-1].name+'</label></input></span>';			
+						if(i != 0 && i % 5 == 0){
+							if(i != mapList.length){
+								html += '</br>';
+							}
+						}
+					}
+				}
+				$('#productLabel').html(html + '</br>');
+				$('#productLabelSpan').show();
+			}
+		});
+	}
+	
+	function selectProduct() {
+		showBox("选择产品",
+				'/coupons/coupon-select-product.html?width=800&height=650');
+	}
+	
+	//加载用户类型
+	function listBuyerTypeLabelList(val){
+		var systemDictType = 'BUYERUSERTYPELABEL';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#buyerUserType').html(html);
+			}
+		});
+	}
+	
+	//加载发放方式
+	function listGrantWays(val){
+		var systemDictType = 'COUPONSGRANTWAY';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				html += '<dl>';
+				html += '<dt>';
+				html += '<span class="cred">*</span>发放方式：';
+				html += '</dt>';
+				html += '<dd>';
+				if(mapList != null && mapList.length >0){
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(mapList[i].id == 'COUPONSGRANTWAY_AUTO_RELEASE'){
+							html +='<input type="radio" name="grantWay" value="'+mapList[i].id+'" onclick="doGrantWay(\''+mapList[i].id+'\')" onmousedown=showErr("grantWay") checked="checked" />&nbsp;';
+						}else{
+							html +='<input type="radio" name="grantWay" value="'+mapList[i].id+'" onclick="doGrantWay(\''+mapList[i].id+'\')" onmousedown=showErr("grantWay") />&nbsp;';
+						}
+						html += mapList[i].name;
+						html +='&nbsp;&nbsp;&nbsp;&nbsp;';
+					}
+				}
+				/* html += '</br>';
+				html += '<span class ="gray">抢红包，只支持“批量发送”和“全部用户”；分享有礼，只支持“批量发送”和“新注册用户”</span>'; */
+				html += '<span id ="grantWayMsg" class ="cred"></span>';
+				html += '</dd>';
+				html += '</dl>';
+				$('#grantWaySpan').html(html);
+				$('input[name="grantWay"]').each(function(){
+					if($(this).val() != 'COUPONSGRANTWAY_AUTO_RELEASE'){
+						$(this).attr("disabled","disabled");
+					}else{
+						$(this).checked="true";
+					}
+				});
+			}
+		});
+	}
+	
+	function doGrantWay(way){
+		if(way == 'COUPONSGRANTWAY_ACTIVITY_MANAGER'){
+			$('#addBasicDateDiv').hide();
+			$('.stageIndex').each(function(){
+				if($.trim($(this).text()) != 1){
+					$(this).parent().parent().remove();
+				}
+			});
+			$('.stageIndex').parent().hide();
+			$('.delDateDiv').hide();
+			$('.ms').hide();
+		}else{
+			$('#addBasicDateDiv').show();
+			$('.stageIndex').parent().show();
+			$('.delDateDiv').show();
+			$('.ms').show();
+		}
+	}
+	
+//div显示
+function nextShow(obj){
+	if(obj.children(".leftDiv").is(":visible")){
+		obj.find(".leftDiv").hide();
+	}else{
+		obj.children(".leftDiv").show();
+	}
+}
+//复选框选中
+function nextChecked(obj){
+	var parentDiv = obj.parent("div");
+	var subCheckboxs = obj.parent().children(".leftDiv").find(".leftClassCode");
+	//var upDivs = parentObj.parent(".leftDiv").parents(".leftDiv");
+	if(obj.is(":checked")){
+		checkedUp(parentDiv);
+		subCheckboxs.each(function(){
+			$(this).attr("checked",'true');
+		});
+	}else{
+		/* checkNext(parentDiv); */
+		subCheckboxs.each(function(){
+			$(this).removeAttr("checked");
+		});
+	}
+}
+ //递归选中上一级
+function checkedUp(parentDiv){
+	parentDiv = parentDiv.parent(".leftDiv").parent("div");
+	if(parentDiv[0]){
+		parentDiv.children(".leftClassCode").attr("checked",'true');
+		checkedUp(parentDiv);
+	}
+} 
+	
+/* 分类 */
+//得到所有一级分类
+function getAllProductClass(){
+	var productClassList=[];
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/getAllProductClass',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode!=1)return;
+			productClassList=data.entity;
+		}
+	});
+	return productClassList;
+}
+
+
+
+
+function getList(storeTypeClassCodes){
+	$("#productClassDiv").html(productClassCiv);
+	$('#productClassDiv').show();
+	var productClassList=getAllProductClass();
+	var html='';
+	if(productClassList != null && productClassList.length > 0){
+		$.each(productClassList,function(i,i_item){
+			html+='<div class="leftDiv rightDiv" align="left" style="margin-left:8px;line-height:20px;">';
+			html+='<div class="leftDiv-d rightDiv-d" style="line-height:20px" align="left">';
+			html+='<input class="leftClassCode rightClassCode" value="'+i_item.classCode+'" type="checkbox"';
+			if(storeTypeClassCodes != null && storeTypeClassCodes.length > 0){
+				$.each(storeTypeClassCodes,function(l,l_item){
+					if(i_item.classCode == l_item.classCode){
+						html+='checked="checked"';
+					}
+				});
+			}
+			if(i_item.subClassList == null || i_item.subClassList.length == 0){
+				html+='name="proclassname"';
+			}
+			html+='>';
+			html+='<span class="leftClassName rightClassName" style="cursor:pointer">'+i_item.className+'(';
+			if(i_item.subClassList != null && i_item.subClassList.length > 0){
+				html+=i_item.subClassList.length;	
+			}else{
+				html+=0;	
+			}
+			html+=')</span>';
+			html+='<div class="leftDiv rightDiv" style="line-height:10px;margin-left:12px;display:none" align="left">';
+			if(i_item.subClassList != null && i_item.subClassList.length > 0){
+				$.each(i_item.subClassList,function(j,j_item){
+					html+='<div class="leftDiv-d rightDiv-d" style="line-height:20px" align="left">';
+					html+='<input class="leftClassCode rightClassCode" value="'+j_item.classCode+'" type="checkbox"';
+					if(storeTypeClassCodes != null && storeTypeClassCodes.length > 0){
+						$.each(storeTypeClassCodes,function(l,l_item){
+							if(j_item.classCode == l_item.classCode){
+								html+='checked="checked"';
+							}
+						});
+					}
+					if(j_item.subClassList == null || j_item.subClassList.length == 0){
+						html+='name="proclassname"';
+					}
+					html+='>';
+					html+='<span class="leftClassName rightClassName" style="margin-left:2px;cursor:pointer;color:#0000FF">'+j_item.className+'(';
+					if(j_item.subClassList != null && j_item.subClassList.length > 0){
+						html+=j_item.subClassList.length;	
+					}else{
+						html+=0;	
+					}
+					html+=')</span>';
+					html+='<div class="leftDiv rightDiv" style="line-height:10px;margin-left:15px;display:none" align="left">';
+					if(j_item.subClassList != null && j_item.subClassList.length > 0){
+						$.each(j_item.subClassList,function(k,k_item){
+							html+='<div class="leftDiv-d rightDiv-d" style="line-height:20px" align="left">';
+							html+='<input class="leftClassCode rightClassCode" value="'+k_item.classCode+'" type="checkbox"';
+							if(storeTypeClassCodes != null && storeTypeClassCodes.length > 0){
+								$.each(storeTypeClassCodes,function(l,l_item){
+									if(k_item.classCode == l_item.classCode){
+										html+='checked="checked"';
+									}
+								});
+							}
+							if(k_item.subClassList == null || k_item.subClassList.length == 0){
+								html+='name="proclassname"';
+							}
+							html+='>';
+							html+='<span class="leftClassName rightClassName" style="margin-left:2px;color:#FF0000">'+k_item.className+'</span>';
+							html+='</div>';
+						});
+					}
+					html+='</div></div>';
+				});
+			}
+			html+='</div></div></div>';
+		});
+	}
+	$('#leftBox').html(html);
+}
+
+var productClassCiv = '<table border="1" bordercolor="#CCCCCC" style="border-collapse:collapse;width:560px;">';
+productClassCiv +='<tr>';
+productClassCiv +='<td style="height:20px" align="center" valign="middle">可选择产品类别</td>';
+/* productClassCiv +='<td style="height:20px" align="center" valign="middle">已选择产品类别</td>'; */
+productClassCiv +='</tr>';
+productClassCiv +='<tr>';
+productClassCiv +='<td align="center" valign="top">';
+productClassCiv +='<div id="leftBox" style="height:280px;width:560px;overflow:auto;"></div>';
+productClassCiv +='</td>';
+/* productClassCiv +='<td align="center" valign="top">';
+productClassCiv +='<div id="selectFunctionListBox" style="height:280px;width:265px;overflow:auto"></div>';
+productClassCiv +='</td>'; */
+productClassCiv +='</tr>';
+productClassCiv +='</table>';
+
+var stageIndex = 1;
+var CUSTOMTYPEhtml = '<div class="selectdatediv">'
+ 	+'<span>&nbsp;&nbsp;第<span class="stageIndex">'+stageIndex+'</span>阶段:&nbsp;&nbsp;</span>'
+ 	+'<span><input type="type" class="btime txt">&nbsp;&nbsp;至&nbsp;&nbsp;<input type="type" class="etime txt"></span>&nbsp;&nbsp;&nbsp;&nbsp;'
+ 	+'<a href="javascript:void(0)" class="delDateDiv ablue" >删除</a>'
+ 	+'</div>';
+
+var SYSTEMTYPEhtml = '<div class="selectdatediv">'
+	+'<span>&nbsp;&nbsp;第<span class="stageIndex">'+stageIndex+'</span>阶段:&nbsp;&nbsp;</span>'
+	+'<span>周期:&nbsp;<input type="type" class="period txt" maxlength="2">&nbsp;&nbsp;天&nbsp;&nbsp;</span>'
+	+'<span style="font-style: #ccc" class="ms">设置的值是从上一阶段的结束时间开始算起；</span>&nbsp;&nbsp;&nbsp;&nbsp;'
+	+'<a href="javascript:void(0)" class="delDateDiv ablue" >删除</a>'
+	+'</div>';
+$(document).ready(function(e) {
+	loadHtml("headerId", "/include/header.html");
+	loadHtml("left_menu_content", "/include/leftmenu.html");
+	loadHtml("footerId", "/include/footer.html");
+	$('#dateDiv').html(CUSTOMTYPEhtml);
+	$('#conPackId').val(conPackId);
+	loadTimeInput();
+	loadCouponsInfo();
+	listBuyerTypeLabelList();
+	listGrantWays();
+	$('#userInfo').hide();
+	//左边点击文字
+	$("#productClassDiv").on("click",".leftClassName",function(){
+		var obj = $(this).parent();
+		nextShow(obj);
+	});
+	//右边点击文字
+	/* $("#rightBox").on("click",".leftClassName",function(){
+		var obj = $(this).parent();
+		nextShow(obj);
+	}); */
+	//勾选复选框
+	$("#productClassDiv").on("click",".leftClassCode",function(){
+		nextChecked($(this));
+	});
+	
+	$('.validType').on('click',function(){
+		$('#addBasicDateDiv').show();
+		var grantRange = $('input[name="grantRange"]:checked').val();
+		stageIndex = 1;
+		$("#validTypeValue").val("");
+		if($(this).val()=='COUPONVALIDTYPE_CUSTOMTYPE'){
+			$('#dateDiv').html(CUSTOMTYPEhtml);
+			loadTimeInput();
+			$('input[name="grantWay"]').each(function(){
+				if($(this).val() != 'COUPONSGRANTWAY_AUTO_RELEASE'){
+					$(this).attr("disabled","disabled");
+				}else{
+					$(this).prop("checked","checked");
+				}
+			});
+		}else if($(this).val()=='COUPONVALIDTYPE_SYSTEMTYPE'){
+			$('#dateDiv').html(SYSTEMTYPEhtml);
+			$('input[name="grantWay"]').each(function(i,val){
+				if(grantRange == 'COUPONSGRANTRANGE_BATCH'){
+					if($(this).val() != 'COUPONSGRANTWAY_AUTO_RELEASE'){
+						$(this).removeAttr("disabled");
+					}else{
+						$(this).removeAttr("checked");
+					}
+				}
+			});
+		}
+	});
+	
+	$("#dateDiv").on("click",".delDateDiv",function(){
+		var selectdatedivs = $(".selectdatediv");
+		if(selectdatedivs != null && selectdatedivs.length > 1){
+			var num = parseInt($(this).parent(".selectdatediv").find('.stageIndex').text());
+			var nextDivs = $(this).parent(".selectdatediv").nextAll();
+			$(this).parent(".selectdatediv").remove();
+			if(nextDivs != null && nextDivs.length > 0){
+				nextDivs.each(function(){
+					$(this).find('.stageIndex').text(num);
+					num ++;
+				});
+			}
+			stageIndex = parseInt($('#dateDiv').find('.selectdatediv:last').find('.stageIndex').text());
+		}else{
+			showBox('提示','必须保留一条','alert')
+		}
+	});
+	$("#addBasicDateDiv").on("click",function(){
+		stageIndex = stageIndex+1;
+		if($('input[name="validType"]:checked').val()=="COUPONVALIDTYPE_CUSTOMTYPE"){
+			$('#dateDiv').append(CUSTOMTYPEhtml);
+		}else if($('input[name="validType"]:checked').val()=="COUPONVALIDTYPE_SYSTEMTYPE"){
+			$("#dateDiv").append(SYSTEMTYPEhtml);
+		}
+		$('#dateDiv').find('.selectdatediv:last').find('.stageIndex').text(stageIndex);
+		loadTimeInput();
+	});
+	
+});
+
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 促销管理 &gt; <span>优惠劵发放</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">优惠劵发放</div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+								<dl>
+									<dt>
+										优惠券包名称：
+									</dt>
+									<dd>
+										<span id="conName" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred" >*</span>使用范围：
+									</dt>
+									<dd>
+										<input type="radio" id="radio1" name="useRangeCode" value="COUPONSUSERANGE_ALL" checked='checked' onclick="getUseRange(1)"/>&nbsp;全场</br>
+		   								<input type="radio" id="radio2" name="useRangeCode" value="COUPONSUSERANGE_PRODUCT_CLASS" onclick="getUseRange(2)" />&nbsp;选择产品品类</br>		   																
+										<div id= "productClassDiv" class="disn">
+										</div>
+										<span id ="useRangeProductClassMsg" class ="cred"></span>							
+		   								<input type="radio" id="radio3" name="useRangeCode" value="COUPONSUSERANGE_PRODUCT_LABEL" onclick="getUseRange(3)" />&nbsp;选择产品标示</br>
+		   								<span id= "productLabelSpan" class="disn"><span id= "productLabel" style="border: 1px dashed;display:block" class="disn"></span></span>
+										<span id ="useRangeProductLabelMsg" class ="cred"></span>	
+		   								<input type="radio" id="radio4" name="useRangeCode" value="COUPONSUSERANGE_SINGLE_PRODUCT" onclick="getUseRange(4)" />&nbsp;选择单个产品
+		   								<input type="hidden" name="productId" id="productId" />
+		   								<fieldset id="productInField" style="border: 1px dashed;" class="disn">
+		   								已选产品：
+										<span id="productName"></span>
+										</fieldset>
+										<span id ="useRangeProductIdMsg" class ="cred"></span>	
+									</dd>
+								</dl>
+
+									<input type="hidden" class="txt grid-30" id="useRange" name="useRange" />
+								<dl>
+									<dt>
+										<span class="cred">*</span>有效期：
+									</dt>
+									<dd>
+										<input type="radio" name="validType" class="validType" value="COUPONVALIDTYPE_CUSTOMTYPE" checked="checked">自定义时间
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="radio" name="validType" class="validType" value="COUPONVALIDTYPE_SYSTEMTYPE">系统时间周期
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred"></span>
+									</dt>
+									<dd>
+									<input type="button" id="addBasicDateDiv" class="btn_sure" value="添加">
+									<input type="hidden" id="validTypeValue" name="validTypeValue">
+										<div id="dateDiv" style="border: 1px solid #000000; width: 600px">
+										</div>
+										<span id="validTypeValueMsg" class="gray"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>发放范围：
+									</dt>
+									<dd>
+										<input type="radio" id="radio5" name="grantRange" value="COUPONSGRANTRANGE_BATCH" checked='checked' onclick="getGrantRange(1)"/>&nbsp;批量发送&nbsp;&nbsp;&nbsp;
+		   								<input type="radio" id="radio6" name="grantRange" value="COUPONSGRANTRANGE_SINGLE" onclick="getGrantRange(2)"/>&nbsp;单独发送&nbsp;&nbsp;&nbsp;
+									</dd>
+								</dl>
+							<div id="level">
+								<dl>
+									<dt>
+										<span class="cred">*</span>用户类型：
+									</dt>
+									<dd>
+										<select class="select grid-46" id="buyerUserType" name="buyerUserType"
+											onmousedown="showErr('buyerUserType')"></select>&nbsp;&nbsp; <span
+											class="cred" id="buyerUserTypeMsg"></span>
+									</dd>
+								</dl>
+							</div>
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>用户登录账号：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-45" id="userNames" name="userNames" onmousedown="showErr('userNames')">&nbsp;&nbsp;
+										<span id="userNamesMsg" class="gray">输入多个登录账号,用英文逗号隔开</span>
+									</dd>
+								</dl>
+							</div>
+							<span id="grantWaySpan"></span>
+							<dl>
+								<dt>
+									<span class="cred">*</span>规则说明：
+								</dt>
+								<dd>
+									<textarea type="text" class="txt grid-46" id="rule" name="rule" onmousedown="showErr('rule')" rows="8" maxlength="256"></textarea>&nbsp;&nbsp;
+									<span id="ruleMsg" class="cred"></span>
+								</dd>
+							</dl>
+							<br/>
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit" onClick="dataSubmit()">  
+										<input type="button" id="goBack" class="btn_gray" value="返回" onclick="javascript:comebackList();">
+										<span id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden"  id="conPackId" name="conPackId" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

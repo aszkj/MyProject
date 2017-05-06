@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.AuditProductBatchInfoMapper">
+	<resultMap id="BaseResultMap" type="AuditProductBatchInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="BATCHNO" property="batchNo" jdbcType="VARCHAR" />
+		<result column="UPLOADCOUNT" property="uploadCount" jdbcType="INTEGER" />
+		<result column="SUBMITSTATUS" property="submitStatus" jdbcType="VARCHAR" />
+		<result column="SUBMITTIME" property="submitTime" jdbcType="TIMESTAMP" />
+		<result column="SUBMITUSERID" property="submitUserId" jdbcType="INTEGER" />
+		<result column="SUBMITCOUNT" property="submitCount" jdbcType="INTEGER" />
+		<result column="DATARESOURCE" property="dataResource" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, BATCHNO, UPLOADCOUNT, SUBMITSTATUS, SUBMITTIME,
+		SUBMITUSERID, SUBMITCOUNT,DATARESOURCE, CREATETIME, CREATEUSERID, MODIFYTIME, MODIFYUSERID
+	</sql>
+
+	<insert id="save" parameterType="AuditProductBatchInfo" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_AUDIT_PRODUCT_BATCH_INFO (
+		BATCHNO, UPLOADCOUNT, SUBMITSTATUS, SUBMITTIME, SUBMITUSERID, SUBMITCOUNT,DATARESOURCE, CREATETIME, CREATEUSERID
+		)
+		values (
+		#{batchNo,jdbcType=VARCHAR},
+		#{uploadCount,jdbcType=INTEGER},
+		#{submitStatus,jdbcType=VARCHAR},
+		#{submitTime,jdbcType=TIMESTAMP},
+		#{submitUserId,jdbcType=INTEGER},
+		#{submitCount,jdbcType=INTEGER},
+		#{dataResource,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<delete id="deleteByBatchNo">
+		delete from P_AUDIT_PRODUCT_BATCH_INFO
+		where BATCHNO = #{batchNo, jdbcType=VARCHAR}
+		and SUBMITSTATUS IN
+		<foreach item="item" index="index" collection="submitStatusList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="loadById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT_BATCH_INFO
+		where ID = #{id, jdbcType=INTEGER}
+	</select>
+	
+	<select id="loadByBatchNo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT_BATCH_INFO
+		where BATCHNO = #{batchNo, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateUploadCount">
+		update P_AUDIT_PRODUCT_BATCH_INFO
+		set
+		UPLOADCOUNT = UPLOADCOUNT + #{deltaCount,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where BATCHNO = #{batchNo, jdbcType=VARCHAR}
+		and UPLOADCOUNT + #{deltaCount,jdbcType=INTEGER} &gt;= 0
+	</update>
+	
+	<update id="updateSubmitStatus">
+		update P_AUDIT_PRODUCT_BATCH_INFO
+		set
+		SUBMITSTATUS = #{submitStatus,jdbcType=VARCHAR},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where BATCHNO = #{batchNo, jdbcType=VARCHAR}
+		and SUBMITSTATUS IN
+		<foreach item="item" index="index" collection="preSubmitStatusList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<update id="updateSubmitTime">
+		update P_AUDIT_PRODUCT_BATCH_INFO
+		set
+		SUBMITTIME = #{submitTime,jdbcType=TIMESTAMP},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where BATCHNO = #{batchNo, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateSubmitCount">
+		update P_AUDIT_PRODUCT_BATCH_INFO
+		set
+		SUBMITCOUNT = ifNull(SUBMITCOUNT, 0) + #{deltaCount,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where BATCHNO = #{batchNo, jdbcType=VARCHAR}
+		and ifNull(SUBMITCOUNT, 0) + #{deltaCount,jdbcType=INTEGER} &gt;= 0
+	</update>
+
+	<select id="findAuditProductBatchInfos" resultMap="BaseResultMap" parameterType="AuditProductBatchInfoQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT_BATCH_INFO
+		<where>
+			<if test="batchNo != null">
+				BATCHNO = #{batchNo,jdbcType=VARCHAR}
+			</if>
+			<if test="submitStatus != null and submitStatus != ''">
+				and SUBMITSTATUS = #{submitStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="dataResource != null and dataResource != ''">
+				and DATARESOURCE = #{dataResource,jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+</mapper>

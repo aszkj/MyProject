@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部栏-->
+		<div class="top-big-tit" style="background-color: #ffc600;">
+			<div class="top-big-tit-btn whiteBackBtn" onclick="history.go(-1)"></div>
+			<p style="color:#fff;">深圳市</p>
+		</div>
+	</header>
+	<section>
+		<!--搜索地址框-->
+		<div class="searchBox">
+			<form onsubmit="searchWords();return false;">
+			<input type="search" class="searchAdd" id="searchAddInput" placeholder="请输入小区、写字楼、街道">
+			</form>
+		</div>
+		<!--搜索出来的地址-->
+		<div class="bordFixed" style="top:1.9rem;"></div>
+		<div class="sHisTit">
+			<p>历史搜索记录</p>
+		</div>
+		<div class="storeList sadList" id="storeListHistory" style="padding-top: 2.88rem;"></div>
+	</section>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<footer>
+		<div class="bord"></div>
+		<!--清除搜索历史-->
+		<button class="clear-search hide" onclick="clearHistory()">清除搜索历史</button>
+	</footer>
+</body>
+<script type="text/javascript">
+	var origin = getUrlParam("origin");
+	$(function() {
+		var data = getCommunityHisStorage();
+		if (data && data.length > 0) {
+			$(".clear-search").removeClass("hide");
+		}
+		$("#searchAddHistoryTmpl").tmpl(data).appendTo("#storeListHistory");
+	});
+	function searchWords() {
+		var keywords = $("#searchAddInput").val();
+		if (!keywords || keywords.trim() == "") {
+			alert("请输入您所需要搜索的信息");
+			return false;
+		}
+		window.location.href = 'searchAddress.html?keywords=' + keywords
+				+ '&origin=' + origin;
+			}
+	function clearHistory() {
+		removeLocalStorage(localStorageCommunityHistoryKey);
+		$("#storeListHistory").html("");
+		$(".clear-search").addClass("hide");
+	}
+	function changeStoreSuccess() {
+		returnIndex();
+	}
+	function selectCommunity(community) {
+		if (!origin)
+			changeStoreByCommunity(community, changeStoreSuccess);
+		else
+			passCommunityInfoToAddress(community);
+	}
+	function passCommunityInfoToAddress(community) {
+		history.go(-1);
+		setSessionStorage(sessionEditCommunityInfoKey, community);
+	}
+</script>
+<script id="searchAddHistoryTmpl" type="text/x-jquery-tmpl">
+        <div class="storeItem" onclick="selectCommunity(${JSON.stringify($data)})">
+            <p class="storeName">${$data.communityName}</p>
+            <p class="storeAddress">${$data.addressDetail}</p>
+        </div>
+</script>
+</html>

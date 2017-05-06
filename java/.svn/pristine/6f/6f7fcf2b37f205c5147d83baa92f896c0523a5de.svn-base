@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<style>
+.workorder_save_button_new{padding:8px 100px}
+</style>
+<script type="text/javascript">
+	var GLOBAL_PARAM = {
+		countWordsFlag : true,
+		g_boxId : $.trim(getUrlParam("boxId")),
+		type : $.trim(getUrlParam("type")),
+		systemParamId : $.trim(getUrlParam("systemParamId"))
+	};
+
+	function checkParamsCode(value) {
+		if("" != $.trim(value)){
+			ajax({
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'  + GLOBAL_PARAM.systemParamId + '-' + value
+						+ '/checkParamsCodeIsExist',
+				type : 'post',
+				dataType : 'json',
+				error : function() {
+				},
+				success : function(data) {
+					if (data.msgCode == 1) {
+						if(!data.entity){
+							$('#paramsCodeErr').text('系统参数编码已经存在');
+						}
+					}else{
+						$('#paramsCodeErr').text('验证系统参数编码出现系统异常');
+					}
+				}
+			});
+		}
+	}
+	
+	function checkParamName(value) {
+		if("" != $.trim(value)){
+			ajax({
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'  + GLOBAL_PARAM.systemParamId + '-' + value
+						+ '/checkParamNameIsExist',
+				type : 'post',
+				dataType : 'json',
+				error : function() {
+				},
+				success : function(data) {
+					if (data.msgCode == 1) {
+						if(!data.entity){
+							$('#paramNameErr').text('系统参数名称已经存在');
+						}
+					}else{
+						$('#paramNameErr').text('验证系统参数名称出现系统异常');
+					}
+				}
+			});
+		}
+	}
+	
+	function getSystemParam() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + GLOBAL_PARAM.systemParamId + '/loadSystemParamsById',
+			type : 'post',
+			dataType : 'json',
+			error : function() {
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				var object = data.entity;
+				$('#id').val(object.id);
+				$('#paramsCode').val(object.paramsCode);
+			    $('#paramsCode').attr('disabled','true');
+				$('#paramName').val(object.paramName);
+				$('#paramValue').val(object.paramValue);
+				$('#paramStatus').val(object.paramStatus);
+				$('#note').val(object.note);
+			}
+		});
+	}
+
+	/*保存*/
+	function saveParam() {
+		var url;
+		var flag=true;
+		if (GLOBAL_PARAM.systemParamId != null && GLOBAL_PARAM.systemParamId != '') {
+			url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/updateSystemParam';
+			$('#id').val(GLOBAL_PARAM.systemParamId);
+		} else {
+			url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/saveSystemParam';
+		}
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm'))); 
+		var paramsCode = $('#paramsCode').val();
+		var paramName = $('#paramName').val();
+		var paramValue = $('#paramValue').val();
+		if (paramsCode == null || paramsCode == '') {
+			$('#paramsCodeErr').text('参数编码为空');
+			flag = false;
+		}
+		if (paramName == null || paramName == '') {
+			$('#paramNameErr').text('参数名称为空');
+			flag = false;
+		}
+		if (paramValue == null || paramValue == '') {
+			$('#paramValueErr').text('参数值为空');
+			flag = false;
+		}
+		if (!flag) {
+			$('#prompt').text('请将信息填写完整再提交.');
+			return false;
+		} else {
+			$('#prompt').text('');
+		}
+		var paramsCodeErrText = $('#paramsCodeErr').text();
+		var paramNameErrText = $('#paramNameErr').text();
+		var paramValueErrText = $('#paramValueErr').text();
+		if(paramsCodeErrText != '' || paramNameErrText != '' || paramValueErrText != ''){
+			return false;
+		}
+		$.ajax({
+			type : 'post',
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			url : url,
+			error : function() {
+				alert("提交数据失败，请稍后再试")
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					if('系统参数编码已经存在' == data.msg){
+						$('#paramsCodeErr').text(data.msg);
+					}else if('系统参数名称已经存在' == data.msg){
+						$('#paramNameErr').text(data.msg);
+					}else{
+						$('#prompt').text(data.msg);
+					}
+					return;
+				}
+				$('#prompt').html('操作成功.');
+				setTimeout(function(){
+				    if(parent){
+				    	parent.$('#sId').val(GLOBAL_PARAM.systemParamId);
+				    	parent.dataSubmit();
+				    }
+					close_box();
+				},1000);
+			}
+		});
+	}
+
+	/*关闭弹框*/
+	function close_box() {
+		if (GLOBAL_PARAM.g_boxId != '' && parent && parent.closeBox){
+			if(GLOBAL_PARAM.type==1){
+		    	parent.$('#sId').val(GLOBAL_PARAM.systemParamId);
+		    	parent.dataSubmit();
+			}
+			parent.closeBox(GLOBAL_PARAM.g_boxId);
+		}
+	}
+	function showErr(errorType) {
+		if (errorType == 'paramsCode') {
+			$('#paramsCodeErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+		if (errorType == 'paramName') {
+			$('#paramNameErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+		if (errorType == 'paramValue') {
+			$('#paramValueErr').text('');
+			$('#prompt').text('');
+			return;
+		}
+	}
+	function countwords(id) {
+		var inputLength = $("#" + id).val().length;
+		var maxCount = 50;
+		if (inputLength == 0) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + maxCount + "个字");
+		} else if (inputLength > 0 && inputLength <= maxCount) {
+			GLOBAL_PARAM.countWordsFlag = true;
+			$("#" + id + "Err").html("还可以输入" + (maxCount - inputLength) + "个字");
+		} else if (inputLength > maxCount) {
+			GLOBAL_PARAM.countWordsFlag = false;
+			$("#" + id + "Err").html(
+					"<strong class='cred'>已经超过" + (inputLength - maxCount)
+							+ "个字</strong>");
+		}
+	}
+	
+	$(document).ready(function(e) {
+	    if(GLOBAL_PARAM.systemParamId!=''&&GLOBAL_PARAM.systemParamId!=null){
+	    	getSystemParam();
+	    }
+	    if(GLOBAL_PARAM.type==1){
+		    $('#paramsCode').attr('disabled','true');
+	       $('#paramName').attr('disabled', 'true');
+	       $('#paramValue').attr('disabled','true');
+		   $('#paramStatus').attr('disabled', 'true');
+		   $('#note').attr('disabled', 'true');
+	       $('#saveButton').hide();
+	       $('#resetButton').val('关闭');
+	    }else{
+		   $('#paramsCode').removeAttr('disabled');
+	       $('#paramName').removeAttr('disabled');
+	       $('#paramValue').removeAttr('disabled');
+	       $('#paramStatus').removeAttr('disabled');
+	       $('#note').removeAttr('disabled');
+	       $('#saveButton').show();
+	       $('#resetButton').val('取消');
+	    }
+	});
+</script>
+</head>
+
+<body>
+<div class="workorder_mng">
+   <div class="workorder_leave">
+   <form method="post" id="dataForm">
+    <input type="hidden" class="txt" id="id" name="id"/>
+    <dl>
+       <dt><span class="cred">*</span>参数编码：</dt>
+	   <dd>
+		   <input type="text" class="txt grid-40" id="paramsCode" name="paramsCode" onmousedown="showErr('paramsCode')"  onblur="checkParamsCode(this.value)" />&nbsp;&nbsp;
+		   <span id="paramsCodeErr" class="cred"></span>
+	   </dd>
+    </dl>
+	<dl>
+	   	<dt><span class="cred">*</span>参数名称：</dt>
+	   	<dd><input type="text" class="txt grid-40" id="paramName" name="paramName" onmousedown="showErr('paramName')" onblur="checkParamName(this.value)"/>&nbsp;&nbsp;
+	   	<span id="paramNameErr" class="cred"></span></dd>
+   </dl>
+   <dl>
+     	<dt><span class="cred">*</span>参数值：</dt>
+	   	<dd><input type="text" class="txt grid-40" id="paramValue" name="paramValue" onmousedown="showErr('paramValue')"/>&nbsp;&nbsp;
+	   	<span id="paramValueErr" class="cred"></span></dd>
+   </dl>
+   <dl>
+		<dt><span class="cred">*</span>参数状态：</dt>
+	   	<dd>
+		   	<select class="select grid-41" id="paramStatus" name="paramStatus">
+				<option value="SYSPARAMSTATUS_ON">有效</option>
+				<option value="SYSPARAMSTATUS_OFF">无效</option>
+    	    </select>
+	   	</dd>
+   </dl>
+   <dl>
+		<dt>备注：</dt>
+		<dd>
+		<textarea type="text" id="note" name="note"
+			class="txt grid-40" rows="3" onkeyup="countwords('note')"></textarea>
+		</dd>
+		<span id="auditNoteErr" class="gray" style="padding:1px 100px">可以输入50个字</span>
+   </dl>
+   </form>
+   <p class="workorder_save_button_new">
+   	<input id="saveButton" type="button" onclick="saveParam()" class="btn_sure" value="提交" />
+   	<input id="resetButton" type="button" onclick="close_box()" class="btn_gray" value="取消" />
+   	<span id="prompt" class="cred"></span>
+   </p>
+   </div>
+</body>
+</html>

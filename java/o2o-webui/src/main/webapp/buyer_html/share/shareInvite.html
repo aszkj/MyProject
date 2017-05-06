@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<title>好友邀请</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css" />
+<script type="text/javascript" src="../static-resource/js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="../static-resource/js/resize.js"></script>
+<script type="text/javascript" src="../static-resource/js/base.js"></script>
+<script type="text/javascript" src="../static-resource/js/module.js"></script>
+</head>
+<body>
+	<div class="topTitBox">
+		<div id="backBtn">
+
+		</div>
+	</div>
+	<div class="shareInvite">
+		<div class="shareInviteTopText" id="fromText">
+			<h3>来自好友的一里递礼包</h3>
+			<p class="shareInviteText">新用户专享</p>
+		</div>
+		<div class="shareInviteTopText hide" id="receivedPaperText">
+			<h3>太棒了</h3>
+			<p class="shareInviteText">收到了您的好友的礼包</p>
+		</div>
+		<div class="userImg">
+			<img src="../static-resource/images/share/tx.png">
+			<div class="vipMember"></div>
+		</div>
+		<div class="toInviteText">
+			<p class="shareInviteText">接受您的好友邀请加入一里递</p>
+			<h4>领取100元大礼包</h4>
+		</div>
+		<div id="paperFold">
+			<img src="../static-resource/images/share/paper_03.png">
+		</div>
+		<div id="paperUnfold" class="hide">
+			<img src="../static-resource/images/share/ppbg_03.png">
+		</div>
+		<div id="toInputTele" class="shareInputBox">
+			<label><input id="userTele" placeholder="请输入您的手机号拆开礼包"></label>
+			<p>*每个微信号只能成功领取1次新人礼包</p>
+			<label><input type="button" value="马上拆开" readonly="readonly" class="paperBtn" onclick="invite()"> </label>
+		</div>
+		<div id="toUsePaper" class="shareInputBox hide">
+			<p>100元礼包已放入账号139xxxx1233</p>
+			<label><input type="button" value="立即使用" readonly="readonly" class="paperBtn" onclick="openApp()"> </label>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var shareCode = getUrlParam("shareCode");
+	var code;
+	var UA = navigator.userAgent.toLowerCase();
+	var isPhone = RegExp("iphone").test(UA);
+	var isAndroid = RegExp("android").test(UA) || RegExp("linux").test(UA);
+	$(function() {
+		showContent();
+	});
+	function showContent() {
+		if (!isWX()) {
+			showOpenWithWX();
+		} else {
+			
+		}
+	}
+	function showOpenWithWX() {
+		// 显示请在微信页面端打开的情况
+	}
+	function requestActInfo() {
+		var param = new Object();
+		param.shareCode = shareCode;
+		ajax("/share/infobysharecode", param, function(data) {
+			if (!data || !data.shareInfo)
+				//显示活动过期或者活动已结束等页面情况
+				return;
+			showActInfo(true, data.inviteUserInfo);
+		}, function(msg) {
+			alert(msg);
+		});
+	}
+	function showActInfo(shown, inviteUserInfo) {
+		if (shown) {
+			$(".userImg").append("<img src='"+inviteUserInfo.userImageUrl+"'>");
+			if (inviteUserInfo.memberType == 1)
+				$(".userImg").append("<div class='vipMember'></div>");
+		}
+	}
+
+	function invite() {
+		var param = new Object();
+		param.code = code;
+		param.shareCode = shareCode;
+		param.mobile = $("#userTele").val();
+		ajax("/share/acceptinvite", paramm, function(data) {
+			openPaper();
+		}, function(msg) {
+			alert(msg);
+		});
+	}
+	function openPaper() {
+		$("#paperFold").hide();
+		$("#paperUnfold").removeClass("hide");
+		$("#fromText").hide();
+		$("#receivedPaperText").removeClass("hide");
+		$("#toInputTele").hide();
+		$("#toUsePaper").removeClass("hide");
+		$(".toInviteText").hide();
+	}
+	function openApp() {
+		var appUri = "yilidi://yldbkd.com/open";
+		var appdownload = "http://a.app.qq.com/o/simple.jsp?pkgname=com.yldbkd.www.buyer.android";
+		if (isPhone) {
+			var loadDateTime = new Date();
+			window.setTimeout(function() {
+				var timeOutDateTime = new Date();
+				if (timeOutDateTime - loadDateTime < 5000) {
+					window.location = appdownload;
+				} else {
+					window.close();
+				}
+			}, 500);
+			window.location = appUri;
+		} else if (isAndroid) {
+			var state = null;
+			try {
+				state = window.open(appUri, '_blank');
+			} catch (e) {
+				console.log(e);
+			}
+			if (state)
+				window.close();
+			else
+				window.location = appdownload;
+		}
+	}
+</script>
+</html>

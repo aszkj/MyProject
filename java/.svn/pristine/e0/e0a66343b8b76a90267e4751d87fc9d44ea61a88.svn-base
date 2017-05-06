@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.StockOutOrderStockOutRelationMapper">
+	<resultMap id="BaseResultMap" type="StockOutOrderStockOutRelation">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOCKOUTOPERTYPE" property="stockOutOperType" jdbcType="VARCHAR" />
+		<result column="STOCKOUTORDERNO" property="stockOutOrderNo" jdbcType="VARCHAR" />
+		<result column="STOCKOUTID" property="stockOutId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, STOCKOUTOPERTYPE, STOCKOUTORDERNO, STOCKOUTID, CREATETIME, CREATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="StockOutOrderStockOutRelation" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_STOCKOUT_ORDER_STOCKOUT_RELATION (
+		STOCKOUTOPERTYPE, STOCKOUTORDERNO,
+		STOCKOUTID, CREATETIME, CREATEUSERID
+		)
+		values(
+		#{stockOutOperType,jdbcType=VARCHAR},
+		#{stockOutOrderNo,jdbcType=VARCHAR},
+		#{stockOutId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<select id="listStockOutOrderStockOutRelations" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKOUT_ORDER_STOCKOUT_RELATION
+		<where>
+			<if test="stockOutOperType != null">
+				and STOCKOUTOPERTYPE = #{stockOutOperType,jdbcType=VARCHAR}
+			</if>
+			<if test="stockOutOrderNo != null">
+				and STOCKOUTORDERNO = #{stockOutOrderNo,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

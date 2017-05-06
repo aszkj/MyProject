@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.PriceOthernessAreaMapper" >
+  <resultMap id="BaseResultMap" type="PriceOthernessArea" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="OTHERNESSPRICEID" property="othernessPriceId" jdbcType="INTEGER" />
+    <result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+    <result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, OTHERNESSPRICEID, PROVINCECODE, CITYCODE
+  </sql>
+  
+  <insert id="save" parameterType="PriceOthernessArea" >
+    insert into P_PRICE_OTHERNESS_AREA (ID, OTHERNESSPRICEID, 
+      PROVINCECODE, CITYCODE)
+    values (#{id,jdbcType=INTEGER}, #{othernessPriceId,jdbcType=INTEGER}, 
+      #{provinceCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR})
+  </insert>
+  
+  <select id="listByOthernessPriceId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from P_PRICE_OTHERNESS_AREA
+    where OTHERNESSPRICEID = #{othernessPriceId,jdbcType=INTEGER}
+  </select>
+  
+</mapper>

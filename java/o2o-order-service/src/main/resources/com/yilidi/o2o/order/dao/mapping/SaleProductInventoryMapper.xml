@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.SaleProductInventoryMapper">
+	<resultMap id="BaseResultMap" type="SaleProductInventory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="REMAINCOUNT" property="remainCount" jdbcType="INTEGER" />
+		<result column="ORDEREDCOUNT" property="orderedCount" jdbcType="INTEGER" />
+		<result column="STANDBYCOUNT" property="standbyCount" jdbcType="INTEGER" />
+		<result column="WARNINGFLAG" property="warningFlag" jdbcType="VARCHAR" />
+		<result column="STORESTATUS" property="storeStatus" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,STOREID, SALEPRODUCTID, REMAINCOUNT, ORDEREDCOUNT,
+		STANDBYCOUNT, WARNINGFLAG, STORESTATUS,
+		CREATEUSERID,
+		CREATETIME,MODIFYUSERID,MODIFYTIME
+	</sql>
+	<sql id="Simple_Column_List">
+		SALEPRODUCTID, REMAINCOUNT
+	</sql>
+
+	<insert id="save" parameterType="SaleProductInventory">
+		insert into T_SALE_PRODUCT_INVENTORY (
+		STOREID, SALEPRODUCTID,
+		REMAINCOUNT,
+		ORDEREDCOUNT,
+		STANDBYCOUNT, WARNINGFLAG, STORESTATUS, CREATEUSERID, CREATETIME,MODIFYUSERID,MODIFYTIME
+		)
+		values (
+		#{storeId,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER},
+		#{remainCount,jdbcType=INTEGER},
+		#{orderedCount,jdbcType=INTEGER},
+		#{standbyCount,jdbcType=INTEGER},
+		#{warningFlag,jdbcType=VARCHAR},
+		#{storeStatus,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=INTEGER},
+		#{modifyTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<update id="updateRemainCountById">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		REMAINCOUNT = REMAINCOUNT + #{delta,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where ID =
+		#{id,jdbcType=INTEGER} and REMAINCOUNT + #{delta,jdbcType=INTEGER} >= ORDEREDCOUNT
+	</update>
+
+	<update id="updateOrderedCountById">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		ORDEREDCOUNT = ORDEREDCOUNT + #{orderCount,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where ID =
+		#{id,jdbcType=INTEGER} and REMAINCOUNT >= ORDEREDCOUNT + #{orderCount,jdbcType=INTEGER}
+	</update>
+	<update id="updateOrderedCountBySaleProductId">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		ORDEREDCOUNT = ORDEREDCOUNT + #{orderCount,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER} and REMAINCOUNT >= ORDEREDCOUNT + #{orderCount,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateStandByCountById">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		STANDBYCOUNT = STANDBYCOUNT + #{standByCount,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where ID =
+		#{id,jdbcType=INTEGER} and ORDEREDCOUNT >= STANDBYCOUNT + #{standByCount,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateForSendById">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		ORDEREDCOUNT = ORDEREDCOUNT - #{sendCount,jdbcType=INTEGER},
+		STANDBYCOUNT =
+		STANDBYCOUNT - #{sendCount,jdbcType=INTEGER},
+		REMAINCOUNT = REMAINCOUNT - #{sendCount,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		ID =
+		#{id,jdbcType=INTEGER} and STANDBYCOUNT - #{sendCount,jdbcType=INTEGER} >= 0
+		and ORDEREDCOUNT -
+		#{sendCount,jdbcType=INTEGER} >= 0 and REMAINCOUNT - #{sendCount,jdbcType=INTEGER} >= 0
+	</update>
+	<select id="listByStoreIdAndSaleProductIds" resultType="SaleProductInventory">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_PRODUCT_INVENTORY
+		<where>
+			SALEPRODUCTID in
+			<foreach item="item" index="index" collection="saleProductIds" open="(" separator="," close=")">
+				#{item,
+				jdbcType=INTEGER}
+			</foreach>
+			<if test="storeId != null">
+				AND STOREID = #{storeId}
+			</if>
+		</where>
+		order by SALEPRODUCTID
+	</select>
+
+	<select id="loadByStoreIdAndSaleProductId" resultType="SaleProductInventory">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_PRODUCT_INVENTORY
+		<where>
+			SALEPRODUCTID = #{saleProductId, jdbcType=INTEGER}
+			<if test="storeId != null">
+				AND STOREID = #{storeId}
+			</if>
+		</where>
+		FOR UPDATE
+	</select>
+
+	<update id="updateStandbyCountForAccept">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		STANDBYCOUNT = STANDBYCOUNT + #{standbyCount,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER} and ORDEREDCOUNT >= STANDBYCOUNT + #{standbyCount,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateOrderedCountForCancel">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		ORDEREDCOUNT = ORDEREDCOUNT - #{returnCount,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER} and ORDEREDCOUNT >= #{returnCount,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateAllCountForSend">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		ORDEREDCOUNT = ORDEREDCOUNT - #{sendCount,jdbcType=INTEGER},
+		STANDBYCOUNT =
+		STANDBYCOUNT - #{sendCount,jdbcType=INTEGER},
+		REMAINCOUNT = REMAINCOUNT - #{sendCount,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER} and STANDBYCOUNT - #{sendCount,jdbcType=INTEGER} >= 0
+		and ORDEREDCOUNT -
+		#{sendCount,jdbcType=INTEGER} >= 0 and REMAINCOUNT - #{sendCount,jdbcType=INTEGER} >= 0
+	</update>
+	<update id="updateOrderCountAndStandbyCountForAcceptCancel">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		ORDEREDCOUNT = ORDEREDCOUNT - #{cancelCount,jdbcType=INTEGER},
+		STANDBYCOUNT =
+		STANDBYCOUNT - #{cancelCount,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER} and
+		STANDBYCOUNT - #{cancelCount,jdbcType=INTEGER} >= 0
+		and ORDEREDCOUNT -
+		#{cancelCount,jdbcType=INTEGER} >= 0
+	</update>
+	<update id="updateRemainCountBySaleProductId">
+		update T_SALE_PRODUCT_INVENTORY
+		set
+		REMAINCOUNT = REMAINCOUNT + #{delta,jdbcType=INTEGER},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where SALEPRODUCTID
+		= #{saleProductId,jdbcType=INTEGER} and REMAINCOUNT + #{delta,jdbcType=INTEGER} >= ORDEREDCOUNT
+	</update>
+
+	<select id="listSimpleSaleProductInventoryByStoreId" resultType="SimpleSaleProductInventory">
+		select
+		<include refid="Simple_Column_List" />
+		from T_SALE_PRODUCT_INVENTORY
+		where STOREID = #{storeId,jdbcType=INTEGER}
+	</select>
+
+	<select id="findInventoriesBySaleProductIds" resultType="SimpleSaleProductInventory" parameterType="SaleProductInventoryQuery">
+		SELECT A.SALEPRODUCTID FROM (SELECT SALEPRODUCTID FROM T_SALE_PRODUCT_INVENTORY WHERE SALEPRODUCTID IN
+		<foreach item="item" index="index" collection="saleProductIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		AND REMAINCOUNT - ORDEREDCOUNT > 0
+		<foreach item="item" index="index" collection="saleProductIds" open="ORDER BY FIELD(SALEPRODUCTID," separator=","
+			close=")">
+			#{item}
+		</foreach>
+		) AS A
+		UNION
+		SELECT B.SALEPRODUCTID FROM (SELECT SALEPRODUCTID FROM T_SALE_PRODUCT_INVENTORY WHERE SALEPRODUCTID IN
+		<foreach item="item" index="index" collection="saleProductIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		AND REMAINCOUNT - ORDEREDCOUNT &lt;= 0
+		<foreach item="item" index="index" collection="saleProductIds" open="ORDER BY FIELD(SALEPRODUCTID," separator=","
+			close=")">
+			#{item}
+		</foreach>
+		) AS B
+	</select>
+
+</mapper>

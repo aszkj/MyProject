@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.UserShareCodeMapper">
+	<resultMap id="BaseResultMap" type="UserShareCode">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SHARECODE" property="shareCode" jdbcType="VARCHAR" />
+		<result column="SHAREUSERID" property="shareUserId" jdbcType="INTEGER" />
+		<result column="QRCODEURL" property="qrCodeUrl" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, SHARECODE,SHAREUSERID,QRCODEURL,CREATETIME,CREATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="UserShareCode" useGeneratedKeys="true" keyProperty="id">
+		insert into U_USER_SHARECODE
+		(
+		SHARECODE,SHAREUSERID,QRCODEURL,CREATETIME, CREATEUSERID
+		)
+		values
+		(
+		#{shareCode,jdbcType=VARCHAR},
+		#{shareUserId,jdbcType=INTEGER},
+		#{qrCodeUrl,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}
+		)
+	</insert>
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_USER_SHARECODE
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByShareUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_USER_SHARECODE
+		where
+		SHAREUSERID = #{shareUserId,jdbcType=INTEGER}
+	</select>
+	<select id="loadByShareCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from U_USER_SHARECODE
+		where
+		SHARECODE = #{shareCode,jdbcType=VARCHAR}
+	</select>
+	<select id="loadByShareCodeAndUserId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_USER_SHARECODE
+		where
+		SHARECODE = #{shareCode,jdbcType=VARCHAR}
+		and SHAREUSERID = #{shareUserId,jdbcType=INTEGER}
+	</select>
+	<select id="listAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_USER_SHARECODE
+	</select>
+</mapper>

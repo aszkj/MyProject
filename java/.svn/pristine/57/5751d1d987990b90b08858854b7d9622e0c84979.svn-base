@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd ">
+	
+	<!-- 抽象静态化生成器 -->	
+	<bean id="abstractStaticizationGenerator"
+		class="com.yilidi.o2o.staticization.generator.AbstractStaticizationGenerator" abstract="true"> 
+		<property name="systemParamsService" ref="systemParamsService" />		
+	</bean>
+	
+	<!-- 具体静态化生成器 -->	
+	<bean id="userDetailStaticizationGenerator" class="com.yilidi.o2o.staticization.generator.concrete.UserDetailStaticizationGenerator" parent="abstractStaticizationGenerator">
+		<property name="userService" ref="userService" />
+	</bean>	
+
+</beans>

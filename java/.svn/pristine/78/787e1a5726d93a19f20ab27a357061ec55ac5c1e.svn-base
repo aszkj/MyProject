@@ -1,0 +1,378 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:2,
+	totalCount:0
+};
+function updatePageInfo(){
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页");}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/searchSystemDict',
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					var sId = $('#sId').val();
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr ';
+						if(sId == dataList[i].id){
+							html += ' name="selrow" bgcolor="#c8e3f8"';
+						}
+						html += '><td>';
+						html += dataList[i].typeName;
+						html += '</td><td>';
+						html += dataList[i].dictType;
+						html += '</td><td>';
+						html += dataList[i].dictName;
+						html += '</td><td>';
+						html += dataList[i].dictCode;
+						html += '</td><td>';
+						html += dataList[i].dictStatus=='SYSDICTSTATUS_ON'?'有效':'无效';
+						html += '</td><td>';
+						html += '<permission code="FUNCTION_VIEW_SYSTEM_DICT_MANAGEMENT">';
+						html += '<a href="javascript:detailDict('+dataList[i].id+')" class="ablue">查看&nbsp;</a> ';
+						html += '</permission>';
+						html += '<permission code="FUNCTION_MODIFY_SYSTEM_DICT_MANAGEMENT">';
+						html += '<a href="javascript:updateDict('+dataList[i].id+')" class="ablue">修改&nbsp;</a> ';
+						html += '</permission>';
+						if(dataList[i].dictStatus=='SYSDICTSTATUS_ON'){
+							html += '<permission code="FUNCTION_DISABLE_SYSTEM_DICT_MANAGEMENT">';
+							html += '<a href="javascript:stateDict('+dataList[i].id+',\'SYSDICTSTATUS_OFF\')" class="ablue">停用&nbsp;</a> ';
+							html += '</permission>';
+						}else{
+							html += '<permission code="FUNCTION_ENABLE_SYSTEM_DICT_MANAGEMENT">';
+							html += '<a href="javascript:stateDict('+dataList[i].id+',\'SYSDICTSTATUS_ON\')" class="ablue">启用&nbsp;</a>';
+							html += '</permission>';
+						}
+						html += '<permission code="FUNCTION_ADJUST_SORT_SYSTEM_DICT_MANAGEMENT">';
+						html += '<a href="javascript:void(0);" onclick="updateIndexShowBox('+dataList[i].id+')" class="ablue">调整顺序('+dataList[i].sort+')</a>';
+						html += '</permission>';
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="6">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('系统提示',data.msg,'alert');
+			}
+		}
+	}); 
+}
+function getAllValidDictTypes(){
+	ajax({
+		    url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY  + '/getAllValidDictTypes',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:getAllValidDictTypesSuccess
+	});
+}
+function getAllValidDictTypesSuccess(data){
+	if(data.msgCode!=1){
+		return;
+	}
+	var dictTypeMapList = data.entity;
+	var dictTypeMapHtml = [];
+	if(dictTypeMapList != null && dictTypeMapList.length >0){
+		dictTypeMapHtml.push('<option value="">--请选择--</option>');
+		for(var i=0,length=dictTypeMapList.length;i<length;i++){
+				dictTypeMapHtml.push('<option value="'+dictTypeMapList[i].dictType);
+				dictTypeMapHtml.push('" name="'+dictTypeMapList[i].typeName+'">'+dictTypeMapList[i].typeName+'</option>');
+		}
+	}
+	$('#dictType').html(dictTypeMapHtml.join(''));
+}
+function stateDict(id,dictStatus){
+	var tips = '';
+	if(dictStatus == 'SYSDICTSTATUS_OFF'){
+		 tips = '确认停用该系统字典吗？'
+	}
+	if(dictStatus == 'SYSDICTSTATUS_ON'){
+		 tips = '确认启用该系统字典吗？'
+	}
+	showBox('提示！',tips,'confirm',function(){
+		ajax({
+			url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY +'/' + id + '-' + dictStatus + '/changeSystemDictStatus',
+			type:'post',
+			dataType: 'json',
+			error: function(){},
+			success: function(data){
+			  if(data.msgCode != 1){ 
+				  showBox('系统提示',data.msg,'alert');
+			  }else{
+				   showBox('系统提示',data.msg,'alert',function(){
+					   $('#sId').val(id);
+					   dataSubmit();
+				  });
+			  }
+			}
+		});
+	});
+}
+function addDict(){
+	var message = '新增系统字典';
+	showBox(message,'/system/systemdict-mng.html?width=700&height=400');
+}
+function updateDict(id){
+	var message = '修改系统字典';
+	showBox(message,'/system/systemdict-mng.html?width=700&height=400&systemDictId='+id);
+}
+function detailDict(id){
+	var message = '查看系统字典';
+	showBox(message,'/system/systemdict-mng.html?width=700&height=400&systemDictId='+id+'&type=1');
+}
+function updateIndexShowBox(id){
+	$.data(document.body, 'id', id);
+	showBox('提示', 'updateShowBox');
+}
+function updateIndex(){
+	var id = $.data(document.body, 'id');
+	var index = $.trim($('#updateIndex').val());
+	if(!updateIndexBlur()){
+		return false;
+	}
+	ajax({
+		url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'  + id + '-' + index + '/changeDictSort',
+		type : 'post',
+		dataType : 'json',
+		error : function() {
+		},
+		success : function(data) {
+			if (data.msgCode == 1) {
+				closeBox();
+				 $('#sId').val(id);
+				dataSubmit();
+			}else{
+				showBox('系统提示',data.msg,'alert');
+			}
+		}
+	});
+}
+function updateIndexBlur(){
+	var index = $.trim($('#updateIndex').val()),
+		indexReg = /^\d+$/;
+	if(!indexReg.test(index)){
+		$('#updateIndexMsg').html('请输入数字').attr('class', 'error');
+		return false;
+	}
+	else{
+		$('#updateIndexMsg').html('').attr('class', 'right');
+	}
+	return true;
+}
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	getAllValidDictTypes();
+	dataSubmit();
+});
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; <a href="/">系统管理</a> &gt;<span>系统字典管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">系统字典管理</div>
+				<div class="complaint_main">
+					<input type="hidden" id="sId" name="id"></input>
+					<form method="get" id="dataForm">
+						<div class="main_search">
+							<dl>
+								<dt>字典类型：</dt>
+								<dd>
+									<select class="select grid-20" id="dictType" name="dictType"></select>
+								</dd>
+							</dl>
+							<dl>
+								<dt>字典名称：</dt>
+								<dd><input type="text" class="txt grid-35" id="dictName" name="dictName" /></dd>
+							</dl>
+							<dl>
+								<dt>字典编码：</dt>
+								<dd><input type="text" class="txt grid-35" id="dictCode" name="dictCode" /></dd>
+							</dl>
+							<dl>
+								<dt>字典状态：</dt>
+								<dd>
+									<select class="select grid-20" id="dictStatus" name="dictStatus">
+										<option value="">--全部--</option>
+										<option value="SYSDICTSTATUS_ON">有效</option>
+										<option value="SYSDICTSTATUS_OFF">无效</option>
+									</select>
+								</dd>
+							</dl>
+							<p class="main_search_btn">
+							<permission code="FUNCTION_SEARCH_SYSTEM_DICT_MANAGEMENT">
+								<input type="button" value="查询" class="btn_sure" id="orderSearch" onClick="dataSubmit()" /> 
+							</permission>
+							<permission code="FUNCTION_ADD_SYSTEM_DICT_MANAGEMENT">
+								<input type="button" value="新增系统字典" class="btn_sure" id="userAdd" onClick="addDict()" />
+							</permission>
+								<input type="hidden"  id="start" name="start" />
+								<input type="hidden"  id="pageSize" name="pageSize" />
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="80">字典类型名称</th>
+									<th width="80">字典类型编码</th>
+									<th width="45">字典名称</th>
+									<th width="130">字典编码</th>
+									<th width="20">字典状态</th>
+									<th width="60">操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营平台</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+<div id="updateShowBox" class="hide">
+	<div class="system_form">
+	<dl>
+		<dt><em class="cred">*</em>调整顺序：</dt>
+		<dd><input type="text" id="updateIndex" class="txt grid-16"onblur="updateIndexBlur()" placeholder="请输入数字"> <span id="updateIndexMsg"></span></dd>
+	</dl>
+	<p>	<input type="submit" value="确 定" class="btn_sure" onclick="updateIndex()"/> 
+		<input type="button" value="取 消" class="btn_gray" onclick="closeBox()" />
+		<span id="prompt" class="cred"></span>
+	</p>
+	</div>
+</div>
+</body>
+</html>

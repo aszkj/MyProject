@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:service interface="com.yilidi.o2o.order.service.IOrderService"
+		ref="orderService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IShopCartService"
+		ref="shopCartService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IFlittingOrderItemService"
+		ref="flittingOrderItemService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IFlittingOrderService"
+		ref="flittingOrderService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IStockInService"
+		ref="stockInService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IStockOutService"
+		ref="stockOutService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service
+		interface="com.yilidi.o2o.order.service.ISaleProductInventoryService"
+		ref="saleProductInventoryService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IFlittingOrderService"
+		ref="flittingOrderService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service
+		interface="com.yilidi.o2o.order.service.IOrderConsigneeAddressService"
+		ref="orderConsigneeAddressService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IFlittingOrderItemService"
+		ref="flittingOrderItemService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IPurchaseOrderService"
+		ref="purchaseOrderService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IPayLogService"
+		ref="payLogService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IStockOutOrderService"
+		ref="stockOutOrderService" protocol="${dubbo.protocol.id},${hessian.protocol.id}" />
+	<dubbo:service
+		interface="com.yilidi.o2o.order.service.IActivityOrderCustomerRecService"
+		ref="activityOrderCustomerRecService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.ICouponService"
+		ref="couponService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IVoucherService"
+		ref="voucherService" protocol="${dubbo.protocol.id}" />
+
+	<dubbo:service interface="com.yilidi.o2o.order.service.ISaleOrderItemService"
+		ref="saleOrderItemService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service
+		interface="com.yilidi.o2o.order.service.IFirstOrderCustomerRecService"
+		ref="firstOrderCustomerRecService" protocol="${dubbo.protocol.id}" />
+	<dubbo:service interface="com.yilidi.o2o.order.service.IOrderRefundService"
+		ref="orderRefundService" protocol="${dubbo.protocol.id}" />
+</beans>

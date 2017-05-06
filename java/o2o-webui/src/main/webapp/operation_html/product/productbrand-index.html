@@ -1,0 +1,268 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(TURN_PAGE_PARAMS['currentPage'] != 1){
+			showBox('提示!',"您输入的页码超出正常范围！",'alert');
+		} else { 
+			showBox('提示!',"当前已经是第一页！",'alert');
+		}
+		return;
+	}
+	if(pageNo>TURN_PAGE_PARAMS['pageCount']){
+		if(TURN_PAGE_PARAMS['currentPage'] != TURN_PAGE_PARAMS['pageCount']){
+			showBox('提示!',"您输入的页码超出正常范围！",'alert');
+		} else {
+			showBox('提示!',"当前已经是最后一页！",'alert');
+		}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+function dataSubmit(pageNo){
+	$("#tbody").html("");
+	var pattern = /\d+/;
+	if(typeof(pageNo)!="undefined" && pattern.test(parseInt(pageNo))){TURN_PAGE_PARAMS.currentPage = pageNo}
+	$('#currentPagesize').val(TURN_PAGE_PARAMS.pageSize);
+	$('#start').val(TURN_PAGE_PARAMS.currentPage);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/findProductBrandInfos',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				var pId = $("#id").val();
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						var productBrand =dataList[i]; 
+						html += '<tr ';
+						if('' != pId && null != pId && pId == dataList[i].id){
+							html += ' name="selrow" bgcolor="#c8e3f8"';
+						}
+						html += '><td>';
+						html += ((TURN_PAGE_PARAMS.currentPage - 1) * (TURN_PAGE_PARAMS.pageSize) + i + 1);
+						html += '</td><td>';
+						html += productBrand.brandName ? productBrand.brandName : '---';
+						html += '</td><td>';
+						if(productBrand.type == 'HOTSALEFLAG_YES'){
+							html += '<span class="cred">';
+							html += '是';
+							html += '</span>';
+						}else if(productBrand.type == 'HOTSALEFLAG_NO'){
+							html += '<span >';
+							html += '否';
+							html += '</span>';
+						}else{
+							html += '<span >';
+							html += '待设定';
+							html += '</span>';
+						}
+						html += '</td><td>';
+						html +=  productBrand.displayOrder;
+						html += '</td><td>';
+						html += '<img src="'+productBrand.imageFullUrl+'" alt="" width="150" height="50" border="0"/>';
+						html += '</td><td>';
+						if(productBrand.statusCode == 'PRODUCTBRANDSTATUS_ON'){
+							html += '<span>';//class="cgreen"
+							html += '是';
+							html += '</span>';
+						}else{
+							html += '<span>';// class="cred"
+							html += '否';
+							html += '</span>';
+						}
+						
+						html += '</td><td>';
+						html += productBrand.createTime ? productBrand.createTime : '---';
+						html += '</td><td>';
+						
+						html += '<permission code="FUNCTION_VIEW_PRODUCTBRAND_MANAGEMENT">';
+						html += '<a href="/product/productbrand-edit.html?method=view&id='+productBrand.id+'&'+getParamValue()+'" class="ablue">查看</a>';
+						html += '</permission>';
+						html += '<permission code="FUNCTION_EDIT_PRODUCTBRAND_MANAGEMENT">';
+						html += '<a href="/product/productbrand-edit.html?method=edit&id='+productBrand.id+'&'+getParamValue()+'" class="ablue">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp修改</a>';
+						html += '</permission>';
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="8">暂无数据</td></tr>';
+				}
+
+				$("#tbody").html(html);
+				TURN_PAGE_PARAMS.currentPage = data.entity.currentPage;
+				TURN_PAGE_PARAMS.totalCount = data.entity.recordCount;
+				TURN_PAGE_PARAMS.pageCount = Math.ceil(data.entity.recordCount / data.entity.pageSize);
+				updateFlipLabel();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+	
+	$('#checkall').prop('checked',false);
+}
+
+/*获取返回页面的上次查询条件*/
+function setParamValue(){
+	$('#id').val(getUrlParam('id'));
+	$('#brandName').val(decodeURIComponent(getUrlParam('brandName')));
+	$('#brandCode').val(decodeURIComponent(getUrlParam('brandCode')));
+	$('#statusCode').val(decodeURIComponent(getUrlParam('statusCode')));
+	if("" != getUrlParam('pageSize') && "" != getUrlParam('start') ){
+		TURN_PAGE_PARAMS.pageSize = getUrlParam('pageSize');
+		TURN_PAGE_PARAMS.currentPage = getUrlParam('start');
+	} 
+}
+function getParamValue(){
+	var passParam = [];
+	var brandName = $.trim($("#brandName").val());	
+	var brandCode = $.trim($("#brandCode").val());
+	var statusCode = $.trim($("#statusCode").val());
+	var start = $.trim($('#start').val());
+	var pageSize = $.trim($('#currentPagesize').val());
+	passParam.push('brandName='+brandName);
+	passParam.push('brandCode='+brandCode);
+	passParam.push('statusCode='+statusCode);
+	passParam.push('start=' + start);
+	passParam.push('pageSize=' + pageSize);
+	return passParam.join('&');
+}
+$(document).ready(function(e) {
+	$("#id").val(getUrlParam('id'))
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	setParamValue();
+	dataSubmit();
+});
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 产品管理 &gt; <span>品牌管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">品牌管理</div>
+				<div class="complaint_main">
+					<input type="hidden" id="id" name="id" value="" />
+					<form method="get" id="dataForm">
+						<input type="hidden" id="currentPagesize" name="pageSize" value="" />
+						<input type="hidden" id="start" name="start" value="" />
+						<div class="main_search">
+							<dl>
+								<dt>品牌名称：</dt>
+								<dd><input type="text" class="txt grid-15" id="brandName" name="brandName" /></dd>
+							</dl>&nbsp;&nbsp;&nbsp;&nbsp;
+							<dl>
+								<dt>是否热门：</dt>
+								<dd>
+									<select class="select grid-10" id="type" name="type" >
+										<option value="">请选择</option>
+										<option value="HOTSALEFLAG_YES">热门</option>
+										<option value="HOTSALEFLAG_NO">非热门</option>
+									</select>
+								</dd>
+							</dl>
+						<p class="main_search_btn">
+							<permission code="FUNCTION_SEARCH_PRODUCTBRAND_MANAGEMENT">
+								<input type="button" value="搜索" class="btn_sure" id="productSearch" onClick="dataSubmit()" /> 
+							</permission>
+							<permission code="FUNCTION_ADD_PRODUCTBRAND_PRODUCTBRAND_MANAGEMENT">
+								<input type="button" value="新建品牌" class="btn_sure" onClick="locationHref('/product/productbrand-edit.html?method=add')" id="addProduct" />
+							</permission>
+						</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr height="40">
+									<th width="50">序号</th>
+									<th width="200">品牌名称</th>
+									<th width="100">是否热门</th> 
+									<th width="100">组内顺序</th>
+									<th width="200">log图</th> 
+									<th width="100">是否显示</th> 
+									<th width="200">创建时间</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody">
+							</tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl> 
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营平台</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+<div id="loading" class="loading hide">发送中</div>
+</body>
+</html>

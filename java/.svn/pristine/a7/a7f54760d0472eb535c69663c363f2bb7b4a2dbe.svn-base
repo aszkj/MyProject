@@ -1,0 +1,488 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var param = {
+		currentPage : 1,
+		pageSize : 20,
+		pageCount : 0,
+		totalCount : 0
+	};
+
+	function updatePageInfo() {
+		if (param['totalCount'] < 1) {
+			$(".main_pagination").hide();
+		} else {
+			$(".main_pagination").show()
+		}
+		var html = [];
+		var i = 1;
+		var j = 5;
+		if (param['pageCount'] >= 5) {
+			i = (param['currentPage'] + 2) <= param['pageCount'] ? ((param['currentPage'] - 2 >= 1) ? (param['currentPage'] - 2)
+					: 1)
+					: (param['pageCount'] - 4);
+			j = i + 4;
+		} else {
+			j = param['pageCount'];
+		}
+		if (param['currentPage'] == 1) {
+			html.push('<span class="page_prev">&lt;&lt; 上一页</span>');
+		} else {
+			html
+					.push('<a onclick="goPage('
+							+ (param['currentPage'] - 1)
+							+ ')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');
+		}
+		for (; i <= j; i++) {
+			if (i == param['currentPage']) {
+				html.push('<a href="javascript:void(0);" class="bg_on">');
+				html.push(i);
+				html.push('</a>');
+			} else {
+				html.push('<a onclick="goPage(');
+				html.push(i);
+				html.push(');" href="javascript:void(0);" >');
+				html.push(i);
+				html.push('</a>');
+			}
+		}
+		if (param['currentPage'] == param['pageCount']) {
+			html.push('<span class="page_next">下一页 &gt;&gt;</span>');
+		} else {
+			html
+					.push('<a onclick="goPage('
+							+ (param['currentPage'] + 1)
+							+ ')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');
+		}
+		$("#pageItem").html(html.join(''));
+		$("#pageCount").html(param['pageCount']);
+		$("#totalCount").html(param['totalCount']);
+	}
+
+	function goPage(pageNo) {
+		var pattern = /\d+/;
+		if (!pattern.test(parseInt(pageNo)))
+			return;
+		if (parseInt(pageNo) < 1) {
+			if (param['currentPage'] != 1) {
+				alert("您输入的页码超出正常范围");
+			} else {
+				alert("当前已经是第一页");
+			}
+			return;
+		}
+		if (pageNo > param['pageCount']) {
+			if (param['currentPage'] != param['pageCount']) {
+				alert("您输入的页码超出正常范围");
+			} else {
+				alert("当前已经是最后一页");
+			}
+			return;
+		}
+		dataSubmit(pageNo);
+	}
+
+	function dataSubmit(pageNo) {
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(pageNo))) {
+			param.currentPage = pageNo;
+		}
+		$('#start').val(param.currentPage);
+		$('#pageSize').val(param.pageSize);
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					contentType : 'application/json',
+					data : formJsonStr,
+					dataType : 'json',
+					error : function() {
+						alert("提交数据失败，请稍后再试")
+					},
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+							+ '/getAllBuyerFeedback',
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							//特殊处理 尖括号
+							var temp = JSON.stringify(data);
+							temp = encodeString(temp);
+							data = JSON.parse(temp);
+							var html = '';
+							var dataList = data.entity.resultList;
+							var id = getUrlParam('id');
+							if (null != dataList && dataList.length > 0) {
+								for (var i = 0, j = dataList.length; i < j; i++) {
+									html += '<tr';
+									if (id == dataList[i].id) {
+										html += ' name="selrow" bgcolor="#c8e3f8"';
+									}
+									html += '><td>';
+									html += (i + 1)
+									html += '</td><td>';
+									html += dataList[i].userMobile == null ? '---'
+											: dataList[i].userMobile;
+									html += '</td><td>';
+									html += dataList[i].submitTime == null ? '---'
+											: dataList[i].submitTime;
+									html += '</td><td>';
+									html += dataList[i].content == null ? '---'
+											: dataList[i].content;
+									html += '</td><td>';
+									html += dataList[i].operateStatus == null ? '---'
+											: dataList[i].operateStatus == "FEEDBACKSTATIS_NODISPOSE" ? '未处理'
+													: '已处理';
+									html += '</td><td>';
+									html += dataList[i].operateTime == null ? '---'
+											: dataList[i].operateTime;
+									html += '</td><td>';
+									html += dataList[i].operateName == null ? '---'
+											: dataList[i].operateName;
+									html += '</td><td>';
+									if (dataList[i].contentClassifysName != null) {
+										var contentClassifysNames = dataList[i].contentClassifysName
+												.split(",");
+										$.each(contentClassifysNames, function(
+												i, item) {
+											html += item + '<br>';
+										});
+									} else {
+										html += '---';
+									}
+									html += '</td><td>';
+									if (dataList[i].operateStatus == 'FEEDBACKSTATIS_NODISPOSE') {
+										html += '<permission code="FUNCTION_OPERATE_BUYER_FEEDBACK">';
+										html += '<a href="javascript:void(0)" onclick="changeState('
+												+ dataList[i].id
+												+ ', 0)" class="ablue">处理</a>';
+										html += '</permission>';
+									} else {
+										html += '<permission code="FUNCTION_SEE_BUYER_FEEDBACK">';
+										html += '<a href="javascript:void(0)" onclick="changeState('
+												+ dataList[i].id
+												+ ', 1)" class="ablue">查看</a>';
+										html += '</permission>';
+									}
+
+									html += '</td></tr>';
+								}
+							} else {
+								html += '<tr><td colspan="9">暂无数据</td></tr>';
+							}
+							$("#tbody").html(html);
+							param.currentPage = data.entity.currentPage;
+							param.pageCount = data.entity.pageCount;
+							param.totalCount = data.entity.recordCount;
+							updatePageInfo();
+							disposeFunctionPermissions();
+						} else {
+							showBox('提示信息', data.msg, 'alert');
+						}
+					}
+				});
+		$('#checkall').prop('checked', false);
+	}
+
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#beginSubmitTime').datepicker({
+			dateFormat : 'yy-mm-dd',
+			constrainInput : true
+		});
+		$('#endSubmitTime').datepicker({
+			dateFormat : 'yy-mm-dd',
+			constrainInput : true
+		});
+		$('#beginOperateTime').datepicker({
+			dateFormat : 'yy-mm-dd',
+			constrainInput : true
+		});
+		$('#endOperateTime').datepicker({
+			dateFormat : 'yy-mm-dd',
+			constrainInput : true
+		});
+	}
+
+	function changeState(id, code) {
+		location.href = "/feedback/buyerFeedback-edit.html?id=" + id + "&code="
+				+ code + "&" + getParamValue();
+
+	}
+
+	function buyerFeedbaceTypeList() {
+		//绑定终端用户级别类型
+		var systemDictType = 'FEEDBACKTYPE';
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ systemDictType + '/getSystemDictInfoList',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				var buyerLevelMapList = data.entity;
+				var buyerLevelMapHtml = [];
+				if (buyerLevelMapList != null && buyerLevelMapList.length > 0) {
+					buyerLevelMapHtml.push('<option value="">--请选择--</option>');
+					for (var i = 0, length = buyerLevelMapList.length; i < length; i++) {
+						buyerLevelMapHtml.push('<option value="'
+								+ buyerLevelMapList[i].id);
+						buyerLevelMapHtml.push('" name="'
+								+ buyerLevelMapList[i].name + '">'
+								+ buyerLevelMapList[i].name + '</option>');
+					}
+				}
+				$('#contentClassify').html(buyerLevelMapHtml.join(''));
+			}
+		});
+	}
+
+	function exportBuyerUser() {
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$.ajax({
+			type : 'post',
+			contentType : 'application/json',
+			data : formJsonStr,
+			dataType : 'json',
+			cache : false,
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/exportBuyerFeedback',
+			beforeSubmit : function() {
+			},
+			success : function(data) {
+				//响应返回的业务处理  
+				if (data.msgCode == 1) {
+					$("#download_link")
+							.attr(
+									"href",
+									DOWNLOAD_FILE_TEMP_URL
+											+ data.entity.reportFilePath);
+					$("#download_link").show();
+				} else {
+					showBox('提示!', data.msg, 'alert');
+				}
+			}
+		});
+	}
+
+	/*获取返回页面的上次查询条件*/
+	function setParamValue() {
+		$('#userMobile').val(decodeURIComponent(getUrlParam('userMobile')));
+		$('#beginSubmitTime').val(getUrlParam('beginSubmitTime'));
+		$('#endSubmitTime').val(getUrlParam('endSubmitTime'));
+		$('#beginOperateTime').val(getUrlParam('beginOperateTime'));
+		$('#endOperateTime').val(getUrlParam('endOperateTime'));
+		$('#operateStatus').val(getUrlParam('operateStatus'));
+		$('#contentClassify').val(
+				decodeURIComponent(getUrlParam('contentClassify')));
+		if ("" != getUrlParam('pageSize') && "" != getUrlParam('start')) {
+			param.pageSize = getUrlParam('pageSize');
+			param.currentPage = getUrlParam('start');
+		}
+	}
+	function getParamValue() {
+		var passParam = [];
+		var userMobile = $.trim($("#userMobile").val());
+		var beginSubmitTime = $.trim($("#beginSubmitTime").val());
+		var endSubmitTime = $.trim($("#endSubmitTime").val());
+		var beginOperateTime = $.trim($("#beginOperateTime").val());
+		var endOperateTime = $.trim($("#endOperateTime").val());
+		var operateStatus = $.trim($("#operateStatus").val());
+		var contentClassify = $.trim($("#contentClassify").val());
+		var start = $.trim($('#start').val());
+		var pageSize = $.trim($('#pageSize').val());
+
+		passParam.push('userMobile=' + userMobile);
+		passParam.push('beginSubmitTime=' + beginSubmitTime);
+		passParam.push('endSubmitTime=' + endSubmitTime);
+		passParam.push('beginOperateTime=' + beginOperateTime);
+		passParam.push('endOperateTime=' + endOperateTime);
+		passParam.push('operateStatus=' + operateStatus);
+		passParam.push('contentClassify=' + contentClassify);
+		passParam.push('start=' + start);
+		passParam.push('pageSize=' + pageSize);
+		return passParam.join('&');
+	}
+
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		loadTimeInput();
+		buyerFeedbaceTypeList();
+		setParamValue();
+		dataSubmit();
+		$('#checkall').prop('checked', false);
+	});
+</script>
+</head>
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; <a href="/">反馈管理</a> &gt;<span>买家反馈列表</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">买家反馈列表</div>
+					<div class="complaint_main">
+						<form method="get" id="dataForm">
+							<div class="main_search">
+								<dl>
+									<dt>用户手机号码：</dt>
+									<dd>
+										<input type="text" class="txt grid-9" id="userMobile"
+											name="userMobile" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>提交时间：</dt>
+									<dd>
+										<input type="text" class="txt grid-9" id="beginSubmitTime"
+											name="beginSubmitTime" />
+									</dd>
+									<dt class="mlr5">至</dt>
+									<dd>
+										<input type="text" class="txt grid-9" id="endSubmitTime"
+											name="endSubmitTime" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>处理时间：</dt>
+									<dd>
+										<input type="text" class="txt grid-9" id="beginOperateTime"
+											name="beginOperateTime" />
+									</dd>
+									<dt class="mlr5">至</dt>
+									<dd>
+										<input type="text" class="txt grid-9" id="endOperateTime"
+											name="endOperateTime" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>处理状态：</dt>
+									<dd>
+										<select class="select grid-10" id="operateStatus"
+											name="operateStatus">
+											<option value="">--全部--</option>
+											<option value="FEEDBACKSTATIS_NODISPOSE">未处理</option>
+											<option value="FEEDBACKSTATIS_YESDISPOSE">已处理</option>
+										</select>
+									</dd>
+								</dl>
+								<dl>
+									<dt>内容归类：</dt>
+									<dd>
+										<select class="select grid-10" id="contentClassify"
+											name="contentClassify">
+											<!--<option value="">--全部--</option>
+										<option value="USERSTATUS_ON">有效</option>
+										<option value="USERSTATUS_OFF">失效</option> -->
+										</select>
+									</dd>
+								</dl>
+								<input type="hidden" id="start" name="start" /> <input
+									type="hidden" id="pageSize" name="pageSize" />
+								<p class="main_search_btn">
+									<permission code="FUNCTION_QUERY_BUYER_FEEDBACK">
+									<input type="button" value="查询" class="btn_sure"
+										id="feedbackSearch" onClick="dataSubmit()" /> </permission>
+									<permission code="FUNCTION_EXPORT_BUYER_FEEDBACK">
+									<input type="button" value="导出" class="btn_sure"
+										onClick="javascript:exportBuyerUser();" /> </permission>
+									<a hidden id="download_link"
+										style="color: red; text-decoration: underline;"><span
+										style="color: red">点击下载</span></a> <input type="hidden" id="start"
+										name="start" /> <input type="hidden" id="pageSize"
+										name="pageSize" />
+								</p>
+							</div>
+							<!--搜索结束-->
+						</form>
+						<div class="order_index">
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<th width="10">序号</th>
+										<th width="20">用户手机号码</th>
+										<th width="25">提交时间</th>
+										<th width="100">内容</th>
+										<th width="20">处理状态</th>
+										<th width="25">处理时间</th>
+										<th width="20">处理人</th>
+										<th width="20">内容归类</th>
+										<th width="10">操作</th>
+									</tr>
+								</thead>
+								<tbody id="tbody"></tbody>
+							</table>
+						</div>
+						<dl class="main_pagination">
+							<dd class="pagination">
+								<span id="pageItem"> <span class="page_prev">&lt;&lt;
+										上一页</span> <a class="bg_on" href="javascript:void(0);">1</a> <a
+									href="javascript:void(0);" onclick="goPage(2);">2</a> <a
+									class="page_next" href="javascript:void(0);"
+									onclick="goPage(2)">下一页 &gt;&gt;</a>
+								</span> <span class="page_no">共<span id="totalCount">0</span>条
+								</span> <span class="page_no">共<span id="pageCount">2</span>页 到第
+									<input type="text"
+									onkeyup="this.value=this.value.replace(/^0+|\D/g,'')"
+									class="page_txt" id="pageObj">页 <input type="button"
+									onclick="goPage($.trim($('#pageObj').val()));" class="page_btn"
+									value="确定"></span>
+							</dd>
+						</dl>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

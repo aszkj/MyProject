@@ -1,0 +1,432 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/lang/zh_CN.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var secKillProductId = getUrlParam("secKillProductId");
+	function detail() {
+		$("#secKillProductId").val(secKillProductId);
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/seckillproduct/detail/' + secKillProductId,
+			data : '',
+			dataType : 'json',//非必须.默认text
+			error : function() {
+			}, //非必须
+			success : function(data) {
+				/* checkJsonRight(data); */
+				if (data.msgCode == 1) {
+					var secKillProduct = data.entity;
+					$("#barCode").html(secKillProduct.barCode);
+					$("#productName").html(secKillProduct.productName);
+					$("#productPrice").html(
+							toCenti(secKillProduct.promotionalPrice, 2));
+					$("#secKillProductPrice").val(
+							toCenti(secKillProduct.secKillProductPrice, 2));
+					$("#displayOrder").val(secKillProduct.displayOrder);
+					$("#remainCount").val(secKillProduct.remainCount);
+					$("#secKillCount").val(secKillProduct.secKillCount);
+					$("#qualifyType").val(secKillProduct.qualifyType);
+					$("#limitOrderCount").val(secKillProduct.limitOrderCount);
+					$("#secKillTime").val(secKillProduct.secKillTime / 60);
+				} else {
+					showBox('提示信息', data.msg, 'alert');
+				}
+			}//非必须
+		});
+	}
+	function dataEditSubmit() {
+		var url = OPERATION_SYSTEM_IDENTITY + '/seckillproduct/edit';
+		if (!validateData()) {
+			return;
+		}
+		var secKillProductPrice = parseFloat($("#secKillProductPrice").val());
+		$("#secKillProductPrice").val(toMul(secKillProductPrice, 1000));
+		var secKillTime = parseInt($("#secKillTime").val());
+		$("#secKillTime").val(secKillTime * 60);
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					url : TERMINAL_URL + url,
+					contentType : 'application/json',
+					data : formJsonStr,
+					dataType : 'json',
+					cache : false,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+					},
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window.setTimeout(function() {
+								comeback();
+							}, 1000);
+						} else {
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							$('#promptMessage').text(data.msg);
+							$("#secKillProductPrice").val(
+									toCenti($("#secKillProductPrice").val()));
+							$("#secKillTime").val(secKillTime);
+						}
+					}
+				});
+	}
+	var validate = (function() {
+		return {
+			validateSecKillProductPrice : function() {
+				var secKillProductPrice = $.trim($('#secKillProductPrice')
+						.val());
+				$secKillProductPriceMsg = $('#secKillProductPriceMsg');
+				if (!secKillProductPrice) {
+					$secKillProductPriceMsg.html('请输入秒杀价格').attr('class',
+							'error');
+					return false;
+				}
+				var legalNum = /^0$|^0\.\d{1,2}$|^[1-9]\d*\.?\d{1,2}$|^[1-9]\d*$/g;
+				if (!legalNum.test(secKillProductPrice)) {
+					$secKillProductPriceMsg.html('请填写合法的数字！(最多包含两个小数点)').attr(
+							'class', 'error');
+					return false;
+				}
+				$secKillProductPriceMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateDisplayOrder : function() {
+				var displayOrder = $.trim($('#displayOrder').val());
+				$displayOrderMsg = $('#displayOrderMsg');
+				if (!displayOrder) {
+					$displayOrderMsg.html('请输入排序').attr('class', 'error');
+					return false;
+				}
+				var legalNum = /^[1-9]\d{0,9}$/g;
+				if (!legalNum.test(displayOrder)) {
+					$displayOrderMsg.html('请填写合法的数字').attr('class', 'error');
+					return false;
+				}
+				$displayOrderMsg.html('').attr('class', 'right');
+				$('#displayOrder').val(displayOrder);
+				return true;
+			},
+			validateRemainCount : function() {
+				var remainCount = $.trim($('#remainCount').val());
+				$remainCountMsg = $('#remainCountMsg');
+				if (!remainCount) {
+					$remainCountMsg.html('请填写秒杀商品数量').attr('class', 'error');
+					return false;
+				}
+				var legalNum = /^[1-9]\d{0,9}$/g;
+				if (!legalNum.test(remainCount)) {
+					$remainCountMsg.html('请填写合法数字').attr('class', 'error');
+					return false;
+				}
+				$remainCountMsg.html('').attr('class', 'right');
+				$('#remainCount').val(remainCount);
+				return true;
+			},
+			validateSecKillCount : function() {
+				var secKillCount = $.trim($('#secKillCount').val());
+				$secKillCountMsg = $('#secKillCountMsg');
+				if (!secKillCount) {
+					$secKillCountMsg.html('请填写允许秒中数量').attr('class', 'error');
+					return false;
+				}
+				var legalNum = /^[0-9]\d{0,9}$/g;
+				if (!legalNum.test(secKillCount)) {
+					$secKillCountMsg.html('请填写合法数字').attr('class', 'error');
+					return false;
+				}
+				$secKillCountMsg.html('').attr('class', 'right');
+				$('#secKillCount').val(secKillCount);
+				return true;
+			},
+			validateQualifyType : function() {
+				var qualifyType = $.trim($('#qualifyType').val());
+				$qualifyTypeMsg = $('#qualifyTypeMsg');
+				if (!qualifyType) {
+					$qualifyTypeMsg.html('请选择参与资格').attr('class', 'error');
+					return false;
+				}
+				$qualifyTypeMsg.html('').attr('class', 'right');
+				$('#qualifyType').val(qualifyType);
+				return true;
+			},
+			validateLimitOrderCount : function() {
+				var limitOrderCount = $.trim($('#limitOrderCount').val());
+				$limitOrderCountMsg = $('#limitOrderCountMsg');
+				if (!limitOrderCount) {
+					$limitOrderCountMsg.html('请填写限购数量').attr('class', 'error');
+					return false;
+				}
+				var legalNum = /^[0-9]\d{0,9}$/g;
+				if (!legalNum.test(limitOrderCount)) {
+					$limitOrderCountMsg.html('请填写合法数字').attr('class', 'error');
+					return false;
+				}
+				$limitOrderCountMsg.html('').attr('class', 'right');
+				$('#limitOrderCount').val(limitOrderCount);
+				return true;
+			},
+			validateSecKillTime : function() {
+				var secKillTime = $.trim($('#secKillTime').val());
+				$secKillTimeMsg = $('#secKillTimeMsg');
+				if (!secKillTime) {
+					$secKillTimeMsg.html('请填写抢光时间').attr('class', 'error');
+					return false;
+				}
+				var legalNum = /^[0-9]\d{0,9}$/g;
+				if (!legalNum.test(secKillTime)) {
+					$limitOrderCountMsg.html('请填写合法数字').attr('class', 'error');
+					return false;
+				}
+				$secKillTimeMsg.html('').attr('class', 'right');
+				$('#secKillTime').val(secKillTime);
+				return true;
+			}
+		}
+	})();
+	function validateData() {
+		if (!validate.validateSecKillProductPrice()) {
+			return false;
+		}
+		if (!validate.validateDisplayOrder()) {
+			return false;
+		}
+		if (!validate.validateRemainCount()) {
+			return false;
+		}
+		if (!validate.validateSecKillCount()) {
+			return false;
+		}
+		if (!validate.validateQualifyType()) {
+			return false;
+		}
+		if (!validate.validateLimitOrderCount()) {
+			return false;
+		}
+		if (!validate.validateSecKillTime()) {
+			return false;
+		}
+		return true;
+	}
+
+	function comeback() {
+		var urlParam = window.location.search;
+		locationHref('/seckill/seckillproduct-index.html' + urlParam);
+	}
+	function selectProduct() {
+		showBox("选择商品",
+				'/seckill/seckillproduct-select-product.html?width=800&height=650');
+	}
+	function listQualifyType(val) {
+		var systemDictType = 'SECKILLPRODUCTQUALIFYTYPE';
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ systemDictType + '/getSystemDictInfoList',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						if (val == mapList[i].id) {
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						} else {
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						}
+					}
+				}
+				$('#qualifyType').html(html);
+			}
+		});
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		listQualifyType();
+		detail();
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 秒杀管理 &gt; <span id="breadName">编辑秒杀商品</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<input type="hidden" name="id" id="secKillProductId">
+							<dl>
+								<dt>商品条码：</dt>
+								<dd>
+									<span id="barCode"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>商品名称：</dt>
+								<dd>
+									<span id="productName"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>VIP价格：</dt>
+								<dd>
+									<span id="productPrice"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<span class="cred">*</span>秒杀价格：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-2" id="secKillProductPrice"
+										name="secKillProductPrice" /> <span
+										id="secKillProductPriceMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<span class="cred">*</span>排序：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-2" id="displayOrder"
+										name="displayOrder" /> <span id="displayOrderMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<span class="cred">*</span>秒杀商品数量：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-2" id="remainCount"
+										name="remainCount" /> <span id="remainCountMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<span class="cred">*</span>允许秒中数量：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-2" id="secKillCount"
+										name="secKillCount" /> <span id="secKillCountMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<span class="cred">*</span>参与资格：
+								</dt>
+								<dd>
+									<select class="select grid-2" id="qualifyType"
+										name="qualifyType"></select><span id="qualifyTypeMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<span class="cred">*</span>限购数量：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-2" id="limitOrderCount"
+										name="limitOrderCount" /> <span id="limitOrderCountMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>
+									<span class="cred">*</span>抢光时间(分)：
+								</dt>
+								<dd>
+									<input type="text" class="txt grid-2" id="secKillTime"
+										name="secKillTime" /> <span id="secKillTimeMsg"></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit()" /> <input type="reset" id="reset"
+											class="btn_gray" value="重置" /> <input type="button"
+											id="goBack" class="btn_gray" value="取消"
+											onClick="javascript:comeback();" /> <span id="promptMessage"
+											class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+				+ Math.random() + "'><\/script>");
+</script>
+<script src="http://api.map.baidu.com/api?v=2.0&ak=SI4AOIBz771trCVjGV0XRzlr" type="text/javascript"></script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部栏-->
+		<div class="top-big-tit" style="background-color: #ffc600;">
+			<div class="top-big-tit-btn whiteBackBtn" onclick="history.go(-1)"></div>
+			<p style="color:#fff;">深圳市</p>
+		</div>
+	</header>
+	<section style="padding-top: .9rem">
+		<!--搜索地址框-->
+		<div class="searchBox">
+			<input type="search" class="searchAdd" placeholder="请输入小区、写字楼、街道" onclick="window.location.href='searchAddressHistory.html'">
+		</div>
+		<div class="bordBig" style="position: fixed;background-color: #eeeeee;height: .2rem;width: 100%;top: 1.9rem;left: 0;z-index: 19931112;"></div>
+		<div class="locTit" onclick="toLocationNearClick()">
+			<p>点击定位到当前地点</p>
+		</div>
+		<div class="addressTab">
+			<ul>
+				<li><a href="#" class="tabMy currTab">我的收货地址</a></li>
+				<li><a href="#" class="tabNear">附近自提门店</a></li>
+			</ul>
+		</div>
+		<div class="addressIns" style="padding-top: 2.9rem;">
+			<div class="addressList" id="addMy"></div>
+			<div id="storeNear">
+				<div id="wrapper" style="background-color: #eeeeee;top: 3.78rem;">
+					<div id="scroller" style="background-color: #eeeeee;">
+						<div id="pullDown" class="hide">
+							<span class="pullDownIcon"></span><span class="pullDownLabel">下拉刷新...</span>
+						</div>
+						<div class="storeList"></div>
+						<div id="pullUp" class="hide">
+							<span class="pullUpIcon"></span><span class="pullUpLabel">上拉刷新...</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</section>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$(".tabMy").click(function() {
+				$("#storeNear").hide();
+				$("#addMy").show();
+				$(".tabNear").removeClass('currTab');
+				$(".tabMy").addClass('currTab');
+			});
+			$(".tabNear").click(function() {
+				$("#addMy").hide();
+				$("#storeNear").show();
+				$(".tabMy").removeClass('currTab');
+				$(".tabNear").addClass('currTab');
+			});
+		})
+	</script>
+</body>
+<script type="text/javascript">
+	$(function() {
+		storeListTmpl();
+		addressTmpl();
+		removeSaveInfo();
+	});
+	function addressTmpl() {
+		var params = new Object();
+		if (isLogin()) {
+			ajax("/useraddress/addresslist", params, function(data) {
+				if (!data || data.length <= 0)
+					return;
+				$("#addressTmpl").tmpl(data).prependTo(".addressList");
+			}, function(data) {
+			});
+		}
+	}
+	function selectAddress(address) {
+		changeStoreByCommunity(address.community, changeStoreSuccess);
+	}
+	function changeStoreSuccess() {
+		returnIndex();
+	}
+	function storeListTmpl() {
+		var geolocation = new BMap.Geolocation();
+		geolocation.getCurrentPosition(function(r) {
+			if (this.getStatus() == BMAP_STATUS_SUCCESS)
+				findStore(r.point.lng, r.point.lat);
+		}, {
+			enableHighAccuracy : true
+		});
+	}
+	function findStore(longitude, latitude) {
+		var params = new Object();
+		params.longitude = longitude;
+		params.latitude = latitude;
+		ajax("/store/locationlist", params, function(data) {
+			if (!data || data.length <= 0)
+				return;
+			$("#storeListTmpl").tmpl(data).prependTo(".storeList");
+		}, function(data) {
+		});
+	}
+	/** 操作清除编辑地址信息的操作 */
+	function removeSaveInfo() {
+		removeSessionStorage(sessionEditAddressInfoKey);
+		removeSessionStorage(sessionEditCommunityInfoKey);
+	}
+	//点击进入到附近地址信息
+	function toLocationNearClick() {
+		window.location.href = 'addressNear.html';
+	}
+</script>
+<script id="addressTmpl" type="text/x-jquery-tmpl">
+        <div class="addressItem">
+        	<div id="addressLeftCon" onclick="selectAddress(${JSON.stringify($data)})">
+                <span class="receiverName">${consigneeName}</span>
+                <span class="teleNum">${phoneNo}</span>
+                <p class="reAddress">${community.communityName}${addressDetail}</p>
+            </div>
+            <div class="edit" onclick="window.location.href='newAddress.html?origin=isall&addressId='+${addressId}">
+            	<img src="../static-resource/images/cart/edd.png">
+            </div>
+        </div>
+</script>
+<script id="storeListTmpl" type="text/x-jquery-tmpl">
+            <div class="storeMsg" onclick="changeStore(${JSON.stringify($data)},changeStoreSuccess)">
+                <p class="storeName">${storeName}</p>
+                <p class="openTime">${businessHoursBegin}-${businessHoursEnd}</p>
+                <p class="storeAddress">${addressDetail}</p>
+            </div>
+</script>
+</html>

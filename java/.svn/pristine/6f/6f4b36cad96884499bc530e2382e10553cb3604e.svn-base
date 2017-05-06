@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.CustomerMapper">
+	<resultMap id="BaseResultMap" type="Customer">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="MASTERUSERID" property="masterUserId" jdbcType="INTEGER" />
+		<result column="CUSTOMERNAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="PAYPASSWORD" property="payPassword" jdbcType="VARCHAR" />
+		<result column="MASTERNAME" property="masterName" jdbcType="VARCHAR" />
+		<result column="IDCARDNO" property="idCardNo" jdbcType="VARCHAR" />
+		<result column="IDCARDURL" property="idCardUrl" jdbcType="VARCHAR" />
+		<result column="TELPHONE" property="telPhone" jdbcType="VARCHAR" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="TOWNCODE" property="townCode" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="MAXUSERCOUNT" property="maxUserCount" jdbcType="INTEGER" />
+		<result column="BUYERLEVELCODE" property="buyerLevelCode" jdbcType="VARCHAR" />
+		<result column="SELLERLEVELCODE" property="sellerLevelCode" jdbcType="VARCHAR" />
+		<result column="BUSINESSLICENSENO" property="businessLicenseNo" jdbcType="VARCHAR" />
+		<result column="LICENSEURL" property="licenseUrl" jdbcType="VARCHAR" />
+		<result column="AUTHORIZATIONORGANIZATION" property="authOrganization" jdbcType="VARCHAR" />
+		<result column="EXPIREDATE" property="expireDate" jdbcType="DATE" />
+		<result column="TAXCODE" property="taxCode" jdbcType="VARCHAR" />
+		<result column="TAXURL" property="taxUrl" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+		<result column="INVITECUSTOMERID" property="inviteCustomerId" jdbcType="INTEGER" />
+		<result column="INVITATIONCODE" property="invitationCode" jdbcType="VARCHAR" />
+		<result column="RECOMMENDCUSTOMERID" property="recommendCustomerId" jdbcType="INTEGER" />
+		<result column="VIPEXPIREDATE" property="vipExpireDate" jdbcType="DATE" />
+		<result column="VIPCREATETIME" property="vipCreateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="CustomerRelatedInfoResultMap" type="CustomerRelatedInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="USERPROFILEID" property="userProfileId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="MASTERUSERID" property="masterUserId" jdbcType="INTEGER" />
+		<result column="CUSTOMERNAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="PAYPASSWORD" property="payPassword" jdbcType="VARCHAR" />
+		<result column="MASTERNAME" property="masterName" jdbcType="VARCHAR" />
+		<result column="IDCARDNO" property="idCardNo" jdbcType="VARCHAR" />
+		<result column="IDCARDURL" property="idCardUrl" jdbcType="VARCHAR" />
+		<result column="TELPHONE" property="telPhone" jdbcType="VARCHAR" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="TOWNCODE" property="townCode" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="MAXUSERCOUNT" property="maxUserCount" jdbcType="INTEGER" />
+		<result column="BUYERLEVELCODE" property="buyerLevelCode" jdbcType="VARCHAR" />
+		<result column="SELLERLEVELCODE" property="sellerLevelCode" jdbcType="VARCHAR" />
+		<result column="BUSINESSLICENSENO" property="businessLicenseNo" jdbcType="VARCHAR" />
+		<result column="LICENSEURL" property="licenseUrl" jdbcType="VARCHAR" />
+		<result column="AUTHORIZATIONORGANIZATION" property="authOrganization" jdbcType="VARCHAR" />
+		<result column="EXPIREDATE" property="expireDate" jdbcType="DATE" />
+		<result column="TAXCODE" property="taxCode" jdbcType="VARCHAR" />
+		<result column="TAXURL" property="taxUrl" jdbcType="VARCHAR" />
+		<result column="CUSTOMERSTATUSCODE" property="customerStatusCode" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+		<result column="INVITECUSTOMERID" property="inviteCustomerId" jdbcType="INTEGER" />
+		<result column="INVITATIONCODE" property="invitationCode" jdbcType="VARCHAR" />
+		<result column="RECOMMENDCUSTOMERID" property="recommendCustomerId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="MASTERFLAG" property="masterFlag" jdbcType="VARCHAR" />
+		<result column="USERSTATUSCODE" property="userStatusCode" jdbcType="VARCHAR" />
+		<result column="AUDITSTATUSCODE" property="auditStatusCode" jdbcType="VARCHAR" />
+		<result column="AUDITTIME" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITUSERID" property="auditUserId" jdbcType="INTEGER" />
+		<result column="AUDITUSERNAME" property="auditUserName" jdbcType="VARCHAR" />
+		<result column="AUDITNOTE" property="auditNote" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="USERPROVINCECODE" property="userProvinceCode" jdbcType="VARCHAR" />
+		<result column="USERCITYCODE" property="userCityCode" jdbcType="VARCHAR" />
+		<result column="USERCOUNTYCODE" property="userCountyCode" jdbcType="VARCHAR" />
+		<result column="USERTOWNCODE" property="userTownCode" jdbcType="VARCHAR" />
+		<result column="VIPEXPIREDATE" property="vipExpireDate" jdbcType="DATE" />
+		<result column="VIPCREATETIME" property="vipCreateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="BaseStoreResultMap" type="StoreInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="VipUserStatisticResultMap" type="VipUserStatisticInfo">
+		<result column="STATISTICDATE" property="statisticDate" jdbcType="VARCHAR" />
+		<result column="REGISTCOUNT" property="registCount" jdbcType="INTEGER" />
+		<result column="VIPUSERCOUNT" property="vipUserCount" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, MASTERUSERID, CUSTOMERNAME, CUSTOMERTYPE, PAYPASSWORD,
+		MASTERNAME,
+		IDCARDNO, IDCARDURL,
+		TELPHONE, PROVINCECODE,
+		CITYCODE,
+		COUNTYCODE, TOWNCODE, ADDRESSDETAIL, MAXUSERCOUNT,
+		BUYERLEVELCODE,
+		SELLERLEVELCODE, BUSINESSLICENSENO, LICENSEURL,
+		AUTHORIZATIONORGANIZATION, EXPIREDATE,
+		TAXCODE, TAXURL, STATUSCODE, CREATETIME,
+		CREATEUSERID, MODIFYTIME, MODIFYUSERID, NOTE,
+		INVITECUSTOMERID, INVITATIONCODE, RECOMMENDCUSTOMERID,
+		VIPEXPIREDATE,VIPCREATETIME
+	</sql>
+
+	<insert id="saveSelective" parameterType="Customer" useGeneratedKeys="true" keyProperty="id">
+		insert into U_CUSTOMER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="masterUserId != null">
+				MASTERUSERID,
+			</if>
+			<if test="customerName != null">
+				CUSTOMERNAME,
+			</if>
+			<if test="customerType != null">
+				CUSTOMERTYPE,
+			</if>
+			<if test="payPassword != null">
+				PAYPASSWORD,
+			</if>
+			<if test="masterName != null">
+				MASTERNAME,
+			</if>
+			<if test="idCardNo != null">
+				IDCARDNO,
+			</if>
+			<if test="idCardUrl != null">
+				IDCARDURL,
+			</if>
+			<if test="telPhone != null">
+				TELPHONE,
+			</if>
+			<if test="provinceCode != null">
+				PROVINCECODE,
+			</if>
+			<if test="cityCode != null">
+				CITYCODE,
+			</if>
+			<if test="countyCode != null">
+				COUNTYCODE,
+			</if>
+			<if test="townCode != null">
+				TOWNCODE,
+			</if>
+			<if test="addressDetail != null">
+				ADDRESSDETAIL,
+			</if>
+			<if test="maxUserCount != null">
+				MAXUSERCOUNT,
+			</if>
+			<if test="buyerLevelCode != null">
+				BUYERLEVELCODE,
+			</if>
+			<if test="sellerLevelCode != null">
+				SELLERLEVELCODE,
+			</if>
+			<if test="businessLicenseNo != null">
+				BUSINESSLICENSENO,
+			</if>
+			<if test="licenseUrl != null">
+				LICENSEURL,
+			</if>
+			<if test="authOrganization != null">
+				AUTHORIZATIONORGANIZATION,
+			</if>
+			<if test="expireDate != null">
+				EXPIREDATE,
+			</if>
+			<if test="taxCode != null">
+				TAXCODE,
+			</if>
+			<if test="taxUrl != null">
+				TAXURL,
+			</if>
+			<if test="statusCode != null">
+				STATUSCODE,
+			</if>
+			<if test="createTime != null">
+				CREATETIME,
+			</if>
+			<if test="createUserId != null">
+				CREATEUSERID,
+			</if>
+			<if test="note != null">
+				NOTE,
+			</if>
+			<if test="inviteCustomerId != null">
+				INVITECUSTOMERID,
+			</if>
+			<if test="invitationCode != null">
+				INVITATIONCODE,
+			</if>
+			<if test="recommendCustomerId != null">
+				RECOMMENDCUSTOMERID,
+			</if>
+			<if test="vipExpireDate!= null">
+				VIPEXPIREDATE,
+			</if>
+			<if test="vipCreateTime != null">
+				VIPCREATETIME,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="masterUserId != null">
+				#{masterUserId,jdbcType=INTEGER},
+			</if>
+			<if test="customerName != null">
+				#{customerName,jdbcType=VARCHAR},
+			</if>
+			<if test="customerType != null">
+				#{customerType,jdbcType=VARCHAR},
+			</if>
+			<if test="payPassword != null">
+				#{payPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="masterName != null">
+				#{masterName,jdbcType=VARCHAR},
+			</if>
+			<if test="idCardNo != null">
+				#{idCardNo,jdbcType=VARCHAR},
+			</if>
+			<if test="idCardUrl != null">
+				#{idCardUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="telPhone != null">
+				#{telPhone,jdbcType=VARCHAR},
+			</if>
+			<if test="provinceCode != null">
+				#{provinceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cityCode != null">
+				#{cityCode,jdbcType=VARCHAR},
+			</if>
+			<if test="countyCode != null">
+				#{countyCode,jdbcType=VARCHAR},
+			</if>
+			<if test="townCode != null">
+				#{townCode,jdbcType=VARCHAR},
+			</if>
+			<if test="addressDetail != null">
+				#{addressDetail,jdbcType=VARCHAR},
+			</if>
+			<if test="maxUserCount != null">
+				#{maxUserCount,jdbcType=INTEGER},
+			</if>
+			<if test="buyerLevelCode != null">
+				#{buyerLevelCode,jdbcType=VARCHAR},
+			</if>
+			<if test="sellerLevelCode != null">
+				#{sellerLevelCode,jdbcType=VARCHAR},
+			</if>
+			<if test="businessLicenseNo != null">
+				#{businessLicenseNo,jdbcType=VARCHAR},
+			</if>
+			<if test="licenseUrl != null">
+				#{licenseUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="authOrganization != null">
+				#{authOrganization,jdbcType=VARCHAR},
+			</if>
+			<if test="expireDate != null">
+				#{expireDate,jdbcType=DATE},
+			</if>
+			<if test="taxCode != null">
+				#{taxCode,jdbcType=VARCHAR},
+			</if>
+			<if test="taxUrl != null">
+				#{taxUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="statusCode != null">
+				#{statusCode,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId,jdbcType=INTEGER},
+			</if>
+			<if test="note != null">
+				#{note,jdbcType=VARCHAR},
+			</if>
+			<if test="inviteCustomerId != null">
+				#{inviteCustomerId,jdbcType=INTEGER},
+			</if>
+			<if test="invitationCode != null">
+				#{invitationCode,jdbcType=VARCHAR},
+			</if>
+			<if test="recommendCustomerId != null">
+				#{recommendCustomerId,jdbcType=INTEGER},
+			</if>
+			<if test="vipExpireDate != null">
+				#{vipExpireDate,jdbcType=DATE},
+			</if>
+			<if test="vipCreateTime != null">
+				#{vipCreateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="save" parameterType="Customer" useGeneratedKeys="true" keyProperty="id">
+		insert into U_CUSTOMER (ID,
+		MASTERUSERID, CUSTOMERNAME,
+		CUSTOMERTYPE, PAYPASSWORD, MASTERNAME, IDCARDNO,
+		IDCARDURL, TELPHONE, PROVINCECODE,
+		CITYCODE,
+		COUNTYCODE, TOWNCODE,
+		ADDRESSDETAIL, MAXUSERCOUNT, BUYERLEVELCODE,
+		SELLERLEVELCODE, BUSINESSLICENSENO, LICENSEURL,
+		AUTHORIZATIONORGANIZATION, EXPIREDATE, TAXCODE,
+		TAXURL, STATUSCODE, CREATETIME,
+		CREATEUSERID, NOTE, INVITECUSTOMERID,
+		INVITATIONCODE, RECOMMENDCUSTOMERID,
+		VIPEXPIREDATE,VIPCREATETIME
+		)
+		values
+		(#{id,jdbcType=INTEGER},
+		#{masterUserId,jdbcType=INTEGER},
+		#{customerName,jdbcType=VARCHAR},
+		#{customerType,jdbcType=VARCHAR}, #{payPassword,jdbcType=VARCHAR},
+		#{masterName,jdbcType=VARCHAR},
+		#{idCardNo,jdbcType=VARCHAR},
+		#{idCardUrl,jdbcType=VARCHAR}, #{telPhone,jdbcType=VARCHAR},
+		#{provinceCode,jdbcType=VARCHAR},
+		#{cityCode,jdbcType=VARCHAR},
+		#{countyCode,jdbcType=VARCHAR},
+		#{townCode,jdbcType=VARCHAR},
+		#{addressDetail,jdbcType=VARCHAR}, #{maxUserCount,jdbcType=INTEGER},
+		#{buyerLevelCode,jdbcType=VARCHAR},
+		#{sellerLevelCode,jdbcType=VARCHAR},
+		#{businessLicenseNo,jdbcType=VARCHAR}, #{licenseUrl,jdbcType=VARCHAR},
+		#{authOrganization,jdbcType=VARCHAR}, #{expireDate,jdbcType=DATE},
+		#{taxCode,jdbcType=VARCHAR},
+		#{taxUrl,jdbcType=VARCHAR},
+		#{statusCode,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{note,jdbcType=VARCHAR}),
+		#{inviteCustomerId,jdbcType=INTEGER},
+		#{invitationCode,jdbcType=VARCHAR},
+		#{recommendCustomerId,jdbcType=INTEGER},
+		#{vipExpireDate,jdbcType=DATE},
+		#{vipCreateTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<update id="updateByIdSelective" parameterType="Customer">
+		update U_CUSTOMER
+		<set>
+			<if test="masterUserId != null">
+				MASTERUSERID = #{masterUserId,jdbcType=INTEGER},
+			</if>
+			<if test="customerName != null">
+				CUSTOMERNAME = #{customerName,jdbcType=VARCHAR},
+			</if>
+			<if test="customerType != null">
+				CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR},
+			</if>
+			<if test="payPassword != null">
+				PAYPASSWORD = #{payPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="masterName != null">
+				MASTERNAME = #{masterName,jdbcType=VARCHAR},
+			</if>
+			<if test="idCardNo != null">
+				IDCARDNO = #{idCardNo,jdbcType=VARCHAR},
+			</if>
+			<if test="idCardUrl != null">
+				IDCARDURL = #{idCardUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="telPhone != null">
+				TELPHONE = #{telPhone,jdbcType=VARCHAR},
+			</if>
+			<if test="provinceCode != null">
+				PROVINCECODE = #{provinceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cityCode != null">
+				CITYCODE = #{cityCode,jdbcType=VARCHAR},
+			</if>
+			<if test="countyCode != null">
+				COUNTYCODE = #{countyCode,jdbcType=VARCHAR},
+			</if>
+			<if test="townCode != null">
+				TOWNCODE = #{townCode,jdbcType=VARCHAR},
+			</if>
+			<if test="addressDetail != null">
+				ADDRESSDETAIL = #{addressDetail,jdbcType=VARCHAR},
+			</if>
+			<if test="maxUserCount != null">
+				MAXUSERCOUNT = #{maxUserCount,jdbcType=INTEGER},
+			</if>
+			<if test="buyerLevelCode != null">
+				BUYERLEVELCODE = #{buyerLevelCode,jdbcType=VARCHAR},
+			</if>
+			<if test="sellerLevelCode != null">
+				SELLERLEVELCODE = #{sellerLevelCode,jdbcType=VARCHAR},
+			</if>
+			<if test="businessLicenseNo != null">
+				BUSINESSLICENSENO =
+				#{businessLicenseNo,jdbcType=VARCHAR},
+			</if>
+			<if test="licenseUrl != null">
+				LICENSEURL = #{licenseUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="authOrganization != null">
+				AUTHORIZATIONORGANIZATION =
+				#{authOrganization,jdbcType=VARCHAR},
+			</if>
+			<if test="expireDate != null">
+				EXPIREDATE = #{expireDate,jdbcType=DATE},
+			</if>
+			<if test="taxCode != null">
+				TAXCODE = #{taxCode,jdbcType=VARCHAR},
+			</if>
+			<if test="taxUrl != null">
+				TAXURL = #{taxUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="statusCode != null">
+				STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+			<if test="note != null">
+				NOTE = #{note,jdbcType=VARCHAR},
+			</if>
+			<if test="vipExpireDate != null">
+				VIPEXPIREDATE = #{vipExpireDate,jdbcType=DATE},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateAdminCustomer" parameterType="Customer">
+		update U_CUSTOMER
+		<set>
+			STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+			MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			INVITATIONCODE = #{invitationCode,jdbcType=VARCHAR}
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_CUSTOMER
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByCustomerName" resultMap="BaseResultMap" parameterType="string">
+		select
+		<include refid="Base_Column_List" />
+		from U_CUSTOMER
+		where CUSTOMERNAME = #{customerName,jdbcType=INTEGER}
+	</select>
+
+	<select id="listStoreInfoByQuery" resultMap="BaseStoreResultMap">
+		SELECT A.ID,A.CUSTOMERNAME AS STORENAME,B.STORECODE FROM U_CUSTOMER A
+		LEFT JOIN U_STORE_PROFILE B ON A.ID = B.STOREID
+		<where>
+			1=1
+			<if test="storeQuery.storeId != null">
+				and A.ID = #{storeQuery.storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeQuery.storeName != null">
+				and A.CUSTOMERNAME like CONCAT('%',#{storeQuery.storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeQuery.storeCode != null">
+				and B.STORECODE= #{storeQuery.storeCode, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="findCustomers" resultMap="CustomerRelatedInfoResultMap" parameterType="CustomerQuery">
+		select B.ID, A.USERNAME, B.CUSTOMERTYPE, A.MASTERFLAG, A.PHONE,
+		B.CUSTOMERNAME,B.MASTERNAME,
+		B.PROVINCECODE, B.CITYCODE,
+		B.COUNTYCODE,
+		B.TOWNCODE, B.ADDRESSDETAIL, A.AUDITSTATUSCODE,
+		A.AUDITTIME, C.USERNAME
+		as AUDITUSERNAME, A.AUDITNOTE,
+		A.STATUSCODE as USERSTATUSCODE,
+		B.STATUSCODE as CUSTOMERSTATUSCODE, B.VIPEXPIREDATE
+		from U_USER A left join
+		U_CUSTOMER B on
+		A.CUSTOMERID = B.ID
+		left join U_USER C on A.AUDITUSERID = C.ID
+		<where>
+			A.CUSTOMERTYPE &lt;&gt; '0'
+			<if test="customerType != null">
+				and B.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="masterFlag != null">
+				and A.MASTERFLAG = #{masterFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="auditCode != null">
+				and A.AUDITSTATUSCODE = #{auditCode, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and A.STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="loadCustomerRelatedInfoById" resultMap="CustomerRelatedInfoResultMap" parameterType="java.lang.Integer">
+		select B.ID, A.ID as
+		USERID, C.ID as USERPROFILEID, E.STOREID as STOREID, B.CUSTOMERTYPE,
+		A.AUDITSTATUSCODE, A.STATUSCODE as USERSTATUSCODE,
+		B.STATUSCODE as CUSTOMERSTATUSCODE,
+		A.USERNAME, A.MASTERFLAG, D.USERNAME as AUDITUSERNAME, E.STORENAME,
+		A.PHONE,
+		B.BUYERLEVELCODE, A.AUDITTIME, C.PROVINCECODE as
+		USERPROVINCECODE,
+		C.CITYCODE as USERCITYCODE, C.COUNTYCODE as
+		USERCOUNTYCODE, C.TOWNCODE as USERTOWNCODE,
+		A.EMAIL,
+		B.SELLERLEVELCODE, B.CREATETIME, B.CUSTOMERNAME, B.TELPHONE,
+		B.MASTERNAME,
+		B.PROVINCECODE, B.CITYCODE, B.COUNTYCODE,
+		B.TOWNCODE, B.ADDRESSDETAIL, B.IDCARDNO, B.LICENSEURL,
+		B.VIPEXPIREDATE,
+		B.VIPCREATETIME
+		from U_USER A
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		left join U_USER_PROFILE C on A.ID
+		= C.USERID
+		left
+		join U_USER D on
+		A.AUDITUSERID =
+		D.ID
+		left join U_STORE E on B.ID = E.CUSTOMERID
+		where A.MASTERFLAG =
+		'USERMASTERFLAG_MAIN'
+		and
+		B.ID =
+		#{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="getInviteCount" resultType="long">
+		select COUNT(ID)
+		from U_CUSTOMER
+		where INVITECUSTOMERID =
+		#{inviteCustomerId,jdbcType=INTEGER}
+		and STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+		<if test="startCreateTime != null">
+			and CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+		</if>
+		<if test="endCreateTime != null">
+			and CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+		</if>
+	</select>
+
+	<select id="getVipUserCount" resultType="long">
+		select COUNT(ID)
+		from U_CUSTOMER
+		where INVITECUSTOMERID =
+		#{inviteCustomerId,jdbcType=INTEGER}
+		and STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+		and BUYERLEVELCODE =
+		#{buyerLevelCode, jdbcType = VARCHAR}
+		and VIPCREATETIME is not null
+		<if test="startCreateTime != null">
+			and CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+		</if>
+		<if test="endCreateTime != null">
+			and CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+		</if>
+	</select>
+
+	<select id="findInvitedCustomers" resultMap="BaseResultMap" parameterType="InvitedUserQuery">
+		select
+		<include refid="Base_Column_List" />
+		from U_CUSTOMER
+		where INVITECUSTOMERID = #{storeId,jdbcType=INTEGER}
+		and STATUSCODE = #{statusCode, jdbcType
+		=VARCHAR}
+	</select>
+
+	<select id="getVipUserCountByTimes" resultType="int">
+		select COUNT(ID)
+		from U_CUSTOMER
+		where INVITECUSTOMERID =
+		#{inviteCustomerId,jdbcType=INTEGER}
+		and STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+		and BUYERLEVELCODE =
+		#{buyerLevelCode, jdbcType = VARCHAR}
+		and VIPCREATETIME is not null
+		and CREATETIME &gt;= #{beginDate,jdbcType=TIMESTAMP}
+		and CREATETIME &lt;=
+		#{endDate,jdbcType=TIMESTAMP}
+	</select>
+
+	<select id="findVipUserStatisticInfos" resultMap="VipUserStatisticResultMap" parameterType="VipUserStatisticDetailQuery">
+		select count(ID) as
+		REGISTCOUNT,sum(case when BUYERLEVELCODE = #{buyerLevelCode, jdbcType = VARCHAR} and VIPCREATETIME is not null then 1 else 0 end) as VIPUSERCOUNT,
+		substring(CREATETIME, 1, 10) as STATISTICDATE
+		from U_CUSTOMER
+		where INVITECUSTOMERID =
+		#{storeId,jdbcType=INTEGER}
+		and
+		STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+		and CREATETIME &gt;= #{beginTime,jdbcType=TIMESTAMP}
+		and CREATETIME &lt;=
+		#{endTime,jdbcType=TIMESTAMP}
+		group by substring(CREATETIME, 1, 10)
+		order by CREATETIME desc
+	</select>
+	<select id="listByCustomerTypeAndBuyerLevelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_CUSTOMER
+		<where>
+			<if test="customerType != null">
+				AND CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				AND BUYERLEVELCODE = #{buyerLevelCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<update id="updateBuyerLevelById">
+		update U_CUSTOMER
+		set BUYERLEVELCODE=#{buyerLevelCode,jdbcType=VARCHAR},
+		VIPCREATETIME=#{vipCreateTime,jdbcType=TIMESTAMP},
+		VIPEXPIREDATE=#{vipExpireDate,jdbcType=DATE},
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	<select id="loadByInvitationCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_CUSTOMER
+		where INVITATIONCODE =
+		#{invitationCode,jdbcType=VARCHAR}
+	</select>
+</mapper>

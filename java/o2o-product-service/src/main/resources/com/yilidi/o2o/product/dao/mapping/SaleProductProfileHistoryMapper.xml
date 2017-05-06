@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleProductProfileHistoryMapper">
+	<resultMap id="BaseResultMap" type="SaleProductProfileHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTPROFILEID" property="saleProductProfileId"
+			jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId"
+			jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="PRODUCTOWNER" property="productOwner" jdbcType="VARCHAR" />
+		<result column="SELLPOINT" property="sellPoint" jdbcType="VARCHAR" />
+		<result column="HOTSALEFLAG" property="hotSaleFlag" jdbcType="VARCHAR" />
+		<result column="SALESTATUS" property="saleStatus" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTSPEC" property="saleProductSpec" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTSOURCE" property="saleProductSource" jdbcType="VARCHAR" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="OPERATEUSERID" property="operateUserId"
+			jdbcType="INTEGER" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEPRODUCTPROFILEID, SALEPRODUCTID, CHANNELCODE,
+		CONTENT, PRODUCTOWNER,
+		SELLPOINT,HOTSALEFLAG, SALESTATUS,SALEPRODUCTSPEC,SALEPRODUCTSOURCE,DISPLAYORDER,
+		OPERATEUSERID, OPERATETIME,OPERATETYPE
+	</sql>
+
+	<insert id="saveSaleProductProfileHistory" parameterType="SaleProductProfileHistory"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_SALE_PRODUCT_PROFILE_HISTORY (ID,
+		SALEPRODUCTPROFILEID,
+		SALEPRODUCTID, CHANNELCODE,
+		CONTENT,PRODUCTOWNER,
+		SELLPOINT,HOTSALEFLAG, SALESTATUS, SALEPRODUCTSPEC,SALEPRODUCTSOURCE,DISPLAYORDER, OPERATEUSERID,
+		OPERATETIME,OPERATETYPE
+		)
+		values
+		(#{id,jdbcType=INTEGER},#{saleProductProfileId,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER},#{channelCode,jdbcType=VARCHAR},
+		#{content,jdbcType=VARCHAR}, #{productOwner,jdbcType=VARCHAR},
+		#{sellPoint,jdbcType=VARCHAR},
+		#{hotSaleFlag,jdbcType=VARCHAR},
+		#{saleStatus,jdbcType=VARCHAR},
+		#{saleProductSpec,jdbcType=VARCHAR},
+		#{saleProductSource,jdbcType=VARCHAR},#{displayOrder,jdbcType=INTEGER},
+		#{operateUserId,jdbcType=INTEGER},#{operateTime,jdbcType=TIMESTAMP},
+		#{operateType,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="loadSaleProductProfileHistoryById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_PROFILE_HISTORY
+		where 
+		ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listSaleProductProfileHistoryBySaleProductIdAndChannelCode"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_PROFILE_HISTORY
+		where 
+		SALEPRODUCTID = #{saleProductId, jdbcType=INTEGER}
+		and 
+		CHANNELCODE = #{channelCode, jdbcType=VARCHAR}
+	</select>
+
+</mapper>

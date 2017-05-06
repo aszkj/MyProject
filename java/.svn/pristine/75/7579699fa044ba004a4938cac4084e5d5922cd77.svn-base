@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.StockOutOrderMapper">
+	<resultMap id="BaseResultMap" type="StockOutOrder">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOCKOUTORDERNO" property="stockOutOrderNo" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORETYPE" property="storeType" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="STOCKOUTORDERTYPE" property="stockOutOrderType" jdbcType="VARCHAR" />
+		<result column="STOCKOUTCOUNT" property="stockOutCount" jdbcType="INTEGER" />
+		<result column="STOCKOUTAMOUNT" property="stockOutAmount" jdbcType="BIGINT" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="ORDERSTATUS" property="orderStatus" jdbcType="VARCHAR" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSERID" property="updateUserId" jdbcType="INTEGER" />
+		<result column="AUDITTIME" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITUSERID" property="auditUserId" jdbcType="INTEGER" />
+		<result column="AUDITREJECTREASON" property="auditRejectReason" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,STOCKOUTORDERNO, STOREID, STORETYPE,STORENAME,
+		STORECODE,STOCKOUTORDERTYPE, STOCKOUTCOUNT, STOCKOUTAMOUNT,
+		CREATETIME,
+		CREATEUSERID,ORDERSTATUS,
+		UPDATETIME,
+		UPDATEUSERID, AUDITTIME,
+		AUDITUSERID,AUDITREJECTREASON
+	</sql>
+
+	<insert id="save" parameterType="StockOutOrder" useGeneratedKeys="true" keyProperty="id">
+		insert into T_STOCKOUT_ORDER (
+		STOCKOUTORDERNO, STOREID,STORETYPE, STORENAME,STORECODE,STOCKOUTORDERTYPE,
+		STOCKOUTCOUNT, STOCKOUTAMOUNT,CREATETIME,
+		CREATEUSERID,ORDERSTATUS,
+		UPDATETIME, UPDATEUSERID
+		)
+		values(
+		#{stockOutOrderNo,jdbcType=VARCHAR},
+		#{storeId,jdbcType=INTEGER},
+		#{storeType,jdbcType=VARCHAR},
+		#{storeName,jdbcType=VARCHAR},
+		#{storeCode,jdbcType=VARCHAR},
+		#{stockOutOrderType,jdbcType=VARCHAR},
+		#{stockOutCount,jdbcType=INTEGER},
+		#{stockOutAmount,jdbcType=BIGINT},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{orderStatus,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUserId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<update id="updateOrderStautsForAuditPassedByStockOutOrderNo">
+		update T_STOCKOUT_ORDER
+		<set>
+			ORDERSTATUS = #{auditPassOrderStatus,jdbcType=VARCHAR},
+			UPDATETIME = #{auditTime, jdbcType=TIMESTAMP},
+			UPDATEUSERID =
+			#{auditUserId,jdbcType=INTEGER},
+			AUDITTIME = #{auditTime, jdbcType=TIMESTAMP},
+			AUDITUSERID = #{auditUserId,jdbcType=INTEGER}
+		</set>
+		where
+		STOCKOUTORDERNO = #{stockOutOrderNo,jdbcType=VARCHAR} and ORDERSTATUS = #{oriOrderStauts,jdbcType=VARCHAR}
+	</update>
+	<update id="updateOrderStautsForAuditNotPassedByStockOutOrderNo">
+		update T_STOCKOUT_ORDER
+		<set>
+			ORDERSTATUS = #{auditNotPassOrderStatus,jdbcType=VARCHAR},
+			<if test="auditRejectReason != null">
+				AUDITREJECTREASON = #{auditRejectReason,jdbcType=VARCHAR},
+			</if>
+			UPDATETIME = #{auditTime, jdbcType=TIMESTAMP},
+			UPDATEUSERID =
+			#{auditUserId,jdbcType=INTEGER},
+			AUDITTIME = #{auditTime,
+			jdbcType=TIMESTAMP},
+			AUDITUSERID = #{auditUserId,jdbcType=INTEGER}
+		</set>
+		where
+		STOCKOUTORDERNO = #{stockOutOrderNo,jdbcType=VARCHAR} and ORDERSTATUS = #{oriOrderStauts,jdbcType=VARCHAR}
+	</update>
+	<select id="loadByStockOutOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKOUT_ORDER
+		where STOCKOUTORDERNO = #{stockOutOrderNo,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadForUpdateByStockOutOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKOUT_ORDER
+		where STOCKOUTORDERNO = #{stockOutOrderNo,jdbcType=VARCHAR} for update
+	</select>
+
+	<select id="findStockOutOrderInfos" resultMap="BaseResultMap" parameterType="StockOutOrderQuery">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKOUT_ORDER
+		<where>
+			<if test="stockOutOrderNo != null">
+				and STOCKOUTORDERNO = #{stockOutOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="stockOutOrderNoList !=null">
+				and STOCKOUTORDERNO IN
+				<foreach item="item" index="index" collection="stockOutOrderNoList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="storeId != null">
+				and STOREID = #{storeId,jdbcType=INTEGER}
+			</if>
+			<if test="storeType != null">
+				and STORETYPE = #{storeType,jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode != null">
+				and STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and STORENAME like concat('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="stockOutOrderType != null">
+				and STOCKOUTORDERTYPE =#{stockOutOrderType,jdbcType=VARCHAR}
+			</if>
+			<if test="orderStatus !=null">
+				and ORDERSTATUS = #{orderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="beginCreateTime != null">
+				and CREATETIME &gt;= #{beginCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="beginAuditTime != null">
+				and AUDITTIME &gt;= #{beginAuditTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and AUDITTIME &lt;= #{endAuditTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by CREATETIME desc
+	</select>
+	<select id="getCountsForExportStockOutOrder" resultType="long" parameterType="StockOutOrderQuery">
+		select
+		count(1)
+		from T_STOCKOUT_ORDER
+		<where>
+			<if test="stockOutOrderNo != null">
+				and STOCKOUTORDERNO = #{stockOutOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="stockOutOrderNoList !=null">
+				and STOCKOUTORDERNO IN
+				<foreach item="item" index="index" collection="stockOutOrderNoList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="storeCode != null">
+				and STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="storeName != null">
+				and STORENAME like concat('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="orderStatus !=null">
+				and ORDERSTATUS = #{orderStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="beginCreateTime != null">
+				and CREATETIME &gt;= #{beginCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="beginAuditTime != null">
+				and AUDITTIME &gt;= #{beginAuditTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and AUDITTIME &lt;= #{endAuditTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+</mapper>

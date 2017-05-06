@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.UserMapper">
+	<resultMap id="UserResultMap" type="User">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="REALNAME" property="realName" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="DEPARTMENT" property="department" jdbcType="VARCHAR" />
+		<result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+		<result column="MASTERFLAG" property="masterFlag" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="AUDITSTATUSCODE" property="auditStatusCode"
+			jdbcType="VARCHAR" />
+		<result column="REGISTERPLATFORM" property="registerPlatform"
+			jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="AUDITTIME" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITUSERID" property="auditUserId" jdbcType="INTEGER" />
+		<result column="AUDITNOTE" property="auditNote" jdbcType="VARCHAR" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="FREEZETIME" property="freezeTime" jdbcType="TIMESTAMP" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="AdminUserResultMap" type="AdminUserInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="REALNAME" property="realName" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="DEPARTMENT" property="department" jdbcType="VARCHAR" />
+		<result column="LOGINTIME" property="loginTime" jdbcType="VARCHAR" />
+		<result column="LOGINIP" property="loginIp" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+		<result column="INVITATIONCODE" property="invitationCode"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="BuyerUserResultMap" type="UserInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="REALNAME" property="realName" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="BUYERLEVELCODE" property="buyerLevelCode"
+			jdbcType="VARCHAR" />
+		<result column="REGISTERPLATFORM" property="registerPlatform"
+			jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+		<result column="VIPEXPIREDATE" property="vipExpireDate"
+			jdbcType="DATE" />
+		<result column="VIPCREATETIME" property="vipCreateTime"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="RoleBindingUserResultMap" type="RoleBindingUserInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="REALNAME" property="realName" jdbcType="VARCHAR" />
+		<result column="DEPARTMENT" property="department" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="UserNameAndTypeResultMap" type="UserNameAndTypeInfo">
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="User_Column_List">
+		ID, CUSTOMERID, USERNAME, REALNAME, EMAIL,
+		PHONE,DEPARTMENT,PASSWORD, MASTERFLAG, CUSTOMERTYPE,
+		STATUSCODE,
+		AUDITSTATUSCODE,REGISTERPLATFORM,CREATETIME,
+		CREATEUSERID, AUDITTIME,
+		AUDITUSERID,
+		AUDITNOTE, MODIFYTIME,
+		MODIFYUSERID,FREEZETIME,NOTE
+	</sql>
+
+	<insert id="save" parameterType="User" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into U_USER (
+		CUSTOMERID, USERNAME,
+		REALNAME, EMAIL,
+		PHONE,DEPARTMENT,
+		PASSWORD, MASTERFLAG,
+		CUSTOMERTYPE, STATUSCODE,
+		AUDITSTATUSCODE,REGISTERPLATFORM,
+		CREATETIME, CREATEUSERID,
+		AUDITTIME,
+		AUDITUSERID,
+		AUDITNOTE, MODIFYTIME, MODIFYUSERID,
+		FREEZETIME, NOTE
+		)
+		values
+		(
+		#{customerId,jdbcType=INTEGER},
+		#{userName,jdbcType=VARCHAR},
+		#{realName,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR},
+		#{department,jdbcType=VARCHAR},
+		#{password,jdbcType=VARCHAR},
+		#{masterFlag,jdbcType=VARCHAR},
+		#{customerType,jdbcType=VARCHAR},
+		#{statusCode,jdbcType=VARCHAR},
+		#{auditStatusCode,jdbcType=VARCHAR},
+		#{registerPlatform,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{auditTime,jdbcType=TIMESTAMP},
+		#{auditUserId,jdbcType=INTEGER},
+		#{auditNote,jdbcType=VARCHAR},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=INTEGER},
+		#{freezeTime,jdbcType=TIMESTAMP},
+		#{note,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="update" parameterType="User">
+		update U_USER set
+		CUSTOMERID =
+		#{customerId,jdbcType=INTEGER},
+		USERNAME =
+		#{userName,jdbcType=VARCHAR},
+		REALNAME = #{realName,jdbcType=VARCHAR},
+		EMAIL = #{email,jdbcType=VARCHAR},
+		PHONE = #{phone,jdbcType=VARCHAR},
+		DEPARTMENT = #{department,jdbcType=VARCHAR},
+		REGISTERPLATFORM =
+		#{registerPlatform,jdbcType=VARCHAR},
+		PASSWORD =
+		#{password,jdbcType=VARCHAR},
+		MASTERFLAG =
+		#{masterFlag,jdbcType=VARCHAR},
+		CUSTOMERTYPE =
+		#{customerType,jdbcType=VARCHAR},
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR},
+		AUDITSTATUSCODE =
+		#{auditStatusCode,jdbcType=VARCHAR},
+		AUDITTIME =
+		#{auditTime,jdbcType=TIMESTAMP},
+		AUDITUSERID =
+		#{auditUserId,jdbcType=INTEGER},
+		AUDITNOTE =
+		#{auditNote,jdbcType=VARCHAR},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		FREEZETIME =
+		#{freezeTime,jdbcType=TIMESTAMP},
+		NOTE = #{note,jdbcType=VARCHAR}
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateByIdSelective" parameterType="User">
+		update U_USER
+		<set>
+			<if test="customerId != null">
+				CUSTOMERID = #{customerId,jdbcType=INTEGER},
+			</if>
+			<if test="userName != null">
+				USERNAME = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="realName != null">
+				REALNAME = #{realName,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				EMAIL = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				PHONE = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="department != null">
+				DEPARTMENT = #{department,jdbcType=VARCHAR},
+			</if>
+			<if test="registerPlatform != null">
+				REGISTERPLATFORM = #{registerPlatform,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				PASSWORD = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="masterFlag != null">
+				MASTERFLAG = #{masterFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="customerType != null">
+				CUSTOMERTYPE = #{customerType,jdbcType=VARCHAR},
+			</if>
+			<if test="statusCode != null">
+				STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+			</if>
+			<if test="auditStatusCode != null">
+				AUDITSTATUSCODE = #{auditStatusCode,jdbcType=VARCHAR},
+			</if>
+			<if test="auditTime != null">
+				AUDITTIME = #{auditTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="auditUserId != null">
+				AUDITUSERID = #{auditUserId,jdbcType=INTEGER},
+			</if>
+			<if test="auditNote != null">
+				AUDITNOTE = #{auditNote,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+			<if test="freezeTime != null">
+				FREEZETIME = #{freezeTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="note != null">
+				NOTE = #{note,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<!-- 重置密码 -->
+	<update id="updateUserPassword" parameterType="java.util.Map">
+		update U_USER set
+		PASSWORD = #{password,jdbcType=VARCHAR}
+		where
+		ID =
+		#{id,jdbcType=INTEGER}
+	</update>
+
+	<!-- 冻结子账号 -->
+	<update id="updateUserStatusCode" parameterType="java.util.Map">
+		update U_USER
+		<set>
+			<if test="statusCode != null">
+				STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+			</if>
+			<if test="freezeTime != null">
+				FREEZETIME = #{freezeTime,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="UserResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="User_Column_List" />
+		from U_USER
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByNameAndType" resultMap="UserResultMap">
+		select
+		<include refid="User_Column_List" />
+		from U_USER
+		where
+		USERNAME = #{userName,jdbcType=VARCHAR}
+		and
+		CUSTOMERTYPE =
+		#{customerType,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findUsers" resultMap="UserResultMap" parameterType="UserQuery">
+		select
+		<include refid="User_Column_List" />
+		from ${table}
+		<where>
+			<if test="customerType != null">
+				CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="masterFlag != null">
+				and MASTERFLAG = #{masterFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="auditCode != null">
+				and AUDITSTATUSCODE = #{auditCode, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="checkUserName" parameterType="java.lang.String"
+		resultType="integer">
+		select COUNT(USERNAME)
+		from U_USER
+		where USERNAME =
+		#{userName,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findSubUsers" resultMap="UserResultMap"
+		parameterType="UserQuery">
+		select
+		<include refid="User_Column_List" />
+		from ${table}
+		<where>
+			<if test="masterFlag != null">
+				and MASTERFLAG = #{masterFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="customerId != null">
+				and CUSTOMERID = #{customerId, jdbcType=INTEGER}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="getCountsForExportUser" parameterType="User"
+		resultType="long">
+		select COUNT(1)
+		from U_USER
+		where CREATETIME &lt;=
+		#{createTime,jdbcType=TIMESTAMP}
+	</select>
+
+	<select id="listDataForExportUser" resultMap="UserResultMap">
+		select
+		<include refid="User_Column_List" />
+		from U_USER
+		where CREATETIME &lt;=
+		#{user.createTime,jdbcType=TIMESTAMP}
+		limit #{startLineNum,
+		jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+
+	<select id="listUserIdsByCustomerType" resultType="java.lang.Integer">
+		SELECT U.ID
+		FROM U_CUSTOMER C,U_USER U WHERE U.CUSTOMERID = C.ID AND
+		C.CUSTOMERTYPE =#{customerType, jdbcType=VARCHAR};
+	</select>
+
+	<select id="listUserIdsByBuyerLevel" resultType="java.lang.Integer">
+		SELECT U.ID FROM
+		U_CUSTOMER C,U_USER U WHERE U.CUSTOMERID = C.ID AND
+		C.BUYERLEVELCODE
+		=#{buyerLevel, jdbcType=VARCHAR};
+	</select>
+
+	<select id="listUserIdsByUserNames" resultType="java.lang.Integer">
+		SELECT ID FROM U_USER
+		<where>
+			1=1
+			<if test="userNames !=null">
+				and USERNAME IN
+				<foreach item="item" index="index" collection="userNames"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<insert id="batchSave" parameterType="java.util.List">
+		insert into U_USER (
+		CUSTOMERID, USERNAME,
+		REALNAME, EMAIL, PHONE,
+		PASSWORD, MASTERFLAG,
+		CUSTOMERTYPE, STATUSCODE,
+		AUDITSTATUSCODE,
+		CREATETIME, CREATEUSERID,
+		AUDITTIME, AUDITUSERID,
+		AUDITNOTE, MODIFYTIME,
+		MODIFYUSERID, NOTE
+		)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.customerId,jdbcType=INTEGER},
+			#{item.userName,jdbcType=VARCHAR},
+			#{item.realName,jdbcType=VARCHAR},
+			#{item.email,jdbcType=VARCHAR},
+			#{item.phone,jdbcType=VARCHAR},
+			#{item.password,jdbcType=VARCHAR},
+			#{item.masterFlag,jdbcType=VARCHAR},
+			#{item.customerType,jdbcType=VARCHAR},
+			#{item.statusCode,jdbcType=VARCHAR},
+			#{item.auditStatusCode,jdbcType=VARCHAR},
+			#{item.createTime,jdbcType=TIMESTAMP},
+			#{item.createUserId,jdbcType=INTEGER},
+			#{item.auditTime,jdbcType=TIMESTAMP},
+			#{item.auditUserId,jdbcType=INTEGER},
+			#{item.auditNote,jdbcType=VARCHAR},
+			#{item.modifyTime,jdbcType=TIMESTAMP},
+			#{item.modifyUserId,jdbcType=INTEGER},
+			#{item.note,jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+
+	<select id="findAdminUsers" resultMap="AdminUserResultMap"
+		parameterType="UserQuery">
+		SELECT D.* FROM (SELECT
+		A.ID,A.CUSTOMERID,A.CUSTOMERTYPE,A.USERNAME,A.REALNAME,A.EMAIL,
+		A.PHONE,A.DEPARTMENT,A.STATUSCODE,A.CREATETIME,B.LOGINTIME,B.LOGINIP,C.INVITATIONCODE
+		FROM U_USER A
+		LEFT JOIN U_LOGIN_LOG B ON A.ID = B.USERID
+		LEFT JOIN
+		U_CUSTOMER C ON A.CUSTOMERID = C.ID
+		ORDER BY
+		B.LOGINTIME DESC) D
+		<where>
+			1=1
+			<if test="realName != null">
+				and D.REALNAME = #{realName, jdbcType=VARCHAR}
+			</if>
+			<if test="email != null">
+				and D.EMAIL = #{email, jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				and D.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and D.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+			<if test="department != null">
+				and D.DEPARTMENT = #{department, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and D.STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and D.CREATETIME &gt;= #{startCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and D.CREATETIME &lt;= #{endCreateTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			GROUP BY D.ID
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="findBuyerUsers" resultMap="BuyerUserResultMap"
+		parameterType="UserQuery">
+		SELECT
+		A.ID,A.CUSTOMERID,A.USERNAME,A.REALNAME,A.CUSTOMERTYPE,A.PHONE,A.EMAIL,A.CREATETIME,
+		A.REGISTERPLATFORM,A.STATUSCODE,B.BUYERLEVELCODE,A.CREATETIME,B.VIPCREATETIME,B.VIPEXPIREDATE
+		FROM
+		U_USER A
+		LEFT JOIN U_CUSTOMER B ON A.CUSTOMERID = B.ID
+		<where>
+			1=1
+			<if test="userName != null">
+				and A.USERNAME like CONCAT('%',#{userName,
+				jdbcType=VARCHAR},'%')
+			</if>
+			<if test="telPhone != null">
+				and A.PHONE = #{telPhone, jdbcType=VARCHAR}
+			</if>
+			<if test="email != null">
+				and A.EMAIL like CONCAT('%',#{email,
+				jdbcType=VARCHAR},'%')
+			</if>
+			<if test="customerType != null">
+				and A.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and A.STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+			</if>
+			<if test="buyerLevelCode != null">
+				and B.BUYERLEVELCODE = #{buyerLevelCode, jdbcType =
+				VARCHAR}
+			</if>
+			<if test="startCreateDate != null">
+				and A.CREATETIME &gt;= #{startCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateDate != null">
+				and A.CREATETIME &lt;= #{endCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="startVipCreateDate != null">
+				and B.VIPCREATETIME &gt;= #{startVipCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endVipCreateDate != null">
+				and B.VIPCREATETIME &lt;= #{endVipCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="startVipExpireDate != null">
+				and B.VIPEXPIREDATE &gt;= #{startVipExpireDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endVipExpireDate != null">
+				and B.VIPEXPIREDATE &lt;= #{endVipExpireDate,
+				jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="listDataForExportBuyerUser" resultMap="BuyerUserResultMap">
+		SELECT
+		A.ID,A.CUSTOMERID,A.USERNAME,A.CUSTOMERTYPE,A.PHONE,A.EMAIL,A.CREATETIME,
+		A.REGISTERPLATFORM,A.STATUSCODE,B.BUYERLEVELCODE,A.CREATETIME,B.VIPCREATETIME,B.VIPEXPIREDATE
+		FROM
+		U_USER A
+		LEFT JOIN U_CUSTOMER B ON A.CUSTOMERID = B.ID
+		<where>
+			1=1
+			<if test="userQuery.userName != null">
+				and A.USERNAME like CONCAT('%',#{userQuery.userName,
+				jdbcType=VARCHAR},'%')
+			</if>
+			<if test="userQuery.telPhone != null">
+				and A.PHONE = #{userQuery.telPhone, jdbcType=VARCHAR}
+			</if>
+			<if test="userQuery.email != null">
+				and A.EMAIL like CONCAT('%',#{userQuery.email,
+				jdbcType=VARCHAR},'%')
+			</if>
+			<if test="userQuery.customerType != null">
+				and A.CUSTOMERTYPE = #{userQuery.customerType,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="userQuery.statusCode != null">
+				and A.STATUSCODE = #{userQuery.statusCode, jdbcType =
+				VARCHAR}
+			</if>
+			<if test="userQuery.buyerLevelCode != null">
+				and B.BUYERLEVELCODE = #{userQuery.buyerLevelCode,
+				jdbcType = VARCHAR}
+			</if>
+			<if test="userQuery.startCreateDate != null">
+				and A.CREATETIME &gt;= #{userQuery.startCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="userQuery.endCreateDate != null">
+				and A.CREATETIME &lt;= #{userQuery.endCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="userQuery.startVipCreateDate != null">
+				and B.VIPCREATETIME &gt;= #{userQuery.startVipCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="userQuery.endVipCreateDate != null">
+				and B.VIPCREATETIME &lt;= #{userQuery.endVipCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="userQuery.startVipExpireDate != null">
+				and B.VIPEXPIREDATE &gt;= #{userQuery.startVipExpireDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="userQuery.endVipExpireDate != null">
+				and B.VIPEXPIREDATE &lt;= #{userQuery.endVipExpireDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="userQuery.order != null">
+				order by ${userQuery.order}
+				<if test="userQuery.sort != null">
+					${userQuery.sort}
+				</if>
+			</if>
+		</where>
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+
+	<select id="getCountsForExportBuyerUser" parameterType="UserQuery"
+		resultType="java.lang.Long">
+		SELECT COUNT(*) FROM U_USER A
+		LEFT JOIN U_CUSTOMER B ON A.CUSTOMERID =
+		B.ID
+		<where>
+			1=1
+			<if test="userName != null">
+				and A.USERNAME like CONCAT('%',#{userName,
+				jdbcType=VARCHAR},'%')
+			</if>
+			<if test="telPhone != null">
+				and A.PHONE = #{telPhone, jdbcType=VARCHAR}
+			</if>
+			<if test="email != null">
+				and A.EMAIL like CONCAT('%',#{email,
+				jdbcType=VARCHAR},'%')
+			</if>
+			<if test="customerType != null">
+				and A.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and A.STATUSCODE = #{statusCode, jdbcType = VARCHAR}
+			</if>
+			<if test="buyerLevelCode != null">
+				and B.BUYERLEVELCODE = #{buyerLevelCode, jdbcType =
+				VARCHAR}
+			</if>
+			<if test="startCreateDate != null">
+				and A.CREATETIME &gt;= #{startCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateDate != null">
+				and A.CREATETIME &lt;= #{endCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="startVipCreateDate != null">
+				and B.VIPCREATETIME &gt;= #{startVipCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endVipCreateDate != null">
+				and B.VIPCREATETIME &lt;= #{endVipCreateDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="startVipExpireDate != null">
+				and B.VIPEXPIREDATE &gt;= #{startVipExpireDate,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endVipExpireDate != null">
+				and B.VIPEXPIREDATE &lt;= #{endVipExpireDate,
+				jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+
+	<select id="loadBuyerUserById" resultMap="BuyerUserResultMap"
+		parameterType="java.lang.Integer">
+		SELECT
+		A.ID,A.CUSTOMERID,A.USERNAME,A.CUSTOMERTYPE,A.PHONE,A.EMAIL,A.CREATETIME,
+		A.REGISTERPLATFORM,A.STATUSCODE,B.BUYERLEVELCODE,B.VIPCREATETIME,B.VIPEXPIREDATE
+		FROM U_USER A
+		LEFT
+		JOIN U_CUSTOMER B ON A.CUSTOMERID = B.ID
+		where A.ID =
+		#{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listBuyerUsersByUserName" resultMap="UserResultMap"
+		parameterType="java.lang.String">
+		SELECT
+		<include refid="User_Column_List" />
+		FROM U_USER A
+		where A.USERNAME =
+		#{userName,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findRoleBindingUsers" parameterType="map"
+		resultMap="RoleBindingUserResultMap">
+		SELECT ID, USERNAME, REALNAME, DEPARTMENT, EMAIL, PHONE, STATUSCODE
+		FROM U_USER
+		<where>
+			ID in
+			<foreach item="item" index="index" collection="map.userIds"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			<if test="map.userQuery.realName != null">
+				and REALNAME = #{map.userQuery.realName,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="map.userQuery.userName != null">
+				and USERNAME = #{map.userQuery.userName,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="map.userQuery.telPhone != null">
+				and PHONE = #{map.userQuery.telPhone, jdbcType=VARCHAR}
+			</if>
+			<if test="map.userQuery.department != null">
+				and DEPARTMENT = #{map.userQuery.department,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="map.userQuery.email != null">
+				and EMAIL = #{map.userQuery.email, jdbcType=VARCHAR}
+			</if>
+			<if test="map.userQuery.statusCode != null">
+				and STATUSCODE = #{map.userQuery.statusCode, jdbcType =
+				VARCHAR}
+			</if>
+			<if test="map.userQuery.order != null">
+				order by ${map.userQuery.order}
+				<if test="map.userQuery.sort != null">
+					${map.userQuery.sort}
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<select id="listUserNameAndTypeInfo" resultMap="UserNameAndTypeResultMap">
+		select USERNAME,
+		CUSTOMERTYPE from U_USER
+	</select>
+
+	<select id="loadMainUser" resultMap="UserResultMap">
+		select
+		<include refid="User_Column_List" />
+		from U_USER
+		where CUSTOMERID = #{customerId,jdbcType=INTEGER}
+		and
+		MASTERFLAG = #{masterFlag,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 获取子账号列表 -->
+	<select id="findChildAccountList" parameterType="com.yilidi.o2o.user.service.dto.query.UserQuery"
+		resultMap="UserResultMap">
+		select
+		z.ID,
+		z.USERNAME,
+		z.REALNAME,
+		z.PHONE,
+		z.STATUSCODE,
+		z.CREATETIME,
+		z.FREEZETIME,
+		z.CUSTOMERID
+		from (
+		SELECT
+		a.ID as ID,
+		a.USERNAME as
+		USERNAME,
+		a.REALNAME as REALNAME,
+		a.PHONE as PHONE,
+		a.STATUSCODE as
+		STATUSCODE,
+		a.CREATETIME as CREATETIME,
+		a.FREEZETIME as FREEZETIME,
+		a.CUSTOMERID as CUSTOMERID
+		FROM
+		U_USER a,
+		U_CUSTOMER b
+		WHERE
+		a.CUSTOMERID =
+		b.ID
+		AND a.CUSTOMERTYPE = 'CUSTOMERTYPE_SELLER'
+		AND a.MASTERFLAG =
+		'USERMASTERFLAG_SUB'
+		AND a.CUSTOMERID IN (
+		SELECT
+		c.STOREID
+		FROM
+		U_STORE_PROFILE c
+		<where>
+			<if test="storeName != null and storeName != ''">
+				AND c.STORENAME LIKE
+				CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeCode != null and storeCode != ''">
+				AND c.STORECODE = #{storeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		)
+		<if test="statusCode != null and statusCode != ''">
+			AND a.STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+		</if>
+		) z
+		<where>
+			<if test="customerId != null">
+				AND z.CUSTOMERID = #{customerId,jdbcType=INTEGER}
+			</if>
+		</where>
+		ORDER BY z.CREATETIME DESC
+	</select>
+
+	<select id="getAcceptOrderUserId" resultType="java.lang.Integer">
+		SELECT
+		t.ID
+		FROM
+		U_USER t
+		WHERE
+		t.CUSTOMERID = #{customerId,jdbcType=INTEGER}
+		AND
+		t.STATUSCODE = 'USERSTATUS_ON'
+	</select>
+	<select id="getChildBycustom" resultMap="UserResultMap">
+		SELECT
+		<include refid="User_Column_List" />
+		FROM
+		U_USER t
+		WHERE
+		t.CUSTOMERID = #{customerId,jdbcType=INTEGER}
+		AND
+		t.STATUSCODE = 'USERSTATUS_ON'
+		AND t.MASTERFLAG &lt;&gt;
+		'USERMASTERFLAG_MAIN'
+	</select>
+	
+	<select id="getPushUserByCustomerType" resultMap="UserResultMap">
+		SELECT
+		<include refid="User_Column_List" />
+		FROM
+		U_USER t
+		WHERE
+			t.CUSTOMERTYPE = #{customerType ,jdbcType=VARCHAR}
+		AND t.MASTERFLAG = 'USERMASTERFLAG_MAIN'
+		AND t.STATUSCODE = 'USERSTATUS_ON'
+		AND t.AUDITSTATUSCODE = 'USERAUDITSTATUS_PASSED'
+		AND t.CUSTOMERID in (SELECT ID FROM U_CUSTOMER WHERE STATUSCODE = 'CUSTOMERSTATUS_ON')
+	</select>
+</mapper>

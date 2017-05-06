@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+        document.write("<script type='text/javascript' src='../static-resource/js/checkLogin.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee;">
+    <div class="toptextwrap">
+        <span class="fedtoptext">亲，给点意见吧~</span>
+    </div>
+    <div class="feedbackContentWrap">
+        <textarea id="feedbackContent" placeholder="我们知道我们的业务还不成熟,还有许多需要改进的地方，我们需要您的吐槽来帮助我们发现问题..."></textarea>
+        <div class="charCountWrap"><span id="charCount">0</span>/<span>500</span></div>
+    </div>
+    <button type="submit" id="feedbackBtn"  onclick="feedback()">提交</button>
+</body>
+<script type="text/javascript">
+    function feedback(){
+        var maxLength=500;
+        var params = new Object();
+        params.content = $("#feedbackContent").val();
+        if(params.content){
+            if(checkStr(params.content)){
+                alert("请不要输入表情和特殊字符");
+            }
+            if(params.content.length>maxLength){
+                alert("反馈字数不能超过上限");
+            }else{
+                ajax("/user/saveBuyerFeedback", params, function(data) {
+                    window.location.href='set.html';
+                }, function(msg) {
+                    alert(msg);
+                }, true);
+            }
+        }else{
+            alert("亲，内容还未填写");
+        }
+    }
+    $("#feedbackContent").keyup(function(){
+        var contentLength=$("#feedbackContent").val().length;
+        $("#charCount").html(contentLength);
+    })
+</script>
+</html>

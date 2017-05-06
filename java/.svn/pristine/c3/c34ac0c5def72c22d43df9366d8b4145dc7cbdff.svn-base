@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>一里递</title>
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+        document.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p>我的钱包</p>
+    </div>
+</header>
+<div class="bord"></div>
+<section>
+    <div id="accountInfo">
+    </div>
+    <div class="botConWrap">
+        <div class="couponContent">
+            <div class="couponTab bg hide">
+                <ul id="">
+                    <li><a href="javascript:void(0);" class="couponTabActive" data-ticketStatus="1">有效优惠券</a><div class="borderRightTwo"></div></li>
+                    <li><a href="javascript:void(0);" data-ticketStatus="0">无效优惠券</a></li>
+                </ul>
+            </div>
+            <div class="contentWrap">
+                <div class="couponItemWrap">
+                </div>
+                <div id="pullUp" class="hide">
+                <span class="loading">
+                    <span class="pullUpIcon"></span>
+                </span>
+                    <span class="pullUpLabel">上拉加载更多...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="noMoreContent hide">
+    <p>没有更多内容了，别拉啦!</p>
+</div>
+</body>
+<script type="text/javascript">
+    var pageNum = 0;
+    var pageSize = 12;
+    var totalPages = 0;
+    var ticketType= 0;
+    var ticketStatus=1;
+    var couponTabActive="couponTabActive";
+    var tickettypeActive=getUrlParam("tickettype");
+    $(function(){
+        getAccountInfo();
+    });
+    /*获取优惠券等信息*/
+    function couponTmpl(pageNumTemp){
+        var params = new Object();
+        params.ticketType = ticketType;
+        params.ticketStatus = ticketStatus;
+        params.pageNum=pageNumTemp;
+        params.pageSize=pageSize;
+        ajax("/activity/userticketinfo", params, function(data) {
+            console.log(data);
+            totalPages = data.totalPages;
+            pageNum = data.pageNum; 
+            loadable=pageNum<=totalPages;
+            if(pageNum<=1){
+                $(".couponItemWrap").html("");
+            }
+            if(loadable||totalPages==0){
+                $("#couponTmpl").tmpl(data).appendTo(".couponItemWrap");
+            }
+            $("#pullUp").addClass("hide");
+            //拉到最后一页时候提示
+            if(pageNum!=1&&!loadable){
+                $(".noMoreContent").removeClass("hide");
+                setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+            }
+            $(".couponItem").each(function(){
+                if($(this).attr("data-ticketType")==2&&$(this).attr("data-ticketStatus")!=0){
+                    $(this).removeClass("couponCanUse").addClass("cashCouponBg");
+                }
+                if($(this).attr("data-ticketStatus")==0){
+                    $(this).removeClass("couponCanUse").addClass("couponNoUse");
+                }
+            })
+        }, function(msg) {
+            alert(msg);
+        }, true);
+    }
+    function gettickettype(){
+        if(tickettypeActive){
+            $(".couponCateTab ul li a").each(function(){
+                if($(this).attr("data-tickettype")==tickettypeActive){
+                    $(".couponCateTab ul li a").removeClass("couponCateTabActive");
+                    $(this).addClass("couponCateTabActive");
+                    changeShowCoupon();
+                }
+            })
+        }
+    }
+    function changeShowCoupon(){
+        var type = $(".couponCateTabActive").attr("data-ticketType");
+        var typeName =$(".couponCateTabActive").attr("data-ticketTypeName");
+        $(".couponTab ul li a").removeClass(couponTabActive);
+        $(".couponTab ul li:first-child a").html("有效"+typeName);
+        $(".couponTab ul li:last-child a").html("无效"+typeName);
+        couponTabActive="couponTabActive_"+type;
+        $(".couponTab ul li:first-child a").addClass(couponTabActive);
+    }
+    function getAccountInfo(){
+        var params = new Object();
+        ajax("/user/accountinfo", params, function(data) {
+            if(tickettypeActive){
+                ticketType=tickettypeActive
+            }else{
+                ticketType=data.ticketInfoList[0].ticketType;
+            }
+            $("#accountInfoTmpl").tmpl(data).appendTo("#accountInfo");
+            $(".couponTab").removeClass("hide");
+            gettickettype();
+            couponTmpl(1);
+            $(".couponCateTab ul li a").click(function(){
+                $(".couponCateTab ul li a").removeClass("couponCateTabActive");
+                $(this).addClass("couponCateTabActive");
+                window.scrollTo(0,0);
+                changeShowCoupon();
+                ticketType=$(this).attr("data-ticketType");
+                couponTmpl(1);
+            });
+        },function(msg){
+            alert(msg);
+        },true);
+    }
+    $(".couponTab ul li a").click(function(){
+        window.scrollTo(0,0);
+        $(".couponTab ul li a").removeClass(couponTabActive);
+        $(this).addClass(couponTabActive);
+        ticketStatus=$(this).attr("data-ticketStatus");
+        couponTmpl(1);
+    });
+    /*分页加载*/
+    $(window).scroll(function(){
+        if($(".contentWrap").height()-$(window).scrollTop()<=document.documentElement.clientHeight){
+            $("#pullUp").removeClass("hide");
+            pageNum++;
+            couponTmpl(pageNum);
+        }
+    });
+</script>
+<script id="couponTmpl" type="text/x-jquery-tmpl">
+{{if $data.list&&$data.list.length>0}}
+{{each(i,v) list}}
+ <div class="couponItem couponCanUse" data-ticketStatus="${v.ticketStatus}" data-ticketType="${v.ticketType}">
+       <div class="couponTop">
+          <div class="couponTit">
+              <span>￥</span><span class="ticketAmount">${parseInt(toCenti(v.ticketAmount))}</span>
+                 <p>${v.ticketTypeName}</p>
+           </div>
+           <div class="couponIns">
+             <p>适用范围：<span class="useScope">${v.useScope}</span></p>
+              <p class="ticketDescription">${v.ticketDescription}</p>
+            </div>
+          </div>
+          <div class="timeWrap">
+               <span class="deadline">有效期：${v.beginTime.substring(0,v.beginTime.indexOf(' '))}至${v.endTime.substring(0,v.endTime.indexOf(' '))}</span>
+                <span class="ticketStatus">${v.ticketStatusName}</span>
+          </div>
+ </div>
+ <div class="bord"></div>
+ {{/each}}
+ {{else}}
+   <div class="not-find-box" id="noTicket">
+            <img src="../static-resource/images/wallet/nocoupon.png">
+            <p id="noText">你还没有相关奖券哦~</p>
+   </div>
+ {{/if}}
+</script>
+<script id="accountInfoTmpl" type="text/x-jquery-tmpl">
+     <div class="account bg">
+       {{each accountInfoList}}
+            <div class="balance">
+                <h5>${accountName}</h5>
+                <p>${accountNum}</p>
+            </div>
+            <div class="borderRightMiddle"></div>
+       {{/each}}
+        </div>
+        <div class="clearfix"></div>
+        <div class="couponCateTab">
+            <ul>
+            {{each(i,v) ticketInfoList}}
+                <li><a href="javascript:void(0);" class="${i==0 ? 'couponCateTabActive' :''} ticketName" data-ticketType="${v.ticketType}" data-ticketTypeName="${v.ticketTypeName}">${v.ticketTypeName}(<span id="couponCount">${v.ticketCount}</span>)</a><div class="borderRightThree"></div></li>
+            {{/each}}
+            </ul>
+        </div>
+</script>
+</html>

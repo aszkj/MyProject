@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>一里递</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<link rel="stylesheet" href="../static-resource/css/catalog.css" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/productCart.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body>
+	<!--顶部tab-->
+	<div class="cateBrandTabBox option" id="cateBrandTabBox">
+		<ul>
+			<li><a href="javascript:void(0)" class="tabCB cateActive" id="tabC" onclick="showCate()">分类</a></li>
+			<li><a href="javascript:void(0)" class="tabCB" id="tabB" onclick="showBrand()">品牌</a></li>
+		</ul>
+	</div>
+	<!--搜索框-->
+	<div class="cateSearchBox" id="cateSearchBox">
+		<label> <input id="cateSearch" type="search" onclick="toSearch()" readonly="readonly"/>
+			<p class="searchIcon">搜索商品/品牌</p>
+		</label>
+	</div>
+	<!--分类和品牌-->
+	<div class="cateBrandCon">
+		<!--分类-->
+		<div id="tabCate" class="cateBox content">
+			<div class="l_left" id="con_left">
+				<!--标题-->
+				<ul class="job_sub firstCateWords" id="scroller1"
+					style="transition-timing-function: cubic-bezier(0.1, 0.57, 0.1, 1); transition-duration: 0ms; transform: translate(0px, 0px) translateZ(0px);">
+				</ul>
+			</div>
+			<div class="l_right" id="con_right">
+				<div class="rightBox" id="scroller"
+					style="transition-timing-function: cubic-bezier(0.1, 0.57, 0.1, 1); transition-duration: 0ms; transform: translate(0px, 0px) translateZ(0px);"></div>
+			</div>
+		</div>
+		<!--品牌-->
+		<div id="tabBrand" class="cateBox content">
+			<div class="hotBrandTit">
+				<p>热门品牌</p>
+				<p class="moreTit" onclick="window.location.href='brand.html'">查看更多</p>
+			</div>
+			<div id="brandConBox">
+				<div class="brandCon" id="scrollerBrand"
+					style="transition-timing-function: cubic-bezier(0.1, 0.57, 0.1, 1); transition-duration: 0ms; transform: translate(0px, 0px) translateZ(0px);"></div>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<footer id="footerDiv">
+		<!--底部tab-->
+		<div class="tabPadDiv"></div>
+		<div class="footer-tab">
+			<div class="tab1" onclick="window.location.href='../index.html'">
+				<img src="../static-resource/images/index1.png">
+				<p>首页</p>
+			</div>
+			<div class="tab1 current" onclick="window.location.href='javascript:void(0);'">
+				<img src="../static-resource/images/cate2.png">
+				<p>分类</p>
+			</div>
+			<div class="tab1 cart-btn" onclick="window.location.href='../cart/cart.html'">
+				<input class="cart-pro-number  cartNumInTab" id="cartProNumber" readonly="readonly" value="" /> <img src="../static-resource/images/cart1.png">
+				<p>购物车</p>
+			</div>
+			<div class="tab1" onclick="window.location.href='../my/my.html'">
+				<img src="../static-resource/images/my1.png">
+				<p>我的</p>
+			</div>
+		</div>
+	</footer>
+</body>
+<script type="text/javascript">
+	var classCode = getUrlParam("code");
+	$(function() {
+		firstCateTmpl();
+		showCartNum();
+		hotBrandTmpl();
+	});
+	//tab切换显示分类和品牌
+	function showCate() {
+		$("#tabB").removeClass("brandActive");
+		$("#tabC").addClass("cateActive");
+		$(".cateSearchBox").css("border-bottom", "1px solid #e0e0e0");
+		$("#tabBrand").hide();
+		$("#tabCate").show();
+	}
+	function showBrand() {
+		$("#tabC").removeClass("cateActive");
+		$("#tabB").addClass("brandActive");
+		$(".cateSearchBox").css("border", "none");
+		$("#tabCate").hide();
+		$("#tabBrand").show();
+		brandLoad();
+	}
+	function hotBrandTmpl() {
+		var params = new Object();
+		params.type = "all";
+		params.storeId=getSessionStorage(sessionStorageStoreKey).storeId;
+		ajax("/brand/searchbrand", params, function(data) {
+			$("#hotBrandTmpl").tmpl(data).appendTo(".brandCon");
+			brandLoad();
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	/*一级分类*/
+	function firstCateTmpl() {
+		var params = new Object();
+		params.parentClassCode = "TOP_LEVEL_CLASS";
+		params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		setTimeout(function() {
+			ajax("/product/getproducttype", params, function(data) {
+				$("#firstCateTmpl").tmpl(data).appendTo(".firstCateWords");
+				if (!data)
+					return;
+				if (!classCode)
+					classCode = data[0].classCode;
+				$(".l_left ul.job_sub li").click(function() {
+					checkCateItem($(this).attr("data-classcode"));
+				});
+				checkCateItem(classCode);
+				loaded();
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}, 300);
+	}
+
+	/*二级分类和三级分类*/
+	function subCateTmpl() {
+		var params = new Object();
+		params.parentClassCode = classCode;
+		params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+		ajax("/product/getproducttype", params, function(data) {
+			$("#subCateTmpl").tmpl(data).appendTo(".rightBox");
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	function checkCateItem(classCodeTemp) {
+		var checkClassCode = $(".job_sub li.off").attr("data-classcode");
+		if (checkClassCode == classCodeTemp)
+			return;
+		$(".job_sub li.off").removeClass("off");
+		$(".job_sub li").each(function() {
+			if ($(this).attr("data-classcode") == classCodeTemp) {
+				$(this).addClass("off");
+				classCode = classCodeTemp;
+				$(".rightBox").html("");
+				subCateTmpl();
+			}
+		});
+	}
+	function toBrandProducts(brandCode, brandName) {
+		window.location.href = 'brandProducts.html?brandCode=' + brandCode
+				+ "&brandName=" + brandName;
+	}
+	function toCateProducts(classCode, data) {
+		setSessionStorage(sessionStorageClassDataKey, data);
+		window.location.href = 'cateProducts.html?classCode=' + classCode;
+	}
+
+	function toSearch() {
+		window.location.href = "../search/search.html";
+	}
+</script>
+<script id="hotBrandTmpl" type="text/x-jquery-tmpl">
+       <div class="brand" onclick="toBrandProducts('${brandCode}','${brandName}')">
+                   <img src="${brandLogoImageUrl}" onerror="setErrorLongDefaultImg(this)">
+                   <p>${brandName}</p>
+       </div>
+</script>
+<script id="firstCateTmpl" type="text/x-jquery-tmpl">
+      <li data-classcode="${classCode}"><a>${className}</a></li>
+</script>
+<script id="subCateTmpl" type="text/x-jquery-tmpl">
+                 <div class="secondClass">
+                    <div class="secondClassTit" data-secondclasscode="${classCode}" onclick="toCateProducts('${classCode}',${JSON.stringify($data)})">
+                        <p>${className}&nbsp;&nbsp;&nbsp;</p>
+                    </div>
+                    {{each(i,v) subClassList}}
+                    {{if i<9}}
+                    <div class="thirdClass" data-thirdclasscode="${v.classCode}" onclick="toCateProducts('${v.classCode}',${JSON.stringify($data)})">
+                        <img src="${v.classImageUrl}" onerror="setErrorDefaultImg(this)" data-sourceurl="${v.classImageUrl}">
+                        <p>${v.className}</p>
+                    </div>
+                    {{/if}}
+                    {{/each}}
+                    <div class="clearfix"></div>
+                </div>
+</script>
+<script type="text/javascript" src="../static-resource/js/iscrollforcate.js"></script>
+<script type="text/javascript" src="../static-resource/js/cateBrand.js"></script>
+</html>

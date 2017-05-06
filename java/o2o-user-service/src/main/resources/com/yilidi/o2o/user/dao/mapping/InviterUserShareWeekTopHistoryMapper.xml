@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.InviterUserShareWeekTopHistoryMapper">
+	<resultMap id="BaseResultMap" type="InviterUserShareWeekTopHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="YEAR" property="year" jdbcType="INTEGER" />
+		<result column="MONTH" property="month" jdbcType="INTEGER" />
+		<result column="WEEKNUMBER" property="weekNumber" jdbcType="INTEGER" />
+		<result column="INVITERCOUNT" property="inviterCount" jdbcType="INTEGER" />
+		<result column="REVISIONBATCHCODE" property="revisionBatchCode" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, USERNAME,YEAR, MONTH,WEEKNUMBER,INVITERCOUNT,REVISIONBATCHCODE,
+		CREATETIME,
+		CREATEUSERID,MODIFYTIME,MODIFYUSERID
+	</sql>
+
+	<insert id="save" parameterType="InviterUserShareWeekTopHistory" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		U_INVITERUSER_SHARE_WEEKTOP_HISTORY
+		(
+		USERNAME, YEAR,MONTH,WEEKNUMBER,INVITERCOUNT,REVISIONBATCHCODE,CREATETIME,
+		CREATEUSERID,MODIFYTIME,MODIFYUSERID
+		)
+		values
+		(
+		#{userName,jdbcType=VARCHAR},
+		#{year,jdbcType=INTEGER},
+		#{month,jdbcType=INTEGER},
+		#{weekNumber,jdbcType=INTEGER},
+		#{inviterCount,jdbcType=INTEGER},
+		#{revisionBatchCode,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=INTEGER}
+		)
+	</insert>
+	<select id="findInviterUserShareWeekTopHistorys" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITERUSER_SHARE_WEEKTOP_HISTORY
+		<where>
+			<if test="year != null">
+				and YEAR=#{year,jdbcType=INTEGER}
+			</if>
+			<if test="month != null">
+				and MONTH=#{month,jdbcType=INTEGER}
+			</if>
+			<if test="weekNumber != null">
+				and WEEKNUMBER=#{weekNumber,jdbcType=INTEGER}
+			</if>
+			<if test="revisionBatchCode != null">
+				and REVISIONBATCHCODE=#{revisionBatchCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by INVITERCOUNT desc
+	</select>
+	<select id="getRevisionCount" resultType="int">
+		select count(1) from
+		(select
+		REVISIONBATCHCODE
+		from U_INVITERUSER_SHARE_WEEKTOP_HISTORY
+		<where>
+			<if test="year != null">
+				and YEAR=#{year,jdbcType=INTEGER}
+			</if>
+			<if test="month != null">
+				and MONTH=#{month,jdbcType=INTEGER}
+			</if>
+			<if test="weekNumber != null">
+				and WEEKNUMBER=#{weekNumber,jdbcType=INTEGER}
+			</if>
+			<if test="userName != null">
+				and USERNAME=#{userName,jdbcType=VARCHAR}
+			</if>
+		</where>
+		group by REVISIONBATCHCODE
+		) temp
+	</select>
+</mapper>

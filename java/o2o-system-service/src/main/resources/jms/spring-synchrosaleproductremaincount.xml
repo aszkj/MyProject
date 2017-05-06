@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<!-- **************************** 以下是配置消息生产者 **************************** -->
+
+	<!-- 定义synchroSaleProductRemainCount主题 -->
+	<bean id="synchroSaleProductRemainCountTopic" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="o2o.synchroSaleProductRemainCount" />
+	</bean>
+
+	<!-- synchroSaleProductRemainCountTopicSendJmsTemplate send jms模板 -->
+	<bean id="synchroSaleProductRemainCountTopicSendJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory"></property>
+		<property name="defaultDestination" ref="synchroSaleProductRemainCountTopic" />
+		<property name="messageConverter" ref="o2oMessageConverter" />
+		<property name="pubSubDomain" value="true" />
+		<property name="deliveryMode" value="2" />
+	</bean>
+
+	<!-- 消息发送方 -->
+	<bean id="synchroSaleProductRemainCountMessageSender" class="com.yilidi.o2o.system.jms.sender.SynchroSaleProductRemainCountMessageSender"
+		parent="abstractSender" />
+
+	<!-- **************************** 以下是配置消息消费者 **************************** -->
+
+	<!-- 消息接收方 -->
+	<bean id="synchroSaleProductRemainCountMessageReceiver" class="com.yilidi.o2o.system.jms.receiver.SynchroSaleProductRemainCountMessageReceiver"
+		parent="abstractReceiver" />
+
+	<!-- 主题消息监听容器 -->
+	<bean id="synchroSaleProductRemainCountListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="pubSubDomain" value="true" />
+		<property name="destination" ref="synchroSaleProductRemainCountTopic" />
+		<property name="subscriptionDurable" value="true" />
+		<property name="clientId" value="clientId_synchroSaleProductRemainCount" />
+		<property name="messageListener" ref="synchroSaleProductRemainCountMessageReceiver" />
+		<property name="sessionTransacted" value="true" />
+	</bean>
+
+</beans>

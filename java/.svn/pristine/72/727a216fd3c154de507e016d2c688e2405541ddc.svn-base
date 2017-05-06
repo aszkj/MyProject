@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.StockOutOrderHistoryMapper">
+	<resultMap id="BaseResultMap" type="StockOutOrderHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOCKOUTORDERNO" property="stockOutOrderNo" jdbcType="VARCHAR" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+		<result column="ORDERSTATUS" property="orderStatus" jdbcType="VARCHAR" />
+		<result column="OPERATIONDESC" property="operationDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, STOCKOUTORDERNO, OPERATETIME, OPERATEUSERID, ORDERSTATUS, OPERATIONDESC
+	</sql>
+
+	<insert id="save" parameterType="StockOutOrderHistory" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_STOCKOUT_ORDER_HISTORY (
+		STOCKOUTORDERNO, OPERATETIME, OPERATEUSERID,
+		ORDERSTATUS, OPERATIONDESC
+		)
+		values(
+		#{stockOutOrderNo,jdbcType=VARCHAR},
+		#{operateTime,jdbcType=TIMESTAMP},
+		#{operateUserId,jdbcType=INTEGER},
+		#{orderStatus,jdbcType=VARCHAR},
+		#{operationDesc,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="listStockOutOrderHistorys" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_STOCKOUT_ORDER_HISTORY
+		where STOCKOUTORDERNO = #{stockOutOrderNo,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

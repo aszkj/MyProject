@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.BuyerFeedbackMapper">
+	<resultMap id="BaseResultMap" type="com.yilidi.o2o.user.model.BuyerFeedback">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="USERMOBILE" property="userMobile" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="CONTENTCLASSIFY" property="contentClassify"
+			jdbcType="VARCHAR" />
+		<result column="SUBMITTIME" property="submitTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATESTATUS" property="operateStatus"
+			jdbcType="VARCHAR" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATEID" property="operateId" jdbcType="INTEGER" />
+		<result column="OPERATENAME" property="operateName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Column_List">
+		ID, USERID, USERMOBILE, CONTENT, CONTENTCLASSIFY,
+		SUBMITTIME,OPERATESTATUS,OPERATETIME, OPERATEID, OPERATENAME
+	</sql>
+
+	<!-- 通过id获取买家反馈 -->
+	<select id="getBuyerFeedbackById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Column_List" />
+		from U_BUYER_FEEDBACK
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<!-- 处理买家反馈 -->
+	<update id="updateBuyerFeedback" parameterType="com.yilidi.o2o.user.model.BuyerFeedback">
+		update
+		U_BUYER_FEEDBACK
+		set
+		CONTENTCLASSIFY = #{contentClassify,jdbcType=VARCHAR},
+		OPERATESTATUS = #{operateStatus,jdbcType=VARCHAR},
+		OPERATETIME = #{operateTime,jdbcType=TIMESTAMP},
+		OPERATEID = #{operateId,jdbcType=INTEGER},
+		OPERATENAME = #{operateName,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<!-- 买家反馈通用搜索条件 -->
+	<sql id="searchParam">
+		<where>
+			<if test="userMobile != null and userMobile != ''">
+				and USERMOBILE like
+				CONCAT('%',#{userMobile,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="submitBeginTime != null">
+				and SUBMITTIME &gt;=
+				#{submitBeginTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="submitEndTime != null">
+				and SUBMITTIME &lt;= #{submitEndTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operateBeginTime != null">
+				and OPERATETIME &gt;=
+				#{operateBeginTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operateEndTime != null">
+				and OPERATETIME &lt;=
+				#{operateEndTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="operateStatus != null and operateStatus != ''">
+				and OPERATESTATUS = #{operateStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="contentClassify != null and contentClassify != ''">
+				and CONTENTCLASSIFY like
+				CONCAT('%',#{contentClassify,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 买家反馈列表 -->
+	<select id="findAllBuyerFeedback" parameterType="com.yilidi.o2o.user.model.query.BuyerFeedbackQuery"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Column_List" />
+		from
+		U_BUYER_FEEDBACK
+		<include refid="searchParam" />
+	</select>
+
+	<!-- 保存买家反馈 -->
+	<insert id="saveBuyerFeedback" parameterType="com.yilidi.o2o.user.model.BuyerFeedback">
+		insert into
+		U_BUYER_FEEDBACK (
+		USERID,USERMOBILE,CONTENT,OPERATESTATUS,SUBMITTIME
+		)values (
+		#{userId,jdbcType=INTEGER},
+		#{userMobile,jdbcType=VARCHAR},
+		#{content,jdbcType=VARCHAR},
+		#{operateStatus,jdbcType=VARCHAR},
+		#{submitTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<!-- 获取买家反馈总数 -->
+	<select id="getCountsForExportBuyerFeedback" parameterType="com.yilidi.o2o.user.model.query.BuyerFeedbackQuery"
+		resultType="java.lang.Long">
+		select count(1) from U_BUYER_FEEDBACK
+		<include refid="searchParam" />
+	</select>
+
+	<!-- 导出买家反馈列表 -->
+	<select id="getListForExportBuyerFeedback" resultMap="BaseResultMap">
+		select
+		<include refid="Column_List" />
+		from
+		U_BUYER_FEEDBACK
+		<where>
+			<if
+				test="buyerFeedbackQuery.userMobile != null and buyerFeedbackQuery.userMobile != ''">
+				and USERMOBILE like
+				CONCAT('%',#{buyerFeedbackQuery.userMobile,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="buyerFeedbackQuery.submitBeginTime != null">
+				and SUBMITTIME &gt;=
+				#{buyerFeedbackQuery.submitBeginTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="buyerFeedbackQuery.submitEndTime != null">
+				and SUBMITTIME &lt;=
+				#{buyerFeedbackQuery.submitEndTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="buyerFeedbackQuery.operateBeginTime != null">
+				and OPERATETIME &gt;=
+				#{buyerFeedbackQuery.operateBeginTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="buyerFeedbackQuery.operateEndTime != null">
+				and OPERATETIME &lt;=
+				#{buyerFeedbackQuery.operateEndTime,jdbcType=TIMESTAMP}
+			</if>
+			<if
+				test="buyerFeedbackQuery.operateStatus != null and operateStatus != ''">
+				and OPERATESTATUS =
+				#{buyerFeedbackQuery.operateStatus,jdbcType=VARCHAR}
+			</if>
+			<if
+				test="buyerFeedbackQuery.contentClassify != null and buyerFeedbackQuery.contentClassify != ''">
+				and CONTENTCLASSIFY like
+				CONCAT('%',#{buyerFeedbackQuery.contentClassify,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+		limit #{startLineNum,jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+</mapper>
+
+	
+	
+		
+
+
+	

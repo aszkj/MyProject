@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.StoreProfileMapper">
+	<resultMap id="BaseResultMap" type="StoreProfile">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="LONGITUDE" property="longitude" jdbcType="VARCHAR" />
+		<result column="LATITUDE" property="latitude" jdbcType="VARCHAR" />
+		<result column="BUSINESSHOURSBEGIN" property="businessHoursBegin" jdbcType="VARCHAR" />
+		<result column="BUSINESSHOURSEND" property="businessHoursEnd" jdbcType="VARCHAR" />
+		<result column="STOREIMAGEPATH" property="storeImagePath" jdbcType="VARCHAR" />
+		<result column="SENDFLAG" property="sendFlag" jdbcType="VARCHAR" />
+		<result column="STARTSENDINGPRICE" property="startSendingPrice" jdbcType="BIGINT" />
+		<result column="ADDSENDINGPRICE" property="addSendingPrice" jdbcType="BIGINT" />
+		<result column="CONTACT" property="contact" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="TELPHONE" property="telPhone" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="TOWNCODE" property="townCode" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="STORESTATUS" property="storeStatus" jdbcType="VARCHAR" />
+		<result column="STORESCORE" property="storeScore" jdbcType="FLOAT" />
+		<result column="STORETYPE" property="storeType" jdbcType="VARCHAR" />
+		<result column="STOCKSHARE" property="stockShare" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,STOREID,STORENAME,STORECODE,LONGITUDE,LATITUDE,BUSINESSHOURSBEGIN,
+		BUSINESSHOURSEND,STOREIMAGEPATH,SENDFLAG,STARTSENDINGPRICE,
+		ADDSENDINGPRICE,CONTACT,MOBILE,TELPHONE,EMAIL,PROVINCECODE,CITYCODE,COUNTYCODE,
+		TOWNCODE,ADDRESSDETAIL,STORESTATUS,STORESCORE,STORETYPE,STOCKSHARE
+	</sql>
+
+	<resultMap id="WarehouseLocationInfoResultMap" type="WarehouseLocationInfo">
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="DISTANCE" property="distance" jdbcType="BIGINT" />
+	</resultMap>
+	<resultMap id="StoreLocationInfoResultMap" type="StoreLocationInfo">
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="BUSINESSHOURSBEGIN" property="businessHoursBegin" jdbcType="VARCHAR" />
+		<result column="BUSINESSHOURSEND" property="businessHoursEnd" jdbcType="VARCHAR" />
+		<result column="STARTSENDINGPRICE" property="startSendingPrice" jdbcType="BIGINT" />
+		<result column="ADDSENDINGPRICE" property="addSendingPrice" jdbcType="BIGINT" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="TOWNCODE" property="townCode" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="STORESTATUS" property="storeStatus" jdbcType="VARCHAR" />
+		<result column="STORETYPE" property="storeType" jdbcType="VARCHAR" />
+		<result column="DISTANCE" property="distance" jdbcType="BIGINT" />
+	</resultMap>
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE WHERE ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByStoreId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE
+		WHERE 1=1
+		<if test="storeId !=null">
+			and STOREID = #{storeId,jdbcType=INTEGER}
+		</if>
+		<if test="storeStatus != null">
+			AND STORESTATUS = #{storeStatus,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<select id="loadByStoreCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE WHERE STORECODE = #{storeCode,jdbcType=INTEGER}
+	</select>
+	
+	<select id="listByStoreName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE WHERE STORENAME = #{storeName,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadNationalStore" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE
+		WHERE STORETYPE = #{storeType,jdbcType=VARCHAR}
+		AND PROVINCECODE = #{provinceCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadByCommunityId" resultMap="BaseResultMap">
+		SELECT
+		U.ID,U.STOREID,
+		U.STORENAME,
+		U.STORECODE,
+		U.STOCKSHARE,
+		U.LONGITUDE,
+		U.LATITUDE,
+		U.BUSINESSHOURSBEGIN,
+		U.BUSINESSHOURSEND,
+		U.STOREIMAGEPATH,
+		U.SENDFLAG,
+		U.STARTSENDINGPRICE,
+		U.ADDSENDINGPRICE,
+		U.MOBILE,
+		U.TELPHONE,
+		U.EMAIL,
+		U.PROVINCECODE,
+		U.CITYCODE,
+		U.COUNTYCODE,
+		U.TOWNCODE,
+		U.ADDRESSDETAIL,
+		U.STORESTATUS,
+		U.CONTACT,
+		U.STORESCORE,
+		U.STORETYPE
+		FROM
+		U_STORE_PROFILE
+		U,U_DISTRICT_STORE D
+		WHERE
+		U.STOREID = D.STOREID
+		<if test="communityId !=null">
+			and D.COMMUNITYID = #{communityId,jdbcType=INTEGER}
+		</if>
+		<if test="storeStatus != null">
+			AND U.STORESTATUS = #{storeStatus,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<insert id="save" parameterType="StoreProfile" useGeneratedKeys="true" keyProperty="id">
+		insert into U_STORE_PROFILE
+		(STOREID,STORENAME,STORECODE,LONGITUDE,
+		LATITUDE,BUSINESSHOURSBEGIN,BUSINESSHOURSEND,
+		STOREIMAGEPATH,SENDFLAG,STARTSENDINGPRICE,
+		ADDSENDINGPRICE,CONTACT,MOBILE,TELPHONE,EMAIL,PROVINCECODE,CITYCODE,COUNTYCODE,
+		TOWNCODE,ADDRESSDETAIL,STORESTATUS,STORETYPE,STOCKSHARE
+		)
+		values
+		(#{storeId,jdbcType=INTEGER},
+		#{storeName,jdbcType=VARCHAR},
+		#{storeCode,jdbcType=VARCHAR},
+		#{longitude,jdbcType=VARCHAR},
+		#{latitude,jdbcType=VARCHAR},
+		#{businessHoursBegin,jdbcType=VARCHAR},
+		#{businessHoursEnd,jdbcType=VARCHAR},
+		#{storeImagePath,jdbcType=VARCHAR},
+		#{sendFlag,jdbcType=VARCHAR},
+		#{startSendingPrice,jdbcType=BIGINT},
+		#{addSendingPrice,jdbcType=BIGINT},
+		#{contact,jdbcType=VARCHAR},
+		#{mobile,jdbcType=VARCHAR},
+		#{telPhone,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},
+		#{provinceCode,jdbcType=VARCHAR},
+		#{cityCode,jdbcType=VARCHAR},
+		#{countyCode,jdbcType=VARCHAR},
+		#{townCode,jdbcType=VARCHAR},
+		#{addressDetail,jdbcType=VARCHAR},
+		#{storeStatus,jdbcType=VARCHAR},
+		#{storeType,jdbcType=VARCHAR},
+		#{stockShare,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="update" parameterType="StoreProfile">
+		UPDATE U_STORE_PROFILE
+		P,U_CUSTOMER C,U_USER U
+		SET P.STORENAME=
+		#{storeName,jdbcType=VARCHAR},
+		P.LONGITUDE= #{longitude,jdbcType=VARCHAR},
+		P.LATITUDE =
+		#{latitude,jdbcType=VARCHAR},
+		P.BUSINESSHOURSBEGIN
+		=#{businessHoursBegin,jdbcType=VARCHAR},
+		P.BUSINESSHOURSEND
+		=#{businessHoursEnd,jdbcType=VARCHAR},
+		P.STOREIMAGEPATH=#{storeImagePath,jdbcType=VARCHAR},
+		P.SENDFLAG
+		=#{sendFlag,jdbcType=VARCHAR},
+		P.STARTSENDINGPRICE
+		=#{startSendingPrice,jdbcType=BIGINT},
+		P.ADDSENDINGPRICE =
+		#{addSendingPrice,jdbcType=BIGINT},
+		P.MOBILE
+		=#{mobile,jdbcType=VARCHAR},
+		P.TELPHONE =#{telPhone,jdbcType=VARCHAR},
+		P.EMAIL =#{email,jdbcType=VARCHAR},
+		P.PROVINCECODE
+		=#{provinceCode,jdbcType=VARCHAR},
+		P.CITYCODE
+		=#{cityCode,jdbcType=VARCHAR},
+		P.COUNTYCODE
+		=#{countyCode,jdbcType=VARCHAR},
+		P.TOWNCODE=#{townCode,jdbcType=VARCHAR},
+		P.ADDRESSDETAIL
+		=#{addressDetail,jdbcType=VARCHAR},
+		P.CONTACT
+		=#{contact,jdbcType=VARCHAR},
+		P.STORETYPE
+		=#{storeType,jdbcType=VARCHAR},
+		P.STOCKSHARE
+		=#{stockShare,jdbcType=VARCHAR},
+		C.CUSTOMERNAME
+		=#{storeName,jdbcType=VARCHAR},
+		U.REALNAME
+		=#{contact,jdbcType=VARCHAR},
+		U.PHONE =#{mobile,jdbcType=VARCHAR}
+		WHERE
+		P.STOREID= C.ID AND U.CUSTOMERID=C.ID AND
+		P.ID =#{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateStatusById">
+		UPDATE U_STORE_PROFILE
+		SET
+		STORESTATUS
+		=#{storeStatus,jdbcType=VARCHAR}
+		WHERE ID
+		=#{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateStoreScoreByStoreId">
+		UPDATE U_STORE_PROFILE
+		SET
+		STORESCORE
+		=#{storeScore,jdbcType=DOUBLE}
+		WHERE STOREID
+		=#{storeId,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateStockShareByStoreId">
+		UPDATE U_STORE_PROFILE
+		SET
+		STOCKSHARE
+		=#{stockShare,jdbcType=VARCHAR}
+		WHERE STOREID
+		=#{storeId,jdbcType=INTEGER}
+	</update>
+	<select id="getStoreProfile" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE
+		<where>
+			1=1
+			<if test="storeStatus != null">
+				AND STORESTATUS = #{storeStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY ID ASC
+	</select>
+
+	<select id="loadNearestStoreProfileByLngAndLat" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		,round(6378137*2*asin(sqrt(power(sin((#{latitude,jdbcType=VARCHAR}-LATITUDE)*pi()/360),2)+
+		cos(#{latitude,jdbcType=VARCHAR}*pi()/180)*cos(LATITUDE*pi()/180)*power(sin((#{longitude,jdbcType=VARCHAR}-LONGITUDE)*pi()/360),2))))
+		as distance
+		from U_STORE_PROFILE
+		ORDER BY distance limit 1
+	</select>
+
+	<update id="updateStoreDetailsForSeller" parameterType="StoreProfile">
+		UPDATE U_STORE_PROFILE
+		SET
+		STORESTATUS =
+		#{storeStatus,jdbcType=VARCHAR}
+		WHERE
+		STOREID = #{storeId,jdbcType=INTEGER}
+	</update>
+
+	<select id="listByStoreCodeAndStoreNameAndStoreStatus" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE
+		<where>
+			<if test="storeCode != null">
+				AND STORECODE like
+				CONCAT('%',#{storeCode,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeName != null">
+				AND STORENAME like
+				CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeStatus != null">
+				AND STORESTATUS = #{storeStatus}
+			</if>
+		</where>
+	</select>
+
+	<select id="listByStoreTypes" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE
+		where STORETYPE in
+		<foreach item="item" index="index" collection="storeTypes" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		order by STORETYPE
+	</select>
+
+	<select id="listAroundWarehouses" resultMap="WarehouseLocationInfoResultMap">
+		SELECT
+		STOREID,STORENAME,STORECODE,
+		round(6378137*2*asin(sqrt(power(sin((#{latitude,jdbcType=VARCHAR}-LATITUDE)*pi()/360),2)+
+		cos(#{latitude,jdbcType=VARCHAR}*pi()/180)*cos(LATITUDE*pi()/180)*power(sin((#{longitude,jdbcType=VARCHAR}-LONGITUDE)*pi()/360),2))))
+		as DISTANCE
+		FROM U_STORE_PROFILE
+		WHERE STORETYPE = #{storeType,jdbcType=VARCHAR}
+		HAVING DISTANCE
+		&lt;=#{distance,jdbcType=INTEGER}
+		ORDER BY DISTANCE
+	</select>
+
+	<select id="listStoreProfileByStoreIds" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE
+		where STOREID in
+		<foreach item="item" index="index" collection="storeIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		<foreach item="item" index="index" collection="storeIds" open="order by field(STOREID," separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="listStoreProfiles" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_PROFILE
+	</select>
+	<select id="listAroundStores" resultMap="StoreLocationInfoResultMap" parameterType="StoreLocationQuery">
+		SELECT
+		STOREID,STORENAME,BUSINESSHOURSBEGIN,BUSINESSHOURSEND,STARTSENDINGPRICE,ADDSENDINGPRICE,PROVINCECODE,CITYCODE,COUNTYCODE,TOWNCODE,ADDRESSDETAIL,STORESTATUS,STORETYPE,
+		round(6378137*2*asin(sqrt(power(sin((#{latitude,jdbcType=VARCHAR}-LATITUDE)*pi()/360),2)+
+		cos(#{latitude,jdbcType=VARCHAR}*pi()/180)*cos(LATITUDE*pi()/180)*power(sin((#{longitude,jdbcType=VARCHAR}-LONGITUDE)*pi()/360),2))))
+		as DISTANCE
+		FROM U_STORE_PROFILE
+		<where>
+			<if test="storeType != null">
+				AND STORETYPE = #{storeType,jdbcType=VARCHAR}
+			</if>
+		</where>
+		HAVING DISTANCE
+		&lt;=#{distance,jdbcType=INTEGER}
+		ORDER BY DISTANCE
+	</select>
+</mapper>

@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="${jsPath}/jquery.min.js?version=${version}"></script>
+<script type="text/javascript" src="${jsPath}/jquery.form.js?version=${version}"></script>
+<script type="text/javascript" src="${jsPath}/common.js?version=${version}"></script>
+<script type="text/javascript" src="${jsPath}/module.js?version=${version}"></script>
+
+<script type="text/javascript">
+var UPLOAD_FILE_TEMP_URL = 'http://upload.yilidi.com/local';
+var UPLOAD_FILE_URL = 'http://upload.yilidi.com';
+$(document).ready(function(e) {
+	//alert("测试");
+});
+
+function uploadSubmit(){
+var file=$.trim($("#uploadFile").val());
+	ajax({
+		uploadForm:'uploadForm',
+		url:"/biz/uploadToTemp",
+		dataType:'json',//非必须.默认text
+		async:false,
+		error:function(){
+		}, //非必须
+		success:function(data){
+			var tempPicPath = UPLOAD_FILE_TEMP_URL + data.entity;
+			$("#tempPicPath").val(data.entity);
+			//$("#div_tempPicPath").html('<img src= "'+tempPicPath+'"></a>');
+		}//非必须
+	});
+}
+
+function finalSubmit(){
+	var file=$.trim($("#uploadFile").val());
+	var tempPicPath=$.trim($("#tempPicPath").val());
+		ajax({
+			uploadForm:'uploadForm',
+			url:"/biz/uploadToPublish?tempPicPath=" + tempPicPath,
+			dataType:'json',//非必须.默认text
+			async:false,
+			error:function(){
+			}, //非必须
+			success:function(data){
+				var picPath = UPLOAD_FILE_URL + data.entity;
+				$("#picPath").val(data.entity);
+				$("#div_picPath").html('<img src= "'+picPath+'"></a>');
+			}//非必须
+		});
+}
+	
+function deleTemp(){
+	var tempPicPath=$.trim($("#tempPicPath").val());
+		ajax({
+			uploadForm:'uploadForm',
+			url:"/biz/deleteTemp?tempPicPath=" + tempPicPath,
+			dataType:'json',//非必须.默认text
+			async:false,
+			error:function(){
+			}, //非必须
+			success:function(data){
+				alert(data.msg);
+			}//非必须
+		});
+}
+
+function delePublish(){
+	var picPath=$.trim($("#picPath").val());
+		ajax({
+			uploadForm:'uploadForm',
+			url:"/biz/deletePublish?picPath=" + picPath,
+			dataType:'json',//非必须.默认text
+			async:false,
+			error:function(){
+			}, //非必须
+			success:function(data){
+				alert(data.msg);
+				$("#picPath").val(null);
+				$("#div_picPath").html('');
+			}//非必须
+		});
+}
+
+function uploadSubmit1(){
+	var file=$.trim($("#uploadFile1").val());
+		ajax({
+			uploadForm:'uploadForm1',
+			url:"/biz/uploadToTempForUserReport",
+			dataType:'json',//非必须.默认text
+			async:false,
+			error:function(){
+			}, //非必须
+			success:function(data){
+				var tempPicPath = DOWNLOAD_FILE_TEMP_URL + data.entity;
+				$("#tempPicPath1").val(data.entity);
+				//$("#div_tempPicPath").html('<img src= "'+tempPicPath+'"></a>');
+			}//非必须
+		});
+}
+
+function importUserReport(){
+	var reportRelativePath=$.trim($("#tempPicPath1").val());
+		$.ajax({
+			url:"/biz/importUserReport?reportRelativePath="+reportRelativePath,
+			dataType:'json',//非必须.默认text
+			async:false,
+			error:function(){
+			}, //非必须
+			success:function(data){
+				 if(data.msgCode != 1){
+					 if(data.entity != null){
+						 alert(data.entity);
+					 }else{
+						 alert(data.msg);
+					 }
+				 }else{
+					 alert(data.msg);
+				 }
+			}//非必须
+		});
+}
+	
+
+function exportReport() {
+		locationHref('http://127.0.0.1:8090/export');	
+}
+
+</script>
+
+</head>
+<body>
+<h5>真实姓名：${userDto.realName}</h5>
+<h5>用户名：${userDto.userName}</h5>
+<h5>电子邮箱：${userDto.email}</h5>
+<h5>省份编码：${userDto.userProfileDto.provinceCode}</h5>
+<h5>电话号码：${userDto.phone}</h5>
+<h5>QQ号码：${userDto.userProfileDto.imQq}</h5>
+
+ <form id="uploadForm"  enctype="multipart/form-data" onsubmit="uploadSubmit();return false;">
+  <div>
+      <p>
+      <input id="uploadFile" name="file" type="file"/> </p><div id="div_tempPicPath"></div>
+      <input id="tempPicPath" name="tempPicPath" type="hidden"/> </p>
+      <div>
+        <input type="submit"  value="确定" class="btn_sure" id="uploadBtn"/>
+        <input type="button"  value="上传远程服务器" class="btn_sure" onclick="javascript:finalSubmit()" />
+        </br>
+        </br>
+        <input type="button"  value="删除本地临时文件" class="btn_sure" onclick="javascript:deleTemp()"/>
+        <input type="button"  value="删除远程正式文件" class="btn_sure" onclick="javascript:delePublish()" />
+         <input id="picPath" name="picPath" type="hidden"/> </p>
+        <div id="div_picPath"></div>
+      </div>
+  </div>          
+  </form>
+  
+ <form id="uploadForm1"  enctype="multipart/form-data" onsubmit="uploadSubmit1();return false;">
+  <div>
+      <p>
+     <input id="uploadFile1" name="file1" type="file"/> ss</p>  
+     <input id="tempPicPath1" name="tempPicPath1" type="hidden"/> </p>
+      <div>
+        <input type="submit"  value="确定" class="btn_sure" id="uploadBtn1"/>
+      </div>
+      <div>
+        <input type="button"  value="导入" class="btn_sure" onclick="javascript:importUserReport()"/>
+      </div>
+  </div>          
+  </form>
+   </br>
+   </br>
+  <input type="button" value="导出"   onClick="javascript:exportReport();" /> 
+
+</body>
+</html>

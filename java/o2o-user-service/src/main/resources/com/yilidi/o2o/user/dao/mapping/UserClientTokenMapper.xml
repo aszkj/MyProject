@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.UserClientTokenMapper">
+	<resultMap id="BaseResultMap" type="UserClientToken">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="CLIENTTOKEN" property="clientToken" jdbcType="VARCHAR" />
+		<result column="DEVICETOKEN" property="deviceToken" jdbcType="VARCHAR" />
+		<result column="PLATFORM" property="platform" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,USERID,CLIENTTOKEN,DEVICETOKEN,PLATFORM
+	</sql>
+
+	<insert id="save" parameterType="UserClientToken" useGeneratedKeys="true" keyProperty="id">
+		insert into U_USER_CLIENT_TOKEN
+		(USERID,CLIENTTOKEN,DEVICETOKEN,PLATFORM)
+		values
+		(
+		#{userId,jdbcType=INTEGER},
+		#{clientToken,jdbcType=VARCHAR},
+		#{deviceToken,jdbcType=VARCHAR},
+		#{platform,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="update">
+		update U_USER_CLIENT_TOKEN 
+		set CLIENTTOKEN = #{clientToken,jdbcType=VARCHAR},
+		DEVICETOKEN = #{deviceToken,jdbcType=VARCHAR},
+		PLATFORM = #{platform,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<delete id="delete">
+		delete from U_USER_CLIENT_TOKEN
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<select id="loadByUserId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_USER_CLIENT_TOKEN
+		where USERID = #{userId,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByClientToken" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_USER_CLIENT_TOKEN
+		where CLIENTTOKEN = #{clientToken,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="loadByDeviceToken" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_USER_CLIENT_TOKEN
+		where DEVICETOKEN = #{deviceToken,jdbcType=VARCHAR}
+	</select>
+</mapper>

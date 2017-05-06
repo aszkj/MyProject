@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.WithdrawApplyMapper">
+	<resultMap id="BaseResultMap" type="WithdrawApply">
+		<id column="APPLYID" property="applyId" jdbcType="INTEGER" />
+		<result column="ACCOUNTTYPECODE" property="accountTypeCode" jdbcType="VARCHAR" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="AMOUNT" property="amount" jdbcType="BIGINT" />
+		<result column="CURRENTBALANCE" property="currentBalance" jdbcType="BIGINT" />
+		<result column="HAVEWITHDRAW" property="haveWithdraw" jdbcType="BIGINT" />
+		<result column="CASHSUBSIDYAMOUNT" property="cashSubsidyAmount" jdbcType="BIGINT" />
+		<result column="PRICESUBSIDYAMOUNT" property="priceSubsidyAmount" jdbcType="BIGINT" />
+		<result column="COUPONSUBSIDYAMOUNT" property="couponSubsidyAmount" jdbcType="BIGINT" />
+		<result column="APPLYUSERID" property="applyUserId" jdbcType="INTEGER" />
+		<result column="APPLYTIME" property="applyTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITUSERID" property="auditUserId" jdbcType="INTEGER" />
+		<result column="AUDITTIME" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="AUDITNOTE" property="auditNote" jdbcType="VARCHAR" />
+		<result column="TRANSFERTIME" property="transferTime" jdbcType="TIMESTAMP" />
+		<result column="BINDINGACCOUNTID" property="bindingAccountId" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<resultMap id="WithdrawApplyRelatedInfoResultMap" type="WithdrawApplyRelatedInfo">
+		<id column="APPLYID" property="applyId" jdbcType="INTEGER" />
+		<result column="ACCOUNTTYPECODE" property="accountTypeCode" jdbcType="VARCHAR" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="CUSTOMERNAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="CONTACTNAME" property="contactName" jdbcType="VARCHAR" />
+		<result column="TELPHONE" property="telPhone" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="AMOUNT" property="amount" jdbcType="BIGINT" />
+		<result column="CURRENTBALANCE" property="currentBalance" jdbcType="BIGINT" />
+		<result column="HAVEWITHDRAW" property="haveWithdraw" jdbcType="BIGINT" />
+		<result column="CASHSUBSIDYAMOUNT" property="cashSubsidyAmount" jdbcType="BIGINT" />
+		<result column="PRICESUBSIDYAMOUNT" property="priceSubsidyAmount" jdbcType="BIGINT" />
+		<result column="COUPONSUBSIDYAMOUNT" property="couponSubsidyAmount" jdbcType="BIGINT" />
+		<result column="APPLYTIME" property="applyTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITTIME" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="AUDITNOTE" property="auditNote" jdbcType="VARCHAR" />
+		<result column="TRANSFERTIME" property="transferTime" jdbcType="TIMESTAMP" />
+		<result column="BINDINGACCOUNTID" property="bindingAccountId" jdbcType="INTEGER" />
+		<result column="BANKCODE" property="bankCode" jdbcType="VARCHAR" />
+		<result column="SUBBANKNAME" property="subBankName" jdbcType="VARCHAR" />
+		<result column="BANKCARDNO" property="bankCardNo" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		APPLYID, ACCOUNTTYPECODE, CUSTOMERID, CUSTOMERTYPE, AMOUNT,HAVEWITHDRAW,
+		CURRENTBALANCE,CASHSUBSIDYAMOUNT,PRICESUBSIDYAMOUNT,COUPONSUBSIDYAMOUNT,
+		APPLYUSERID, APPLYTIME, AUDITUSERID, AUDITTIME,
+		STATUSCODE, AUDITNOTE, TRANSFERTIME, BINDINGACCOUNTID
+	</sql>
+
+	<insert id="save" parameterType="WithdrawApply" useGeneratedKeys="true" keyProperty="applyId">
+		insert into U_WITHDRAW_APPLY
+		(ACCOUNTTYPECODE, CUSTOMERID, CUSTOMERTYPE,AMOUNT,CURRENTBALANCE,HAVEWITHDRAW,
+		CASHSUBSIDYAMOUNT,PRICESUBSIDYAMOUNT,COUPONSUBSIDYAMOUNT,APPLYUSERID,
+		APPLYTIME,AUDITUSERID, AUDITTIME, STATUSCODE, AUDITNOTE,
+		TRANSFERTIME, BINDINGACCOUNTID
+		)
+		values
+		(#{accountTypeCode,jdbcType=VARCHAR},
+		#{customerId,jdbcType=INTEGER},
+		#{customerType,jdbcType=VARCHAR},
+		#{amount,jdbcType=BIGINT},
+		#{currentBalance,jdbcType=BIGINT},
+		#{haveWithdraw,jdbcType=BIGINT},
+		#{cashSubsidyAmount,jdbcType=BIGINT},
+		#{priceSubsidyAmount,jdbcType=BIGINT},
+		#{couponSubsidyAmount,jdbcType=BIGINT},
+		#{applyUserId,jdbcType=INTEGER},
+		#{applyTime,jdbcType=TIMESTAMP},
+		#{auditUserId,jdbcType=INTEGER},
+		#{auditTime,jdbcType=TIMESTAMP},
+		#{statusCode,jdbcType=VARCHAR},
+		#{auditNote,jdbcType=VARCHAR},
+		#{transferTime,jdbcType=TIMESTAMP},
+		#{bindingAccountId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<update id="updateForAudit">
+		update U_WITHDRAW_APPLY
+		set AUDITUSERID = #{auditUserId,jdbcType=INTEGER},
+		AUDITTIME = CURRENT_TIME,
+		STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+		AUDITNOTE = #{auditNote,jdbcType=VARCHAR}
+		where APPLYID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateStatus">
+		update U_WITHDRAW_APPLY
+		set
+		TRANSFERTIME = CURRENT_TIME,
+		STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+		where
+		APPLYID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateCurrentBalance">
+		update U_WITHDRAW_APPLY
+		set
+		CURRENTBALANCE = #{currentBalance,jdbcType=BIGINT}
+		where
+		APPLYID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_WITHDRAW_APPLY
+		where APPLYID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 统计每个门店用户的提现总金额（分状态查询统计：未审核，审核不通过，审核通过和提现成功） -->
+	<select id="countSellerWithdrawBalance" resultType="java.lang.Long" parameterType="WithdrawApplyQuery">
+		SELECT SUM(A.AMOUNT) FROM U_WITHDRAW_APPLY A
+		<where>
+			1=1
+			<if test="customerId != null">
+				AND A.CUSTOMERID = #{customerId,jdbcType=INTEGER}
+			</if>
+			<if test="statusCodes !=null">
+				AND A.STATUSCODE IN
+				<foreach item="item" index="index" collection="statusCodes" 
+                   open="(" separator="," close=")">
+                 	 #{item}
+              	</foreach>
+			</if>
+		</where>
+		 GROUP BY A.CUSTOMERID
+	</select>
+
+	<select id="loadWithdrawApplyById" resultMap="WithdrawApplyRelatedInfoResultMap" parameterType="java.lang.Integer">
+		select A.APPLYID, A.ACCOUNTTYPECODE,A.CUSTOMERID,A.CUSTOMERTYPE,B.CUSTOMERNAME,D.STORECODE,B.MASTERNAME AS CONTACTNAME,B.TELPHONE,
+		B.CITYCODE,B.COUNTYCODE,A.CURRENTBALANCE,A.HAVEWITHDRAW,A.AMOUNT,A.APPLYTIME,A.AUDITTIME, A.TRANSFERTIME, A.STATUSCODE,
+		A.AUDITNOTE,A.BINDINGACCOUNTID,C.ACCOUNTBINDINGTYPE AS BANKCODE,C.SUBBANKNAME,C.ACCOUNTNO AS BANKCARDNO from U_WITHDRAW_APPLY A 
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID 
+		left join U_ACCOUNT_BINDING C on A.CUSTOMERID = C.CUSTOMERID
+    	left join U_STORE_PROFILE D on A.CUSTOMERID = D.STOREID
+    	where A.APPLYID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="findWithdrawApplies" resultMap="WithdrawApplyRelatedInfoResultMap" parameterType="WithdrawApplyQuery">
+		select A.APPLYID, A.ACCOUNTTYPECODE,A.CUSTOMERID,A.CUSTOMERTYPE,B.CUSTOMERNAME,D.STORECODE,B.CITYCODE,B.COUNTYCODE,
+		A.CURRENTBALANCE,A.HAVEWITHDRAW,A.AMOUNT,A.CASHSUBSIDYAMOUNT,A.COUPONSUBSIDYAMOUNT,A.PRICESUBSIDYAMOUNT,A.APPLYTIME,
+		A.AUDITTIME, A.TRANSFERTIME, A.STATUSCODE,A.AUDITNOTE,A.BINDINGACCOUNTID
+		from U_WITHDRAW_APPLY A
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		left join U_STORE_PROFILE D on A.CUSTOMERID = D.STOREID
+		<where>
+			1=1
+			<if test="cityCode != null">
+				and B.CITYCODE = #{cityCode, jdbcType=VARCHAR}
+			</if>
+			<if test="countyCode != null">
+				and B.COUNTYCODE = #{countyCode, jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				and A.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="customerName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{customerName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and A.STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+			<if test="minAmount != null">
+				and A.AMOUNT &gt;= #{minAmount, jdbcType=BIGINT}
+			</if>
+			<if test="maxAmount != null">
+				and A.AMOUNT &lt;= #{maxAmount, jdbcType=BIGINT}
+			</if>
+			<if test="startApplyTime != null">
+				and A.APPLYTIME &gt;= #{startApplyTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endApplyTime != null">
+				and A.APPLYTIME &lt;= #{endApplyTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="startAuditTime != null">
+				and A.AUDITTIME &gt;= #{startAuditTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and A.AUDITTIME &lt;= #{endAuditTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="startTransferTime != null">
+				and A.TRANSFERTIME &gt;= #{startTransferTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTransferTime != null">
+				and A.TRANSFERTIME &lt;= #{endTransferTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<select id="listDataForExportWithdrawApply" resultMap="WithdrawApplyRelatedInfoResultMap">
+		select A.APPLYID, A.ACCOUNTTYPECODE,A.CUSTOMERID,A.CUSTOMERTYPE,B.CUSTOMERNAME,D.STORECODE,B.MASTERNAME AS CONTACTNAME,B.TELPHONE,
+		B.CITYCODE,B.COUNTYCODE,B.ADDRESSDETAIL,A.CURRENTBALANCE,A.HAVEWITHDRAW,A.AMOUNT,A.CASHSUBSIDYAMOUNT,A.PRICESUBSIDYAMOUNT,A.COUPONSUBSIDYAMOUNT,
+		A.APPLYTIME,A.AUDITTIME, A.TRANSFERTIME, A.STATUSCODE,C.ACCOUNTBINDINGTYPE AS BANKCODE,C.SUBBANKNAME,C.ACCOUNTNO AS BANKCARDNO
+		from U_WITHDRAW_APPLY A
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		left join U_ACCOUNT_BINDING C on A.BINDINGACCOUNTID = C.BINGDINGACCOUNTID
+    	left join U_STORE_PROFILE D on A.CUSTOMERID = D.STOREID
+		<where>
+			1=1
+			<if test="withdrawApplyQuery.cityCode != null">
+				and B.CITYCODE = #{withdrawApplyQuery.cityCode, jdbcType=VARCHAR}
+			</if>
+			<if test="withdrawApplyQuery.countyCode != null">
+				and B.COUNTYCODE = #{withdrawApplyQuery.countyCode, jdbcType=VARCHAR}
+			</if>
+			<if test="withdrawApplyQuery.customerType != null">
+				and A.CUSTOMERTYPE = #{withdrawApplyQuery.customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="withdrawApplyQuery.customerName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{withdrawApplyQuery.customerName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="withdrawApplyQuery.storeCode != null">
+				and D.STORECODE = #{withdrawApplyQuery.storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="withdrawApplyQuery.statusCode != null">
+				and A.STATUSCODE = #{withdrawApplyQuery.statusCode, jdbcType=VARCHAR}
+			</if>
+			<if test="withdrawApplyQuery.minAmount != null">
+				and A.AMOUNT &gt;= #{withdrawApplyQuery.minAmount, jdbcType=BIGINT}
+			</if>
+			<if test="withdrawApplyQuery.maxAmount != null">
+				and A.AMOUNT &lt;= #{withdrawApplyQuery.maxAmount, jdbcType=BIGINT}
+			</if>
+			<if test="withdrawApplyQuery.startApplyTime != null">
+				and A.APPLYTIME &gt;= #{withdrawApplyQuery.startApplyTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="withdrawApplyQuery.endApplyTime != null">
+				and A.APPLYTIME &lt;= #{withdrawApplyQuery.endApplyTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="withdrawApplyQuery.startAuditTime != null">
+				and A.AUDITTIME &gt;= #{withdrawApplyQuery.startAuditTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="withdrawApplyQuery.endAuditTime != null">
+				and A.AUDITTIME &lt;= #{withdrawApplyQuery.endAuditTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="withdrawApplyQuery.startTransferTime != null">
+				and A.TRANSFERTIME &gt;= #{withdrawApplyQuery.startTransferTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="withdrawApplyQuery.endTransferTime != null">
+				and A.TRANSFERTIME &lt;= #{withdrawApplyQuery.endTransferTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="withdrawApplyQuery.order != null">
+				order by ${withdrawApplyQuery.order}
+				<if test="withdrawApplyQuery.sort != null">
+					${withdrawApplyQuery.sort}
+				</if>
+			</if>
+		</where>
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCountsForExportWithdrawApply" parameterType="WithdrawApplyQuery" resultType="java.lang.Long">
+		select COUNT(*) from U_WITHDRAW_APPLY A 
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID 
+		left join U_ACCOUNT_BINDING C on A.BINDINGACCOUNTID = C.BINGDINGACCOUNTID
+    	left join U_STORE_PROFILE D on A.CUSTOMERID = D.STOREID
+		<where>
+			1=1
+			<if test="cityCode != null">
+				and B.CITYCODE = #{cityCode, jdbcType=VARCHAR}
+			</if>
+			<if test="countyCode != null">
+				and B.COUNTYCODE = #{countyCode, jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				and A.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="customerName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{customerName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and A.STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+			<if test="minAmount != null">
+				and A.AMOUNT &gt;= #{minAmount, jdbcType=BIGINT}
+			</if>
+			<if test="maxAmount != null">
+				and A.AMOUNT &lt;= #{maxAmount, jdbcType=BIGINT}
+			</if>
+			<if test="startApplyTime != null">
+				and A.APPLYTIME &gt;= #{startApplyTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endApplyTime != null">
+				and A.APPLYTIME &lt;= #{endApplyTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="startAuditTime != null">
+				and A.AUDITTIME &gt;= #{startAuditTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endAuditTime != null">
+				and A.AUDITTIME &lt;= #{endAuditTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="startTransferTime != null">
+				and A.TRANSFERTIME &gt;= #{startTransferTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTransferTime != null">
+				and A.TRANSFERTIME &lt;= #{endTransferTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+</mapper>

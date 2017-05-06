@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.BuyRewardActivityAuditMapper">
+	<resultMap id="BuyRewardActivityResultMap" type="BuyRewardActivityAudit">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="ACTIVITYNAME" property="activityName" jdbcType="VARCHAR" />
+		<result column="VALUEMETHOD" property="valueMethod" jdbcType="VARCHAR" />
+		<result column="GIFTTYPE" property="giftType" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="ACTIVITYBEGIN" property="activityBegin"
+			jdbcType="TIMESTAMP" />
+		<result column="ACTIVITYEND" property="activityEnd" jdbcType="TIMESTAMP" />
+		<result column="SUBMITTIME" property="submitTime" jdbcType="TIMESTAMP" />
+		<result column="AUDITSTATUS" property="auditStatus" jdbcType="VARCHAR" />
+		<result column="FINALAUDITUSERID" property="finalAuditUserId"
+			jdbcType="INTEGER" />
+		<result column="FINALAUDITTIME" property="finalAuditTime"
+			jdbcType="TIMESTAMP" />
+		<result column="FINALAUDITREJECTREASON" property="finalAuditRejectReason"
+			jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="BuyRewardActivityMappingResultMap" type="BuyRewardActivityMapping">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="ACTIVITYID" property="activityId" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="REWARDCONDITIONS" property="rewardConditions"
+			jdbcType="VARCHAR" />
+		<result column="REWARDGIFTS" property="rewardGifts" jdbcType="VARCHAR" />
+		<result column="GIFTAMOUNT" property="giftAmount" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, ACTIVITYNAME, VALUEMETHOD,
+		GIFTTYPE,AUDITSTATUS,SUBMITTIME,
+		STATUSCODE,ACTIVITYBEGIN, ACTIVITYEND,
+		FINALAUDITUSERID,
+		FINALAUDITTIME,FINALAUDITREJECTREASON,CREATEUSERID,
+		CREATETIME,
+		MODIFYUSERID, MODIFYTIME
+	</sql>
+
+	<sql id="Base_Column_List_MAPPING">
+		ID, ACTIVITYID, PRODUCTID, REWARDCONDITIONS,
+		REWARDGIFTS,GIFTAMOUNT, CREATEUSERID, CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="BuyRewardActivityAudit"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_BUYREWARD_ACTIVITY_AUDIT (
+		ACTIVITYNAME, VALUEMETHOD,
+		GIFTTYPE,STATUSCODE, ACTIVITYBEGIN,
+		ACTIVITYEND,CREATEUSERID,
+		CREATETIME
+		)
+		values(
+		#{activityName,jdbcType=VARCHAR},
+		#{valueMethod,jdbcType=VARCHAR},
+		#{giftType,jdbcType=VARCHAR},
+		#{statusCode,jdbcType=VARCHAR},
+		#{activityBegin,jdbcType=TIMESTAMP},
+		#{activityEnd,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<update id="update" parameterType="BuyRewardActivityAudit">
+		UPDATE
+		P_BUYREWARD_ACTIVITY_AUDIT
+		SET
+		ACTIVITYNAME =
+		#{activityName,jdbcType=VARCHAR},
+		VALUEMETHOD =
+		#{valueMethod,jdbcType=VARCHAR},
+		GIFTTYPE =
+		#{giftType,jdbcType=VARCHAR},
+		AUDITSTATUS =
+		#{auditStatus,jdbcType=VARCHAR},
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR},
+		ACTIVITYBEGIN =
+		#{activityBegin,jdbcType=TIMESTAMP},
+		ACTIVITYEND =
+		#{activityEnd,jdbcType=TIMESTAMP},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateActivityTime" parameterType="BuyRewardActivityAudit">
+		UPDATE
+		P_BUYREWARD_ACTIVITY_AUDIT
+		SET
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP},
+		<if test="activityEnd != null">
+			ACTIVITYEND = #{activityEnd, jdbcType=TIMESTAMP}
+		</if>
+		<if test="activityBegin != null">
+			,ACTIVITYBEGIN = #{activityBegin,
+			jdbcType=TIMESTAMP}
+		</if>
+		where ID = #{id,jdbcType=INTEGER}
+		<if test="auditStatus != null">
+			and AUDITSTATUS = #{auditStatus, jdbcType=VARCHAR}
+		</if>
+		<if test="statusCode != null">
+			and STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+		</if>
+	</update>
+
+	<update id="updateAuditStatus">
+		UPDATE P_BUYREWARD_ACTIVITY_AUDIT
+		SET
+		AUDITSTATUS =
+		#{auditStatus,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateStatusCode">
+		UPDATE P_BUYREWARD_ACTIVITY_AUDIT
+		SET
+		STATUSCODE =
+		#{statusCode,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<delete id="deleteBuyRewardActivitysByIdsAndAuditStatusList"
+		parameterType="java.lang.Integer">
+		delete from P_BUYREWARD_ACTIVITY_AUDIT
+		where
+		ID = #{id,jdbcType=INTEGER}
+		and AUDITSTATUS IN
+		<foreach item="item" index="index" collection="auditStatusList"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<delete id="deleteBuyRewardActivityMappingsByActivityId"
+		parameterType="java.lang.Integer">
+		delete from P_BUYREWARD_ACTIVITY_MAPPING_AUDIT
+		where
+		ACTIVITYID = #{activityId,jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateAuditStatusById">
+		update P_BUYREWARD_ACTIVITY_AUDIT
+		set
+		SUBMITTIME =
+		#{submitTime,jdbcType=TIMESTAMP},
+		AUDITSTATUS =
+		#{auditStatus,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}
+		and
+		AUDITSTATUS IN
+		<foreach item="item" index="index" collection="preAuditStatusList"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<update id="updateAuditStatusByFinalAudit">
+		update P_BUYREWARD_ACTIVITY_AUDIT
+		set
+		AUDITSTATUS =
+		#{auditStatus,jdbcType=VARCHAR},
+		FINALAUDITUSERID =
+		#{finalAuditUserId,jdbcType=INTEGER},
+		FINALAUDITTIME =
+		#{finalAuditTime,jdbcType=TIMESTAMP},
+		FINALAUDITREJECTREASON =
+		#{finalAuditRejectReason,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}
+		and
+		AUDITSTATUS = #{preAuditStatus,jdbcType=VARCHAR}
+	</update>
+
+	<insert id="saveActivityMapping" useGeneratedKeys="true"
+		parameterType="java.util.List">
+		insert into
+		P_BUYREWARD_ACTIVITY_MAPPING_AUDIT
+		(ACTIVITYID, PRODUCTID,
+		REWARDCONDITIONS,
+		REWARDGIFTS,GIFTAMOUNT, CREATEUSERID, CREATETIME)
+		values
+		<foreach collection="list" item="buyRewardActivityMapping"
+			index="index" separator=",">
+			(#{buyRewardActivityMapping.activityId},
+			#{buyRewardActivityMapping.productId},
+			#{buyRewardActivityMapping.rewardConditions},
+			#{buyRewardActivityMapping.rewardGifts},
+			#{buyRewardActivityMapping.giftAmount},
+			#{buyRewardActivityMapping.createUserId},
+			#{buyRewardActivityMapping.createTime})
+		</foreach>
+	</insert>
+
+	<select id="loadById" resultMap="BuyRewardActivityResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_BUYREWARD_ACTIVITY_AUDIT
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="getBuyRewardActivityDetailByProductIdAndActivityId" resultMap="BuyRewardActivityMappingResultMap">
+		select
+		<include refid="Base_Column_List_MAPPING" />
+		from P_BUYREWARD_ACTIVITY_MAPPING_AUDIT
+		where
+		PRODUCTID = #{productId,jdbcType=INTEGER}
+		and
+		ACTIVITYID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="getBuyRewardActivityByProductId" resultMap="BuyRewardActivityResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from
+		P_BUYREWARD_ACTIVITY_AUDIT
+		WHERE
+		ID IN (
+		SELECT
+		ACTIVITYID
+		FROM
+		P_BUYREWARD_ACTIVITY_MAPPING_AUDIT
+		WHERE
+		PRODUCTID =
+		#{productId,jdbcType=INTEGER}
+		)
+	</select>
+
+	<select id="listBuyRewardActivityByActivityAuditStatus"
+		resultMap="BuyRewardActivityResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from
+		P_BUYREWARD_ACTIVITY_AUDIT
+		WHERE
+		AUDITSTATUS LIKE
+		#{auditStatus,jdbcType=VARCHAR}
+	</select>
+
+	<select id="listBuyRewardActivityByActivityStatusCode"
+		resultMap="BuyRewardActivityResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from
+		P_BUYREWARD_ACTIVITY_AUDIT
+		WHERE
+		STATUSCODE NOT LIKE
+		#{statusCode,jdbcType=VARCHAR}
+		and
+		AUDITSTATUS LIKE
+		#{auditStatus,jdbcType=VARCHAR}
+	</select>
+
+	<select id="listBuyRewardActivityDetailsByActivityId" resultMap="BuyRewardActivityMappingResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List_MAPPING" />
+		from P_BUYREWARD_ACTIVITY_MAPPING_AUDIT
+		where ACTIVITYID =
+		#{activityId,jdbcType=INTEGER}
+	</select>
+
+	<select id="listBuyRewardActivityByActivityName" resultMap="BuyRewardActivityResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from P_BUYREWARD_ACTIVITY_AUDIT
+		where ACTIVITYNAME =
+		#{activityName,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findBuyRewardActivityMappers" resultMap="BuyRewardActivityResultMap"
+		parameterType="BuyRewardActivityQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_BUYREWARD_ACTIVITY_AUDIT
+		<where>
+			<if test="activityName != null">
+				ACTIVITYNAME like
+				CONCAT('%',#{activityName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="valueMethod != null">
+				and VALUEMETHOD = #{valueMethod, jdbcType=VARCHAR}
+			</if>
+			<if test="giftType != null">
+				and GIFTTYPE = #{giftType, jdbcType=VARCHAR}
+			</if>
+			<if test="auditStatus != null">
+				and AUDITSTATUS = #{auditStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="finalAuditStatusList != null">
+				and AUDITSTATUS IN
+				<foreach item="item" index="index" collection="finalAuditStatusList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+			</if>
+			<if test="activityBegin != null">
+				and ACTIVITYBEGIN &gt;= #{activityBegin,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="activityEnd != null">
+				and ACTIVITYEND &lt;= #{activityEnd, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+</mapper>

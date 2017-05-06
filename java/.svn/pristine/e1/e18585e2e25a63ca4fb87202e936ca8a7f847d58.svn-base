@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<title>重置密码</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+				+ Math.random() + "'><\/script>");
+</script>
+	<script type="text/javascript" src="../static-resource/js/angular.js"></script>
+	<script type="text/javascript" src="../static-resource/js/controller.js"></script>
+</head>
+<body ng-app="register" ng-controller="registerController" style="background-color: #eeeeee;">
+	<div class="forgot-top">
+		<p>
+			<span class="verify">验证身份</span><span>></span><span class="reset" style="color:#ff5555;">重置密码</span>
+		</p>
+	</div>
+	<div class="bot-con">
+		<form name="forgotForm" class="forgotForm" style="background-color: #fff;">
+			<label class="input-last password"> 密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:
+				<input type="password" name="password" id="password" class="password"
+				placeholder="请输入新登录密码" ng-model="user.password" required ng-minlength="6">
+				<div class="eye eye-close">
+					<img src="../static-resource/images/register/eyeclose.png">
+				</div>
+				<div class="eye eye-open">
+					<img src="../static-resource/images/register/eyeopen.png">
+				</div>
+			</label>
+			<div role="alert">
+				<span class="error" error-msg="password" id="errorTipForPassword"></span>
+			</div>
+			<label class="input-last password"> 确认密码:
+				<input type="password" name="password2" class="password" id="password2" placeholder="请再次输入" ng-model="user.password2" required
+				ng-minlength="6">
+			</label>
+			<div role="alert">
+				<span class="error" ng-if="forgotForm.password2.$error.required&&forgotForm.password2.$touched">请再次输入密码</span> <span class="error"
+					ng-if="!validatePassword()&&forgotForm.password2.$touched">两次密码输入不一致</span>
+			</div>
+		</form>
+		<div class="sub-btn">
+			<button type="submit" id="reg-btn" ng-disabled="forgotForm.$invalid">提交</button>
+		</div>
+		<div class="other">
+			<p style="color:#000;">
+				收不到短信验证码，请拨打客服电话<a href="tel:4001116366" style="color:#2b95ed;">400-111-6366</a>
+			</p>
+		</div>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<script type="text/javascript">
+		$(function() {
+			var sub = document.getElementById("reg-btn");
+			//初始化移入移出事件
+			if (sub.addEventListener) {
+				sub.addEventListener("click", resetPassword);
+			} else if (sub.attachEvent) {
+				sub.attachEvent("click", resetPassword);
+			}
+		});
+		function resetPassword() {
+			var valida = validaPassword();
+			var param = new Object();
+			param.password = $("#password").val();
+			if(valida){
+				ajax("/user/resetpassword", param, function(data) {
+					alert("密码修改成功！");
+					history.go(-2);
+				}, function(msg) {
+					alert(msg);
+				}, true);
+			}
+		}
+		function validaPassword() {
+			var password = document.getElementById("password");
+			var passwordConfirm = document.getElementById("password2");
+			if (password.value != passwordConfirm.value){
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
+	</script>
+	<script type="text/javascript">
+		document.write("<script type='text/javascript' src='../static-resource/js/verify.js?"
+				+ Math.random() + "'><\/script>");
+	</script>
+</body>
+</html>

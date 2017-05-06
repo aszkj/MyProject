@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p>账户安全</p>
+    </div>
+</header>
+<section class="bg setItemWrap">
+    <div class="setItem" onclick="window.location.href='changePassword.html'">
+        <p>修改密码</p>
+    </div>
+    <div class="setItem noArrowBg inputItemWrap">
+        <p>绑定手机号码</p>
+        <input id="userBindTele" readonly="readonly" type="text" value="">
+    </div>
+    <div class="setItem noArrowBg inputItemWrap">
+        <p>绑定微信号</p>
+        <input id="userBindWeChat" readonly="readonly" type="text" value="">
+    </div>
+</section>
+</body>
+<script type="text/javascript">
+    $(function(){
+        getUserInfo();
+    });
+    function getUserInfo(){
+        var param = new Object();
+        ajax("/user/userinfo", param, function(data) {
+            var userInfo=data;
+            console.log(data);
+            if(userInfo.userName){
+                $("#userBindTele").val(userInfo.userName);
+            }else{
+                $("#userBindTele").html("未绑定手机号码");
+            }
+            if(userInfo.bindWXInfo){
+                $("#userBindWeChat").val(userInfo.bindWXInfo.nickName);
+            }else{
+                $("#userBindWeChat").val("未绑定微信号");
+            }
+        }, function(msg) {
+            alert(msg);
+        }, true);
+    }
+</script>
+</html>

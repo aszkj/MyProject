@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SystemParamsHistoryMapper" >
+  <resultMap id="BaseResultMap" type="SystemParamsHistory" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="PARAMSID" property="paramsId" jdbcType="INTEGER" />
+    <result column="PARAMSCODE" property="paramsCode" jdbcType="VARCHAR" />
+    <result column="PARAMNAME" property="paramName" jdbcType="VARCHAR" />
+    <result column="PARAMVALUE" property="paramValue" jdbcType="VARCHAR" />
+    <result column="PARAMSTATUS" property="paramStatus" jdbcType="VARCHAR" />
+    <result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+    <result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+    <result column="NOTE" property="note" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, PARAMSID, PARAMSCODE, PARAMNAME, PARAMVALUE, PARAMSTATUS, OPERATETIME, OPERATEUSERID, OPERATETYPE, NOTE
+  </sql>
+  
+  <insert id="save" parameterType="SystemParamsHistory" >
+    insert into S_SYSTEM_PARAMS_HISTORY (PARAMSID, PARAMSCODE, 
+      PARAMNAME, PARAMVALUE, PARAMSTATUS, OPERATETIME, 
+      OPERATEUSERID, OPERATETYPE, NOTE
+      )
+    values (#{paramsId,jdbcType=INTEGER}, #{paramsCode,jdbcType=VARCHAR}, 
+      #{paramName,jdbcType=VARCHAR}, #{paramValue,jdbcType=VARCHAR}, 
+      #{paramStatus,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, 
+      #{operateUserId,jdbcType=INTEGER}, #{operateType,jdbcType=VARCHAR},
+       #{note,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <select id="list" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_SYSTEM_PARAMS_HISTORY
+  </select>
+  
+  <select id="listByParamId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_SYSTEM_PARAMS_HISTORY
+    where PARAMSID = #{paramId,jdbcType=INTEGER}
+  </select>
+
+</mapper>

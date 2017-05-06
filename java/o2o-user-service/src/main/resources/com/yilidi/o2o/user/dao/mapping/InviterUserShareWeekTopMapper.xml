@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.InviterUserShareWeekTopMapper">
+	<resultMap id="BaseResultMap" type="InviterUserShareWeekTop">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="REVISIONUSERNAME" property="revisionUserName" jdbcType="VARCHAR" />
+		<result column="YEAR" property="year" jdbcType="INTEGER" />
+		<result column="MONTH" property="month" jdbcType="INTEGER" />
+		<result column="WEEKNUMBER" property="weekNumber" jdbcType="INTEGER" />
+		<result column="INVITERCOUNT" property="inviterCount" jdbcType="INTEGER" />
+		<result column="REVISIONINVITERCOUNT" property="revisionInviterCount" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,USERNAME,REVISIONUSERNAME,YEAR, MONTH,WEEKNUMBER,INVITERCOUNT,REVISIONINVITERCOUNT,
+		CREATETIME,
+		CREATEUSERID,MODIFYTIME,MODIFYUSERID
+	</sql>
+
+	<insert id="save" parameterType="InviterUserShareWeekTop" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		U_INVITERUSER_SHARE_WEEKTOP
+		(
+		USERNAME,REVISIONUSERNAME,
+		YEAR,MONTH,WEEKNUMBER,INVITERCOUNT,REVISIONINVITERCOUNT,CREATETIME,
+		CREATEUSERID,MODIFYTIME,MODIFYUSERID
+		)
+		values
+		(
+		#{userName,jdbcType=VARCHAR},
+		#{revisionUserName,jdbcType=VARCHAR},
+		#{year,jdbcType=INTEGER},
+		#{month,jdbcType=INTEGER},
+		#{weekNumber,jdbcType=INTEGER},
+		#{inviterCount,jdbcType=INTEGER},
+		#{revisionInviterCount,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=INTEGER}
+		)
+	</insert>
+	<delete id="deleteUserRecord">
+		delete from U_INVITERUSER_SHARE_WEEKTOP
+		where YEAR=#{year,jdbcType=INTEGER}
+		and
+		MONTH=#{month,jdbcType=INTEGER}
+		and
+		WEEKNUMBER=#{weekNumber,jdbcType=INTEGER}
+		and USERNAME=#{userName,jdbcType=VARCHAR}
+	</delete>
+	<update id="updateUserNameAndInviterCountById">
+		update U_INVITERUSER_SHARE_WEEKTOP
+		set USERNAME = #{userName,jdbcType=VARCHAR},
+		INVITERCOUNT =
+		#{inviterCount,jdbcType=INTEGER}
+		where ID=#{id,jdbcType=INTEGER}
+	</update>
+	<select id="findInviterUserShareWeekTops" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITERUSER_SHARE_WEEKTOP
+		where YEAR=#{year,jdbcType=INTEGER}
+		and MONTH=#{month,jdbcType=INTEGER}
+		and
+		WEEKNUMBER=#{weekNumber,jdbcType=INTEGER}
+		order by REVISIONINVITERCOUNT desc
+	</select>
+	<select id="getInviterUserShareWeekTopsCount" resultType="int">
+		select
+		count(1)
+		from U_INVITERUSER_SHARE_WEEKTOP
+		where
+		YEAR=#{year,jdbcType=INTEGER}
+		and MONTH=#{month,jdbcType=INTEGER}
+		and
+		WEEKNUMBER=#{weekNumber,jdbcType=INTEGER}
+		order by
+		INVITERCOUNT desc
+	</select>
+	<select id="loadByUserNameAndYearAndMonthAndWeekNumber" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_INVITERUSER_SHARE_WEEKTOP
+		where
+		USERNAME=#{userName,jdbcType=VARCHAR}
+		and YEAR=#{year,jdbcType=INTEGER}
+		and
+		MONTH=#{month,jdbcType=INTEGER}
+		and
+		WEEKNUMBER=#{weekNumber,jdbcType=INTEGER}
+	</select>
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<!-- **************************** 以下是配置消息生产者 **************************** -->
+
+	<!-- 定义loginLog主题 -->
+	<bean id="loginLogTopic" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="o2o.loginLog" />
+	</bean>
+
+	<!-- loginLogTopic send jms模板 -->
+	<bean id="loginLogTopicSendJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory"></property>
+		<property name="defaultDestination" ref="loginLogTopic" />
+		<property name="messageConverter" ref="o2oMessageConverter" />
+		<property name="pubSubDomain" value="true" />
+		<property name="deliveryMode" value="2" />
+	</bean>
+
+	<!-- 消息发送方 -->
+	<bean id="loginLogMessageSender" class="com.yilidi.o2o.system.jms.sender.LoginLogMessageSender"
+		parent="abstractSender" />
+
+	<!-- **************************** 以下是配置消息消费者 **************************** -->
+
+	<!-- 消息接收方 -->
+	<bean id="loginLogMessageReceiver"
+		class="com.yilidi.o2o.system.jms.receiver.LoginLogMessageReceiver"
+		parent="abstractReceiver" />
+
+	<!-- 主题消息监听容器 -->
+	<bean id="loginLogListenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="pubSubDomain" value="true" />
+		<property name="destination" ref="loginLogTopic" />
+		<property name="subscriptionDurable" value="true" />
+		<property name="clientId" value="clientId_loginLog" />
+		<property name="messageListener" ref="loginLogMessageReceiver" />
+		<property name="sessionTransacted" value="true" />
+	</bean>
+
+</beans>

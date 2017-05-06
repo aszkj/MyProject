@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/checkLogin.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部标题-->
+		<div class="top-big-tit">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<p>支付成功</p>
+		</div>
+	</header>
+	<section class="paySuccess" style="padding-top: .9rem;">
+		<p class="contact">
+			如有问题可联系客服：<a href="tel:4001116366" style="color:#2b95ed;">400-111-6366</a>
+		</p>
+	</section>
+	<!--loading-->
+	<section id="pageloading">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var saleOrderNo = getUrlParam("saleOrderNo");
+	$(function() {
+		paySuccessTmpl(saleOrderNo);
+	});
+	function toOrderDetail() {
+		window.location.replace('pay/orderDetail.html?saleOrderNo='
+				+ saleOrderNo);
+	}
+	function toIndex() {
+		window.location.replace('../index.html');
+	}
+	function paySuccessTmpl(saleOrderNo) {
+		var params = new Object();
+		params.saleOrderNo = saleOrderNo;
+		ajax("/order/paysuccessinfo", params, function(data) {
+			$("#paySuccessTmpl").tmpl(data).prependTo(".paySuccess");
+		}, function(data) {
+		}, true);
+	}
+</script>
+<script id="paySuccessTmpl" type="text/x-jquery-tmpl">
+<div class="congratulation">
+        <h2>恭喜您，订单支付成功</h2>
+        <p ${deliveryModeCode == 2 ? 'show' : 'hide'}">合伙人已收到订单</p>
+    </div>
+    <div class="remind ${deliveryModeCode == 1 ? 'show' : 'hide'}"><p>等待卖家接单...</p></div><!--送货上门-->
+    <div class="remind ${deliveryModeCode == 2 ? 'show' : 'hide'}"><p>请在门店营业时间内自提您的商品哦~</p></div><!--门店自提-->
+    <div class="bordMin"></div>
+    <div class="conBox bg ${deliveryModeCode == 2 ? 'show' : 'hide'}"><!--门店自提-->
+        <p>自提门店：<span class="storeName">${storeInfo.storeName}</span></p>
+        <p>门店热线：<span class="storeTele"><a href="${storeInfo.hotline}" style="color:#2b95ed;">${storeInfo.hotline}</a></span></p>
+        <p>营业时间：<span class="openTime">${storeInfo.businessHoursBegin}-${storeInfo.businessHoursEnd}</span></p>
+        <p class="storeAddress">自提地址：<span>${storeInfo.addressDetail}</span></p>
+    </div>
+    <div class="conBox bg ${deliveryModeCode == 2 ? 'show' : 'hide'}"><!--门店自提-->
+        <p>自提码：<span class="zitiCode">${receiveCode}</span></p>
+        <p>支付方式：<span class="payMethod1">${payTypeName}</span></p>
+        <p>配送方式：<span class="deliveryMethod1">${deliveryModeName}</span></p>
+        <p>自提时间：<span class="deliveryMethod1">${deliveryTimeNote}</span></p>
+        <p>优惠金额：<span class="deliveryMethod1">￥${toCenti(preferentialAmt,2)}</span></p>
+    </div>
+    <div class="conBox bg ${deliveryModeCode == 1 ? 'show' : 'hide'}"><!--送货上门-->
+        <p>订单号：<span class="orderCode">${saleOrderNo}</span></p>
+        <p>支付方式：<span class="payMethod1">${payTypeName}</span></p>
+        <p>配送方式：<span class="deliTime1">${deliveryModeName}</span></p>
+        <p>配送时间：<span class="deliTime1">${deliveryTimeNote}</span></p>
+        <p>优惠金额：<span class="deliveryMethod1">￥${toCenti(preferentialAmt,2)}</span></p>
+    </div>
+<div class="conBox1 bg">
+    <p>实付金额：<span class="total-price">￥${toCenti(paidAmount,2)}</span></p>
+    <a  onclick="toOrderDetail()" class="toOrder">查看订单</a>
+    <a  onclick="toIndex()" class="toShopping">继续购物</a>
+</div>
+</script>
+</html>

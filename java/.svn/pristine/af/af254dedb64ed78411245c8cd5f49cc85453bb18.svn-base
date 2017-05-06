@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.FlittingOrderRejectMapper">
+	<resultMap id="BaseResultMap" type="FlittingOrderReject">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="FLITTINGORDERNO" property="flittingOrderNo" jdbcType="VARCHAR" />
+		<result column="ORIREALFLITTINGCOUNT" property="oriRealFlittingCount" jdbcType="INTEGER" />
+		<result column="ORIREALFLITTINGAMOUNT" property="oriRealFlittingAmount" jdbcType="BIGINT" />
+		<result column="REALFLITTINGCOUNT" property="realFlittingCount" jdbcType="INTEGER" />
+		<result column="REALFLITTINGAMOUNT" property="realFlittingAmount" jdbcType="BIGINT" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+		<result column="OPERATEDESC" property="operateDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, FLITTINGORDERNO, ORIREALFLITTINGCOUNT, ORIREALFLITTINGAMOUNT, ORIREALFLITTINGCOUNT, ORIREALFLITTINGAMOUNT,
+		REALFLITTINGCOUNT, REALFLITTINGAMOUNT, OPERATETYPE, OPERATETIME, OPERATEUSERID, OPERATEDESC
+	</sql>
+
+	<insert id="save" parameterType="FlittingOrderReject" useGeneratedKeys="true" keyProperty="id">
+		insert into T_FLITTING_ORDER_REJECT (
+		FLITTINGORDERNO, ORIREALFLITTINGCOUNT,
+		ORIREALFLITTINGAMOUNT, REALFLITTINGCOUNT, REALFLITTINGAMOUNT, OPERATETYPE,
+		OPERATETIME, OPERATEUSERID, OPERATEDESC
+		)
+		values(
+		#{flittingOrderNo,jdbcType=VARCHAR},
+		#{oriRealFlittingCount,jdbcType=INTEGER},
+		#{oriRealFlittingAmount,jdbcType=BIGINT},
+		#{realFlittingCount,jdbcType=INTEGER},
+		#{realFlittingAmount,jdbcType=BIGINT},
+		#{operateType,jdbcType=VARCHAR},
+		#{operateTime,jdbcType=TIMESTAMP},
+		#{operateUserId,jdbcType=INTEGER},
+		#{operateDesc,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="listFlittingOrderRejects" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_FLITTING_ORDER_REJECT
+		where FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

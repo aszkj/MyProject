@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleProductTempMapper">
+	<resultMap id="BaseResultMap" type="SaleProductTemp">
+		<id column="TEMPID" property="tempId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTNAME" property="saleProductName" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="AUDITSTATUSCODE" property="auditStatusCode" jdbcType="VARCHAR" />
+
+		<result column="PROMOTIONALPRICE" property="promotionalPrice" jdbcType="BIGINT" />
+		<result column="RETAILPRICE" property="retailPrice" jdbcType="BIGINT" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+
+		<result column="CONTENT" property="content" jdbcType="LONGVARCHAR" />
+		<result column="HOTSALEFLAG" property="hotSaleFlag" jdbcType="VARCHAR" />
+		<result column="SALESTATUS" property="saleStatus" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTSPEC" property="saleProductSpec" jdbcType="LONGVARCHAR" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="COMMISSIONPRICE" property="commissionPrice" jdbcType="BIGINT" />
+		<result column="COSTPRICE" property="costPrice" jdbcType="BIGINT" />
+		<result column="VIPCOMMISSIONPRICE" property="vipCommissionPrice" jdbcType="BIGINT" />
+	</resultMap>
+
+
+	<sql id="Base_Column_List">
+		TEMPID, STOREID, PRODUCTID,SALEPRODUCTID, PRODUCTCLASSCODE,
+		SALEPRODUCTNAME,BARCODE,
+		AUDITSTATUSCODE,PROMOTIONALPRICE,RETAILPRICE,CHANNELCODE,CONTENT,HOTSALEFLAG,SALESTATUS,SALEPRODUCTSPEC,DISPLAYORDER,
+		MODIFYUSERID,MODIFYTIME, COMMISSIONPRICE, COSTPRICE, VIPCOMMISSIONPRICE
+	</sql>
+
+	<insert id="saveSaleProductTemp" parameterType="SaleProductTemp" useGeneratedKeys="true" keyProperty="tempId">
+		insert into
+		P_SALE_PRODUCT_TEMP (
+		STOREID, PRODUCTID,SALEPRODUCTID,
+		PRODUCTCLASSCODE,
+		SALEPRODUCTNAME,
+		BARCODE,AUDITSTATUSCODE,PROMOTIONALPRICE,RETAILPRICE,
+		CHANNELCODE,CONTENT,HOTSALEFLAG,
+		SALESTATUS,SALEPRODUCTSPEC,DISPLAYORDER,
+		MODIFYUSERID,MODIFYTIME, COMMISSIONPRICE, COSTPRICE, VIPCOMMISSIONPRICE
+		) values (
+		#{storeId,jdbcType=INTEGER},
+		#{productId,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER},
+		#{productClassCode,jdbcType=VARCHAR},
+		#{saleProductName,jdbcType=VARCHAR},
+		#{barCode,jdbcType=VARCHAR},
+		#{auditStatusCode,jdbcType=VARCHAR},
+		#{promotionalPrice,jdbcType=BIGINT},
+		#{retailPrice,jdbcType=BIGINT},
+		#{channelCode,jdbcType=VARCHAR},
+		#{content,jdbcType=LONGVARCHAR},
+		#{hotSaleFlag,jdbcType=VARCHAR},
+		#{saleStatus,jdbcType=VARCHAR},
+		#{saleProductSpec,jdbcType=VARCHAR},
+		#{displayOrder,jdbcType=INTEGER},
+		#{modifyUserId,jdbcType=INTEGER},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{commissionPrice,jdbcType=BIGINT},
+		#{costPrice,jdbcType=BIGINT}, #{vipCommissionPrice,jdbcType=BIGINT}
+		)
+	</insert>
+
+	<delete id="deleteSaleProductTemp" parameterType="java.lang.Integer">
+		delete
+		from P_SALE_PRODUCT_TEMP
+		where
+		TEMPID =
+		#{tempId,jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateSaleProductTempById" parameterType="SaleProductTemp">
+		update
+		P_SALE_PRODUCT_TEMP
+		set
+		SALEPRODUCTNAME =
+		#{saleProductName,jdbcType=VARCHAR},
+		MARKETTIME = #{marketTime,jdbcType=TIMESTAMP},
+		AUDITSTATUSCODE =
+		#{auditStatusCode,jdbcType=VARCHAR},
+		PRODUCTCLASSCODE =
+		#{productClassCode,jdbcType=VARCHAR},
+		AUDITSTATUSCODE =
+		#{auditStatusCode,jdbcType=VARCHAR},
+		PROMOTIONALPRICE =
+		#{promotionalPrice,jdbcType=BIGINT},
+		RETAILPRICE =
+		#{retailPrice,jdbcType=BIGINT},
+		CONTENT =
+		#{content,jdbcType=LONGVARCHAR},
+		HOTSALEFLAG =
+		#{hotSaleFlag,jdbcType=VARCHAR},
+		SALESTATUS =
+		#{saleStatus,jdbcType=VARCHAR},
+		SALEPRODUCTSPEC =
+		#{saleProductSpec,jdbcType=VARCHAR},
+		DISPLAYORDER =
+		#{displayOrder,jdbcType=INTEGER},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}，
+		COMMISSIONPRICE = #{commissionPrice,jdbcType=BIGINT},
+		COSTPRICE = #{costPrice,jdbcType=BIGINT},
+		VIPCOMMISSIONPRICE = #{vipCommissionPrice,jdbcType=BIGINT}
+		where TEMPID = #{tempId,jdbcType=INTEGER}
+	</update>
+
+
+	<select id="loadSaleProductTempById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_TEMP
+		where TEMPID = #{tempId,jdbcType=INTEGER}
+	</select>
+	<select id="loadSaleProductTempBasicInfoByIdAndChannelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_TEMP
+		where
+		SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+		and
+		CHANNELCODE =
+		#{channelCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findSaleProductTempByStoreId" resultMap="BaseResultMap" parameterType="SaleProductTempQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_TEMP
+		where STOREID = #{storeId,jdbcType=INTEGER}
+	</select>
+
+	<select id="findSaleProductTemps" resultMap="BaseResultMap" parameterType="SaleProductTempQuery">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT
+		<where>
+			1=1
+			<if test="tempId != null">
+				and TEMPID = #{tempId, jdbcType=INTEGER}
+			</if>
+			<if test="storeId != null">
+				and STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="productId != null">
+				and PRODUCTID = #{productId, jdbcType=INTEGER}
+			</if>
+			<if test="saleProductId != null">
+				and SALEPRODUCTID = #{saleProductId, jdbcType=INTEGER}
+			</if>
+			<if test="productClassCode != null">
+				and PRODUCTCLASSCODE = #{productClassCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductName != null">
+				and SALEPRODUCTNAME like
+				CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="auditStatusCode != null">
+				and AUDITSTATUSCODE = #{auditStatusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="promotionalPrice != null">
+				and PROMOTIONALPRICE =
+				#{promotionalPrice,jdbcType=BIGINT}
+			</if>
+			<if test="retailPrice != null">
+				and RETAILPRICE = #{retailPrice,jdbcType=BIGINT}
+			</if>
+			<if test="channelCode != null">
+				and CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+			<if test="content != null">
+				and CONTENT like
+				CONCAT('%',#{content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="hotSaleFlag != null">
+				and HOTSALEFLAG = #{hotSaleFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and SALESTATUS = #{saleStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductSpec != null">
+				and SALEPRODUCTSPEC like
+				CONCAT('%',#{saleProductSpec,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="displayOrder != null">
+				and DISPLAYORDER = #{displayOrder, jdbcType=INTEGER}
+			</if>
+
+			<if test="modifyUserId != null">
+				and MODIFYUSERID = #{modifyUserId, jdbcType=INTEGER}
+			</if>
+			<if test="startModifyTime != null">
+				and MODIFYTIME &gt;= #{startModifyTime, jdbcType=VARCHAR}
+			</if>
+			<if test="endModifyTime != null">
+				and MODIFYTIME &lt; = #{endModifyTime, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+</mapper>

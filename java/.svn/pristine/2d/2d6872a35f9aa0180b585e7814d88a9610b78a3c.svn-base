@@ -1,0 +1,298 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()} 
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页");}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listBuyerUser',
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr><td>';
+						html += dataList[i].id;
+						html += '<input type="hidden" class="id" value="'+dataList[i].id+'">';
+						html += '</td><td>';
+						html += dataList[i].userName;
+						html += '<input type="hidden" class="userName" value="'+dataList[i].userName+'">';
+						html += '</td><td>';
+						html += dataList[i].phone==null?'---':dataList[i].phone;
+						html += '</td><td>';
+						html += dataList[i].buyerLevelName==null?'---':dataList[i].buyerLevelName;
+						html += '</td><td>';
+						html += '<a href="javascript:void(0)" class="ablue selectUser">选择</a> ';
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="11">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	});
+}
+
+
+
+function listBuyerLevelList(){
+	//绑定终端用户级别类型
+	var systemDictType = 'BUYERLEVEL';
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+		type:'post',
+		async:false,
+		dataType:'json',
+		error:function(){return;}, 
+		success:function(data){
+			if(data.msgCode!=1){return;}
+			var buyerLevelMapList = data.entity;
+			var buyerLevelMapHtml = [];
+			if(buyerLevelMapList != null && buyerLevelMapList.length >0){
+			buyerLevelMapHtml.push('<option value="">--请选择--</option>');
+				for(var i=0,length=buyerLevelMapList.length;i<length;i++){
+					buyerLevelMapHtml.push('<option value="'+buyerLevelMapList[i].id);
+					buyerLevelMapHtml.push('" name="'+buyerLevelMapList[i].name+'">'+buyerLevelMapList[i].name+'</option>');
+				}
+			}
+			$('#buyerLevelCode').html(buyerLevelMapHtml.join(''));
+		}
+	});
+}
+
+/*关闭弹框*/
+function close_box() {
+	parent.closeBox();
+}
+
+$(document).ready(function(e){
+	listBuyerLevelList();
+	dataSubmit();
+	
+	//选择
+	var p_userName = "";
+	var p_userId = "";
+	var userNames = "已选择用户：";
+	var userIds = "";
+	var userIdArray = new Array();
+	$("#tbody").on("click",".selectUser",function(){
+		var userName = $(this).parent("td").parent("tr").find(".userName").val();
+		var userId = $(this).parent("td").parent("tr").find(".id").val();
+		var flag = false;
+		if(userIdArray != null && userIdArray.length > 0){
+			$.each(userIdArray,function(i,item){
+				if(item == userId){
+					flag = true;
+					return false;
+				}
+			});
+		}
+		if(!flag){
+			userIdArray.push(userId);
+			userNames += userName + ",";
+			p_userName = userNames.substring(0, userNames.length-1);
+			userIds += userId +",";
+			p_userId = userIds.substring(0, userIds.length-1);
+			$("#selectValue").text(p_userName);
+		}
+	});
+	
+	//确定
+	$("#but_ok").on("click",function(){
+		parent.$("#publishObjectValue").val(p_userId);
+		parent.$("#publishObjectValueNames").text(p_userName);
+		close_box();
+	});
+	$("#but_no").on("click",function(){
+		close_box();
+	});
+	
+});
+</script>
+</head>
+<body id="bodyId">
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+				<div class="complaint_main">
+					<form method="get" id="dataForm">
+						<div class="main_search">
+							<dl>
+								<dt>用户名称：</dt>
+								<dd><input type="text" class="txt grid-9" id="userName" name="userName" /></dd>
+							</dl>
+							<dl>
+								<dt>手机号码：</dt>
+								<dd><input type="text" class="txt grid-9" id="telPhone" name="telPhone" /></dd>
+							</dl>
+							<dl>
+								<dt>用户类型：</dt>
+								<dd>
+									<select class="select" id="buyerLevelCode" name="buyerLevelCode"></select>
+								</dd>
+							</dl>
+							<p class="main_search_btn">
+								<input type="button" value="查询" class="btn_sure" id="orderSearch" onClick="dataSubmit()" />
+								<input type="reset" id="reset" class="btn_gray" value="重置" />
+			                    <a hidden id="download_link" style="color:red;text-decoration: underline;"><span style="color:red">点击下载</span></a>
+								<input type="hidden"  id="start" name="start" />
+								<input type="hidden"  id="pageSize" name="pageSize" />
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="70">用户ID</th>
+									<th width="">用户名称</th>
+									<th width="">手机号码</th>
+									<th width="">用户类型</th>
+									<th width="">操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+						<span id="selectValue"></span>
+					</div>
+					<dl class="main_pagination">
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+					<dl>
+						<dt></dt>
+						<dd>
+							<p class="main_search_btn">
+								<input type="button" class="btn_sure" value="确认" id="but_ok">
+								&nbsp;&nbsp;&nbsp;
+								<input type="button"class="btn_gray" value="取消" id="but_no"> 
+							</p>
+						</dd>
+					</dl>
+				</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

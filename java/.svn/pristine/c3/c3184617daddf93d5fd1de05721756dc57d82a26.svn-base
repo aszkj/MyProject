@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../static-resource/js/checkLogin.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+<script type="text/javascript" src="../static-resource/js/angular.js"></script>
+<script type="text/javascript" src="../static-resource/js/controller.js"></script>
+<script src="http://api.map.baidu.com/api?v=2.0&ak=SI4AOIBz771trCVjGV0XRzlr" type="text/javascript"></script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部栏-->
+		<div class="top-big-tit">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<p id="tooltitle">新增收货地址</p>
+			<div id="saveBtn" class="top-right-con hide" onclick="saveAddress()">
+				<span style="color:#ff7e00;">保存</span>
+			</div>
+		</div>
+	</header>
+	<section style="padding-top: .9rem;">
+		<div class="city">
+			<p>所在城市：深圳市</p>
+		</div>
+		<!--地址-->
+		<div class="bot-con">
+			<form name="addressForm" class="addressForm" style="background-color: #fff;">
+				<div class="communityNameBox">
+					<label id="communityNameLabel"> 收货地址: <input type="text" readonly="readonly" id="communityName" value="" onclick="toSearchAddressClick()">
+						<p id="newNotInScale">不在配送范围</p>
+					</label>
+					<div class="loc" id="loc" onClick="toLocationNearClick()">
+						<img src="../static-resource/images/address/dingwei.png">
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<input class="hide" id="communityId" value=""> <input class="hide" id="provinceCode" value=""> <input class="hide" id="cityCode" value=""> <input
+					class="hide" id="countyCode" value=""> <label style="padding-left: 13.8%"> <input type="text" value="" class="addIns" id="addressDetail"
+					placeholder="请输入楼层、门牌号等详细信息">
+					<div class="clean" onClick="clearText();">
+						<img src="../static-resource/images/register/clean.png">
+					</div>
+				</label>
+				<div role="alert">
+					<span class="error" ng-if="addressForm.addIns.$error.required&&addressForm.addIns.$touched">请填写详细地址信息</span>
+				</div>
+				<label> 收&nbsp;货&nbsp;人: <input type="text" value="" class="receiverIns" id="consigneeName" name="receiverIns" placeholder="请填写真实的收货人姓名">
+					<div class="clean" id="clearBtn" onClick="clearText();">
+						<img src="../static-resource/images/register/clean.png">
+					</div>
+				</label>
+				<div role="alert">
+					<span class="error" ng-if="addressForm.receiverIns.$error.required&&addressForm.receiverIns.$touched">请填写真实的收货人姓名</span>
+				</div>
+				<label> 手&nbsp;机&nbsp;号: <input type="tel" name="teleNumber" class="teleNumber" id="tele" placeholder="请输入有效的11位手机号码" required ng-maxlength="11">
+					<div class="clean" id="clearBtn" onClick="clearText();">
+						<img src="../static-resource/images/register/clean.png">
+					</div>
+				</label>
+				<div role="alert">
+					<span class="error" ng-if="addressForm.teleNumber.$error.maxlength&&addressForm.teleNumber.$touched">手机号码不能超过11位</span> <span class="error"
+						ng-if="addressForm.teleNumber.$error.required&&addressForm.teleNumber.$touched">手机号码不能为空</span> <span class="error" ng-if="!telemsg()&&addressForm.teleNumber.$touched">手机号码格式错误</span>
+				</div>
+			</form>
+			<div class="sub-btn">
+				<button type="submit" id="subAddr" onclick="operAddress()">保存</button>
+			</div>
+		</div>
+	</section>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var origin = getUrlParam("origin");
+	var addressId = getUrlParam("addressId");
+	var saveAddInfo = getSessionStorage(sessionEditAddressInfoKey);
+	var saveCommuInfo = getSessionStorage(sessionEditCommunityInfoKey);//首页小区信息
+	var indexCommuInfo=getSessionStorage(sessionStorageCommunityKey);
+	$(function() {
+		if (!saveAddInfo && !addressId) {
+			setContent(indexCommuInfo);
+			$("#subAddr").html("保存");
+			$("#tooltitle").html("新增收货地址");
+			return;
+		}
+		if (addressId) {
+			$("#tooltitle").html("编辑收货地址");
+			$("#subAddr").html("删除收货地址");
+			$("#saveBtn").show();
+		}
+		if (!saveAddInfo) {
+			editAddressTmpl();
+			$("#tooltitle").html("编辑收货地址");
+			$("#subAddr").html("删除收货地址");
+			$("#saveBtn").show();
+		} else {
+			setAllContent(saveAddInfo);
+			setContent(saveCommuInfo);
+			if(saveCommuInfo.communityId!=indexCommuInfo.communityId){
+				$("#communityNameLabel").css("height","1.44rem");
+				$("#newNotInScale").css("display","block");
+			}
+		}
+	});
+	function editAddressTmpl() {
+		var params = new Object();
+		params.addressId = addressId;
+		ajax("/useraddress/addressdetail", params, function(data) {
+			setAllContent(data);
+		}, function(data) {
+			alert(data);
+		}, true);
+	}
+	function storeListTmpl() {
+		var geolocation = new BMap.Geolocation();
+		geolocation.getCurrentPosition(function(r) {
+			if (this.getStatus() == BMAP_STATUS_SUCCESS)
+				findStore(r.point.lng, r.point.lat);
+			else
+				alert("无法获取到您当前的定位信息，请在网络良好的情况下重试");
+		}, {
+			enableHighAccuracy : true
+		});
+	}
+	function findStore(longitude, latitude) {
+		var params = new Object();
+		params.longitude = longitude;
+		params.latitude = latitude;
+		ajax("/user/location", params, function(data) {
+			setContent(data);
+		}, function(data) {
+		});
+	}
+	function setAllContent(addressDetail) {
+		if (!addressDetail)
+			return;
+		$("#consigneeName").val(addressDetail.consigneeName);
+		$("#tele").val(addressDetail.phoneNo);
+		$("#addressDetail").val(addressDetail.addressDetail);
+		setContent(addressDetail.community);
+	}
+	function setContent(community) {
+		if (!community)
+			return;
+		$("#communityName").val(community.communityName);
+		$("#communityId").val(community.communityId);
+		$("#provinceCode").val(community.provinceCode);
+		$("#cityCode").val(community.cityCode);
+		$("#countyCode").val(community.countyCode);
+	}
+	function toLocationNearClick() {
+		saveAddressInfo();
+		window.location.href = 'addressNear.html?origin=isAddDetail';
+	}
+	function toSearchAddressClick() {
+		saveAddressInfo();
+		window.location.href = 'searchAddressHistory.html?origin=isAddDetail';
+	}
+	function operAddress() {
+		if (!addressId)
+			saveAddress();
+		else
+			deleteAddress();
+	}
+	function saveAddress() {
+		var params = new Object();
+		params.addressId = addressId;
+		params.consigneeName = $("#consigneeName").val();
+		params.phoneNo = $("#tele").val();
+		params.communityId = $("#communityId").val();
+		communityId = $("#communityId").val();
+		params.provinceCode = $("#provinceCode").val();
+		params.cityCode = $("#cityCode").val();
+		params.countyCode = $("#countyCode").val();
+		params.addressDetail = $("#addressDetail").val();
+		if (!communityId) {
+			alert("请选择正确的城市小区");
+		}
+		ajax("/useraddress/addupdateuseraddress", params, function(data) {
+			history.go(-1);
+			removeSaveInfo();
+		}, function(msg) {
+
+		}, true);
+	}
+	function deleteAddress() {
+		var params = new Object();
+		params.addressId = addressId;
+		ajax("/useraddress/invaliduseraddress", params, function(data) {
+			history.go(-1);
+			removeSaveInfo();
+		}, function(msg) {
+			alert(msg);
+		}, true);
+	}
+	function saveAddressInfo() {
+		var addInfo = new Object();
+		addInfo.addressId = addressId;
+		addInfo.consigneeName = $("#consigneeName").val();
+		addInfo.phoneNo = $("#tele").val();
+		var community = new Object();
+		community.communityId = $("#communityId").val();
+		community.communityName = $("#communityName").val();
+		community.provinceCode = $("#provinceCode").val();
+		community.cityCode = $("#cityCode").val();
+		community.countyCode = $("#countyCode").val();
+		addInfo.addressDetail = $("#addressDetail").val();
+		addInfo.community = community;
+		setSessionStorage(sessionEditAddressInfoKey, addInfo);
+	}
+</script>
+</html>

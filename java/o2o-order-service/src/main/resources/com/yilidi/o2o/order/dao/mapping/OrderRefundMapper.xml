@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.OrderRefundMapper">
+	<resultMap id="BaseResultMap" type="OrderRefund">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="REFUNDAMOUNT" property="refundAmount" jdbcType="BIGINT" />
+		<result column="PAYPLATFORMCODE" property="payPlatformCode"
+			jdbcType="VARCHAR" />
+		<result column="REFUNDWAY" property="refundWay" jdbcType="VARCHAR" />
+		<result column="REFUNDREASON" property="refundReason" jdbcType="VARCHAR" />
+		<result column="REFUNDREJECTREASON" property="refundRejectReason"
+			jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, REFUNDAMOUNT, PAYPLATFORMCODE, STATUS,
+		REFUNDWAY,REFUNDREASON,REFUNDREJECTREASON,CREATEUSERID,
+		CREATETIME,MODIFYUSERID,MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="OrderRefundStatusHistory">
+		insert into
+		T_ORDER_REFUND
+		(
+		SALEORDERNO, REFUNDAMOUNT,
+		PAYPLATFORMCODE,
+		STATUS,
+		REFUNDWAY,REFUNDREASON,CREATEUSERID,
+		CREATETIME
+		)
+		values
+		(#{saleOrderNo,jdbcType=VARCHAR},
+		#{refundAmount,jdbcType=BIGINT},
+		#{payPlatformCode,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{refundWay,jdbcType=VARCHAR},
+		#{refundReason,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<select id="loadBySaleOrderNo" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_ORDER_REFUND
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+	</select>
+	<update id="updateStatusBySaleOrderNo">
+		update T_ORDER_REFUND set
+		STATUS = #{updateStatus,jdbcType=VARCHAR},
+		<if test="refundReason != null">
+			REFUNDREJECTREASON=#{refundReason,jdbcType=VARCHAR},
+		</if>
+		MODIFYUSERID=#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME=#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEORDERNO=#{saleOrderNo,jdbcType=VARCHAR}
+		AND STATUS =
+		#{prevStatus,jdbcType=VARCHAR}
+	</update>
+</mapper>

@@ -1,0 +1,435 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var storeId = getUrlParam("storeId");
+var storeType = getUrlParam("storeType");
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(TURN_PAGE_PARAMS['currentPage'] != 1){
+			showBox('提示!',"您输入的页码超出正常范围",'alert');
+		}else{ 
+			showBox('提示!',"当前已经是第一页",'alert');
+		}
+		return;
+	}
+	if(pageNo>TURN_PAGE_PARAMS['pageCount']){
+		if(TURN_PAGE_PARAMS['currentPage'] != TURN_PAGE_PARAMS['pageCount']){
+			showBox('提示!',"您输入的页码超出正常范围",'alert');
+		}
+		else{
+			showBox('提示!',"当前已经是最后一页",'alert');
+		}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+function showListTitle(){
+	var html = '';
+	html += '<th width="30"></th>';
+	html += '<th width="140">产品条形码</th>';
+	html += '<th width="120">产品名称</th>';
+	html += '<th width="120">产品规格</th>';
+	html += '<th width="120">产品分类</th>';
+	html += '<th width="110">普通会员价（元）</th>';
+	html += '<th width="110">VIP会员价（元）</th>';
+	html += '<th width="80">是否上架</th>';
+	if(storeType == 'STORETYPE_MICROWAREHOUSE'){
+		html += '<th width="100">最小采购数量</th>';
+	}
+	$('#listTitle').html(html);
+}
+function dataSubmit(pageNo){
+	$("#tbody").html("");
+	TURN_PAGE_PARAMS.currentPage = pageNo ? pageNo : 1;
+	$('#currentPagesize').val(TURN_PAGE_PARAMS.pageSize);
+	$('#start').val(TURN_PAGE_PARAMS.currentPage);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/' + storeId + '-' + storeType + '/listProductRelativeInfosByStoreType',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				if(null == data.entity){
+					if(storeType == 'STORETYPE_MICROWAREHOUSE'){
+						html += '<tr><td colspan="9">暂无数据</td></tr>';
+					}else{
+						html += '<tr><td colspan="8">暂无数据</td></tr>';
+					}
+				}else{
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						var product =dataList[i]; 
+						html += '<tr><td>';
+						html += '<input type="checkbox" class="pid" class="tab_check" value="'+product.id+'"/>';
+						html += '</td><td>';
+						html += product.barCode;
+						html += '</td><td>';
+						if (product.productName) {
+							html += product.productName;
+						} else {
+							html += '---';
+						}
+						html += '</td><td>';
+						html += product.productSpec;
+						html += '</td><td>';
+						html += product.className;
+						html += '</td><td>';
+						html += toCenti(product.retailPrice);
+						html += '</td><td>';
+						html += toCenti(product.promotionalPrice);
+						html += '</td><td>';
+						if(product.saleStatus == 'PRODUCTSALESTATUS_OFFSALE'){
+							html += '<span class="cred">';
+						}
+						html += product.saleStatusName;
+						if(product.saleStatus == 'PRODUCTSALESTATUS_OFFSALE'){
+							html += '</span>';
+						}
+						html += '</td>';
+						if(storeType == 'STORETYPE_MICROWAREHOUSE'){
+							html += '<td>';
+							html += '<input class="txt grid-10" id="perOperCount_'+product.id+'" name="perOperCount" onkeyup="this.value=this.value.replace(/^0+|\\D/g,\'\')"/>';
+							html += '</td>';
+						}
+						html += '</tr>';
+					}
+				}else{
+					if(storeType == 'STORETYPE_MICROWAREHOUSE'){
+						html += '<tr><td colspan="9">暂无数据</td></tr>';
+					}else{
+						html += '<tr><td colspan="8">暂无数据</td></tr>';
+					}
+				}
+				}
+				$("#tbody").html(html);
+				TURN_PAGE_PARAMS.currentPage = data.entity.currentPage;
+				TURN_PAGE_PARAMS.totalCount = data.entity.recordCount;
+				TURN_PAGE_PARAMS.pageCount = Math.ceil(data.entity.recordCount / data.entity.pageSize);
+				updateFlipLabel();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+	
+	$('#checkall').prop('checked',false);
+}
+
+/*导出报表开始*/
+function exportSearchProduct(){
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/exportSearchProduct',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				$("#product_down").attr("href",DOWNLOAD_FILE_TEMP_URL+data.entity.reportFilePath);
+				$("#product_down").show();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+function selAll(o,idname){
+	var ids = $("input[type='checkbox'][class='"+idname+"']");
+	var checked = o.checked;
+	ids.each(function(){			
+		if(!checked){
+			$(this).prop("checked",false);
+		}else{
+			$(this).prop("checked",true);
+		}
+	});
+}
+function checkSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (!checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+/**
+ * 批量添加
+ */
+function batchAdd(idname) {
+	$('#promptMessage').text('');
+	if (checkSel(idname)) {
+		showBox('提示',"请先选择要批量添加到店铺的产品！",'alert');
+		return;
+	}
+	showBox('提示！','是否批量添加你所选择的产品？','confirm',function(){
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		var flag = true;
+		ids.each(function() {
+			if($(this).prop("checked")){
+				if(storeType == 'STORETYPE_MICROWAREHOUSE'){
+					var perOperCount = $("#perOperCount_"+$(this).val()).val();
+					if(null == perOperCount || '' == $.trim(perOperCount)){
+						$("#perOperCount_"+$(this).val()).focus();
+						$('#promptMessage').text('最小采购数量不能为空！');
+						flag = false;
+						return;
+					}
+					param += $(this).val() + "_" + perOperCount + ",";
+				}else{
+					param += $(this).val() + ",";
+				}
+			}
+		});
+		if(flag){
+			param = param + decodeURIComponent($.trim(getUrlParam("storeId")));
+			param = param +',' + decodeURIComponent($.trim(getUrlParam("storeType")));
+			$('#btnOnSale').removeClass().addClass('btn_disabled')[0].disabled = true;
+			$("#promptErrorMessage").show();
+			$("#promptErrorMessage").html("正在进行批量添加产品.......");
+	 		ajax({
+				url:  TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ param +'/batchSaveSaleProduct',
+				method: 'get',
+				dataType: 'json',
+				success: function(data){
+					 if(data.msgCode != 1){
+						 showBox('提示!',data.msg,'alert');
+						 $('#btnOnSale').removeClass().addClass('btn_sure')[0].disabled = false;
+						 $("#promptErrorMessage").hide();
+						 $("#promptErrorMessage").html("");
+					 }else{
+						 if(data.entity != null){
+							 var list = data.entity;
+							 var errorhtml = "";
+							 for(var o in list){  
+								 errorhtml += "<p style='white-space:nowrap;'>"+list[o]+"</p>";
+							 }
+							 $('#btnOnSale').removeClass().addClass('btn_sure')[0].disabled = false;
+							 $("#promptErrorMessage").show();
+							 $("#promptErrorMessage").html(errorhtml);
+						 }else{
+							 $('#btnOnSale').removeClass().addClass('btn_sure')[0].disabled = false;
+							 $("#promptErrorMessage").show();
+							 $('#promptErrorMessage').text('操作成功');
+							 setTimeout(function(){
+								 $("#promptErrorMessage").hide();
+								},2000);
+							 dataSubmit();
+						 }
+				 	}
+				}
+			}); 
+		}
+	})
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	showListTitle();
+	loadSubClass("TOP_LEVEL_CLASS");
+	dataSubmit();
+	$('#checkall').prop('checked',false);
+});
+
+/* 加载商品分类 */
+function loadSubClass(productClassCode){
+	$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+productClassCode+'/getAllNextProductClassByUpCode', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			data = JSON.parse(encodeString(JSON.stringify(data)));
+			if(null != data.entity && data.entity.length > 0){
+				initProductClassSelect(data.entity);
+			}
+		}
+	});
+}
+function initProductClassSelect(listProductClass){
+	var	html = '<select class="select grid-15" onchange=changeClassSelect(this)>';
+	  	html += '<option value="">--请选择--</option>';
+		for(var i=0;i<listProductClass.length;i++){
+			html += '<option value="'+listProductClass[i].classCode+'">';
+			html += listProductClass[i].className;
+			html +='</option>'
+		}
+	html += '<select/>';
+	$("#productClassDiv").append(html);
+}
+
+function changeClassSelect(ele){
+	var productClass = $(ele);
+	productClass.nextAll().each(function(){
+		$(this).remove();
+	});
+	if(productClass.val()!= ""){
+		$("#productClassCode").val(productClass.val());
+		loadSubClass($.trim($("#productClassCode").val()));
+	}else{
+		var parentClassCode = productClass.prev();
+		if(parentClassCode != null){
+			//如果选择了请选择就默认选择此节点上一个节点的值
+			$("#productClassCode").val(productClass.prev().val());
+		}else{
+			$("#productClassCode").val("TOP_LEVEL_CLASS");
+		}
+	}
+}
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 商家管理 &gt; <span>商家商品</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">添加产品到商家</div>
+				<div class="complaint_main">
+					<form method="get" id="dataForm">
+						<input type="hidden" id="currentPagesize" name="pageSize" value="" />
+						<input type="hidden" id="start" name="start" value="" />
+						<div class="main_search">
+							<dl>
+								<dt>产品名称：</dt>
+								<dd><input type="text" class="txt grid-15" id="saleProductName" name="saleProductName" /></dd>
+							</dl>
+							<dl>
+								<dt>产品条形码：</dt>
+								<dd><input type="text" class="txt grid-15" id="barCode" name="barCode" /></dd>
+							</dl>
+							<dl>
+								<dt>产品分类：</dt>
+								<dd>
+									<input type="hidden" id="productClassCode" name="productClassCode">
+									<div id="productClassDiv">
+										<!-- <select class="select grid-15" id="productClass" name="productClassCode">
+											<option value="" selected>--请选择产品分类--</option>
+										</select> -->
+									</div>
+								</dd>
+							</dl>
+							<dl>
+								<dt>是否上架：</dt>
+								<dd>
+									<select class="select grid-10" id="saleStatus" name="saleStatus" >
+										<option value="">请选择</option>
+										<option value="PRODUCTSALESTATUS_INIT">未上架</option>
+										<option value="PRODUCTSALESTATUS_ONSALE">已上架</option>
+										<option value="PRODUCTSALESTATUS_OFFSALE">已下架</option>
+									</select>
+								</dd>
+							</dl>
+						<p class="main_search_btn">
+							<input type="button" value="查询" class="btn_sure" id="productSearch" onClick="dataSubmit()" /> 
+							<!-- <input type="button" value="导出" class="btn_sure" onClick="javascript:exportSearchProduct();" /> -->
+							<a hidden id="product_down" style="COLOR:red; TEXT-DECORATION:underline"><span style="color:red">点击下载</span></a>
+						</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead id="listTitle">
+							</thead>
+							<tbody id="tbody">
+							</tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<input type="checkbox" class="tab_check"  id='checkall'onclick="javascript:selAll(this,'pid');" />
+						<label for="">全选</label>
+						<input type="button" style="cursor:pointer;" id="btnOnSale" onclick="javascript:batchAdd('pid');" title="" value="批量添加" class="btn_sure"/>
+						<span id="promptMessage" class="cred"></span>
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+					<dl>
+						<dt></dt>
+						<dd>
+							<p class="main_search_btn">
+								<input type="button" id="goBack" class="btn_gray" value="返回" onclick="javascript:history.go(-1);">
+								<span id="promptMessage" class="cred"></span>
+								<span id="promptErrorMessage" class="cred" style="display:block; height:500px; overflow-y:auto; width:700px;"></span>
+							</p>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营平台</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+<div id="loading" class="loading hide">发送中</div>
+</body>
+</html>

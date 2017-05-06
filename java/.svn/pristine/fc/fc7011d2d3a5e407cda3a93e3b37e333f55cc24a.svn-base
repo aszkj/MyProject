@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body style="background-color: #eeeeee;">
+<header>
+<!--顶部标题-->
+<div class="top-big-tit">
+    <div class="top-big-tit-btn" onclick="window.location.href='/my/my.html'"></div>
+    <p>我的消息</p>
+</div>
+</header>
+<div class="bord"></div>
+<section style="padding-top: 1rem" id="messageWrap">
+</section>
+</body>
+<script type="text/javascript">
+    $(function(){
+        userMessageTmpl();
+    });
+    function userMessageTmpl(){
+        var params = new Object();
+        ajax("/message/usermessages", params, function(data) {
+            console.log(data);
+           $("#userMessageTmpl").tmpl(data).appendTo("#messageWrap");
+        }, function(msg) {
+            alert(msg);
+        });
+    }
+    function getMessageImgUrl(typeValue){
+        if(typeValue==1){
+            return "../static-resource/images/messgae/coupon.png"
+        }
+        if(typeValue==2){
+            return "../static-resource/images/messgae/refund.png"
+        }
+        if(typeValue==3){
+            return "../static-resource/images/messgae/activity.png"
+        }
+    }
+    function toMessageItems(typeValue){
+        if(typeValue==3){
+            window.location.href='activityItems.html?typeValue='+typeValue;
+        }else{
+            window.location.href='messageItems.html?typeValue='+typeValue;
+        }
+    }
+</script>
+<script id="userMessageTmpl" type="text/x-jquery-tmpl">
+      <div class="messageItem bg" onclick="toMessageItems(${typeValue})">
+        <div class="messageImg">
+            <img src="${getMessageImgUrl(typeValue)}">
+        </div>
+        <div class="messageText">
+            <h3 class="messageTit">${typeName}</h3> <h6 class="messageTime">${msgTime}</h6>
+            <div class="clearfix"></div>
+            <p class="messageIns">${msgAbstract}</p>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="bord"></div>
+</script>
+</html>

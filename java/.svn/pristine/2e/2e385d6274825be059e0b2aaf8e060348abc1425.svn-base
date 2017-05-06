@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../../static-resource/css/main.css" />
+<script type="text/javascript" src="../../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/checkLogin.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/productCart.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/main.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+<script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.0.0.js'></script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部标题-->
+		<div class="top-big-tit">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<p>退款</p>
+		</div>
+	</header>
+	<div id="tabs_container">
+		<div class="contentWrap">
+			<section class="allOrder" style="padding-top: 1rem"></section>
+			<div id="pullUp" class="hide">
+                <span class="loading">
+                    <span class="pullUpIcon"></span>
+                </span>
+				<span class="pullUpLabel">上拉加载更多...</span>
+			</div>
+		</div>
+	</div>
+	<!--支付弹框-->
+	<div class="confirmConBox hide" id="chooseCon">
+		<div class="changeStoreCon confirmCon">
+			<h3>请选择</h3>
+			<div class="btnBox">
+				<!--<button class="zhiBtn">选择支付宝支付方式</button>-->
+				<button class="wxBtn">选择微信支付方式</button>
+				<button class="noPayBtn" onclick="noPay()">取消</button>
+			</div>
+		</div>
+	</div>
+	<div class="noMoreContent hide">
+		<p>没有更多内容了，别拉啦!</p>
+	</div>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var pageNum = 0;
+	var pageSize = 12;
+	var totalPages = 0;
+	$(function() {
+		allOrderTmpl(1);
+		showCartNum();
+		wxInit();
+	});
+	function allOrderTmpl(pageNumTemp) {
+		var params = new Object();
+		params.statusCode = 4;//退款订单
+		params.pageNum = pageNumTemp;
+		params.pageSize = pageSize;
+		ajax("/order/orderlist", params, function(data) {
+			console.log(data);
+			totalPages = data.totalPages;
+			pageNum = data.pageNum;
+			if (pageNum <= 1) {
+				$(".allOrder").html("");
+			}
+			loadable = pageNum <= totalPages;
+			if(loadable||totalPages==0)
+			$("#allOrderTmpl").tmpl(data).appendTo(".allOrder");
+			$("#pullUp").addClass("hide");
+			//拉到最后一页时候提示
+			if(pageNum!=1&&!loadable){
+				$(".noMoreContent").removeClass("hide");
+				setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+			}
+		}, function(data) {
+			alert(data);
+		}, true);
+	}
+	/*分页加载*/
+	$(window).scroll(function(){
+		if($(".contentWrap").height()-$(window).scrollTop()<=document.documentElement.clientHeight){
+			$("#pullUp").removeClass("hide");
+			pageNum++;
+			allOrderTmpl(pageNum);
+		}
+	});
+	function statusBtn(e, statusCode) {
+		if (statusCode == 1) {
+			return "去支付";
+		}
+		if (statusCode == 2) {
+			return "取消订单";
+		}
+		if (statusCode == 3) {
+			return "待发货";
+		}
+		if (statusCode == 4) {
+			return "确认收货";
+		}
+		if (statusCode == 5) {
+			return "已完成";
+		}
+		if (statusCode == 6) {
+			return "已评价";
+		}
+		if (statusCode == 7) {
+			return "已取消";
+		}
+		if (statusCode == 8) {
+			return "退款中";
+		}
+		if (statusCode == 9) {
+			return "退款完成";
+		}
+	}
+	function orderOperation(e, statusCode, saleOrderNo) {
+		if (statusCode == 1) {//去支付
+			wexinPay(saleOrderNo);
+		}
+		if (statusCode == 2) {//取消订单
+			if (confirm("您确定要取消订单吗?")) {
+				cancelOrder(saleOrderNo);
+			}
+		}
+		if (statusCode == 4) {//确认收货
+			receiptOrder(saleOrderNo);
+		}
+	}
+	function cancelOrder(saleOrderNo) {
+		var params = new Object();
+		params.saleOrderNo = saleOrderNo;
+		ajax("/order/cancel", params, function(data) {
+			window.location.reload();
+		}, function(data) {
+			alert(data);
+		}, true);
+	}
+	function receiptOrder(saleOrderNo) {
+		var params = new Object();
+		params.saleOrderNo = saleOrderNo;
+		ajax("/order/confirm", params, function(data) {
+			window.location.reload();
+		}, function(data) {
+			alert(data);
+		}, true);
+	}
+	/*去支付操作*/
+	function toPayOrder(saleOrderNo) {
+		$("#chooseCon").removeClass("hide");
+		$(".wxBtn").click(function() {
+			wexinPay(saleOrderNo);
+			$("#chooseCon").addClass("hide");
+		});
+	}
+	/*取消支付*/
+	function noPay() {
+		$("#chooseCon").addClass("hide");
+	}
+	/*微信支付相关函数*/
+	function wexinPay(saleOrderNo) {
+		var params = new Object();
+		params.saleOrderNo = saleOrderNo;
+		params.tradeType = "JSAPI";
+		ajax("/pay/wxpayapporderparam", params, function(data) {
+			if (!data)
+				directOrderList();
+			wexinConfig(data);
+		}, function(msg) {
+			alert(msg);
+			directOrderList();
+		}, true);
+	}
+	function wxInit() {
+		var param = new Object();
+		param.url = location.href.split('#')[0];
+		ajax("/wxsdk/wxsignbyurl", param, function(data) {
+			if (!data)
+				return;
+			wx.config({
+				debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				appId : data.appId, // 必填，公众号的唯一标识
+				timestamp : data.timestamp, // 必填，生成签名的时间戳
+				nonceStr : data.nonceStr, // 必填，生成签名的随机串
+				signature : data.signature,// 必填，签名
+				jsApiList : [ 'chooseWXPay' ]
+			// 必填，需要使用的JS接口列表，所有JS接口列表
+			});
+		}, function(msg) {
+		}, true);
+	}
+	function wexinConfig(data) {
+		wx.chooseWXPay({
+			appId : data.appId,
+			timestamp : data.timeStamp, // 支付签名时间戳
+			nonceStr : data.nonceStr, // 支付签名随机串，不长于 32 位
+			package : 'prepay_id=' + data.prepayId, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***
+			signType : 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+			paySign : data.sign, // 支付签名
+			success : function(res) {
+				// 支付成功后的回调函数
+				if (res.errMsg == "chooseWXPay:ok") {
+					// 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回 ok，但并不保证它绝对可靠。
+					paySuccess();
+				} else {
+					payFailure();
+				}
+			},
+			cancel : function(res) {
+				//支付取消
+				payCancel();
+			}
+		});
+	}
+	function paySuccess() {
+		alert("您的支付已经成功！");
+		location.reload();
+	}
+	function payFailure() {
+		alert("您的支付未成功!\n如果您确认已经支付了,因支付过程可能会较为缓慢，请稍后刷新该订单查看是否成功，如遇见其他问题请联系我们的客服！")
+	}
+	function payCancel() {
+		alert("您取消了支付");
+	}
+</script>
+<script id="allOrderTmpl" type="text/x-jquery-tmpl">
+{{if $data.list&&$data.list.length>0}}
+{{each(i,v) list}}
+        <div class="unpaidItem">
+            <div class="unpaidTit ${v.deliveryModeCode == 1 ? 'delTit' : 'ziTit'}" onclick="window.location.href='orderDetail.html?saleOrderNo=${v.saleOrderNo}'">
+                <p class="storeName">${v.storeName}</p>
+                <span class="statusCodeName">${v.statusCodeName}</span>
+            </div>
+            <div class="unpaidImg" onclick="window.location.href='orderDetail.html?saleOrderNo=${v.saleOrderNo}'">
+                <div class="unProImg">
+                {{each orderImageList}}
+                    <img src="${orderImage}" onerror="setErrorDefaultImg(this)">
+                {{/each}}
+                </div>
+                <div class="eclImg ${orderImageList.length >= 5 ? 'show' : 'hide'}"">
+                    <img src="../../static-resource/images/order/dot.png">
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="unpaidBot bg">
+                <p>实付<span>￥<span class="payTotal">${toCenti(v.totalAmount,2)}</span></span></p>
+                <a href="javascript:void(0);" class="payBtn ${(v.statusCode == 1||v.statusCode ==2||v.statusCode ==4) ? 'show' : 'hide'}"" onclick="orderOperation(this,${v.statusCode},'${v.saleOrderNo}')">${statusBtn(this,v.statusCode)}</a>
+            </div>
+        </div>
+        {{/each}}
+ {{else}}
+        <div class="not-find-box">
+            <img src="/static-resource/images/norder.png">
+            <p>暂无订单</p>
+        </div>
+ {{/if}}
+   </script>
+</html>

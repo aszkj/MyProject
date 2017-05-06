@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.FlittingStockOutRelationMapper">
+	<resultMap id="BaseResultMap" type="FlittingStockOutRelation">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="FLITTINGOPERTYPE" property="flittingOperType" jdbcType="VARCHAR" />
+		<result column="FLITTINGORDERNO" property="flittingOrderNo" jdbcType="VARCHAR" />
+		<result column="STOCKOUTID" property="stockOutId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, FLITTINGOPERTYPE, FLITTINGORDERNO, STOCKOUTID, CREATETIME, CREATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="FlittingStockOutRelation" useGeneratedKeys="true" keyProperty="id">
+		insert into T_FLITTING_STOCKOUT_RELATION (
+		FLITTINGOPERTYPE, FLITTINGORDERNO,
+		STOCKOUTID, CREATETIME, CREATEUSERID
+		)
+		values(
+		#{flittingOperType,jdbcType=VARCHAR},
+		#{flittingOrderNo,jdbcType=VARCHAR},
+		#{stockOutId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<select id="listFlittingStockInRelations" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_FLITTING_STOCKOUT_RELATION
+		<where>
+			<if test="flittingOperType != null">
+				and FLITTINGOPERTYPE = #{flittingOperType,jdbcType=VARCHAR}
+			</if>
+			<if test="flittingOrderNo != null">
+				and FLITTINGORDERNO = #{flittingOrderNo,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

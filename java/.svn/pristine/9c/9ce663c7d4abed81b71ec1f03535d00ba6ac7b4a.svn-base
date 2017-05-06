@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.RolePermissionMapper">
+	<resultMap id="BaseResultMap" type="RolePermission">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="ROLEID" property="roleId" jdbcType="INTEGER" />
+		<result column="PERMISSIONID" property="permissionId" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, ROLEID, PERMISSIONID, CREATEUSERID, CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="RolePermission"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into S_ROLE_PERMISSION (ROLEID, PERMISSIONID,
+		CREATEUSERID, CREATETIME)
+		values (#{roleId,jdbcType=INTEGER},
+		#{permissionId,jdbcType=INTEGER},
+		#{createUserId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteByPermissionId" parameterType="java.lang.Integer">
+		delete from S_ROLE_PERMISSION
+		where PERMISSIONID = #{permissionId,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteByRoleId" parameterType="java.lang.Integer">
+		delete from S_ROLE_PERMISSION
+		where ROLEID = #{roleId,jdbcType=INTEGER}
+	</delete>
+
+	<select id="listByRoleId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_ROLE_PERMISSION
+		where ROLEID = #{roleId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="listRolePermissions" resultMap="BaseResultMap">
+		select RP.ID, RP.ROLEID, RP.PERMISSIONID, RP.CREATEUSERID, RP.CREATETIME
+		from S_ROLE_PERMISSION RP left join  S_PERMISSION P ON RP.PERMISSIONID = P.ID
+		<where>
+			<if test="roleId != null">
+				and RP.ROLEID = #{roleId,jdbcType=INTEGER}
+			</if>
+			<if test="permission.permissionLevel != null">
+				and P.PERMISSIONLEVEL = #{permission.permissionLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="permission.permissionStatus != null">
+				and P.PERMISSIONSTATUS = #{permission.permissionStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="listByPermissionId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_ROLE_PERMISSION
+		where PERMISSIONID = #{permissionId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

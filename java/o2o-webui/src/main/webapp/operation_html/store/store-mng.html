@@ -1,0 +1,1015 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript"
+	src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<style type="text/css">
+#allmap {
+	width: 600px;
+	height: 400px;
+	margin-top: 20px;
+}
+</style>
+<script type="text/javascript">
+	var method = getUrlParam("method");
+	var lot;
+	var lat;
+	var provinceCode = '';
+	var cityCode = '';
+	var countyCode = '';
+	function loadStoreInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id
+						+ '/getStoreDetail',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+					var stockShare = data.entity.stockShare
+							|| "STORESTOCKSHARE_NO";
+					$("#stockShare").val(stockShare);
+					$("#storeType").val(data.entity.storeType);
+					$("#storeCode").val(data.entity.storeCode);
+					$("#storeName").val(data.entity.storeName);
+					$("#contact").val(data.entity.contact);
+					$("#userName").val(data.entity.userName);
+					$("#mobile").val(data.entity.mobile);
+					$("#businessHoursBegin")
+							.val(data.entity.businessHoursBegin);
+					$("#businessHoursEnd").val(data.entity.businessHoursEnd);
+					$("#startSendingPrice").val(
+							toCenti(data.entity.startSendingPrice));
+					$("#addSendingPrice").val(
+							toCenti(data.entity.addSendingPrice));
+					$("#provinceCode").val(data.entity.provinceCode);
+					$("#cityCode").val(data.entity.cityCode);
+					$("#countyCode").val(data.entity.countyCode);
+					provinceCode = data.entity.provinceCode;
+					cityCode = data.entity.cityCode;
+					countyCode = data.entity.countyCode;
+					listProvinces(provinceCode);
+					$("#addressDetail").val(data.entity.addressDetail);
+					$("#longitude").val(data.entity.longitude);
+					$("#latitude").val(data.entity.latitude);
+					lot = data.entity.longitude;
+					lat = data.entity.latitude;
+					$("#id").val(id);
+				}//非必须
+			});
+
+		}
+	}
+
+	function dataEditSubmit() {
+		if (method != 'add' && method != 'edit') {
+			$('#promptMessage').text('参数有误，请返回重试!');
+			return;
+		}
+		var url = '';
+		if (method == 'add') {
+			url = OPERATION_SYSTEM_IDENTITY + '/createStore';
+			if (!validateData()) {
+				return;
+			}
+		} else if (method == 'edit') {
+			url = OPERATION_SYSTEM_IDENTITY + '/updateStore';
+			if (!validateData()) {
+				return;
+			}
+		} else {
+			return;
+		}
+		var startSendingPrice = parseFloat($("#startSendingPrice").val());
+		$("#startSendingPrice").val(toMul(startSendingPrice, 1000));
+		var addSendingPrice = parseFloat($("#addSendingPrice").val());
+		$("#addSendingPrice").val(toMul(addSendingPrice, 1000));
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					contentType : 'application/json',
+					dataType : 'json',
+					data : formJsonStr,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+						$("#startSendingPrice").val(
+								toCenti($("#startSendingPrice").val()));
+						$("#addSendingPrice").val(
+								toCenti($("#addSendingPrice").val()));
+					},
+					url : TERMINAL_URL + url,
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window.setTimeout(function() {
+								var urlParam = window.location.search;
+								locationHref("/store/store-index.html"
+										+ urlParam);
+							}, 1000);
+						} else {
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							$('#promptMessage').text(data.msg);
+							$("#startSendingPrice").val(
+									toCenti($("#startSendingPrice").val()));
+							$("#addSendingPrice").val(
+									toCenti($("#addSendingPrice").val()));
+						}
+					}
+				});
+	}
+
+	var validate = (function() {
+		return {
+			validateStoreType : function() {
+				var storeType = $.trim($('#storeType').val()), $storeTypeMsg = $('#storeTypeMsg');
+				if (!storeType) {
+					$storeTypeMsg.html('请选择商家类型！').attr('class', 'error');
+					return false;
+				}
+				var stockShare = $("#stockShare").val();
+				if (!stockShare) {
+					$("#stockShareMsg").html("请选择是否共享库存")
+							.attr('class', 'error');
+				}
+				$storeTypeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateStoreCode : function() {
+				var storeCode = $.trim($('#storeCode').val()), $storeCodeMsg = $('#storeCodeMsg');
+				var reg = /^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$/;
+				if (!storeCode) {
+					$storeCodeMsg.html('请填写商家编号！').attr('class', 'error');
+					return false;
+				}
+				if (!reg.test(storeCode)) {
+					$storeCodeMsg.html('请输入有效的商家编号').attr('class', 'error');
+					return false;
+				}
+				$storeCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateStoreName : function() {
+				var storeName = $.trim($('#storeName').val()), $storeNameMsg = $('#storeNameMsg');
+				if (!storeName) {
+					$storeNameMsg.html('请填写商家名称！').attr('class', 'error');
+					return false;
+				}
+				$storeNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateContact : function() {
+				var contact = $.trim($('#contact').val()), $contactMsg = $('#contactMsg');
+				if (!contact) {
+					$contactMsg.html('请填写联系人！').attr('class', 'error');
+					return false;
+				}
+				$contactMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateUserName : function() {
+				var userName = $.trim($('#userName').val()), $userNameMsg = $('#userNameMsg');
+				if (!userName) {
+					$userNameMsg.html('请填写登录帐号！').attr('class', 'error');
+					return false;
+				}
+				var storeType = $.trim($('#storeType').val());
+				if (storeType != '' && storeType != 'STORETYPE_MICROWAREHOUSE') {
+					if (!checkMobile(userName)) {
+						$userNameMsg.html('登录帐号请填写11位手机号码！').attr('class',
+								'error');
+						return false;
+					}
+				}
+				$userNameMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateMobile : function() {
+				var mobile = $.trim($('#mobile').val()), $mobileMsg = $('#mobileMsg');
+				if (!mobile) {
+					$mobileMsg.html('请填写服务热线！').attr('class', 'error');
+					return false;
+				}
+				if (!checkMobile(mobile)) {
+					$mobileMsg.html('请填写11位手机号码！').attr('class', 'error');
+					return false;
+				}
+				$mobileMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateBusinessHours : function() {
+				var businessHoursBegin = $.trim($('#businessHoursBegin').val()), $businessHoursMsg = $('#businessHoursMsg');
+				if (!businessHoursBegin) {
+					$businessHoursMsg.html('请选择配送开始时间！').attr('class', 'error');
+					return false;
+				}
+				var businessHoursEnd = $.trim($('#businessHoursEnd').val()), $businessHoursMsg = $('#businessHoursMsg');
+				if (!businessHoursEnd) {
+					$businessHoursMsg.html('请选择配送结束时间！').attr('class', 'error');
+					return false;
+				}
+				if (businessHoursBegin > businessHoursEnd) {
+					$businessHoursMsg.html('配送开始时间不能大于结束时间！').attr('class',
+							'error');
+					return false;
+				}
+				$businessHoursMsg.html('').attr('class', 'right');
+				return true;
+			},
+
+			validateStartSendingPrice : function() {
+				var startSendingPrice = $.trim($('#startSendingPrice').val()), $startSendingPriceMsg = $('#startSendingPriceMsg');
+				if (!startSendingPrice) {
+					$startSendingPriceMsg.html('请填写金额！').attr('class', 'error');
+					return false;
+				}
+				if (!checkMoney(startSendingPrice)) {
+					$startSendingPriceMsg.html('请填写正确的金额格式！').attr('class',
+							'error');
+					return false;
+				}
+				$startSendingPriceMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateAddSendingPrice : function() {
+				var addSendingPrice = $.trim($('#addSendingPrice').val()), $addSendingPriceMsg = $('#addSendingPriceMsg');
+				if (!addSendingPrice) {
+					$addSendingPriceMsg.html('请填写金额！').attr('class', 'error');
+					return false;
+				}
+				if (!checkMoney(addSendingPrice)) {
+					$addSendingPriceMsg.html('请填写正确的金额格式！').attr('class',
+							'error');
+					return false;
+				}
+				$addSendingPriceMsg.html('').attr('class', 'right');
+				return true;
+			},
+
+			validateProvinceCode : function() {
+				var provinceCode = $.trim($('#provinceCode').val()), $provinceCodeMsg = $('#provinceCodeMsg');
+				if (!provinceCode) {
+					$provinceCodeMsg.html('请选择省份！').attr('class', 'error');
+					return false;
+				}
+				$provinceCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateCityCode : function() {
+				var cityCode = $.trim($('#cityCode').val()), $cityCodeMsg = $('#cityCodeMsg');
+				var provinceCode = $.trim($('#provinceCode').val());
+				if (provinceCode != '100000') {
+					if (!cityCode) {
+						$cityCodeMsg.html('请选择市县！').attr('class', 'error');
+						return false;
+					}
+				}
+				$cityCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateCountyCode : function() {
+				var countyCode = $.trim($('#countyCode').val()), $countyCodeMsg = $('#countyCodeMsg');
+				var provinceCode = $.trim($('#provinceCode').val());
+				if (provinceCode != '100000') {
+					if (!countyCode) {
+						$countyCodeMsg.html('请选择区镇！').attr('class', 'error');
+						return false;
+					}
+				}
+				$countyCodeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateAddressDetail : function() {
+				var addressDetail = $.trim($('#addressDetail').val()), $addressDetailMsg = $('#addressDetailMsg');
+				if (!addressDetail) {
+					$addressDetailMsg.html('请填写详细地址！').attr('class', 'error');
+					return false;
+				}
+				$addressDetailMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateLongitude : function() {
+				var longitude = $.trim($('#longitude').val()), $longitudeMsg = $('#longitudeMsg');
+				if (!longitude) {
+					$longitudeMsg.html('请填写商家所在经度！').attr('class', 'error');
+					return false;
+				}
+				$longitudeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateLatitude : function() {
+				var latitude = $.trim($('#latitude').val()), $latitudeMsg = $('#latitudeMsg');
+				if (!latitude) {
+					$latitudeMsg.html('请填写商家所在纬度！').attr('class', 'error');
+					return false;
+				}
+				$latitudeMsg.html('').attr('class', 'right');
+				return true;
+			}
+		}
+	})();
+
+	function validateData() {
+		if (!validate.validateStoreType()) {
+			return false;
+		}
+		if (!validate.validateStoreCode()) {
+			return false;
+		}
+		if (!validate.validateStoreName()) {
+			return false;
+		}
+		if (!validate.validateContact()) {
+			return false;
+		}
+		if (!validate.validateUserName()) {
+			return false;
+		}
+		if (!validate.validateMobile()) {
+			return false;
+		}
+		if (!validate.validateBusinessHours()) {
+			return false;
+		}
+		if (!validate.validateStartSendingPrice()) {
+			return false;
+		}
+		if (!validate.validateAddSendingPrice()) {
+			return false;
+		}
+		if (!validate.validateProvinceCode()) {
+			return false;
+		}
+		if (!validate.validateCityCode()) {
+			return false;
+		}
+		if (!validate.validateCountyCode()) {
+			return false;
+		}
+		if (!validate.validateAddressDetail()) {
+			return false;
+		}
+		if (!validate.validateLongitude()) {
+			return false;
+		}
+		if (!validate.validateLatitude()) {
+			return false;
+		}
+		return true;
+	}
+
+	function showErr(errorType) {
+		if (errorType == 'storeType') {
+			$('#storeTypeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'storeCode') {
+			$('#storeCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'storeName') {
+			$('#storeNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'contact') {
+			$('#contactMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'userName') {
+			$('#userNameMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'mobile') {
+			$('#mobileMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'businessHours') {
+			$('#businessHoursMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'provinceCode') {
+			$('#provinceCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'cityCode') {
+			$('#cityCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'countyCode') {
+			$('#countyCodeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'addressDetail') {
+			$('#addressDetailMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'longitude') {
+			$('#longitudeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'latitude') {
+			$('#latitudeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+	}
+
+	function disableAll() {
+		$('#storeType').attr('disabled', true);
+		$('#storeCode').attr('disabled', true);
+		$('#storeName').attr('disabled', true);
+		$('#stockShare').attr('disabled', true);
+		$('#contact').attr('disabled', true);
+		$('#userName').attr('disabled', true);
+		$('#mobile').attr('disabled', true);
+		$('#email').attr('disabled', true);
+		$('#businessHoursBegin').attr('disabled', true);
+		$('#businessHoursEnd').attr('disabled', true);
+		$('#startSendingPrice').attr('disabled', true);
+		$('#addSendingPrice').attr('disabled', true);
+		$('#provinceCode').attr('disabled', true);
+		$('#cityCode').attr('disabled', true);
+		$('#countyCode').attr('disabled', true);
+		$('#addressDetail').attr('disabled', true);
+		$('#longitude').attr('disabled', true);
+		$('#latitude').attr('disabled', true);
+		$('#shezhi').attr('disabled', true);
+		$('#submit').remove();
+		$('#reset').remove();
+	}
+
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#businessHoursBegin').timepicker({});
+		$('#businessHoursEnd').timepicker({});
+	}
+	/*加载广东省下面的地市菜单*/
+	function loadCity() {
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ '/440000/getAreaDictsByParentCode',
+			type : 'post',
+			dataType : 'json',
+			async : false,
+			success : function(data) {
+				if (data.msgCode != 1)
+					return;
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var listCity = data.entity;
+				var html = '';
+				html += '<option value="">--请选择--</option>';
+				for (var i = 0; i < listCity.length; i++) {
+					var city = listCity[i];
+					html += '<option value="' + city.id + '">' + city.text
+							+ '</option>';
+				}
+
+				$("#cityCode").html(html);
+			}
+		});
+	}
+
+	function listProvinces(val) {
+		var systemDictType = 'REDENVELOPEREWARDTYPE';
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/getProvinceList',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					html += '<option value="100000">全国</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						if (val == mapList[i].id) {
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>';
+							loadCity(val, cityCode);
+						} else {
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>';
+						}
+					}
+				}
+				$("#provinceCode").html(html);
+				if (val == "100000") {
+					$("#provinceCode").val(val);
+				}
+			}
+		});
+	}
+
+	/*加载城市菜单*/
+	function loadCity(val, childval) {
+		$("#cityCode").html("");
+		$("#cityCode").html('<option value="">--请选择--</option>');
+		$("#countyCode").html("");
+		$("#countyCode").html('<option value="">--请选择--</option>');
+		if (val != '100000') {
+			$
+					.ajax({
+						url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+								+ val + '/getAreaDictsByParentCode',
+						type : 'post',
+						dataType : 'json',
+						success : function(data) {
+							if (data.msgCode != 1)
+								return;
+							//特殊处理 尖括号
+							var temp = JSON.stringify(data);
+							temp = encodeString(temp);
+							data = JSON.parse(temp);
+							var html = '';
+							var city = data.entity;
+							html = '<option value="">--请选择--</option>';
+							if (null != city && city.length > 0) {
+								var len = city.length;
+								for (var i = 0; i < len; i++) {
+									var cityTemp = city[i];
+									if (childval == cityTemp.id) {
+										html += '<option selected value="'+cityTemp.id+'">';
+										html += cityTemp.text;
+										html += '</option>';
+										loadCounty(childval, countyCode);
+									} else {
+										html += '<option value="'+cityTemp.id+'">';
+										html += cityTemp.text;
+										html += '</option>';
+									}
+
+								}
+							}
+							$("#cityCode").html(html);
+						}
+					});
+		}
+	}
+
+	/*加载县区菜单*/
+	function loadCounty(val, childval) {
+		$("#countyCode").html("");
+		$("#countyCode").html('<option value="">--请选择--</option>');
+		$
+				.ajax({
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + val
+							+ '/getAreaDictsByParentCode',
+					type : 'post',
+					dataType : 'json',
+					success : function(data) {
+						if (data.msgCode != 1)
+							return;
+						//特殊处理 尖括号
+						var temp = JSON.stringify(data);
+						temp = encodeString(temp);
+						data = JSON.parse(temp);
+						var html = '';
+						var county = data.entity;
+						html = '<option value="">--请选择--</option>';
+						if (null != county && county.length > 0) {
+							var len = county.length;
+							for (var i = 0; i < len; i++) {
+								var countyTemp = county[i];
+								if (childval == countyTemp.id) {
+									html += '<option selected value="'+countyTemp.id+'">';
+									html += countyTemp.text;
+									html += '</option>'
+								} else {
+									html += '<option value="'+countyTemp.id+'">';
+									html += countyTemp.text;
+									html += '</option>'
+								}
+
+							}
+						}
+						$("#countyCode").html(html);
+					}
+				});
+	}
+	function comebackList() {
+		var urlParam = window.location.search;
+		locationHref('/store/store-index.html' + urlParam);
+	}
+
+	//加载商家类型
+	function listStoreTypeList(val) {
+		//绑定终端用户级别类型
+		var systemDictType = 'STORETYPE';
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ systemDictType + '/getSystemDictInfoList',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						if (val == mapList[i].id) {
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						} else {
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						}
+					}
+				}
+				$('#storeType').html(html);
+			}
+		});
+	}
+	//加载商家共享类型
+	function listStockShareList(val) {
+		//绑定终端用户级别类型
+		var systemDictType = 'STORESTOCKSHARE';
+		ajax({
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/'
+					+ systemDictType + '/getSystemDictInfoList',
+			type : 'post',
+			async : false,
+			dataType : 'json',
+			error : function() {
+				return;
+			},
+			success : function(data) {
+				if (data.msgCode != 1) {
+					return;
+				}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+
+				var mapList = data.entity;
+				var html = '';
+				if (mapList != null && mapList.length > 0) {
+					html = '<option value="">--请选择--</option>';
+					for (var i = 0, length = mapList.length; i < length; i++) {
+						if (val == mapList[i].id) {
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						} else {
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html += '</option>'
+						}
+					}
+				}
+				$('#stockShare').html(html);
+			}
+		});
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		listStockShareList();
+		listStoreTypeList();
+		if (method == 'edit') {
+			$("#breadName").html('修改商家');
+			$("#pageTitle").html('修改商家');
+			loadStoreInfo();
+			$('#storeType').attr('disabled', true);
+			$('#storeCode').attr('disabled', true);
+			//$('#storeName').attr('disabled', true);
+		} else if (method == 'add') {
+			$("#breadName").html('新增商家');
+			$("#pageTitle").html('新增商家');
+			//$("#stockShareBox").hide();
+			listProvinces();
+		} else if (method == 'detail') {
+			$("#breadName").html('查看商家');
+			$("#pageTitle").html('查看商家');
+			loadStoreInfo();
+			disableAll();
+		}
+		loadTimeInput();
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 商家管理 &gt; <span id="breadName"></span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title" id="pageTitle"></div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>商家类型：
+									</dt>
+									<dd>
+										<select class="select grid-16" id="storeType" name="storeType"
+											onmousedown="showErr('storeType')"></select>&nbsp;&nbsp; <span
+											class="cred" id="storeTypeMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>商家编号：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="storeCode"
+											name="storeCode" onmousedown="showErr('storeCode')" />&nbsp;&nbsp;
+										<span class="cred" id="storeCodeMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>商家名称：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="storeName"
+											name="storeName" onmousedown="showErr('storeName')" />&nbsp;&nbsp;
+										<span class="cred" id="storeNameMsg"></span>
+									</dd>
+								</dl>
+								<dl id="stockShareBox">
+									<dt>
+										<span class="cred">*</span>共享库存：
+									</dt>
+									<dd>
+										<select class="select grid-16" id="stockShare"
+											name="stockShare"></select>&nbsp;&nbsp; <span class="cred"
+											id="stockShareMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>联系人姓名：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="contact" name="contact"
+											onmousedown="showErr('contact')" />&nbsp;&nbsp; <span
+											class="cred" id="contactMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>登录帐号：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="userName" name="userName"
+											onmousedown="showErr('userName')" />&nbsp;&nbsp; <span
+											class="cred" id="userNameMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>服务热线：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="mobile" name="mobile"
+											onmousedown="showErr('mobile')" />&nbsp;&nbsp; <span
+											class="cred" id="mobileMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>配送时间：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-10" id="businessHoursBegin"
+											name="businessHoursBegin" onkeydown="return false;" /> 至 <input
+											type="text" class="txt grid-10" id="businessHoursEnd"
+											name="businessHoursEnd" onkeydown="return false;" /> <span
+											id="businessHoursMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>免配送费订单金额(元)：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="startSendingPrice"
+											name="startSendingPrice"
+											onmousedown="showErr('startSendingPrice')" />&nbsp;&nbsp; <span
+											class="cred" id="startSendingPriceMsg"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>增加的配送费(元)：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="addSendingPrice"
+											name="addSendingPrice" value="2"
+											onmousedown="showErr('addSendingPrice')" />&nbsp;&nbsp; <span
+											class="cred" id="addSendingPriceMsg">默认2元</span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>商家地址：
+									</dt>
+									<dd>
+										省份 <select class="select grid-12" id="provinceCode"
+											name="provinceCode" onchange="loadCity(this.value)"
+											onmousedown="showErr('provinceCode')">
+										</select> <span id="provinceCodeMsg" class="cred"></span> &nbsp;&nbsp;
+										市/县 <select class="select grid-12" id="cityCode"
+											name="cityCode" onChange="loadCounty(this.value)"
+											onmousedown="showErr('cityCode')">
+											<option value="" selected>--请选择--</option>
+										</select> <span id="cityCodeMsg" class="cred"></span> &nbsp;&nbsp; 区/镇
+										<select class="select grid-12" id="countyCode"
+											name="countyCode" onmousedown="showErr('countyCode')">
+											<option value="" selected>--请选择--</option>
+										</select> <span id="countyCodeMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>详细地址：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-30" id="addressDetail"
+											name="addressDetail" onmousedown="showErr('addressDetail')" />
+										<span id="addressDetailMsg" class="cred"></span>
+									</dd>
+								</dl>
+
+								<dl>
+									<dt>
+										<span class="cred">*</span>经度X：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="longitude"
+											name="longitude" value="114.02597366"
+											onmousedown="showErr('longitude')" /> <span
+											id="longitudeMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>纬度Y：
+									</dt>
+									<dd>
+										<input type="text" class="txt " id="latitude" name="latitude"
+											value="22.54605355" onmousedown="showErr('latitude')" /> <span
+											id="latitudeMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt></dt>
+									<dd>
+										<div id="allmap"></div>
+									</dd>
+								</dl>
+
+							</div>
+
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit"
+											onClick="dataEditSubmit(method)"><input type="button"
+											id="goBack" class="btn_gray" value="返回"
+											onclick="javascript:comebackList();"> <span
+											id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden" id="id" name="id" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+<script type="text/javascript">
+	function init() {
+		//设置默认中心点坐标
+		lot = lot == null ? 114.02597366 : lot;
+		lat = lat == null ? 22.54605355 : lat;
+		var map = new BMap.Map("allmap"); // 创建Map实例
+		map.centerAndZoom(new BMap.Point(lot, lat), 12); // 初始化地图,设置中心点坐标和地图级别
+		map.addControl(new BMap.MapTypeControl()); //添加地图类型控件
+		map.setCurrentCity("深圳"); // 设置地图显示的城市 此项是必须设置的
+		map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放  
+		var marker = new BMap.Marker(new BMap.Point(lot, lat));// 创建标注
+		map.addOverlay(marker); // 将标注添加到地图中
+		marker.enableDragging();//可以拖曳
+		//移动获取经纬度
+		marker.addEventListener("dragend", function(e) {
+			$('#longitude').val(e.point.lng);
+			$('#latitude').val(e.point.lat);
+		});
+	}
+	//百度地图API功能
+	function loadJScript() {
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.src = "http://api.map.baidu.com/api?v=2.0&ak=X4PBxInb7vBti83QpX2URBki&callback=init";
+		document.body.appendChild(script);
+	}
+	window.onload = loadJScript; //异步加载地图
+</script>
+</html>

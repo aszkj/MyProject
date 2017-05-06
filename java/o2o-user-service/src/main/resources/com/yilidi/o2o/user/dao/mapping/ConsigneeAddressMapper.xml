@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.ConsigneeAddressMapper">
+	<resultMap id="BaseResultMap" type="ConsigneeAddress">
+		<id column="ADDRESSID" property="addressId" jdbcType="INTEGER" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="PROVINCECODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="CITYCODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="COUNTYCODE" property="countyCode" jdbcType="VARCHAR" />
+		<result column="TOWNCODE" property="townCode" jdbcType="VARCHAR" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="DEFAULTFLAG" property="defaultFlag" jdbcType="VARCHAR" />
+		<result column="CONSIGNEENAME" property="consigneeName" jdbcType="VARCHAR" />
+		<result column="PHONENO" property="phoneNo" jdbcType="VARCHAR" />
+		<result column="COMMUNITYID" property="communityId" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="NOTE" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ADDRESSID, CUSTOMERID, PROVINCECODE, CITYCODE, COUNTYCODE, TOWNCODE, ADDRESSDETAIL,
+		DEFAULTFLAG,
+		CONSIGNEENAME,
+		PHONENO,COMMUNITYID, CREATEUSERID, CREATETIME, MODIFYUSERID, MODIFYTIME, STATUS,
+		NOTE
+	</sql>
+
+	<insert id="save" parameterType="ConsigneeAddress" keyProperty="addressId" useGeneratedKeys="true">
+		insert into
+		U_CONSIGNEE_ADDRESS (CUSTOMERID, PROVINCECODE,
+		CITYCODE, COUNTYCODE, TOWNCODE,
+		ADDRESSDETAIL, DEFAULTFLAG, CONSIGNEENAME,
+		PHONENO,COMMUNITYID, CREATEUSERID, CREATETIME,MODIFYTIME,
+		STATUS, NOTE)
+		values (#{customerId,jdbcType=INTEGER},
+		#{provinceCode,jdbcType=VARCHAR},
+		#{cityCode,jdbcType=VARCHAR}, #{countyCode,jdbcType=VARCHAR},
+		#{townCode,jdbcType=VARCHAR},
+		#{addressDetail,jdbcType=VARCHAR},
+		#{defaultFlag,jdbcType=VARCHAR},#{consigneeName,jdbcType=VARCHAR},
+		#{phoneNo,jdbcType=VARCHAR},
+		#{communityId,jdbcType=INTEGER},#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{modifyTime,jdbcType=TIMESTAMP},#{status,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from U_CONSIGNEE_ADDRESS
+		where ADDRESSID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateByIdSelective" parameterType="ConsigneeAddress">
+		update U_CONSIGNEE_ADDRESS
+		<set>
+			<if test="provinceCode != null">
+				PROVINCECODE = #{provinceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cityCode != null">
+				CITYCODE = #{cityCode,jdbcType=VARCHAR},
+			</if>
+			<if test="countyCode != null">
+				COUNTYCODE = #{countyCode,jdbcType=VARCHAR},
+			</if>
+			<if test="townCode != null">
+				TOWNCODE = #{townCode,jdbcType=VARCHAR},
+			</if>
+			<if test="addressDetail != null">
+				ADDRESSDETAIL = #{addressDetail,jdbcType=VARCHAR},
+			</if>
+			<if test="defaultFlag != null">
+				DEFAULTFLAG = #{defaultFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="consigneeName != null">
+				CONSIGNEENAME = #{consigneeName,jdbcType=VARCHAR},
+			</if>
+			<if test="phoneNo != null">
+				PHONENO = #{phoneNo,jdbcType=VARCHAR},
+			</if>
+			<if test="communityId != null">
+				COMMUNITYID = #{communityId,jdbcType=INTEGER},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				STATUS = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="note != null">
+				NOTE = #{note,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ADDRESSID = #{addressId,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateById" parameterType="ConsigneeAddress">
+		update U_CONSIGNEE_ADDRESS
+		<set>
+			PROVINCECODE = #{provinceCode,jdbcType=VARCHAR},
+			CITYCODE = #{cityCode,jdbcType=VARCHAR},
+			COUNTYCODE =
+			#{countyCode,jdbcType=VARCHAR},
+			TOWNCODE = #{townCode,jdbcType=VARCHAR},
+			ADDRESSDETAIL = #{addressDetail,jdbcType=VARCHAR},
+			DEFAULTFLAG = #{defaultFlag,jdbcType=VARCHAR},
+			CONSIGNEENAME = #{consigneeName,jdbcType=VARCHAR},
+			PHONENO =
+			#{phoneNo,jdbcType=VARCHAR},
+			COMMUNITYID = #{communityId,jdbcType=INTEGER},
+			MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			STATUS = #{status,jdbcType=VARCHAR},
+			NOTE = #{note,jdbcType=VARCHAR},
+		</set>
+		where ADDRESSID = #{addressId,jdbcType=INTEGER}
+	</update>
+
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_CONSIGNEE_ADDRESS
+		<where>
+			ADDRESSID = #{id,jdbcType=INTEGER}
+			<if test="status != null"> and STATUS = #{status,jdbcType=VARCHAR}</if>
+		</where>
+	</select>
+
+	<select id="listByCustomerId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM U_CONSIGNEE_ADDRESS
+		WHERE CUSTOMERID = #{customerId,jdbcType=INTEGER} AND STATUS="CONSADDRSTATUS_ON"
+		ORDER BY MODIFYTIME
+		DESC
+	</select>
+	<select id="loadLatelyUpdateByCommunityId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_CONSIGNEE_ADDRESS
+		where COMMUNITYID = #{communityId,jdbcType=INTEGER}
+		and CUSTOMERID = #{customerId,jdbcType=INTEGER}
+		and STATUS = #{status,jdbcType=VARCHAR}
+		order by MODIFYTIME desc limit 1
+	</select>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ActivityMapper">
+	<resultMap id="BaseResultMap" type="Activity">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="ACTIVITYNAME" property="activityName" jdbcType="VARCHAR" />
+		<result column="ACTIVITYTYPE" property="activityType" jdbcType="VARCHAR" />
+		<result column="STARTTIME" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="FINISHTIME" property="finishTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSERID" property="updateUserId" jdbcType="INTEGER" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID,ACTIVITYNAME, ACTIVITYTYPE, STARTTIME, FINISHTIME,
+		CREATEUSERID,CREATETIME,UPDATEUSERID,UPDATETIME
+	</sql>
+
+	<insert id="save" parameterType="Activity" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_ACTIVITY (
+		ACTIVITYNAME,
+		ACTIVITYTYPE,
+		STARTTIME, FINISHTIME,
+		CREATEUSERID, CREATETIME,
+		UPDATEUSERID,UPDATETIME)
+		values(
+		#{activityName,jdbcType=VARCHAR},
+		#{activityType,jdbcType=VARCHAR},
+		#{startTime,jdbcType=TIMESTAMP},
+		#{finishTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{updateUserId,jdbcType=INTEGER},
+		#{updateTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from
+		P_ACTIVITY
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_ACTIVITY
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</select>
+</mapper>

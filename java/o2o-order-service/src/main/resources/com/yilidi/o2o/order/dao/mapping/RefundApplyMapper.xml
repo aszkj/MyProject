@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.RefundApplyMapper">
+	<resultMap id="BaseResultMap" type="RefundApply">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="APPLYUSERID" property="applyUserId" jdbcType="INTEGER" />
+		<result column="BUYERCUSTOMERID" property="buyerCustomerId" jdbcType="INTEGER" />
+		<result column="REFUNDAMOUNT" property="refundAmount" jdbcType="BIGINT" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="APPLYTIME" property="applyTime" jdbcType="TIMESTAMP" />
+		<result column="MESSAGE" property="message" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, APPLYUSERID, BUYERCUSTOMERID, REFUNDAMOUNT, SALEORDERNO, STOREID, STATUSCODE, APPLYTIME, MESSAGE
+	</sql>
+
+	<insert id="save" parameterType="RefundApply" useGeneratedKeys="true" keyProperty="id">
+		insert into T_REFUND_APPLY
+		(APPLYUSERID, BUYERCUSTOMERID, REFUNDAMOUNT,
+		SALEORDERNO,
+		STOREID, STATUSCODE,
+		APPLYTIME,
+		MESSAGE)
+		values (
+		#{applyUserId,jdbcType=INTEGER}, #{buyerCustomerId,jdbcType=INTEGER}, #{refundAmount,jdbcType=BIGINT},
+		#{saleOrderNo,jdbcType=VARCHAR}, #{storeId,jdbcType=INTEGER}, #{statusCode,jdbcType=VARCHAR},
+		#{applyTime,jdbcType=TIMESTAMP}, #{message,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="loadByOrderNo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_REFUND_APPLY
+		where SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+	</select>
+
+	<update id="updateByOrderNo">
+		update T_REFUND_APPLY
+		set
+		STATUSCODE = #{statusCode, jdbcType=VARCHAR}
+		where SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+		and STATUSCODE = #{preStatusCode, jdbcType=VARCHAR}
+	</update>
+
+</mapper>

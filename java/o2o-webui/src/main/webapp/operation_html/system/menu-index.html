@@ -1,0 +1,542 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet"  />
+<script type="text/javascript">
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()}
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页")}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	$('#permissionLevel').val('PERMISSIONLEVEL_FIRST_MENU');
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			alert("提交数据失败，请稍后再试")
+		},
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/searchPermissionMenus',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					var pId = $('#pId').val();
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr ';
+						html += ' ondblclick="getSubMenuList('+dataList[i].id+',\'PERMISSIONLEVEL_SECOND_MENU\');"';
+						if(pId == dataList[i].id){
+							html += ' name="selrow" bgcolor="#c8e3f8"';
+						}
+					    html += '><td>';
+						html += dataList[i].sort == null ? '---' : dataList[i].sort;
+						html += '</td><td>';
+						html += dataList[i].customerType=='CUSTOMERTYPE_OPERATOR'?'运营平台':(dataList[i].customerType=='CUSTOMERTYPE_BUYER'?'终端用户':'门店');
+						html += '</td><td>';
+						html += dataList[i].permissionName;
+						html += '</td><td>';
+						html += dataList[i].permissionCode == null ? '---' : dataList[i].permissionCode;
+						html += '</td><td>';
+						html += dataList[i].permissionDesc == null ? '---' : dataList[i].permissionDesc;
+						html += '</td><td>';
+						html += dataList[i].permissionStatus=='PERMISSIONSTATUS_ON'?'有效':(dataList[i].permissionStatus=='PERMISSIONSTATUS_OFF'?'无效':'');
+						html += '</td><td>';
+						if(dataList[i].permissionStatus=='PERMISSIONSTATUS_ON'){
+							html += '<permission code="FUNCTION_DISABLE_FIRST_MENU_MENU_MANAGEMENT">';
+							html += '<a  href="javascript:changeStatus('+dataList[i].id+',\'PERMISSIONSTATUS_OFF\',\''+dataList[i].permissionLevel+'\')" class="ablue">禁用</a>';
+							html += '</permission>';
+						}else{
+							html += '<permission code="FUNCTION_ENABLE_FIRST_MENU_MENU_MANAGEMENT">';
+							html += '<a  href="javascript:changeStatus('+dataList[i].id+',\'PERMISSIONSTATUS_ON\',\''+dataList[i].permissionLevel+'\')" class="ablue">启用</a>';
+							html += '</permission>';
+						}
+						html += '<permission code="FUNCTION_MODIFY_FIRST_MENU_MENU_MANAGEMENT">';
+						html += '&nbsp;&nbsp;&nbsp;<a  href="javascript:updateMenu('+dataList[i].id+')" class="ablue">修改</a>';
+						html += '</permission>';
+						html += '<permission code="FUNCTION_ADD_SECOND_MENU_MENU_MANAGEMENT">';
+						html += '&nbsp;&nbsp;&nbsp;<a href="javascript:addMenu('+dataList[i].id+',\''+dataList[i].permissionLevel+'\')" class="ablue">添加二级菜单</a>';
+						html += '</permission>';
+						html += '</td></tr>';
+					}
+				}else{
+						html += '<tr><td colspan="7">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				$("#first").show();
+	            $("#firstMenu").show();
+              	$("#tbody").show();
+				$("#second").hide();
+				$("#secondMenu").hide();
+				$("#ttbody").hide();
+			    $("#third").hide();
+				$("#thirdMenu").hide();
+				$("#tttbody").hide();
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	}); 
+}
+
+function goBack(id){
+  if(id==2){
+    $(".main_pagination").show();
+    $("#first").show();
+	$("#firstMenu").show();
+	$("#tbody").show();
+	$("#second").hide();
+	$("#secondMenu").hide();
+	$("#ttbody").hide();
+	$("#third").hide();
+	$("#thirdMenu").hide();
+    $("#tttbody").hide();
+  }
+  if(id==3){
+    $(".main_pagination").hide();
+    $("#first").hide();
+	$("#firstMenu").hide();
+	$("#tbody").hide();
+	$("#second").show();
+	$("#secondMenu").show();
+	$("#ttbody").show();
+	$("#third").hide();
+	$("#thirdMenu").hide();
+    $("#tttbody").hide();
+  }
+
+}
+function getSubMenuList(supperMenuId,permissionLevel){
+    $(".main_pagination").hide();
+    if(permissionLevel=='PERMISSIONLEVEL_SECOND_MENU'){
+    $("#first").hide();
+	$("#firstMenu").hide();
+	$("#tbody").hide();
+	$("#second").show();
+	$("#secondMenu").show();
+	$("#ttbody").show();
+	$("#third").hide();
+	$("#thirdMenu").hide();
+    $("#tttbody").hide();
+	}
+	if(permissionLevel=='PERMISSIONLEVEL_FUNCTION'){
+	$("#first").hide();
+	$("#firstMenu").hide();
+	$("#tbody").hide();
+	$("#ttbody").hide();
+	$("#second").hide();
+	$("#secondMenu").hide();
+	$("#third").show();
+	$("#thirdMenu").show();
+	$("#tttbody").show();
+	}
+	var dataJsonStr =  '{"parentId":'+supperMenuId+'}';
+  $.ajax({
+		url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/searchPermissionMenus',
+		type:'post',
+		contentType:'application/json',
+		data: dataJsonStr,
+		dataType: 'json',
+		async: true,
+		cache: false,
+		timeout: 30000,
+		error: getBasicMessageError,
+		success: function(data){
+			checkJsonRight(data);
+			if(data.msgCode==1){
+						var temp = JSON.stringify(data);
+						temp = encodeString(temp);
+						data = JSON.parse(temp);
+						var html = '';
+						var dataList = data.entity.resultList;
+						if(null != dataList && dataList.length > 0){
+							var pId = $('#pId').val();
+							for(var i=0,j=dataList.length;i<j;i++){
+								html += '<tr ';
+							    if(dataList[i].permissionLevel!='PERMISSIONLEVEL_FUNCTION'){
+									html += ' ondblclick="getSubMenuList('+dataList[i].id+',\'PERMISSIONLEVEL_FUNCTION\')"';
+								}
+								if(pId == dataList[i].id){
+									html += ' name="selrow" bgcolor="#c8e3f8"';
+								}
+							    html += '><td>';
+							    html += dataList[i].sort == null ? '---' : dataList[i].sort;
+								html += '</td><td>';
+								html += dataList[i].customerType=='CUSTOMERTYPE_OPERATOR'?'运营平台':(dataList[i].customerType=='CUSTOMERTYPE_BUYER'?'终端用户':'门店');
+								html += '</td><td>';
+								html += dataList[i].permissionName;
+								html += '</td><td>';
+								if(dataList[i].permissionLevel == 'PERMISSIONLEVEL_SECOND_MENU'){
+									html += dataList[i].permissionUrl;
+									html += '</td><td>';
+								}
+								html += dataList[i].permissionCode == null ? '---' : dataList[i].permissionCode;
+								html += '</td><td>';
+								html += dataList[i].permissionDesc == null ? '---' : dataList[i].permissionDesc;
+								html += '</td><td>';
+								html += dataList[i].permissionStatus=='PERMISSIONSTATUS_ON'?'有效':(dataList[i].permissionStatus=='PERMISSIONSTATUS_OFF'?'无效':'');
+								html += '</td><td>';
+								if(dataList[i].permissionStatus=='PERMISSIONSTATUS_ON'){
+									if(dataList[i].permissionLevel=='PERMISSIONLEVEL_SECOND_MENU'){
+											html += '<permission code="FUNCTION_DISABLE_SECOND_MENU_MENU_MANAGEMENT">';
+									}else{
+											html += '<permission code="FUNCTION_DISABLE_FUNCTION_MENU_MANAGEMENT">';
+									}
+									html += '<a  href="javascript:changeStatus('+dataList[i].id+',\'PERMISSIONSTATUS_OFF\',\''+dataList[i].permissionLevel+'\','+dataList[i].parentId+')" class="ablue">禁用</a>';
+									html += '</permission>';
+								}else{
+									if(dataList[i].permissionLevel=='PERMISSIONLEVEL_SECOND_MENU'){
+										html += '<permission code="FUNCTION_ENABLE_SECOND_MENU_MENU_MANAGEMENT">';
+									}else{
+										html += '<permission code="FUNCTION_ENABLE_FUNCTION_MENU_MANAGEMENT">';
+									}
+									html += '<a  href="javascript:changeStatus('+dataList[i].id+',\'PERMISSIONSTATUS_ON\',\''+dataList[i].permissionLevel+'\','+dataList[i].parentId+')" class="ablue">启用</a>';
+									html += '</permission>';
+								}
+								if(dataList[i].permissionLevel=='PERMISSIONLEVEL_SECOND_MENU'){
+									html += '<permission code="FUNCTION_MODIFY_SECOND_MENU_MENU_MANAGEMENT">';
+								}else{
+									html += '<permission code="FUNCTION_MODIFY_FUNCTION_MENU_MANAGEMENT">';
+								}
+								html += '&nbsp;&nbsp;&nbsp;<a href="javascript:updateSecondAndThirdMenu('+dataList[i].id+',\''+dataList[i].permissionLevel+'\','+dataList[i].parentId+')" class="ablue">修改</a>';
+								html += '</permission>';
+								if(dataList[i].permissionLevel=='PERMISSIONLEVEL_SECOND_MENU'){
+								html += '<permission code="FUNCTION_ADD_FUNCTION_MENU_MANAGEMENT">';
+								html += '&nbsp;&nbsp;&nbsp;<a href="javascript:addMenu('+dataList[i].id+',\''+dataList[i].permissionLevel+'\')" class="ablue">添加功能</a>';
+								html += '</permission>';
+								}
+								html += '</td></tr>';
+							}  
+						}else{
+							if(permissionLevel=='PERMISSIONLEVEL_SECOND_MENU'){
+								html += '<tr><td colspan="8">暂无数据</td></tr>';
+							}else if(permissionLevel=='PERMISSIONLEVEL_FUNCTION'){
+								html += '<tr><td colspan="7">暂无数据</td></tr>';
+							}
+						}
+						if(permissionLevel=='PERMISSIONLEVEL_SECOND_MENU'){
+						    $("#ttbody").html(html);
+						}else if(permissionLevel=='PERMISSIONLEVEL_FUNCTION'){
+						    $("#tttbody").html(html);
+						}
+						disposeFunctionPermissions();
+			      }else{
+				        showBox('提示信息',data.msg,'alert');
+		          }
+		}
+	});
+}
+function getBasicMessageError(){}
+
+function addFirstMenu(){
+	var message = '新建菜单';
+	showBox(message,'/system/menufirst-mng.html?width=650&height=400');
+}
+function updateMenu(id){
+	var message = '修改菜单';
+	showBox(message,'/system/menufirst-mng.html?width=650&height=400&menuId='+id);
+}
+
+function changeStatus(id,permissionStatus,permissionLevel,parentId){
+	var msg = '';
+	if(permissionStatus == 'PERMISSIONSTATUS_ON'){
+		if(permissionLevel == 'PERMISSIONLEVEL_FIRST_MENU' || permissionLevel == 'PERMISSIONLEVEL_SECOND_MENU'){
+			msg = '确定启用吗？注：此操作会同时启用其下所有权限';
+		}else{
+			msg = '确定启用吗？';
+		}
+	}else{
+		if(permissionLevel == 'PERMISSIONLEVEL_FIRST_MENU' || permissionLevel == 'PERMISSIONLEVEL_SECOND_MENU'){
+			msg = '确定禁用吗？注：此操作会同时禁用其下所有权限';
+		}else{
+			msg = '确定禁用吗？';
+		}
+	}
+	showBox('确认信息',msg,'confirm',function(){ 
+	    ajax({
+			url: TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + id + '-' + permissionStatus + '/changeStatus',
+			type:'post',
+			dataType: 'json',
+			error: function(){},
+			success: function(data){
+			  if(data.msgCode == 1){
+				  if(permissionLevel == 'PERMISSIONLEVEL_SECOND_MENU' || permissionLevel == 'PERMISSIONLEVEL_FUNCTION'){
+					  $('#pId').val(id);
+					  getSubMenuList(parentId,permissionLevel);
+				  }else{
+					   $('#pId').val(id);
+					   dataSubmit();
+				  }
+			  }else{
+					showBox('提示信息',data.msg,'alert');
+			  }
+			}
+		});
+	})
+}
+
+function addMenu(id,permissionLevel){
+	var message = ((permissionLevel=='PERMISSIONLEVEL_FIRST_MENU')?'添加二级菜单':((permissionLevel=='PERMISSIONLEVEL_SECOND_MENU')?'添加功能':''));
+	showBox(message,'/system/menusecond-mng.html?width=650&height=400&parentId='+id+'&permissionLevel='+((permissionLevel=='PERMISSIONLEVEL_FIRST_MENU')?'PERMISSIONLEVEL_SECOND_MENU':((permissionLevel=='PERMISSIONLEVEL_SECOND_MENU')?'PERMISSIONLEVEL_FUNCTION':'')));
+}
+
+function updateSecondAndThirdMenu(id,permissionLevel,parentId){
+	var message = ((permissionLevel=='PERMISSIONLEVEL_SECOND_MENU')?'修改二级菜单':((permissionLevel=='PERMISSIONLEVEL_FUNCTION')?'修改功能':''));
+	showBox(message,'/system/menusecond-mng.html?width=650&height=400&menuId='+id+'&parentId='+parentId+'&permissionLevel='+permissionLevel);
+}
+
+/*加载时间控件*/
+function loadTimeInput(){
+	$('#onsaleTimeBeginStr').datepicker({
+		dateFormat: 'yy-mm-dd',constrainInput:true
+	});
+	$('#onsaleTimeEndStr').datepicker({
+		dateFormat: 'yy-mm-dd',constrainInput:true
+	});
+}
+$(document).ready(function(e) {
+    $("#first").show();
+	$("#firstMenu").show();
+	$("#tbody").show();
+	$("#second").hide();
+	$("#secondMenu").hide();
+	$("#ttbody").hide();
+    $("#third").hide();
+	$("#thirdMenu").hide();
+	$("#tttbody").hide();
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	selectNavigation("systemMenu");
+	dataSubmit();
+	loadTimeInput();
+});
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt;<a href="/">系统管理</a> &gt;<span>菜单管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">菜单管理</div>
+				<div class="complaint_main">
+					<input type="hidden" id="pId" name="pId" /> 
+					<form method="get" id="dataForm">
+						<div class="main_search">
+							<dl>
+								<dt>用户类型：</dt>
+								<dd>
+									<select class="select grid-15" id="customerType" name="customerType">
+										<option value="" selected>--全部--</option>
+										<option value="CUSTOMERTYPE_OPERATOR">运营平台</option>
+										<option value="CUSTOMERTYPE_BUYER">终端用户</option>
+										<option value="CUSTOMERTYPE_SELLER">门店</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<dt>状态：</dt>
+								<dd>
+									<select class="select grid-15" id="permissionStatus" name="permissionStatus">
+										<option value="" selected>--全部--</option>
+										<option value="PERMISSIONSTATUS_ON">有效</option>
+										<option value="PERMISSIONSTATUS_OFF">无效</option>
+									</select>
+								</dd>
+							</dl>
+							<dl>
+								<dt>一级菜单：</dt>
+								<dd><input type="text" class="txt grid-15" id="permissionName" name="permissionName" /></dd>
+							</dl>
+							<input type="hidden"  id="start" name="start" />
+							<input type="hidden"  id="pageSize" name="pageSize" />	
+							<input type="hidden"  id="permissionLevel" name="permissionLevel" />							
+							<p class="main_search_btn">
+								<permission code="FUNCTION_SEARCH_MENU_MANAGEMENT">
+									<input type="button" value="查询" class="btn_sure" onClick="dataSubmit()" /> 
+								</permission>
+								<permission code="FUNCTION_ADD_MENU_MENU_MANAGEMENT">
+									<input type="button" value="新增一级菜单" class="btn_sure" onClick="addFirstMenu()" /> 
+								</permission>
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div id="first" class="page_title">系统一级菜单&nbsp;&nbsp;&nbsp;<span class="cred">（双击选中的菜单进入对应的下级菜单列表）</span></div>
+					<div id="firstMenu" class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="50">菜单排序</th>
+									<th width="100">用户类型</th>
+									<th width="100">一级菜单</th>
+									<th width="280">权限编码</th>
+									<th width="200">描述</th>
+									<th width="60"> 状态</th>
+									<th width="120">操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span> 
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+			
+				<div id="second" class="page_title">系统二级菜单 <span class="page_prev">&lt;&lt; </span><a href="#" onclick="goBack(2)">上一页</a></div>
+					<div id="secondMenu" class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="50">菜单排序</th>
+									<th width="100">用户类型</th>
+									<th width="100">二级菜单</th>
+									<th width="200">菜单URL</th>
+									<th width="300">权限编码</th>
+									<th width="140">描述</th>
+									<th width="60">状态</th>
+									<th width="150">操作</th>
+								</tr>
+							</thead>
+							<tbody id="ttbody"></tbody>
+						</table>
+					</div>
+				<div id="third" class="page_title">系统功能菜单 <span class="page_prev">&lt;&lt; <a onclick="goBack(3)">上一页</a></span></div>
+					<div id="thirdMenu" class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="50">菜单排序</th>
+									<th width="100">用户类型</th>
+									<th width="100">功能菜单</th>
+									<th width="280">权限编码</th>
+									<th width="200">描述</th>
+									<th width="60">状态</th>
+									<th width="120">操作</th>
+								</tr>
+							</thead>
+							<tbody id="tttbody"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

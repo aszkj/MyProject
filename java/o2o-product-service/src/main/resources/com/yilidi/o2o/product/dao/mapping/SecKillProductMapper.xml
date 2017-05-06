@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SecKillProductMapper">
+	<resultMap id="BaseResultMap" type="SecKillProduct">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="SECKILLPRODUCTPRICE" property="secKillProductPrice" jdbcType="BIGINT" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="REMAINCOUNT" property="remainCount" jdbcType="INTEGER" />
+		<result column="SECKILLCOUNT" property="secKillCount" jdbcType="INTEGER" />
+		<result column="LIMITORDERCOUNT" property="limitOrderCount" jdbcType="INTEGER" />
+		<result column="QUALIFYTYPE" property="qualifyType" jdbcType="VARCHAR" />
+		<result column="SECKILLTIME" property="secKillTime" jdbcType="TIMESTAMP" />
+		<result column="SECKILLPRODUCTSTATUS" property="secKillProductStatus" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSERID" property="updateUserId" jdbcType="INTEGER" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, PRODUCTID, SECKILLPRODUCTPRICE, DISPLAYORDER,
+		REMAINCOUNT,SECKILLCOUNT,
+		LIMITORDERCOUNT, QUALIFYTYPE,
+		SECKILLTIME,SECKILLPRODUCTSTATUS,
+		CREATEUSERID,
+		CREATETIME,UPDATEUSERID,UPDATETIME
+	</sql>
+	<resultMap id="SecKillProductRelatedInfoResultMap" type="SecKillProductRelatedInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="PRODUCTNAME" property="productName" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="SCENEID" property="sceneId" jdbcType="INTEGER" />
+		<result column="ACTIVITYID" property="activityId" jdbcType="INTEGER" />
+		<result column="SCENENAME" property="sceneName" jdbcType="VARCHAR" />
+		<result column="STARTTIME" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="SECKILLPRODUCTPRICE" property="secKillProductPrice" jdbcType="BIGINT" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="REMAINCOUNT" property="remainCount" jdbcType="INTEGER" />
+		<result column="SECKILLCOUNT" property="secKillCount" jdbcType="INTEGER" />
+		<result column="LIMITORDERCOUNT" property="limitOrderCount" jdbcType="INTEGER" />
+		<result column="QUALIFYTYPE" property="qualifyType" jdbcType="VARCHAR" />
+		<result column="SECKILLTIME" property="secKillTime" jdbcType="TIMESTAMP" />
+		<result column="SECKILLPRODUCTSTATUS" property="secKillProductStatus" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSERID" property="updateUserId" jdbcType="INTEGER" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="SecKillSaleProductRelatedInfoResultMap" type="SecKillSaleProductRelatedInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTNAME" property="saleProductName" jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTSPEC" property="saleProductSpec" jdbcType="VARCHAR" />
+		<result column="SECKILLPRODUCTPRICE" property="secKillProductPrice" jdbcType="BIGINT" />
+		<result column="SECKILLPRODUCTPRICE" property="secKillProductPrice" jdbcType="BIGINT" />
+		<result column="REMAINCOUNT" property="remainCount" jdbcType="INTEGER" />
+		<result column="SECKILLCOUNT" property="secKillCount" jdbcType="INTEGER" />
+		<result column="LIMITORDERCOUNT" property="limitOrderCount" jdbcType="INTEGER" />
+		<result column="QUALIFYTYPE" property="qualifyType" jdbcType="VARCHAR" />
+		<result column="SECKILLTIME" property="secKillTime" jdbcType="TIMESTAMP" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<insert id="save" parameterType="SecKillProduct" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_SECKILL_PRODUCT (
+		PRODUCTID,SECKILLPRODUCTPRICE, DISPLAYORDER, REMAINCOUNT,SECKILLCOUNT,
+		LIMITORDERCOUNT,QUALIFYTYPE,SECKILLTIME,SECKILLPRODUCTSTATUS,
+		CREATEUSERID, CREATETIME,
+		UPDATEUSERID,UPDATETIME
+		)
+		values(
+		#{productId,jdbcType=INTEGER},
+		#{secKillProductPrice,jdbcType=BIGINT},
+		#{displayOrder,jdbcType=INTEGER},
+		#{remainCount,jdbcType=INTEGER},
+		#{secKillCount,jdbcType=INTEGER},
+		#{limitOrderCount,jdbcType=INTEGER},
+		#{qualifyType,jdbcType=VARCHAR},
+		#{secKillTime,jdbcType=BIGINT},
+		#{secKillProductStatus,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{updateUserId,jdbcType=INTEGER},
+		#{updateTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from
+		P_SECKILL_PRODUCT
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<update id="update" parameterType="SecKillProduct">
+		update P_SECKILL_PRODUCT
+		set
+		REMAINCOUNT =
+		#{remainCount,jdbcType=VARCHAR},
+		SECKILLPRODUCTPRICE =
+		#{secKillProductPrice,jdbcType=BIGINT},
+		DISPLAYORDER =
+		#{displayOrder,jdbcType=INTEGER},
+		SECKILLCOUNT =
+		#{secKillCount,jdbcType=INTEGER},
+		QUALIFYTYPE =
+		#{qualifyType,jdbcType=VARCHAR},
+		LIMITORDERCOUNT =
+		#{limitOrderCount,jdbcType=INTEGER},
+		<!-- SECKILLPRODUCTSTATUS = #{secKillProductStatus,jdbcType=INTEGER}, -->
+		SECKILLTIME =
+		#{secKillTime,jdbcType=INTEGER},
+		UPDATEUSERID =
+		#{updateUserId,jdbcType=INTEGER},
+		UPDATETIME =
+		#{updateTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SECKILL_PRODUCT
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="loadByActivityIdAndProductId" resultMap="SecKillProductRelatedInfoResultMap">
+		select
+		PSP.ID, PSP.PRODUCTID,PSS.ID AS
+		SCENEID,PSS.SCENENAME,PSS.STARTTIME,PSS.ACTIVITYID,
+		PSP.SECKILLPRODUCTPRICE,
+		PSP.DISPLAYORDER,
+		PSP.REMAINCOUNT,PSP.SECKILLCOUNT,
+		PSP.LIMITORDERCOUNT, PSP.QUALIFYTYPE,
+		PSP.SECKILLTIME,
+		PSP.SECKILLPRODUCTSTATUS,
+		PSP.CREATEUSERID,
+		PSP.CREATETIME,PSP.UPDATEUSERID,PSP.UPDATETIME,
+		PSSPR.STATUSCODE
+		from P_SECKILL_PRODUCT PSP
+		left join
+		P_SECKILL_SCENE_PRODUCT_RELATION PSSPR on PSP.ID = PSSPR.SECKILLPRODUCTID
+		left join
+		P_SECKILL_SCENE PSS on PSS.ID =
+		PSSPR.SECKILLSCENEID
+		where
+		PSS.ACTIVITYID = #{activityId,jdbcType=INTEGER}
+		and PSP.PRODUCTID =
+		#{productId,jdbcType=INTEGER}
+	</select>
+	<select id="findCommbinationSecKillProducts" resultMap="SecKillProductRelatedInfoResultMap" parameterType="SecKillProductQuery">
+		select
+		PSP.ID, PSP.PRODUCTID,PP.PRODUCTNAME,PP.BARCODE,PSS.ID AS SCENEID,PSS.SCENENAME,PSS.STARTTIME,PSS.ACTIVITYID,
+		PSP.SECKILLPRODUCTPRICE,
+		PSP.DISPLAYORDER,
+		PSP.REMAINCOUNT,PSP.SECKILLCOUNT,
+		PSP.LIMITORDERCOUNT, PSP.QUALIFYTYPE,
+		PSP.SECKILLTIME,
+		PSP.SECKILLPRODUCTSTATUS,
+		PSP.CREATEUSERID,
+		PSP.CREATETIME,PSP.UPDATEUSERID,PSP.UPDATETIME,
+		PSSPR.STATUSCODE
+		from
+		P_SECKILL_PRODUCT PSP
+		left join
+		P_PRODUCT PP on
+		PSP.PRODUCTID = PP.ID
+		left
+		join
+		P_SECKILL_SCENE_PRODUCT_RELATION PSSPR on
+		PSP.ID =
+		PSSPR.SECKILLPRODUCTID
+		left
+		join
+		P_SECKILL_SCENE PSS on PSS.ID =
+		PSSPR.SECKILLSCENEID
+		<where>
+			<if test="productName != null">
+				and PP.PRODUCTNAME like CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and PP.BARCODE = #{barCode,jdbcType=VARCHAR}
+			</if>
+			<if test="secKillProductStatus != null">
+				and PSP.SECKILLPRODUCTSTATUS = #{secKillProductStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and PSSPR.STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="sceneName != null">
+				and PSS.SCENENAME like CONCAT('%',#{sceneName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+		ORDER BY PSP.UPDATETIME DESC
+	</select>
+	<select id="findSecKillProducts" resultMap="SecKillProductRelatedInfoResultMap" parameterType="SecKillProductQuery">
+		select
+		PSP.ID, PSP.PRODUCTID,PP.PRODUCTNAME,PP.BARCODE,
+		PSP.SECKILLPRODUCTPRICE,
+		PSP.DISPLAYORDER,
+		PSP.REMAINCOUNT,PSP.SECKILLCOUNT,
+		PSP.LIMITORDERCOUNT, PSP.QUALIFYTYPE,
+		PSP.SECKILLTIME,
+		PSP.SECKILLPRODUCTSTATUS,
+		PSP.CREATEUSERID,
+		PSP.CREATETIME,PSP.UPDATEUSERID,PSP.UPDATETIME
+		from
+		P_SECKILL_PRODUCT PSP
+		left join
+		P_PRODUCT PP on
+		PSP.PRODUCTID = PP.ID
+		<where>
+			<if test="productName != null">
+				and PP.PRODUCTNAME like CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and PP.BARCODE = #{barCode,jdbcType=VARCHAR}
+			</if>
+			<if test="secKillProductStatus != null">
+				and PSP.SECKILLPRODUCTSTATUS = #{secKillProductStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY PSP.UPDATETIME DESC
+	</select>
+	<select id="listSecKillProductBySeceneId" resultMap="SecKillProductRelatedInfoResultMap" parameterType="java.lang.Integer">
+		select
+		PSP.ID,
+		PSP.PRODUCTID,PP.PRODUCTNAME,PP.BARCODE,
+		PSP.SECKILLPRODUCTPRICE,
+		PSP.DISPLAYORDER,
+		PSP.REMAINCOUNT,PSP.SECKILLCOUNT,
+		PSP.LIMITORDERCOUNT, PSP.QUALIFYTYPE,
+		PSP.SECKILLTIME,
+		PSP.SECKILLPRODUCTSTATUS,
+		PSP.CREATEUSERID,
+		PSP.CREATETIME,PSP.UPDATEUSERID,PSP.UPDATETIME,
+		PSSPR.STATUSCODE
+		from
+		P_SECKILL_PRODUCT PSP
+		left join
+		P_PRODUCT PP on
+		PSP.PRODUCTID = PP.ID
+		left
+		join
+		P_SECKILL_SCENE_PRODUCT_RELATION PSSPR on
+		PSP.ID
+		= PSSPR.SECKILLPRODUCTID
+		where
+		PSSPR.SECKILLSCENEID =
+		#{sceneId,jdbcType=INTEGER}
+		ORDER BY PSP.UPDATETIME DESC
+	</select>
+	<select id="findExcludeSecKillSceneRelationSecKillProducts" resultMap="SecKillProductRelatedInfoResultMap"
+		parameterType="SecKillProductQuery">
+		select
+		PSP.ID, PSP.PRODUCTID,PP.PRODUCTNAME,PP.BARCODE,
+		PSP.SECKILLPRODUCTPRICE,
+		PSP.DISPLAYORDER,
+		PSP.REMAINCOUNT,PSP.SECKILLCOUNT,
+		PSP.LIMITORDERCOUNT, PSP.QUALIFYTYPE,
+		PSP.SECKILLTIME,
+		PSP.SECKILLPRODUCTSTATUS,
+		PSP.CREATEUSERID,
+		PSP.CREATETIME,PSP.UPDATEUSERID,PSP.UPDATETIME
+		from
+		P_SECKILL_PRODUCT PSP
+		left join
+		P_PRODUCT PP on
+		PSP.PRODUCTID = PP.ID
+		<where>
+			<if test="productName != null">
+				and PP.PRODUCTNAME like CONCAT('%',#{productName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and PP.BARCODE = #{barCode,jdbcType=VARCHAR}
+			</if>
+			<if test="excludeSecKillProductIds != null">
+				and PSP.ID not in
+				<foreach item="item" index="index" collection="excludeSecKillProductIds" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY PSP.UPDATETIME DESC
+	</select>
+	<select id="listSecKillSaleProductByActivityIdAndStoreId" resultMap="SecKillSaleProductRelatedInfoResultMap">
+		select
+		PSP.ID, PSP.PRODUCTID,PPT.ID AS SALEPRODUCTID,PPT.SALEPRODUCTNAME,PPT.BRANDCODE,
+		PSP.SECKILLPRODUCTPRICE,
+		PSP.REMAINCOUNT,PSP.SECKILLCOUNT,
+		PSP.LIMITORDERCOUNT,
+		PSP.QUALIFYTYPE,
+		PSP.SECKILLTIME,
+		PSSPR.STATUSCODE,
+		PSPP.SALEPRODUCTSPEC
+		from
+		P_SECKILL_PRODUCT
+		PSP
+		left join
+		P_SALE_PRODUCT PPT on PSP.PRODUCTID = PPT.PRODUCTID
+		left join
+		P_SALE_PRODUCT_PROFILE PSPP on
+		PPT.ID =
+		PSPP.SALEPRODUCTID
+		left
+		join
+		P_SECKILL_SCENE_PRODUCT_RELATION PSSPR on
+		PSP.ID =
+		PSSPR.SECKILLPRODUCTID
+		left
+		join
+		P_SECKILL_SCENE
+		PSS on PSS.ID =
+		PSSPR.SECKILLSCENEID
+		<where>
+			<if test="activityId != null">
+				and PSS.ACTIVITYID =#{activityId,jdbcType=INTEGER}
+			</if>
+			<if test="storeId != null">
+				and PPT.STOREID = #{storeId,jdbcType=INTEGER}
+			</if>
+			<if test="statusCode != null">
+				and PSSPR.STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="enableFlag != null">
+				and PPT.ENABLEDFLAG = #{enableFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				and PSPP.SALESTATUS = #{saleStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="secKillProductStatus != null">
+				and PSP.SECKILLPRODUCTSTATUS = #{secKillProductStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY PSP.UPDATETIME DESC
+	</select>
+</mapper>

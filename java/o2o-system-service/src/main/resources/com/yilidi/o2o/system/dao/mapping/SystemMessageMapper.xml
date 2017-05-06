@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SystemMessageMapper">
+	<resultMap id="BaseResultMap" type="com.yilidi.o2o.system.model.SystemMessage">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="MESSAGETYPEGROUP" property="messageTypeGroup" jdbcType="VARCHAR" />
+		<result column="MESSAGETYPE" property="messageType" jdbcType="VARCHAR" />
+		<result column="MESSAGETITLE" property="messageTitle" jdbcType="VARCHAR" />
+		<result column="MESSAGEIMAGE" property="messageImage" jdbcType="VARCHAR" />
+		<result column="MESSAGEINTRO" property="messageIntro" jdbcType="VARCHAR" />
+		<result column="MESSAGECONTENT" property="messageContent" jdbcType="VARCHAR" />
+		<result column="SKIPTYPE" property="skipType" jdbcType="VARCHAR" />
+		<result column="SKIPOBJECT" property="skipObject" jdbcType="VARCHAR" />
+		<result column="PUBLISHOBJECT" property="publishObject" jdbcType="VARCHAR" />
+		<result column="PUBLISHOBJECTVALUE" property="publishObjectValue" jdbcType="VARCHAR" />
+		<result column="ADDUSER" property="addUser" jdbcType="INTEGER" />
+		<result column="ADDTIME" property="addTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATEUSER" property="updateUser" jdbcType="INTEGER" />
+		<result column="UPDATETIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="CHECKSTATUS" property="checkStatus" jdbcType="VARCHAR" />
+		<result column="CHECKUSER" property="checkUser" jdbcType="INTEGER" />
+		<result column="CHECKTIME" property="checkTime" jdbcType="TIMESTAMP" />
+		<result column="CHECKREASON" property="checkReason" jdbcType="VARCHAR" />
+		<result column="SORTID" property="sortId" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, MESSAGETYPEGROUP, MESSAGETYPE, MESSAGETITLE, MESSAGEIMAGE, MESSAGEINTRO,
+		MESSAGECONTENT, SKIPTYPE, SKIPOBJECT, PUBLISHOBJECT, PUBLISHOBJECTVALUE, ADDUSER, 
+		ADDTIME, UPDATEUSER, UPDATETIME, CHECKSTATUS, CHECKUSER, CHECKTIME, CHECKREASON, SORTID
+	</sql>
+	
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from S_SYSTEM_MESSAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<insert id="saveSelective" parameterType="com.yilidi.o2o.system.model.SystemMessage" useGeneratedKeys="true" keyProperty="id">
+		insert into S_SYSTEM_MESSAGE 
+			<trim prefix="(" suffixOverrides="," suffix=")">
+				<if test="messageTypeGroup != null">MESSAGETYPEGROUP,</if>
+				<if test="messageType != null">MESSAGETYPE,</if>
+				<if test="messageTitle != null">MESSAGETITLE,</if>
+				<if test="messageImage != null">MESSAGEIMAGE,</if>
+				<if test="messageIntro != null">MESSAGEINTRO,</if>
+				<if test="messageContent != null">MESSAGECONTENT,</if>
+				<if test="skipType != null">SKIPTYPE,</if>
+				<if test="skipObject != null">SKIPOBJECT,</if>
+				<if test="publishObject != null">PUBLISHOBJECT,</if>
+				<if test="publishObjectValue != null">PUBLISHOBJECTVALUE,</if>
+				<if test="addUser != null">ADDUSER,</if>
+				<if test="addTime != null">ADDTIME,</if>
+				<if test="updateUser != null">UPDATEUSER,</if>
+				<if test="updateTime != null">UPDATETIME,</if>
+				<if test="checkStatus != null">CHECKSTATUS,</if>
+				<if test="checkUser != null">CHECKUSER,</if>
+				<if test="checkTime != null">CHECKTIME,</if>
+				<if test="checkReason != null">CHECKREASON,</if>
+				<if test="sortId != null">SORTID,</if>
+			</trim>
+		values 
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="messageTypeGroup != null">#{messageTypeGroup,jdbcType=VARCHAR},</if>
+				<if test="messageType != null">#{messageType,jdbcType=VARCHAR},</if>
+				<if test="messageTitle != null">#{messageTitle,jdbcType=VARCHAR},</if>
+				<if test="messageImage != null">#{messageImage,jdbcType=VARCHAR},</if>
+				<if test="messageIntro != null">#{messageIntro,jdbcType=VARCHAR},</if>
+				<if test="messageContent != null">#{messageContent,jdbcType=VARCHAR},</if>
+				<if test="skipType != null">#{skipType,jdbcType=VARCHAR},</if>
+				<if test="skipObject != null">#{skipObject,jdbcType=VARCHAR},</if>
+				<if test="publishObject != null">#{publishObject,jdbcType=VARCHAR},</if>
+				<if test="publishObjectValue != null">#{publishObjectValue,jdbcType=VARCHAR},</if>
+				<if test="addUser != null">#{addUser,jdbcType=INTEGER},</if>
+				<if test="addTime != null">#{addTime,jdbcType=TIMESTAMP},</if>
+				<if test="updateUser != null">#{updateUser,jdbcType=INTEGER},</if>
+				<if test="updateTime != null">#{updateTime,jdbcType=TIMESTAMP},</if>
+				<if test="checkStatus != null">#{checkStatus,jdbcType=VARCHAR},</if>
+				<if test="checkUser != null">#{checkUser,jdbcType=INTEGER},</if>
+				<if test="checkTime != null">#{checkTime,jdbcType=TIMESTAMP},</if>
+				<if test="checkReason != null">#{checkReason,jdbcType=VARCHAR},</if>
+				<if test="sortId != null">#{sortId,jdbcType=INTEGER},</if>
+			</trim>
+	</insert>
+	
+	<insert id="save" parameterType="com.yilidi.o2o.system.model.SystemMessage" useGeneratedKeys="true" keyProperty="id">
+		insert into S_SYSTEM_MESSAGE (
+			MESSAGETYPEGROUP,
+	  		MESSAGETYPE,
+	  		MESSAGETITLE,
+	  		MESSAGEIMAGE,
+	  		MESSAGEINTRO,
+	  		MESSAGECONTENT,
+		    SKIPTYPE,
+			SKIPOBJECT,
+			PUBLISHOBJECT,
+			PUBLISHOBJECTVALUE,
+			ADDUSER,
+			ADDTIME,
+			UPDATEUSER,
+			UPDATETIME,
+			CHECKSTATUS,
+			CHECKUSER,
+			CHECKTIME,
+			CHECKREASON,
+			SORTID
+		) values (
+			#{messageTypeGroup,jdbcType=VARCHAR},
+			#{messageType,jdbcType=VARCHAR},
+			#{messageTitle,jdbcType=VARCHAR},
+			#{messageImage,jdbcType=VARCHAR},
+			#{messageIntro,jdbcType=VARCHAR},
+			#{messageContent,jdbcType=VARCHAR},
+			#{skipType,jdbcType=VARCHAR},
+			#{skipObject,jdbcType=VARCHAR},
+			#{publishObject,jdbcType=VARCHAR},
+			#{publishObjectValue,jdbcType=VARCHAR},
+			#{addUser,jdbcType=INTEGER},
+			#{addTime,jdbcType=TIMESTAMP},
+			#{updateUser,jdbcType=INTEGER},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{checkStatus,jdbcType=VARCHAR},
+			#{checkUser,jdbcType=INTEGER},
+			#{checkTime,jdbcType=TIMESTAMP},
+			#{checkReason,jdbcType=VARCHAR},
+			#{sortId,jdbcType=INTEGER},
+		)
+	</insert>
+	
+	<update id="updateByIdSelective" >
+		update S_SYSTEM_MESSAGE
+			<set>
+				<if test="messageTypeGroup != null">MESSAGETYPEGROUP = #{messageTypeGroup,jdbcType=VARCHAR},</if>
+				<if test="messageType != null">MESSAGETYPE = #{messageType,jdbcType=VARCHAR},</if>
+				<if test="messageTitle != null">MESSAGETITLE = #{messageTitle,jdbcType=VARCHAR},</if>
+				<if test="messageImage != null">MESSAGEIMAGE = #{messageImage,jdbcType=VARCHAR},</if>
+				<if test="messageIntro != null">MESSAGEINTRO = #{messageIntro,jdbcType=VARCHAR},</if>
+				<if test="messageContent != null">MESSAGECONTENT = #{messageContent,jdbcType=VARCHAR},</if>
+				<if test="skipType != null">SKIPTYPE = #{skipType,jdbcType=VARCHAR},</if>
+				<if test="skipObject != null">SKIPOBJECT = #{skipObject,jdbcType=VARCHAR},</if>
+				<if test="publishObject != null">PUBLISHOBJECT = #{publishObject,jdbcType=VARCHAR},</if>
+				<if test="publishObjectValue != null">PUBLISHOBJECTVALUE = #{publishObjectValue,jdbcType=VARCHAR},</if>
+				<if test="addUser != null">ADDUSER = #{addUser,jdbcType=INTEGER},</if>
+				<if test="addTime != null">ADDTIME = #{addTime,jdbcType=TIMESTAMP},</if>
+				<if test="updateUser != null">UPDATEUSER = #{updateUser,jdbcType=INTEGER},</if>
+				<if test="updateTime != null">UPDATETIME = #{updateTime,jdbcType=TIMESTAMP},</if>
+				<if test="checkStatus != null">CHECKSTATUS = #{checkStatus,jdbcType=VARCHAR},</if>
+				<if test="checkUser != null">CHECKUSER = #{checkUser,jdbcType=INTEGER},</if>
+				<if test="checkTime != null">CHECKTIME = #{checkTime,jdbcType=TIMESTAMP},</if>
+				<if test="checkReason != null">CHECKREASON = #{checkReason,jdbcType=VARCHAR},</if>
+				<if test="sortId != null">SORTID = #{sortId,jdbcType=INTEGER},</if>
+			</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateById" >
+		update S_SYSTEM_MESSAGE set
+			MESSAGETYPEGROUP = #{messageTypeGroup,jdbcType=VARCHAR},
+			MESSAGETYPE = #{messageType,jdbcType=VARCHAR},      
+			MESSAGETITLE = #{messageTitle,jdbcType=VARCHAR},    
+			MESSAGEIMAGE = #{messageImage,jdbcType=VARCHAR},    
+			MESSAGEINTRO = #{messageIntro,jdbcType=VARCHAR},    
+			MESSAGECONTENT = #{messageContent,jdbcType=VARCHAR},
+			SKIPTYPE = #{skipType,jdbcType=VARCHAR},            
+			SKIPOBJECT = #{skipObject,jdbcType=VARCHAR},        
+			PUBLISHOBJECT = #{publishObject,jdbcType=VARCHAR},  
+			PUBLISHOBJECTVALUE = #{publishObjectValue,jdbcType=VARCHAR},
+			ADDUSER = #{addUser,jdbcType=INTEGER},        
+			ADDTIME = #{addTime,jdbcType=TIMESTAMP},      
+			UPDATEUSER = #{updateUser,jdbcType=INTEGER},  
+			UPDATETIME = #{updateTime,jdbcType=TIMESTAMP},
+			CHECKSTATUS = #{checkStatus,jdbcType=VARCHAR},
+			CHECKUSER = #{checkUser,jdbcType=INTEGER},    
+			CHECKTIME = #{checkTime,jdbcType=TIMESTAMP},  
+			CHECKREASON = #{checkReason,jdbcType=VARCHAR},
+			SORTID = #{sortId,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="findList" parameterType="com.yilidi.o2o.system.model.query.SystemMessageQuery" resultMap="BaseResultMap">
+		SELECT
+			t.ID,
+			t.SORTID,
+			t.MESSAGETYPEGROUP,
+			t.MESSAGETYPE,
+			t.MESSAGETITLE,
+			t.MESSAGEINTRO,
+			t.PUBLISHOBJECT,
+			t.CHECKSTATUS,
+			t.ADDTIME
+		FROM
+			S_SYSTEM_MESSAGE t
+		<where>
+			t.MESSAGETYPEGROUP = 'MESSAGETYPEGROUP_SYSTEMGROUP'
+			<if test="messageType != null and messageType != ''">
+				and t.MESSAGETYPE = #{messageType, jdbcType=VARCHAR}
+			</if>
+			<if test="messageTitle != null and messageTitle != ''">
+				and t.MESSAGETITLE like concat('%',#{messageTitle, jdbcType=VARCHAR},'%')
+			</if>
+			<if test="publishObject != null and publishObject != ''">
+				and t.PUBLISHOBJECT = #{publishObject, jdbcType=VARCHAR}
+			</if>
+			<if test="checkStatus !=null and checkStatus != ''">
+				and t.CHECKSTATUS = #{checkStatus, jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by t.SORTID asc,t.ADDTIME desc
+	</select>
+	
+	<select id="findAppSystemMessageList" parameterType="com.yilidi.o2o.system.model.query.SystemMessageQuery" resultMap="BaseResultMap">
+		SELECT
+			t.ID,
+			t.MESSAGETYPE,
+			t.MESSAGETITLE,
+			t.MESSAGEIMAGE,
+			t.MESSAGEINTRO,
+			t.MESSAGECONTENT,
+			t.PUBLISHOBJECT,
+			t.PUBLISHOBJECTVALUE,
+			t.SKIPTYPE,
+			t.SKIPOBJECT,
+			t.ADDTIME
+		FROM
+			S_SYSTEM_MESSAGE t
+		<where>
+			t.ADDTIME &gt; #{createTime, jdbcType=TIMESTAMP} 
+			<if test="messageType != null and messageType != ''">
+				and t.MESSAGETYPE = #{messageType, jdbcType=VARCHAR}
+			</if>
+			<if test="checkStatus !=null and checkStatus != ''">
+				and t.CHECKSTATUS = #{checkStatus, jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by t.ADDTIME desc
+	</select>
+	
+	<select id="findNewMessageByMessageType" resultMap="BaseResultMap">
+		SELECT
+			t.ID,
+			t.MESSAGETYPE,
+			t.MESSAGETITLE,
+			t.MESSAGEINTRO,
+			t.SKIPTYPE,
+			t.SKIPOBJECT,
+			t.ADDTIME
+		FROM
+			S_SYSTEM_MESSAGE t
+		WHERE
+			t.CHECKSTATUS = 'MESSAGECHECKSTATUS_OK'
+		AND t.MESSAGETYPE = #{messageType, jdbcType=VARCHAR}
+		AND t.ADDTIME &gt; #{createTime, jdbcType=TIMESTAMP}
+		order by t.ADDTIME desc
+		limit 1
+	</select>
+</mapper>

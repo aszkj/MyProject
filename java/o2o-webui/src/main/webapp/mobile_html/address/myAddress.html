@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+				+ Math.random() + "'><\/script>");
+	document.write("<script type='text/javascript' src='../static-resource/js/checkLogin.js?"
+				+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部栏-->
+		<div class="top-big-tit">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<p>收货地址</p>
+			<div class="top-right-con" onclick="toNewAddress()">
+				<span style="color:#ff7e00;">新建</span>
+			</div>
+		</div>
+	</header>
+	<section style="padding-top: .9rem;">
+		<!--地址列表-->
+		<div class="addressList"></div>
+	</section>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+</body>
+<script type="text/javascript">
+	var addrLength=0;
+	$(function() {
+		addressTmpl();
+		removeSaveInfo();
+	});
+	function addressTmpl() {
+		var params = new Object();
+		ajax("/useraddress/addresslist", params, function(data) {
+			if (!data)
+				return;
+			$("#addressTmpl").tmpl(data).prependTo(".addressList");
+			addrLength=data.length;
+		}, function(data) {
+			alert(data);
+		}, true);
+	}
+	function toEditAddress(data) {
+		location.href = 'newAddress.html?addressId=' + data.addressId;
+	}
+	/*点击右上角新建地址的操作*/
+	function toNewAddress() {
+		if(addrLength>=10){
+			alert("收货地址数量已达上限");
+		}else{
+			window.location.href="newAddress.html";
+		}
+	}
+	/** 操作清除编辑地址信息的操作 */
+	function removeSaveInfo() {
+		removeSessionStorage(sessionEditAddressInfoKey);
+		removeSessionStorage(sessionEditCommunityInfoKey);
+	}
+</script>
+<script id="addressTmpl" type="text/x-jquery-tmpl">
+      <div class="addressItem">
+                <span class="receiverName">${consigneeName}</span>
+                <span class="teleNum">${phoneNo}</span>
+                <p class="reAddress">${community.communityName}${addressDetail}</p>
+                   <div class="edit"  onclick="toEditAddress(${JSON.stringify($data)})">
+                       <img src="../static-resource/images/cart/edd.png">
+                   </div>
+        </div>
+</script>
+</html>

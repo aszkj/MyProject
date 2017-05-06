@@ -1,0 +1,155 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet"  />
+<script type="text/javascript">
+//加载设置数据
+function getData(paramsCode){
+	if(paramsCode == null || paramsCode == ""){
+		return;
+	}
+	var url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + paramsCode + '/getSystemParamByParamsCode';
+	$.ajaxSetup({
+        async: false
+    });
+	var d = null;
+	$.post(url,function(data){
+		if(data.msgCode == 1){
+			d = data.entity;
+		}
+	},'json');
+	return d;
+}
+function loadData(){
+	var param1="COUPON_GET_MESSAGE_SET";
+	var param2="COUPON_EXPIRE_MESSAGE_SET";
+	var param3="USER_REFUND_MESSAGE_SET";
+	var data1=getData(param1);
+	if(data1 != null){
+		var html1 = '<tr><td>推送优惠券获得消息</td><td>';
+		if(data1.paramValue == "COUPON_GET_MESSAGE_SET_ON"){
+			html1 += '<div class="onOrOff" style="height: 38px;width: 90px; background-image: url(\'/static-resource/images/module/QQ图片20170320152833.jpg\');">';			
+			html1 += '<input type="hidden" class="paramValue" value="COUPON_GET_MESSAGE_SET_OFF">';
+		}else{
+			html1 += '<div class="onOrOff" style="height: 38px;width: 90px; background-image: url(\'/static-resource/images/module/QQ图片20170320152819.jpg\');">';
+			html1 += '<input type="hidden" class="paramValue" value="COUPON_GET_MESSAGE_SET_ON">';
+		}
+		html1 += '<input type="hidden" class="id" value="'+data1.id+'">';
+		html1 += '</div>';
+		html1 += '</td><td>用户获得优惠券时，推送消息给用户；</td></tr>';
+		$("#tab").append(html1);
+	}
+	var data2=getData(param2);
+	if(data2 != null){
+		var html2 = '<tr><td>推送优惠券过期消息</td><td>';
+		if(data2.paramValue == "COUPON_EXPIRE_MESSAGE_SET_ON"){
+			html2 += '<div class="onOrOff" style="height: 38px;width: 90px; background-image: url(\'/static-resource/images/module/QQ图片20170320152833.jpg\');">';			
+			html2 += '<input type="hidden" class="paramValue" value="COUPON_EXPIRE_MESSAGE_SET_OFF">';
+		}else{
+			html2 += '<div class="onOrOff" style="height: 38px;width: 90px; background-image: url(\'/static-resource/images/module/QQ图片20170320152819.jpg\');">';
+			html2 += '<input type="hidden" class="paramValue" value="COUPON_EXPIRE_MESSAGE_SET_ON">';
+		}
+		html2 += '<input type="hidden" class="id" value="'+data2.id+'">';
+		html2 += '</div>';
+		html2 += '</td><td>优惠券过期仅剩1天时，推送消息给用户；</td></tr>';
+		$("#tab").append(html2);
+	}
+	var data3=getData(param3);
+	if(data3 != null){
+		var html3 = '<tr><td>推送用户退款消息</td><td>';
+		if(data3.paramValue == "USER_REFUND_MESSAGE_SET_ON"){
+			html3 += '<div class="onOrOff" style="height: 38px;width: 90px; background-image: url(\'/static-resource/images/module/QQ图片20170320152833.jpg\');">';			
+			html3 += '<input type="hidden" class="paramValue" value="USER_REFUND_MESSAGE_SET_OFF">';
+		}else{
+			html3 += '<div class="onOrOff" style="height: 38px;width: 90px; background-image: url(\'/static-resource/images/module/QQ图片20170320152819.jpg\');">';
+			html3 += '<input type="hidden" class="paramValue" value="USER_REFUND_MESSAGE_SET_ON">';
+		}
+		html3 += '<input type="hidden" class="id" value="'+data3 .id+'">';
+		html3 += '</div>';
+		html3 += '</td><td>用户申请退款后，推送消息给用户；</td></tr>';
+		$("#tab").append(html3);
+	}
+	
+}
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	loadData();
+	
+	$("#tab").on("click",".onOrOff",function(){
+		var id = $(this).find(".id").val();
+		var paramValue = $(this).find(".paramValue").val();
+		var url = TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/updateSystemParamValue';
+		var param = {id:id,paramValue:paramValue};
+		$.ajax({
+			type:'post',
+			url:url,
+			data:JSON.stringify(param),
+			dataType:'json',
+			contentType:'application/json',
+			success:function(data){
+				if(data.msgCode==1){
+					window.location.reload();
+				}		
+			},
+			error:function(d){
+				showBox("提示信息","请求有误","alert");
+			}
+		});
+	});
+});
+
+
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 促销管理 &gt; <span>优惠券管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">站内消息设置</div>
+				<div id="setContent">
+					<table id="tab"></table>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="content-type" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+    <title>一里递</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <link rel="stylesheet" href="../static-resource/css/reset.css" />
+    <link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+    <link rel="stylesheet" href="../static-resource/css/swiper-3.4.1.min.css" />
+    <script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+    <script type="text/javascript" src="../static-resource/js/swiper-3.4.1.jquery.min.js"></script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</head>
+<body>
+<header>
+    <!--顶部标题-->
+    <div class="top-big-tit" style="z-index: 1993;">
+        <div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+        <p>全部评价</p>
+    </div>
+</header>
+<section>
+    <div class="allComTit bg">
+        <ul id="commentSummaryBox">
+        </ul>
+    </div>
+</section>
+    <div class="contentWrap">
+            <section id="userCommentBox" style="padding-top: 1.92rem;" class="bg">
+            </section>
+            <div id="pullUp" class="hide">
+                <span class="loading">
+                    <span class="pullUpIcon"></span>
+                </span>
+                <span class="pullUpLabel">上拉加载更多...</span>
+            </div>
+    </div>
+<div class="noMoreContent hide">
+    <p>没有更多内容了，别拉啦!</p>
+</div>
+<!--评论大图显示-->
+<div class="userComItemBig hide" onclick="hideBigComPic(this)"></div>
+<!--loading-->
+<section id="pageloading" class="hide">
+    <img src="../static-resource/images/loading.png">
+</section>
+</body>
+<script type="text/javascript">
+    var saleProductId=getUrlParam("saleProductId");
+    var pageNum = 0;
+    var pageSize = 12;
+    var totalPages = 0;
+    var summaryValue=0;//默认展示全部评论
+    $(function(){
+        commentSummaryTmpl();
+    });
+    function starScore(){
+        $(".starScore").each(function(){
+            var saleProductScore=$(this).attr("data-saleProductScore");
+            var starWidth=(saleProductScore)*20;
+            $(this).width(starWidth+'%');
+        });
+    }
+    /*获取商品评价内容汇总信息*/
+    function commentSummaryTmpl(){
+        var params = new Object();
+        params.saleProductId = saleProductId;
+        ajax("/product/getevaluationsummary", params, function(data) {
+            $("#commentSummaryTmpl").tmpl(data).appendTo("#commentSummaryBox");
+            if (!data)
+                return;
+            summaryValue = data[0].summaryValue;
+            $("#commentSummaryBox li").click(function() {
+                checkCommnetItem($(this).attr("data-summaryValue"));
+                window.scrollTo(0,0);
+            });
+            checkCommnetItem(summaryValue);
+        }, function(msg) {
+            alert(msg);
+    }, true);
+    }
+    /*获取商品评论相关信息*/
+    function productCommentTmpl(pageNumTemp) {
+        var params = new Object();
+        params.pageNum = pageNumTemp;
+        params.pageSize = pageSize;
+        params.saleProductId = saleProductId;
+        params.summaryValue = summaryValue;
+        ajax("/product/getevaluations", params, function(data) {
+            totalPages = data.totalPages;
+            pageNum = data.pageNum;
+            if (data.pageNum <= 1) {
+                $("#userCommentBox").html("");
+            }
+            loadable = pageNum <= totalPages;
+            if(loadable||totalPages==0)
+            $("#productCommentTmpl").tmpl(data).appendTo("#userCommentBox");
+            starScore();
+            $("#pullUp").addClass("hide");
+            //拉到最后一页时候提示
+            if(pageNum!=1&&!loadable){
+                $(".noMoreContent").removeClass("hide");
+                setTimeout(function(){$(".noMoreContent").addClass("hide")},1500);
+            }
+        }, function(msg) {
+            alert(msg);
+        }, true);
+    }
+    /*切换显示评论内容*/
+    function checkCommnetItem(summaryValueTemp) {
+        var checkSummaryValue = $("#commentSummaryBox li.comActive").attr(
+                "data-summaryValue");
+        $("#commentSummaryBox li.comActive").removeClass("comActive");
+        $("#commentSummaryBox li").each(function() {
+            if ($(this).attr("data-summaryValue") == summaryValueTemp) {
+                $(this).addClass("comActive");
+                summaryValue = summaryValueTemp;
+                pageNum = 1;
+                productCommentTmpl(pageNum);
+            }
+        });
+    }
+    function getCommentSummaryClass(item) {
+        return item == 0 ? "comActive" : "";
+    }
+    /*分页加载*/
+    $(window).scroll(function(){
+        if($(".contentWrap").height()-$(window).scrollTop()<=document.documentElement.clientHeight){
+            $("#pullUp").removeClass("hide");
+            pageNum++;
+            productCommentTmpl(pageNum);
+        }
+    });
+    /*放大显示评论图片和内容*/
+    function showBigComPic(data,e){
+        var initialSlideIndex=$(e).attr("data-index");
+        $(".userComItemBig").html("");
+        $(".userComItemBig").removeClass("hide");
+        $("#productCommentBigImgTmpl").tmpl(data).appendTo(".userComItemBig");
+        var swiper = new Swiper('.swiper-container', {
+            pagination : '.swiper-pagination',
+            paginationType : 'fraction',
+            initialSlide : initialSlideIndex
+        });
+        $(window).resize();
+    }
+    /*隐藏放大显示的评论图片和内容*/
+    function hideBigComPic(e){
+        $(e).addClass("hide");
+    }
+    function getBigImgUrl(url){
+        if(!url){
+            return null;
+        }
+        var  i = url.lastIndexOf("/");
+        var imageName = (url.substring(0, i + 1))+url.substring(url.indexOf("_") + 1, url.length);
+        return imageName;
+    }
+    /*控制放大的评论图片的居中显示位置*/
+    $(window).resize(function(){
+        $(".comBigImgDom").each(function(){
+            var domHeight=$(this).outerHeight();
+            var domWidth=$(this).outerWidth();
+            if(domHeight==0)
+                domHeight=375;
+            if(domHeight>=$(window).height()){
+                $(this).css({
+                    position: "absolute",
+                    left: ($(window).width() - domWidth)/2,
+                    top: 0,
+                });
+            }else{
+                $(this).css({
+                    position: "absolute",
+                    left: ($(window).width() - domWidth)/2,
+                    top: ($(window).height() - domHeight)/2,
+                });
+            }
+        })
+    });
+</script>
+<script id="commentSummaryTmpl" type="text/x-jquery-tmpl">
+     <li class="smallComTit ${getCommentSummaryClass($index)}" data-summaryValue="${summaryValue}">
+                <p>${summaryName}</p>
+                <p>(${summaryCount})</p>
+     </li>
+</script>
+<script id="productCommentTmpl" type="text/x-jquery-tmpl">
+{{if $data.list&&$data.list.length>0}}
+{{each(i,v) list}}
+    <div class="userComItem bg" >
+        <div class="userComTit">
+           <img src="${v.userImageUrl}" class="userComImg" onerror="setErrorDefaultImg(this)">
+           <p class="userTeleNum">${v.userName}</p>
+           <div class="starWrap">
+              <div class="starDefault">
+                  <div class="starScore" data-saleProductScore="${v.saleProductScore}">
+                  </div>
+              </div>
+           </div>
+            <p class="comTime">${v.createTime}</p>
+        </div>
+        <div class="clearfix"></div>
+        <p class="userComText">${v.evaluateContent}</p>
+        <div class="comImg">
+        {{each evaluateImages}}
+        <div class="comImgBox comImgBoxInPro">
+        <img src="${imageUrl}" data-index="${$index}" onclick="showBigComPic(${JSON.stringify(v)},this)" onerror="setErrorDefaultImg(this)">
+        </div>
+        {{/each}}
+       </div>
+        <div class="clearfix"></div>
+    </div>
+     {{/each}}
+    {{else}}
+    <div class="not-find-box" id="noComment">
+            <img src="/static-resource/images/comment/nocomment.png">
+            <p>暂无评论</p>
+    </div>
+{{/if}}
+</script>
+<script id="productCommentBigImgTmpl" type="text/x-jquery-tmpl">
+         <div class="comBackBtn"></div>
+        <p class="userComText">${evaluateContent}</p>
+        <div class="comImgBigWrap">
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+               {{each evaluateImages}}
+				 <div class="swiper-slide">
+				 <img src="${getBigImgUrl(imageUrl)}" class="comBigImgDom" onerror="setErrorDefaultImg(this)">
+				</div>
+			   {{/each}}
+              </div>
+              <div class="swiper-pagination"></div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+</script>
+</html>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.OrderReminderPayMessageMapper">
+	<resultMap id="BaseResultMap" type="OrderReminderPayMessage">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="TOUSER" property="toUser" jdbcType="VARCHAR" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="SENDTIME" property="sendTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, TOUSER, SALEORDERNO, CONTENT, SENDTIME
+	</sql>
+
+	<insert id="save" parameterType="OrderReminderPayMessage" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		T_ORDER_REMINDER_PAY_MESSAGE (
+		TOUSER, SALEORDERNO, CONTENT, SENDTIME
+		)
+		values(
+		#{toUser,jdbcType=VARCHAR},
+		#{saleOrderNo,jdbcType=VARCHAR},
+		#{content,jdbcType=VARCHAR},
+		#{sendTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<select id="loadBySaleOrderNoAndPhoneNo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_ORDER_REMINDER_PAY_MESSAGE
+		where SALEORDERNO = #{saleOrderNo,jdbcType=VARCHAR}
+		and TOUSER = #{toUser,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

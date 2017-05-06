@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!--关闭所有服务启动时检查依赖的服务是否可用 -->
+	<dubbo:consumer check="false" />
+
+	<dubbo:reference id="sessionTimeoutCheck" interface="com.yilidi.o2o.schedule.ISessionTimeoutCheck" />
+	<dubbo:reference id="exceptionMessageOperationService" interface="com.yilidi.o2o.system.service.IExceptionMessageOperationService" />
+	<dubbo:reference id="smsReportHandleService" interface="com.yilidi.o2o.system.service.ISmsReportHandleService" />
+	<dubbo:reference id="saleDailyService" interface="com.yilidi.o2o.product.service.ISaleDailyService" />
+	<dubbo:reference id="orderShardingService" interface="com.yilidi.o2o.order.service.IOrderShardingService" />
+	<dubbo:reference id="orderService" interface="com.yilidi.o2o.order.service.IOrderService" />
+	<dubbo:reference id="saleOrderItemService" interface="com.yilidi.o2o.order.service.ISaleOrderItemService" />
+	<dubbo:reference id="customerService" interface="com.yilidi.o2o.user.service.ICustomerService" />
+	<dubbo:reference id="storeProfileService" interface="com.yilidi.o2o.user.service.IStoreProfileService" />
+	<dubbo:reference id="storeWarehouseService" interface="com.yilidi.o2o.user.service.IStoreWarehouseService" />
+	<dubbo:reference id="secKillSceneService" interface="com.yilidi.o2o.product.service.ISecKillSceneService" />
+	<dubbo:reference id="shareRuleService" interface="com.yilidi.o2o.user.service.IShareRuleService" />
+	<dubbo:reference id="couponService" interface="com.yilidi.o2o.order.service.ICouponService" />
+	<dubbo:reference id="voucherService" interface="com.yilidi.o2o.order.service.IVoucherService" />
+	<dubbo:reference id="userShareService" interface="com.yilidi.o2o.user.service.IUserShareService" />
+	<dubbo:reference id="invitedUserShareAwardService" interface="com.yilidi.o2o.user.service.IInvitedUserShareAwardService" />
+	<dubbo:reference id="inviterUserShareWeekTopService" interface="com.yilidi.o2o.user.service.IInviterUserShareWeekTopService" />
+	<dubbo:reference id="inviterUserShareWeekTopHistoryService" interface="com.yilidi.o2o.user.service.IInviterUserShareWeekTopHistoryService" />
+	<dubbo:reference id="userService" interface="com.yilidi.o2o.user.service.IUserService" />
+	<dubbo:reference id="storeEvaluationService" interface="com.yilidi.o2o.user.service.IStoreEvaluationService" />
+	<dubbo:reference id="buyRewardActivityService" interface="com.yilidi.o2o.product.service.IBuyRewardActivityAuditService" />
+</beans>

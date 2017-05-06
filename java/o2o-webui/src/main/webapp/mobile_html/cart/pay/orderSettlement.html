@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../../static-resource/css/main.css" />
+<script type="text/javascript" src="../../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/local-data-storage.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/main.js?"
+					+ Math.random() + "'><\/script>");
+	document
+			.write("<script type='text/javascript' src='../../static-resource/js/checkLogin.js?"
+					+ Math.random() + "'><\/script>");
+</script>
+<script type='text/javascript' src='http://res.wx.qq.com/open/js/jweixin-1.0.0.js'></script>
+</head>
+<body style="background-color: #eeeeee;">
+	<header>
+		<!--顶部标题-->
+		<div class="top-big-tit">
+			<div class="top-big-tit-btn" onclick="history.go(-1)"></div>
+			<p>订单结算</p>
+		</div>
+	</header>
+	<section>
+		<!--备注-->
+		<div class="bord" style="padding-top: .9rem;"></div>
+		<div class="remark">
+			<div id="orderNoteBox">
+				备注： <input type="text" value="" id="orderNote" placeholder="想对老板说点啥...">
+			</div>
+		</div>
+		<div class="bord"></div>
+		<!--奖券-->
+		<div class="ticket bg">
+		</div>
+		<!--奖券列表-->
+		<div class="couponWrap hide">
+			<div class="couponBox">
+				<div class="couponContent">
+				<div class="couponBoxTit">
+					<span>选择优惠券</span>
+					<button class="closeCouponBtn" onclick="hideCouponBox()"></button>
+				</div>
+				<div class="clear"></div>
+				<p id="couponRequire">优惠券和抵用券只能2选1使用</p>
+				<div class="couponYou">
+				</div>
+				<div class="couponDi hide">
+				</div>
+				<div class="notUseCoupon bg" data-ticket="">
+					<span>不使用优惠券</span>
+					<div class="couponCheckBoxInNot">
+					</div>
+				</div>
+				<div class="bg hide notUseCashCoupon" data-ticket="">
+					<span>不使用抵用券</span>
+					<div class="couponCheckBoxInNot">
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+		<!--支付方式-->
+		<div class="payMethod bg">
+			<div class="payTit">
+				<p>选择支付方式</p>
+			</div>
+			<!--<div class="payItem payZhi">
+				<p>支付宝</p>
+				<div class="cartCheckBox">
+					<input type="checkbox" name="cartCheck" data-value="1" id="cartCheck_alipay"><label for="cartCheck"></label>
+				</div>
+			</div>-->
+			<div class="payItem payWx">
+				<p>微信支付</p>
+				<div class="cartCheckBox">
+					<input type="checkbox" name="cartCheck" data-value="2" checked id="cartCheck_wxpay"><label for="cartCheck"></label>
+				</div>
+			</div>
+		</div>
+		<!--商品明细-->
+		<div class="proINS bg">
+			<div class="tit">
+				<p>商品明细</p>
+			</div>
+			<div class="SetProList" id="saleProductListDiv"></div>
+		</div>
+		<!--金额-->
+		<div class="sumBox bg">
+			<div class="sumItem">
+				<p>订单金额：</p>
+				<p class="priceBox">
+					￥<span id="totalAmount">0.00</span>
+				</p>
+			</div>
+			<div class="sumItem">
+				<p>优惠金额：</p>
+				<p class="priceBox">
+					-￥<span id="preferentialAmt">0.00</span>
+				</p>
+			</div>
+			<div class="sumItem">
+				<p>配送金额：</p>
+				<p class="priceBox">
+					+￥<span id="transferFee">0.00</span>
+				</p>
+			</div>
+		</div>
+	</section>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../../static-resource/images/loading.png">
+	</section>
+	<div class="tabPadDiv"></div>
+	<footer class="payBot">
+		<!--底部结算栏-->
+		<div class="payBot">
+			<div class="cost">
+				<h4>
+					应付金额：￥<span class="total" id="payableAmount">0.00</span>
+				</h4>
+			</div>
+			<div class="payBtn" onclick="goPay()">
+				<p>确认付款</p>
+			</div>
+		</div>
+	</footer>
+	<form id="aliPayForm" action="https://openapi.alipay.com/gateway.do" method="post">
+		<input type="hidden" name="app_id" id="app_id" value="2016061201506790" /> <input type="hidden" name="method" id="method" value="alipay.trade.wap.pay" /> <input type="hidden"
+			name="return_url" id="return_url" value="" /> <input type="hidden" name="charset" id="charset" value="" /> <input type="hidden" name="sign_type" id="sign_type" value="RSA" />
+		<input type="hidden" name="sign" id="sign" value="" /> <input type="hidden" name="timestamp" id="timestamp" value="" /> <input type="hidden" name="version" id="version"
+			value="1.0" /> <input type="hidden" name="notify_url" id="notify_url" value="" /> <input type="hidden" name="biz_content" id="biz_content" value="" />
+	</form>
+	<script type="text/javascript">
+		Date.prototype.Format = function(fmt) {
+			var o = {
+				"M+" : this.getMonth() + 1, //月份 
+				"d+" : this.getDate(), //日 
+				"h+" : this.getHours(), //小时 
+				"m+" : this.getMinutes(), //分 
+				"s+" : this.getSeconds(), //秒 
+				"q+" : Math.floor((this.getMonth() + 3) / 3), //季度 
+				"S" : this.getMilliseconds()
+			//毫秒 
+			};
+			if (/(y+)/.test(fmt))
+				fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "")
+						.substr(4 - RegExp.$1.length));
+			for ( var k in o)
+				if (new RegExp("(" + k + ")").test(fmt))
+					fmt = fmt.replace(RegExp.$1,
+							(RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k])
+									.substr(("" + o[k]).length)));
+			return fmt;
+		}
+		var settlementData = getSessionStorage(sessionStorageSettlementKey);
+		var successCreateOrder = false;
+		$(function() {
+			showResult(settlementData);
+			wxInit();
+			if (!isStoreOn()) {
+				var store = getSessionStorage(sessionStorageStoreKey);
+				var delBeginTime = getDelBeginTime(store.businessHoursBegin);
+				alert("门店已打烊，现在下单，明天" + delBeginTime + "点后配送");
+			}
+			getTicketInfo();
+			findMaxCoupon();
+		});
+		$("#cartCheck_alipay").click(function() {
+			var checked = $(this).is(':checked');
+			if (checked) {
+				$("#cartCheck_wxpay")[0].checked = false;
+			}
+		});
+		$("#cartCheck_wxpay").click(function() {
+			var checked = $(this).is(':checked');
+			if (checked) {
+				$("#cartCheck_alipay")[0].checked = false;
+			}
+		});
+		function showResult(data) {
+			if (!data)
+				return;
+			$("#totalAmount").text(toCenti(data.orderFeeInfo.totalAmount, 2));
+			$("#preferentialAmt").text(
+					toCenti(data.orderFeeInfo.preferentialAmt, 2));
+			$("#transferFee").text(toCenti(data.orderFeeInfo.transferFee, 2));
+			$("#payableAmount").text(
+					toCenti(data.orderFeeInfo.payableAmount, 2));
+			$("#saleProductItemTmpl").tmpl(data.saleOrderItemList).appendTo(
+					"#saleProductListDiv");
+		}
+		var payableAmount=0;
+		function goPay() {
+			if (!settlementData) {
+				return;
+			}
+			if (!$("#cartCheck_alipay").is(':checked')
+					&& !$("#cartCheck_wxpay").is(':checked')) {
+				alert("请选择支付方式");
+				return;
+			}
+			var payMethod = $("#cartCheck_alipay").is(':checked') ? $(
+					"#cartCheck_alipay").attr("data-value") : $(
+					"#cartCheck_wxpay").attr("data-value");
+			var note = $("#orderNote").val().trim();
+			if (checkStr(note)) {
+				alert("请不要输入表情和特殊字符");
+				return;
+			}
+			$(".payBot .payBtn").css({
+				'background-color' : '#e0e0e0',
+				'color' : '#666666'
+			});
+			var params = new Object();
+			params.note = note;
+			if($(".couponChoosed").attr("data-ticket")){
+				var tickets=[];
+				var ticket = new Object();
+				ticket.ticketId=$(".couponChoosed").attr("data-ticketId");
+				ticket.ticketType=$(".couponChoosed").attr("data-ticketType");
+				tickets.push(ticket);
+				params.tickets=tickets;
+			}
+			ajax("/cart/createorder", params, function(data) {
+				if (!data) {
+					alert("系统出现异常，请稍后重试或到订单页面查询是否成功下单");
+					return;
+				}
+				removeCartByIdArray(settlementData.cartInfo);
+				removeSessionStorage(sessionStorageAddressOfCartKey);
+				successCreateOrder = true;
+				if(payableAmount<=0){
+					directOrderList();
+				}
+				if (payMethod == 1)
+					aliPay(data.saleOrderNo);
+				else
+					wexinPay(data.saleOrderNo);
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		function submitPayForm(data) {
+			$("#return_url").val(getQueryStringValue("return_url", data));
+			$("#charset").val(getQueryStringValue("_input_charset", data));
+			$("#sign").val(getQueryStringValue("sign", data));
+			$("#sign_type").val(getQueryStringValue("sign_type", data));
+			$("#timestamp").val(new Date().Format("yyyy-MM-dd hh:mm:ss"));
+			$("#notify_url").val(getQueryStringValue("notify_url", data));
+			var bizContentObj = new Object();
+			bizContentObj.body = getQueryStringValue("body", data);
+			bizContentObj.timeout_express = getQueryStringValue("it_b_pay",
+					data) * 60;
+			bizContentObj.out_trade_no = getQueryStringValue("out_trade_no",
+					data);
+			bizContentObj.seller_id = getQueryStringValue("partner", data);
+			bizContentObj.subject = getQueryStringValue("subject", data);
+			bizContentObj.total_amount = getQueryStringValue("total_fee", data);
+			bizContentObj.goods_type = getQueryStringValue("payment_type", data);
+			$("#biz_content").val(JSON.stringify(bizContentObj));
+			$("#aliPayForm").submit();
+		}
+		function aliPay(saleOrderNo) {
+			var params = new Object();
+			params.saleOrderNo = saleOrderNo;
+			ajax("/pay/alipayapporderparam", params, function(data) {
+				data = data || {};
+				submitPayForm(data);
+			}, function(msg) {
+				alert(msg);
+				directOrderList();
+			});
+		}
+		function getQueryStringValue(queryStringName, queryString) {
+			if (queryStringName) {
+				var sValue = '';
+				var re = new RegExp("\\b" + queryStringName + "\\b=([^&=]+)");
+				var st = null;
+				st = queryString.match(re);
+				if (st && st.length == 2) {
+					st[1] = st[1].replace(/^\s*|\s*$/g, '');
+					sValue = st[1];
+				}
+				return sValue;
+			} else {
+				return null;
+			}
+		}
+		function wexinPay(saleOrderNo) {
+			var params = new Object();
+			params.saleOrderNo = saleOrderNo;
+			params.tradeType = "JSAPI";
+			ajax("/pay/wxpayapporderparam", params, function(data) {
+				if (!data)
+					directOrderList();
+				wexinConfig(data, saleOrderNo);
+			}, function(msg) {
+				alert(msg);
+				directOrderList();
+			}, true);
+		}
+		function wxInit() {
+			var param = new Object();
+			param.url = location.href.split('#')[0];
+			ajax("/wxsdk/wxsignbyurl", param, function(data) {
+				if (!data)
+					return;
+				wx.config({
+					debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+					appId : data.appId, // 必填，公众号的唯一标识
+					timestamp : data.timestamp, // 必填，生成签名的时间戳
+					nonceStr : data.nonceStr, // 必填，生成签名的随机串
+					signature : data.signature,// 必填，签名
+					jsApiList : [ 'chooseWXPay' ]
+				// 必填，需要使用的JS接口列表，所有JS接口列表
+				});
+			}, function(msg) {
+			}, true);
+		}
+		function wexinConfig(data, saleOrderNo) {
+			wx.chooseWXPay({
+				appId : data.appId,
+				timestamp : data.timeStamp, // 支付签名时间戳
+				nonceStr : data.nonceStr, // 支付签名随机串，不长于 32 位
+				package : 'prepay_id=' + data.prepayId, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***
+				signType : 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+				paySign : data.sign, // 支付签名
+				success : function(res) {
+					// 支付成功后的回调函数
+					if (res.errMsg == "chooseWXPay:ok") {
+						// 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回 ok，但并不保证它绝对可靠。
+						paySuccess(saleOrderNo);
+					} else {
+						payFailure();
+					}
+				},
+				cancel : function(res) {
+					//支付取消
+					payCancel();
+				}
+			});
+		}
+		function paySuccess(saleOrderNo) {
+			directPaySuccess(saleOrderNo);
+		}
+		function payFailure() {
+			alert("您的支付未成功!\n如果您确认已经支付了,因支付过程可能会较为缓慢，请稍后刷新该订单查看是否成功，如遇见其他问题请联系我们的客服！");
+			directOrderList();
+		}
+		function payCancel() {
+			alert("您取消了支付");
+			directOrderList();
+		}
+		function directOrderList() {
+			if (successCreateOrder)
+				window.location.replace('order.html');
+		}
+		function directPaySuccess(saleOrderNo) {
+			window.location.replace('/cart/paySuccess.html?saleOrderNo='
+					+ saleOrderNo);
+		}
+		function isStoreOn() {
+			var store = getSessionStorage(sessionStorageStoreKey);
+			if (!store || !store.storeStatus || store.storeStatus == 0)
+				return false;
+			var beginTime = getLongTime(store.businessHoursBegin);
+			var endTime = getLongTime(store.businessHoursEnd);
+			var delBeginTime = getDelBeginTime(store.businessHoursBegin);
+			var date = getLongTime(new Date().toTimeString().split(" ")[0]);
+			if (beginTime < endTime)
+				return beginTime < date && date < endTime;
+			if (endTime < beginTime)
+				return beginTime < date || date < endTime;
+		}
+		function getLongTime(time) {
+			var times = time.split(":");
+			return 3600 * times[0] + 60 * times[1] + times[2];
+		}
+		function getDelBeginTime(time) {
+			var times = time.split(":");
+			var DelBeginTime = Math.ceil(times[0]) + 1;
+			return DelBeginTime;
+		}
+		/*获取奖券汇总信息*/
+		function getTicketInfo(){
+			$("#ticketItemTmpl").tmpl(settlementData.ticketTypes).appendTo(".ticket");
+			$(".ticketItem").each(function(){
+				if($(this).attr("data-ticket")){
+					if( $(this).attr("data-ticketType") == 1 ){
+						$(this).children(".ticketwouldUse").html("不使用优惠券");
+						if(settlementData.ticketTypes[0].ticketInfoList){
+							$("#couponItemTmpl").tmpl(settlementData.ticketTypes[0].ticketInfoList).appendTo(".couponYou");
+						}else{
+							$(this).children(".ticketwouldUse").html("无可用");
+						}
+					}
+					if( $(this).attr("data-ticketType") == 2 ){
+						$(this).children(".ticketwouldUse").html("不使用抵用券");
+						if(settlementData.ticketTypes[1].ticketInfoList){
+							$("#couponItemTmpl").tmpl(settlementData.ticketTypes[1].ticketInfoList).appendTo(".couponDi");
+						}else{
+							$(this).children(".ticketwouldUse").html("无可用");
+						}
+					}
+				}
+				if( $(this).attr("data-ticketType") == findMaxCoupon().ticketType ){
+					$(this).children(".ticketwouldUse").html("优惠金额"+parseInt(toCenti(findMaxCoupon().ticketAmount))+"元");
+					$(this).children(".ticketwouldUse").addClass("ticketCanUse");
+				}
+			});
+			$(".couponItemInSettle").each(function(){
+				if($(this).attr("data-ticketId")==findMaxCoupon().ticketId){
+					$(this).children(".couponTop").children(".couponCheckBox").addClass("couponChoosed");
+				}
+			});
+			createOrderInfo();
+		}
+		/*获取奖券列表*/
+		function showCoupon(data,ticketType,ticketTypeName){
+			console.log(data);
+			if(data){
+				$(".couponWrap").removeClass("hide");
+				$("#couponItemWrap").html("");
+				if(ticketType==1){
+					$(".couponYou").removeClass("hide");
+					$(".couponDi").addClass("hide");
+				}else{
+					$(".couponYou").addClass("hide");
+					$(".couponDi").removeClass("hide");
+				}
+			}
+			$(".couponBoxTit").children("span").html("选择"+ticketTypeName);
+			if(ticketType==2){
+				$(".couponItemInSettle .couponTit").css("color","#4898c9");
+				$(".couponItemInSettle").css("background-image","url(/static-resource/images/cart/di.png)");
+				$(".notUseCoupon").addClass("hide");
+				$(".notUseCashCoupon").removeClass("hide");
+			}if(ticketType==1){
+				$(".notUseCoupon").removeClass("hide");
+				$(".notUseCashCoupon").addClass("hide");
+				$(".couponItemInSettle .couponTit").css("color","#ff5555");
+				$(".couponItemInSettle").css("background-image","url(/static-resource/images/cart/you.png)");
+			}
+			$(".couponCheckBox").click(function(){
+				$(".couponCheckBox").removeClass("couponChoosed");
+				$(this).addClass("couponChoosed");
+				$(".notUseCoupon").children(".couponCheckBoxInNot ").removeClass("couponChoosed");
+				$(".notUseCashCoupon").children(".couponCheckBoxInNot").removeClass("couponChoosed");
+
+			});
+			$(".notUseCoupon").children(".couponCheckBoxInNot ").click(function(){
+				$(this).addClass("couponChoosed");
+				$(".couponCheckBox1").removeClass("couponChoosed");
+				//$(".notUseCashCoupon").children(".couponCheckBoxInNot ").removeClass("couponChoosed");
+			});
+			$(".notUseCashCoupon").children(".couponCheckBoxInNot").click(function(){
+				$(this).addClass("couponChoosed");
+				$(".couponCheckBox2").removeClass("couponChoosed");
+				//$(".notUseCoupon").children(".couponCheckBoxInNot").removeClass("couponChoosed");
+			})
+		}
+		function getChooseCoupon(){
+			$(".ticketItem").each(function(){
+				var ticketChoosed=$(".couponChoosed").attr("data-ticket");
+				if(ticketChoosed){
+					$(this).children(".ticketwouldUse").removeClass("ticketCanUse");
+					if( $(this).attr("data-ticketType") == 1 ){
+						$(this).children(".ticketwouldUse").html("不使用优惠券");
+					}
+					if( $(this).attr("data-ticketType") == 2 ){
+						$(this).children(".ticketwouldUse").html("不使用抵用券");
+					}
+					if( $(this).attr("data-ticketType") == JSON.parse(ticketChoosed).ticketType ){
+						$(this).children(".ticketwouldUse").html("优惠金额"+parseInt(toCenti(JSON.parse(ticketChoosed).ticketAmount))+"元");
+						$(this).children(".ticketwouldUse").addClass("ticketCanUse");
+						$(this).children(".ticketwouldUse").addClass("ticketCanUse");
+					}
+				}
+				if($(".notUseCoupon").children(".couponCheckBoxInNot ").hasClass("couponChoosed")){
+						if( $(this).attr("data-ticketType") == 1 ){
+							$(this).children(".ticketwouldUse").html("不使用优惠券");
+							$(this).children(".ticketwouldUse").removeClass("ticketCanUse");
+						}
+					}
+					if($(".notUseCashCoupon").children(".couponCheckBoxInNot ").hasClass("couponChoosed")){
+					if( $(this).attr("data-ticketType") == 2 ){
+						$(this).children(".ticketwouldUse").html("不使用抵用券");
+						$(this).children(".ticketwouldUse").removeClass("ticketCanUse");
+					}
+				}
+				createOrderInfo();
+			});
+		}
+		function hideCouponBox(){
+			$(".couponWrap").addClass("hide");
+			getChooseCoupon();
+		}
+		/*得到优惠金额最大的一张奖券*/
+		function findMaxCoupon(){
+			var  maxCoupon=new Object();
+			var ticketAmount=0;
+			var	 ticketTypesLength=settlementData.ticketTypes.length;
+			for(var i=0;i<ticketTypesLength;i++){
+				if(settlementData.ticketTypes[i].ticketInfoList){
+					var tempCoupon = getMaxCouponItem(settlementData.ticketTypes[i].ticketInfoList);
+					if(ticketAmount < tempCoupon.ticketAmount){
+						ticketAmount = tempCoupon.ticketAmount;
+						maxCoupon=tempCoupon;
+					}
+				}
+			}
+			return maxCoupon;/*优惠金额最大的一张奖券*/
+		}
+		function getMaxCouponItem(couponList){
+			var maxCouponItem=new Object();
+			var ticketAmount=0;
+				for(var i=0;i<couponList.length;i++){
+					if(ticketAmount<couponList[i].ticketAmount){
+						ticketAmount = couponList[i].ticketAmount;
+						maxCouponItem=couponList[i];
+					}
+			}
+			return maxCouponItem;
+		}
+		function createOrderInfo(){
+			var params = new Object();
+			if($(".couponChoosed").attr("data-ticket")){
+				var tickets=[];
+				var ticket = new Object();
+				ticket.ticketId=$(".couponChoosed").attr("data-ticketid");
+				ticket.ticketType=$(".couponChoosed").attr("data-ticketType");
+				tickets.push(ticket);
+				params.tickets=tickets;
+			}
+			ajax("/cart/settlementordertickets", params, function(data) {
+				if (!data)
+					return;
+				$("#totalAmount").text(toCenti(data.orderFeeInfo.totalAmount, 2));
+				$("#preferentialAmt").text(
+						toCenti(data.orderFeeInfo.preferentialAmt, 2));
+				$("#transferFee").text(toCenti(data.orderFeeInfo.transferFee, 2));
+				$("#payableAmount").text(
+						toCenti(data.orderFeeInfo.payableAmount, 2));
+				payableAmount=data.orderFeeInfo.payableAmount;
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+	</script>
+	<script id="saleProductItemTmpl" type="text/x-jquery-tmpl">
+			<div class="SetProItem">
+					<p class="proName">${saleProductName}</p>
+					<p class="proNumBox">
+						×<span class="proNum">${cartNum}</span>
+					</p>
+					<p class="priceBox">
+						￥<span class="price">${toCenti(orderPrice,2)}</span>
+					</p>
+			</div>
+	</script>
+	<script id="couponItemTmpl" type="text/x-jquery-tmpl">
+		<div class="couponItem couponCanUse couponItemInSettle" data-ticketStatus="${ticketStatus}" data-ticketType="${ticketType}" data-ticketId="${ticketId}">
+			<div class="couponTop">
+				<div class="couponTit">
+					<span>￥</span><span class="ticketAmount">${parseInt(toCenti(ticketAmount))}</span>
+				</div>
+				<div class="couponIns">
+					<p>适用范围：<span class="useScope">${useScope}</span></p>
+					<p class="ticketDescription">${ticketDescription}</p>
+				</div>
+				<div class="couponCheckBox couponCheckBox${ticketType}" data-ticket="${JSON.stringify($data)}" data-ticketId="${ticketId}" data-ticketType="${ticketType}">
+				</div>
+			</div>
+		</div>
+		<div class="bord"></div>
+	</script>
+	<script id="ticketItemTmpl" type="text/x-jquery-tmpl">
+		<div class="ticketItem" onclick="showCoupon(${JSON.stringify(ticketInfoList)},${ticketType},'${ticketTypeName}')" data-ticket="${JSON.stringify(ticketInfoList)}" data-ticketType="${ticketType}">
+				<span>${ticketTypeName}</span><span class="ticketwouldUse"></span>
+		</div>
+	</script>
+</body>
+</html>

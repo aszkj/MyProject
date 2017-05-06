@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<title>登录</title>
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript" src="../static-resource/js/resize.js"></script>
+<script type="text/javascript">
+  document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+                + Math.random() + "'><\/script>");
+  document.write("<script type='text/javascript' src='../static-resource/js/main.js?"
+                + Math.random() + "'><\/script>");
+</script>
+<script type="text/javascript" src="../static-resource/js/angular.js"></script>
+<script type="text/javascript" src="../static-resource/js/controller.js"></script>
+</head>
+<body ng-app="register" ng-controller="registerController">
+	<div class="top-bg-img">
+		<img src="../static-resource/images/register/banner.png" />
+	</div>
+	<div class="c-con">
+		<div class="reg-top-btn">
+			<span id="regTab">注册
+				<div class="arrow-up up2"></div>
+			</span> <span id="signTab">登录
+				<div class="arrow-up up1"></div>
+			</span>
+		</div>
+		<div class="bot-con">
+			<form name="signForm" class="signForm">
+				<label> 手机号: <input type="tel" name="teleNumber" class="teleNumber" id="tele" onKeyUp="showBtn(tele,clearBtn);" placeholder="请输入您的手机号" required ng-maxlength="11"
+					ng-minlength="11" ng-model="user.signTeleNumber">
+					<div class="clean" id="clearBtn" onClick="clearText(tele,clearBtn);">
+						<img src="../static-resource/images/register/clean.png">
+					</div>
+				</label>
+				<div role="alert">
+					<span class="error" error-msg="tele" id="errorTipForTele"></span>
+				</div>
+				<label class="input-last password"> 密&nbsp;&nbsp;&nbsp;&nbsp;码: <input type="password" name="password" class="password" id="password" placeholder="请输入密码" required
+					ng-model="user.signPassword">
+					<div class="eye eye-close">
+						<img src="../static-resource/images/register/eyeclose.png">
+					</div>
+					<div class="eye eye-open">
+						<img src="../static-resource/images/register/eyeopen.png">
+					</div>
+				</label>
+				<div role="alert">
+					<span class="error" error-msg="password" id="errorTipForPassword"></span>
+				</div>
+				<div class="sub-btn">
+					<button type="submit" id="sign-btn" ng-disabled="signForm.$invalid" onclick="teleconfirm()">即刻登录 生活急需品一步到家</button>
+				</div>
+				<div class="other">
+					<span href="javascrip:void(0)" onclick="redirectVCodeLogin()" style="float: left;">手机无密码登录</span> <span onclick="window.location.href='/user/forgotpassword.html'"
+						style="float: right;">忘记密码？</span>
+					<div class="clear"></div>
+				</div>
+			</form>
+			<form name="registerForm" class="registerForm">
+				<label> 手机号: <input type="tel"
+					name="teleNumber" class="teleNumber" id="tele1" placeholder="请输入您的手机号" onKeyUp="showBtn(tele1,clearBtn1);" required ng-maxlength="11" ng-minlength="11"
+					ng-model="user.regTeleNumber">
+					<div class="clean" id="clearBtn1" onClick="clearText(tele1,clearBtn1);" style="right: 2.2rem;">
+						<img src="../static-resource/images/register/clean.png">
+					</div>
+				</label>
+				<div role="alert">
+					 <span class="error" error-msg="tele1" id="errorTipForTele1"></span>
+				</div>
+				<label> 验证码: <input class="checkCode send-code" type="button" id="btn" ng-disabled="registerForm.teleNumber.$invalid" value="发送验证码" />
+					<input type="text" name="vcode" id="vcode" placeholder="请输入验证码" required>
+				</label> <label class="input-last password"> 密&nbsp;&nbsp;&nbsp;&nbsp;码: <input type="password" name="password" id="password1" class="password" placeholder="由6-16位字母、数字组成" required
+					ng-minlength="6" ng-model="user.regPassword">
+					<div class="eye eye-close">
+						<img src="../static-resource/images/register/eyeclose.png">
+					</div>
+					<div class="eye eye-open">
+						<img src="../static-resource/images/register/eyeopen.png">
+					</div>
+				</label>
+				<div role="alert">
+					<span class="error" error-msg="password1" id="errorTipForPassword1"></span>
+				</div>
+					<div class="invite">
+						<div class="in-c-box">
+							<input type="checkbox" name="invite-input" id="invite_input" ng-model="user.invite"><label for="invite_input"></label>
+						</div>
+						<span class="invite-p">我是被邀请来的</span> <label class="invite-code" style="display: none;"><input id="invitationCode" type="text" placeholder="请输入邀请码/推荐码"></label>
+					</div>
+					<div class="sub-btn">
+						<button type="submit" id="reg-btn" ng-disabled="registerForm.$invalid" onclick="registerConfirm()">注册</button>
+					</div>
+					<!--<div class="other">
+						<p>
+							注册即代表你已同意<a href="#">一里递用户协议</a>
+						</p>
+					</div>-->
+			</form>
+			<div id="thirdSign" class="hide">
+				<img src="../static-resource/images/register/ttop.png" id="ttop"> <img src="../static-resource/images/wx.png" id="wxicon" onclick="redirectThirdLogin()">
+				<!--调用第三方微信登录-->
+				<p>微信</p>
+			</div>
+		</div>
+		<!--loading-->
+		<section id="pageloading" class="hide">
+			<img src="../static-resource/images/loading.png">
+		</section>
+	</div>
+	<script type="text/javascript">
+		var wxCode = getUrlParam("code");
+		var referrerInfo = getSessionStorage(sessionStorageReferrerKey);
+		$(function() {
+			if (wxCode && referrerInfo) {
+				loginByThird(wxCode);
+			}
+			$("#btn").click(function() {
+				checkCodeTime();
+			});
+			removeSessionStorage(sessionStorageReferrerKey);
+		});
+		function teleconfirm() {
+			var params = new Object();
+			params.mobile = $("#tele").val();
+			params.code = $("#password").val();
+			params.type = 1; //密码登录
+			ajax("/user/login", params, function(data) {
+				saveUserInfo(data);
+				sychronizedcart();
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		function sychronizedcart() {
+			var params = new Object();
+			params.storeId = getSessionStorage(sessionStorageStoreKey).storeId;
+			var cartInfoParam = [];
+			var cartInfo = getSessionStorage(localStorageCartInfoKey);
+			for ( var saleProductId in cartInfo) {
+				var cartParam = new Object();
+				cartParam.saleProductId = saleProductId;
+				cartParam.cartNum = cartInfo[saleProductId].cartNum;
+				cartInfoParam.push(cartParam);
+			}
+			params.cartInfo = cartInfoParam;
+			ajax("/cart/synchronouscart", params, function(data) {
+				setCartInfo(data);
+				removeSessionStorage(sessionStorageReferrerKey);
+				window.location.replace(!referrerInfo ? document.referrer
+						: referrerInfo);
+			}, function(data) {
+				removeSessionStorage(sessionStorageReferrerKey);
+				window.location.replace(!referrerInfo ? document.referrer
+						: referrerInfo);
+			}, true);
+		}
+		function registerConfirm() {
+			var params = new Object();
+			params.mobile = $("#tele").val();
+			params.code = $("#vcode").val();
+			params.password = $("#password1").val();
+			params.invitationCode = $("#invitationCode").val(); // 注册 
+			ajax("/user/regist", params, function(data) {
+				saveUserInfo(data);
+				window.location.replace(document.referrer);
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		function checkCodeTime() {
+			var param = new Object();
+			param.mobile = $("#tele1").val();
+			param.type = 1; //注册发送验证码
+			ajax("/system/sendcaptcha", param, function(data) {
+				if (!data)
+					return;
+				resetInterval(data.remainClock, "btn");
+			}, function(msg) {
+				alert(msg);
+			}, true);
+		}
+		function redirectVCodeLogin() {
+			window.location.replace("/user/vcodesign.html");
+		}
+		/** 第三方微信登录点击后触发该方法调用 */
+		function redirectThirdLogin() {
+			setSessionStorage(sessionStorageReferrerKey, document.referrer);
+			var direct = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a7706db5d469293&redirect_uri="
+				+ location
+				+ "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
+			alert(direct);
+			location.href = direct;
+		}
+		function loginByThird(code) {
+			var params = new Object();
+			params.code = code;
+			params.tradeType = "JSAPI";
+			ajax("/user/weixinlogin", params, function(data) {
+				saveUserInfo(data);
+				if (isLogin())
+					sychronizedcart();
+				else
+					window.location.replace("/user/bindTeleNumber.html");
+			}, function(msg) {
+				alert(msg);
+			});
+		}
+		/*显示第三方登录*/
+		function showThirdLogin(condition) {
+			if(condition){
+				$("#thirdSign").removeClass("hide");
+			}
+		}
+	</script>
+    <script type="text/javascript">
+        document.write("<script type='text/javascript' src='../static-resource/js/verify.js?"
+                + Math.random() + "'><\/script>");
+    </script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductBrandMapper">
+	<resultMap id="BaseResultMap" type="ProductBrand">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="BRANDNAME" property="brandName" jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="BRANDDESC" property="brandDesc" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="STATUSCODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="IMAGEURL" property="imageUrl" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="SaleProductInfoResultMap" type="SaleProductByBrandCode">
+		<id column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="BRANDNAME" property="brandName" jdbcType="VARCHAR" />
+		<result column="PRODUCTNAME" property="saleProductName"
+			jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTIMAGEURL" property="saleProductImageUrl"
+			jdbcType="VARCHAR" />
+		<result column="RETAILPRICE" property="retailPrice" jdbcType="BIGINT" />
+		<result column="PROMOTIONALPRICE" property="promotionalPrice"
+			jdbcType="BIGINT" />
+		<result column="SALEPRODUCTSPEC" property="saleProductSpec"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, BRANDNAME, BRANDCODE, BRANDDESC, TYPE,
+		STATUSCODE,
+		CREATEUSERID, CREATETIME,
+		MODIFYUSERID,MODIFYTIME,DISPLAYORDER,IMAGEURL
+	</sql>
+
+	<insert id="saveProductBrand" parameterType="ProductBrand"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into P_PRODUCT_BRAND
+		(ID, BRANDNAME,
+		BRANDCODE, BRANDDESC, TYPE, STATUSCODE, CREATEUSERID,
+		CREATETIME,DISPLAYORDER,IMAGEURL
+		)
+		values
+		(#{id,jdbcType=INTEGER},
+		#{brandName,jdbcType=VARCHAR},
+		#{brandCode,jdbcType=VARCHAR},
+		#{brandDesc,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR},
+		#{statusCode,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{displayOrder,jdbcType=INTEGER},
+		#{imageUrl,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="updateBrandNameByBrandCode">
+		update P_PRODUCT_BRAND
+		set
+		BRANDNAME = #{name,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		BRANDCODE = #{brandCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateStatusCodeByBrandCode">
+		update P_PRODUCT_BRAND
+		set
+		STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		BRANDCODE = #{brandCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateProductBrandById" parameterType="ProductBrand">
+		update
+		P_PRODUCT_BRAND
+		set
+		STATUSCODE = #{statusCode,jdbcType=VARCHAR},
+		BRANDDESC =
+		#{brandDesc,jdbcType=VARCHAR},
+		TYPE = #{type,jdbcType=VARCHAR},
+		BRANDNAME = #{brandName,jdbcType=VARCHAR},
+		IMAGEURL =
+		#{imageUrl,jdbcType=VARCHAR},
+		DISPLAYORDER =
+		#{displayOrder,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadProductBrandByName" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_BRAND
+		where
+		BRANDNAME = #{brandName,jdbcType=VARCHAR}
+	</select>
+
+	<select id="loadProductBrandById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_BRAND
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadProductBrandByBrandCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_BRAND
+		where BRANDCODE = #{brandCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="listProductBrandByClassCodeAndStatusCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_BRAND
+		<where>
+			<if test="productClassCode != null">
+				PRODUCTCLASSCODE = #{productClassCode,jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="findProductBrandInfos" parameterType="ProductBrandQuery"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_BRAND
+		<where>
+			1=1
+			<if test="brandName != null">
+				and BRANDNAME like
+				concat('%',#{brandName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="brandCodesList != null">
+				and BRANDCODE IN
+				<foreach item="item" index="index" collection="brandCodesList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null">
+				and TYPE = #{type,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="getProductBrands" parameterType="ProductBrandQuery"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_BRAND
+		<where>
+			1=1
+			<if test="brandName != null">
+				and BRANDNAME like
+				concat('%',#{brandName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="brandCode != null">
+				and BRANDCODE =#{brandCode,jdbcType=VARCHAR}
+			</if>
+			<if test="brandCodesList != null">
+				and BRANDCODE IN
+				<foreach item="item" index="index" collection="brandCodesList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="type != null">
+				and TYPE = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="statusCode != null">
+				and STATUSCODE = #{statusCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+	<select id="getAllBrandBasic" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		P_PRODUCT_BRAND
+		WHERE
+		STATUSCODE = 'PRODUCTBRANDSTATUS_ON'
+		ORDER BY
+		DISPLAYORDER
+	</select>
+
+	<select id="getBrandByName" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		P_PRODUCT_BRAND
+		WHERE BRANDNAME = #{brandName,jdbcType=VARCHAR}
+		ORDER BY
+		DISPLAYORDER
+	</select>
+
+	<select id="getBrandByCode" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		P_PRODUCT_BRAND
+		WHERE BRANDCODE = #{brandCode,jdbcType=VARCHAR}
+		ORDER BY
+		DISPLAYORDER
+	</select>
+
+	<select id="findSaleProductByBrandCode" parameterType="SaleProductQuery"
+		resultMap="SaleProductInfoResultMap">
+		select
+		P.ID AS SALEPRODUCTID,
+		P.SALEPRODUCTNAME AS PRODUCTNAME,
+		PB.BRANDNAME AS BRANDNAME,
+		PI.IMAGEURL1 AS SALEPRODUCTIMAGEURL,
+		PP.RETAILPRICE AS RETAILPRICE,
+		PP.PROMOTIONALPRICE AS PROMOTIONALPRICE,
+		PD.SALEPRODUCTSPEC AS SALEPRODUCTSPEC
+		FROM
+		P_SALE_PRODUCT P
+		LEFT JOIN
+		P_SALE_PRODUCT_IMAGE PI ON PI.SALEPRODUCTID = P.ID AND PI.MASTERFLAG =
+		'PRODUCTIMAGEMASTERFLAG_YES'
+		LEFT JOIN P_SALE_PRODUCT_PRICE PP ON
+		PP.SALEPRODUCTID = P.ID
+		LEFT JOIN P_PRODUCT_BRAND PB ON PB.BRANDCODE =
+		P.BRANDCODE 
+		LEFT JOIN
+		P_SALE_PRODUCT_PROFILE PD ON PD.SALEPRODUCTID = P.ID
+		AND PP.CHANNELCODE = PD.CHANNELCODE 
+		LEFT JOIN P_PRODUCT_CLASS PPC
+		on
+		P.PRODUCTCLASSCODE = PPC.CLASSCODE
+		<where>
+			<if test="brandCode != null">
+				AND P.BRANDCODE = #{brandCode, jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				AND P.ENABLEDFLAG = #{enabledFlag, jdbcType=VARCHAR}
+			</if>
+			<if test="auditStatusCode != null">
+				AND P.AUDITSTATUSCODE = #{auditStatusCode,
+				jdbcType=VARCHAR}
+			</if>
+			<if test="storeId != null">
+				AND P.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="display != null">
+				and PPC.DISPLAY = #{display, jdbcType=VARCHAR}
+			</if>
+			<if test="saleStatus != null">
+				AND PD.SALESTATUS = #{saleStatus, jdbcType=VARCHAR}
+			</if>
+			    AND PB.STATUSCODE = 'PRODUCTBRANDSTATUS_ON'
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+</mapper>

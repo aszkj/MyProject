@@ -1,0 +1,42 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black" name="apple-mobile-web-app-status-bar-style">
+<meta content="telephone=no" name="format-detection">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<title>一里递APP下载</title>
+</head>
+
+<body>
+<style type="text/css">
+body,h1,h2,h4,p,dl,dt,dd,div{margin:0;padding:0}.app{padding:1em}.app h1,.app h2,.app p{text-align:center}.app h1 img{max-width:4em}.app h2{padding:0.5em 0 2em;font-size:1em}.app p a{display:block;margin:0 auto;width:7em;height:1.8em; line-height:1.8em;border:1px solid #bababa; border-radius:0.5em;font-size:1.6em;color:#747474;text-decoration:none}
+.app dl{position:absolute;top:0;left:0.5em;right:0.5em;padding:1.2em 0;background-color:#fff;color:#000;border-radius:0 0 0.5em 0.5em;zoom:1}.app dl:after {content:"";display:block;clear:both;height:0;visibility:hidden}
+.app dd{padding:0.2em 0;width:12.5em;margin:0 auto;font-size:1.2em;line-height:1.8em;}.app dd img{height:1.2em;padding:0 0.1em;vertical-align:text-top}.app dt{position:absolute;right:0;top:0}.app dt img{height:5em}.overlay{position:absolute;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.35)}
+</style></style>
+<div class="app">
+	<h1><img src="static-resource/images/logo.png" alt="一里递"></h1>
+	<h2>一里递客户端</h2>
+	<p><a href="javascript:;" onClick="downLoad()">立即下载</a></p>
+	<div class="overlay" style="display:none" id="note">
+		<dl>
+			<dd>1、请点击右上角<img src="static-resource/images/icon.jpg" alt="">按钮</dd>
+			<dd>2、选择<img src="static-resource/images/icon_02.jpg" alt="">，<br>即可下载一里递客户端</dd>
+			<dt><img src="static-resource/images/icon_03.jpg" alt=""></dt>
+		</dl>
+	</div>
+</div>
+<script type="text/javascript">
+var UA = navigator.userAgent.toLowerCase(); 
+var note = document.getElementById('note');
+var flag = RegExp("micromessenger").test(UA);
+function downLoad(){
+	flag?note.style.display='':window.location.href='http://download.yldbkd.com:8080/app/android/publish/yldbkd_buyer.apk';
+}
+</script>
+</body>
+</html>

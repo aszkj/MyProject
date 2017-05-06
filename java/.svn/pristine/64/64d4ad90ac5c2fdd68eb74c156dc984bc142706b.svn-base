@@ -1,0 +1,98 @@
+
+<script type="text/javascript">
+	function leftMenuTitleClick(ob) {
+		$(ob).toggleClass('on');
+		$(ob).next('ul').eq(0).toggle();
+	}
+	function loadCss() {
+		var stA = $('#left_menu_content li a');
+		var href = trim(window.location.href);
+		var refId = getUrlParam("refId") || "";
+		var flag = false;
+		var flag2 = false;
+		var obj = null;
+		for (var i = 0, length = stA.length; i < length; i++) {
+			if (refId.length > 0
+					&& stA[i].href.substring(0, stA[i].href.lastIndexOf('/'))
+							.indexOf(refId) != -1) {
+				flag = true;
+				obj = stA[i];
+				break;
+			}
+			var rel = trim(stA[i].rel);
+			if (href.indexOf(stA[i].href) != -1) {
+				flag = true;
+				obj = stA[i];
+				break;
+			}
+			if (href.indexOf(stA[i].href.substring(0, stA[i].href
+					.lastIndexOf('/'))) != -1) {
+				flag2 = true;
+				obj = stA[i];
+			} else if (rel != '') {
+				var stRel = rel.split('|');
+				for (var j = 0, jlength = stRel.length; j < jlength; j++) {
+					if (href.indexOf(stRel[j]) != -1) {
+						flag = true;
+						break;
+					}
+				}
+			}
+		}
+		if (flag || (!flag && flag2)) {
+			obj.parentNode.className = 'cur';
+			$(obj).parent().parent().removeClass('disn');
+			$(obj).parent().parent().prev("h4").removeClass("on");
+		}
+	}
+	function getUserMenu() {
+		ajax({
+			waitTagId : '',
+			url : TERMINAL_URL + WAREHOUSE_SYSTEM_IDENTITY
+					+ '/getUserPermissionMenus',
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			cache : false,
+			timeout : 30000,
+			error : function() {
+			},
+			success : getUserMenuSuccess
+		});
+	}
+	function getUserMenuSuccess(data) {
+		checkJsonRight(data);
+		if (data.msgCode != 1) {
+			return;
+		}
+		var object = data.entity;
+		var param = [];
+		if (null != object && object.length > 0) {
+			for (var i = 0, len = object.length; i < len; i++) {
+				var menuName = object[i].permissionName; //一级菜单
+				param
+						.push('<h4 class="on" onclick="leftMenuTitleClick(this)">');
+				param.push(menuName);
+				param.push('</h4>');
+				if (object[i].nextLevelPermissionList.length > 0) {
+					var subMenuList = object[i].nextLevelPermissionList;
+					param.push('<ul class="disn">');
+					for (var j = 0, len_j = subMenuList.length; j < len_j; j++) {
+						var subMenuId = subMenuList[j].id;
+						var subMenuName = subMenuList[j].permissionName; //二级菜单名称
+						var subMenuUrl = subMenuList[j].permissionUrl; //二级菜单URL
+						param.push('<li><a id="' + subMenuId + '" href="'
+								+ subMenuUrl + '"');
+						param.push('>' + subMenuName + '</a></li>');
+					}
+					param.push('</ul>');
+				}
+			}
+		}
+		$("#left_menu_content").html(param.join(''));
+		loadCss();
+	}
+	$(function() {
+		getUserMenu();
+	});
+</script>

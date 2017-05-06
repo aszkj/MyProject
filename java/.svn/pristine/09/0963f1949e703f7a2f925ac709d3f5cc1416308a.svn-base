@@ -1,0 +1,1 @@
+您的自提订单已备货，请于今天${receiveTime}前取货，提货码：${receiveCode}，商家电话：${storeMobile}。过期未取将自动取消订单。

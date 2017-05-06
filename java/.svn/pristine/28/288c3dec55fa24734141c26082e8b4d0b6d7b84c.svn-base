@@ -1,0 +1,438 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/login.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet" />
+<script type="text/javascript">
+var param ={
+		currentPage:1,
+		pageSize:10,
+		pageCount:0,
+		totalCount:0
+};
+
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()} 
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){alert("您输入的页码超出正常范围");}
+		else{ alert("当前已经是第一页")}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){alert("您输入的页码超出正常范围");}
+		else{alert("当前已经是最后一页");}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+function dataSubmit(pageNo){
+	var pattern = /\d+/;
+	if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type: 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType: 'json',
+		cache : false,
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listStoreProducts',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				var dataList = data.entity.resultList;
+				if(null != dataList && dataList.length > 0){
+					for(var i=0,j=dataList.length;i<j;i++){
+						html += '<tr><td>';
+						if(dataList[i].addStatusCode == 'ADDSTATUS_YES'){
+							html += '<input type="checkbox" class="tab_check" disabled checked/>';
+						}else{
+							html += '<input type="checkbox"  class="id" class="tab_check" value="'+dataList[i].saleProductId+'"/>';
+						}
+						html += '</td><td>';
+						html += dataList[i].storeCode;
+						html += '</td><td>';
+						html += dataList[i].storeName;
+						html += '</td><td>';
+						html += dataList[i].saleProductName;
+						html += '</td><td>';
+						html += dataList[i].barCode;
+						html += '</td><td>';
+						html += dataList[i].parentName + '/' + dataList[i].className;
+						html += '</td><td>';
+						if(dataList[i].addStatusCode == 'ADDSTATUS_YES'){
+							html += '<span class="mlr5 gray">已添加</span>'
+						}else{
+							html += '<a href="javascript:void(0)" onclick="javascript:addSubsifyProduct('+dataList[i].saleProductId+')" class="mlr5 ablue">添加</a>'
+						}
+						html += '</td></tr>';
+					}
+				}else{
+					html += '<tr><td colspan="7">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				TURN_PAGE_PARAMS.currentPage = data.entity.currentPage;
+				TURN_PAGE_PARAMS.totalCount = data.entity.recordCount;
+				TURN_PAGE_PARAMS.pageCount = Math.ceil(data.entity.recordCount / data.entity.pageSize);
+				updateFlipLabel();
+			}else{
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+	
+	$('#checkall').prop('checked',false);
+}
+
+
+function loadClass() {
+	ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ "TOP_LEVEL_CLASS"+'/listSubProductClass',
+		type:'post',
+		dataType:'json',
+		async:false,
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var listProductClass = data.entity;
+			var html = '';
+			html += '<option value="">--全部--</option>';
+			for (var i = 0; i < listProductClass.length; i++) {
+				var parentProductClass = listProductClass[i];
+				html += '<option value="' + parentProductClass.classCode + '">' + parentProductClass.className + '</option>';
+			}
+			
+			$("#parentCode").html(html);
+		}
+	});
+}
+
+function loadSubClass(val){
+	if(val){
+		$("#productClass").html("");
+		$("#productClass").html('<option value="">请选择</option>'); 
+	}
+	var key = $("#parentCode").val();
+	if(key){
+		$("#productClass").show();
+	}else{
+		$("#productClass").hide();
+		$("#productClass").val(null);
+	}                                                                                                                                                                                                                                                                                            
+	$.ajax({
+		url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ key +'/listSubProductClass', 
+		type:'post',
+		dataType:'json',
+		success:function(data){
+			if(data.msgCode != 1) return;
+			//特殊处理 尖括号
+			var temp = JSON.stringify(data);
+			temp = encodeString(temp);
+			data = JSON.parse(temp);
+			var html = '';
+			var listProductClass = data.entity;
+			html='<option value="">请选择</option>';
+			if(null != listProductClass && listProductClass.length > 0){
+				var len = listProductClass.length;
+				for(var i=0;i<len;i++){
+					var product = listProductClass[i];
+					html += '<option value="'+product.classCode+'">';
+					html += product.className;
+					html +='</option>'
+				}
+			}
+			$("#productClass").html(html);
+		}
+	});
+}
+
+function selAll(o,idname){
+	var ids = $("input[type='checkbox'][class='"+idname+"']");
+	var checked = o.checked;
+	ids.each(function(){			
+		if(!checked){
+			$(this).prop("checked",false);
+		}else{
+			$(this).prop("checked",true);
+		}
+	});
+}
+function unselAll(){
+	$('body').on('click','.id',function(){
+		if(checkUnSel('id')){
+			$('#checkall').prop("checked",true);
+		}else{
+			$('#checkall').prop("checked",false);
+		}
+	})
+}
+function checkUnSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+function checkSel(idname) {
+	var ids = $("input[type='checkbox'][class='" + idname + "']");
+	var c = 0;
+	var l = ids.length;
+	ids.each(function() {
+		var checked = $(this).prop("checked");
+		if (!checked) {
+			c++;
+		}
+	});
+	return c == l;
+}
+
+/**
+ * 添加补贴商品设置
+ */
+function addSubsifyProduct(id){
+	showBox('提示！','确认添加该商品吗？','confirm',function(){
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY  +'/'+ id +'/addSubsifyProduct',
+			type: 'post',
+			dataType: 'json',
+			async: true,
+			cache: false,
+			timeout: 30000,
+			error: function(){},
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					if (parent) {
+						parent.dataSubmit();
+					}
+					dataSubmit();
+				}
+			}
+		});
+	});
+}
+
+/**
+ * 批量添加
+ */
+function batchAddSaleProduct(idname) {
+	if (checkSel(idname)) {
+		showBox('提示!',"请先选择要添加的商品！",'alert');
+		return;
+	}		
+	showBox('确认信息',"确认要添加选择的商品吗？",'confirm',function()  {
+		var ids = $("input[type='checkbox'][class='" + idname + "']");
+		var param = "";
+		ids.each(function() {
+			if($(this).prop("checked")){
+				param += $(this).val() + ",";
+			}
+		});
+		param = param.substring(0,param.length-1);
+		ajax({
+			url:  TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+ param +'/batchAddSubsifyProduct',
+			method: 'get',
+			dataType: 'json',
+			success: function(data){
+				if(data.msgCode==3){
+					loginError(data.msg);
+				}else if(data.msgCode==2){
+					showBox('提示',data.msg,'alert')
+				}else if(data.msgCode==1){
+					if (parent) {
+						parent.dataSubmit();
+					}
+					dataSubmit();
+				}
+			}
+		});
+	})
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	loadClass();
+	dataSubmit();
+	unselAll();
+	$('#checkall').prop('checked',false);
+});
+</script>
+</head>
+<body>
+	<div class="clearfix">
+		<div class="complaint_main">
+			<form method="get" id="dataForm">
+				<div class="main_search">
+					<dl>
+						<dt>门店编码：</dt>
+						<dd>
+							<input type="text" class="txt grid-10" id="storeCode"
+								name="storeCode" />
+						</dd>
+					</dl>
+					<dl>
+						<dt>门店名称：</dt>
+						<dd>
+							<input type="text" class="txt grid-10" id="storeName"
+								name="storeName" />
+						</dd>
+					</dl>
+					<dl>
+						<dt>商品名称：</dt>
+						<dd>
+							<input type="text" class="txt grid-10" id="saleProductName"
+								name="saleProductName" />
+						</dd>
+					</dl>
+					<dl>
+						<dt>商品条形码：</dt>
+						<dd>
+							<input type="text" class="txt grid-10" id="barCode"
+								name="barCode" />
+						</dd>
+					</dl>
+					<dl>
+						<dt>商品分类：</dt>
+						<dd>
+							<select class="select grid-8" id="parentCode" name="parentCode"
+								onChange="loadSubClass(this.value)">
+								<option value="" selected>--请选择--</option>
+							</select>
+						</dd>
+						<dd>
+							<select hidden class="select grid-8" id="productClass"
+								name="productClassCode">
+								<option value="" selected>--请选择--</option>
+							</select>
+						</dd>
+					</dl>
+					<p class="main_search_btn">
+						<input type="button" value="查询" class="btn_sure" id="productSearch" onClick="dataSubmit()" />
+						<input type="hidden" id="start" name="start" />
+						<input type="hidden" id="pageSize" name="pageSize" />
+					</p>
+				</div>
+				<!--搜索结束-->
+			</form>
+			<div class="order_index">
+				<table class="simple_table" cellpadding="0" cellspacing="0"
+					width="100%">
+					<thead>
+						<tr>
+							<th width="20"></th>
+							<th width="60">门店编码</th>
+							<th width="80">门店名称</th>
+							<th width="80">商品名称</th>
+							<th width="80">商品条形码</th>
+							<th width="100">商品分类</th>
+							<th width="40">操作</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+					</tbody>
+				</table>
+			</div>
+			<dl class="main_pagination">
+				<input type="checkbox" class="tab_check" id='checkall' onclick="javascript:selAll(this,'id');" />
+				<label for="">全选</label>
+				<input type="button" style="cursor:pointer;" id="btnAdd" onclick="javascript:batchAddSaleProduct('id');" value="添加" class="btn_sure" />
+				<dd class="pagination">
+					<span id="pageItem"> <span class="page_prev">&lt;&lt;
+							上一页</span> <a class="bg_on" href="javascript:void(0);">1</a> <a
+						href="javascript:void(0);" onclick="goPage(2);">2</a> <a
+						class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页
+							&gt;&gt;</a>
+					</span> <span class="page_no">共<span id="totalCount">0</span>条
+					</span> <span class="page_no">共<span id="pageCount">2</span>页 到第 <input
+						type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')"
+						class="page_txt" id="pageObj">页 <input type="button"
+						onclick="goPage($.trim($('#pageObj').val()));" class="page_btn"
+						value="确定"></span>
+				</dd>
+			</dl>
+		</div>
+	</div>
+</body>
+</html>

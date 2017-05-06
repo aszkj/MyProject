@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="content-type" content="no-cache, must-revalidate" />
+<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+<title>一里递</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<link rel="stylesheet" href="../static-resource/css/reset.css" />
+<link rel="stylesheet" href="../static-resource/css/main.css?2.0" />
+<script type="text/javascript" src="../static-resource/js/base.js?2.0"></script>
+<script type="text/javascript">
+		document.write("<script type='text/javascript' src='../static-resource/js/local-data-storage.js?"
+				+ Math.random() + "'><\/script>");
+</script>
+</head>
+<body style="background-color: #eeeeee">
+	<header>
+		<!--顶部搜索栏-->
+		<div class="top-big-tit-input" id="noBackBtnTop">
+			<div id="inputBoxTop">
+				<form onsubmit="searchClick();return false;">
+				<input class="top-mid-con" id="searchInput" type="search" placeholder="请输入需要搜索的关键字">
+				</form>
+			</div>
+			<div class="top-right-con">
+				<span class="cancelBtn" onclick="history.back()">取消</span>
+			</div>
+		</div>
+	</header>
+	<section style="padding-top: .9rem">
+		<div class="bord"></div>
+		<!--热门搜索-->
+		<div class="hot-search">
+			<div class="search-tit hot-tit">
+				<p>热门搜索</p>
+			</div>
+			<div class="key-words hotWords"></div>
+		</div>
+		<div class="bord"></div>
+		<!--最近搜索-->
+		<div class="last-search">
+			<div class="search-tit last-tit">
+				<p>最近搜索</p>
+				<div class="delBtn" onclick="deleteHistory();">
+					<img src="../static-resource/images/search/del.png">
+				</div>
+			</div>
+			<div id="lastWords" class="key-words lastWords"></div>
+			<div id="historyEmpty" class="key-words non-search-history">
+				<p>暂无搜索历史记录</p>
+			</div>
+		</div>
+	</section>
+	<!--loading-->
+	<section id="pageloading" class="hide">
+		<img src="../static-resource/images/loading.png">
+	</section>
+	<footer>
+		<div class="bord"></div>
+		<!--清除搜索历史-->
+		<button class="clear-search" onclick="deleteHistory();">清除搜索历史</button>
+	</footer>
+</body>
+<script type="text/javascript">
+	$(function() {
+		hotWordsTmpl();
+		lastWordsTmpl();
+		removeSessionStorage(sessionStorageKeywordsKey);
+		removeSessionStorage(sessionStorageShowBrandKey);
+	});
+	function hotWordsTmpl() {
+		var params = new Object();
+		params.storeId = getSessionStorage(sessionStorageStoreKey);
+		ajax("/system/hotproductkey", params, function(data) {
+			$("#hotWordsTmpl").tmpl(data).appendTo(".hotWords");
+		}, function(data) {
+			alert(data);
+		});
+	}
+	function searchClick(){
+	    var keywords=$("#searchInput").val();
+        if (!keywords || keywords.trim() == "") {
+            alert("请输入您想查询的商品信息");
+            return;
+        }
+        keywords = keywords.trim();
+        addProductHisStorage(keywords);
+        window.location.href = 'findProducts.html?keywords=' + keywords;
+    }
+	function wordsClick(keywords) {
+		if (!keywords || keywords.trim() == "") {
+			alert("请输入您想查询的商品信息");
+			return;
+		}
+		keywords = keywords.trim();
+		addProductHisStorage(keywords);
+		window.location.href = 'findProducts.html?keywords=' + keywords;
+	}
+	function deleteHistory() {
+		removeLocalStorage(localStorageProductHistoryKey);
+		$("#lastWords").html("");
+		$("#historyEmpty").show();
+		$(".clear-search").hide();
+		$(".delBtn").hide();
+	}
+	function lastWordsTmpl() {
+		var searchKeys = getProductHisStorage();
+		$("#historyEmpty").hide();
+		$(".clear-search").show();
+		$(".delBtn").show();
+		if (!searchKeys || searchKeys.length <= 0){
+			$("#historyEmpty").show();
+			$(".clear-search").hide();
+			$(".delBtn").hide();
+		}
+		$("#lastWordsTmpl").tmpl(searchKeys).appendTo("#lastWords");
+	}
+	/*显示搜索按钮*/
+	function showSearchBtn(){
+		if(document.getElementById('searchInput').value.length > 0){
+			$(".cancelBtn").hide();
+			$(".searchBtn").show();
+		}else{
+			$(".searchBtn").hide();
+			$(".cancelBtn").show();
+		}
+	}
+	function lastWordsIndex(value){
+		return $.inArray(value,getProductHisStorage());
+	}
+</script>
+<script id="hotWordsTmpl" type="text/x-jquery-tmpl">
+{{if $data}}
+  {{if $index<15}}
+    <span onclick="wordsClick('${value}')">${value}</span>
+  {{/if}}
+{{/if}}
+</script>
+<script id="lastWordsTmpl" type="text/x-jquery-tmpl">
+	 <span onclick="wordsClick('${$data}')" data-test="${lastWordsIndex($data)}">${$data}</span>
+</script>
+</html>

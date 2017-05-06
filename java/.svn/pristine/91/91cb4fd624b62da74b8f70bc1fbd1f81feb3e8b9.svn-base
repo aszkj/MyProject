@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.SaleProductInventoryHistoryMapper">
+	<resultMap id="BaseResultMap" type="SaleProductInventoryHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="PREREMAINCOUNT" property="preRemainCount" jdbcType="INTEGER" />
+		<result column="PREORDEREDCOUNT" property="preOrderedCount" jdbcType="INTEGER" />
+		<result column="PRESTANDBYCOUNT" property="preStandbyCount" jdbcType="INTEGER" />
+		<result column="REMAINCOUNT" property="remainCount" jdbcType="INTEGER" />
+		<result column="ORDEREDCOUNT" property="orderedCount" jdbcType="INTEGER" />
+		<result column="STANDBYCOUNT" property="standbyCount" jdbcType="INTEGER" />
+		<result column="DELTA" property="delta" jdbcType="INTEGER" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+		<result column="RELATIVENO" property="relativeNo" jdbcType="VARCHAR" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, STOREID, SALEPRODUCTID, PREREMAINCOUNT, PREORDEREDCOUNT, PRESTANDBYCOUNT,
+		REMAINCOUNT, ORDEREDCOUNT,
+		STANDBYCOUNT, DELTA,
+		OPERATETYPE, RELATIVENO, OPERATETIME, OPERATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="SaleProductInventoryHistory">
+		insert into T_SALE_PRODUCT_INVENTORY_HISTORY (
+		STOREID, SALEPRODUCTID, PREREMAINCOUNT,
+		PREORDEREDCOUNT, PRESTANDBYCOUNT,
+		REMAINCOUNT, ORDEREDCOUNT, STANDBYCOUNT, DELTA,
+		OPERATETYPE, RELATIVENO, OPERATETIME,
+		OPERATEUSERID)
+		values (#{storeId,jdbcType=INTEGER}, #{saleProductId,jdbcType=INTEGER},
+		#{preRemainCount,jdbcType=INTEGER}, #{preOrderedCount,jdbcType=INTEGER}, #{preStandbyCount,jdbcType=INTEGER},
+		#{remainCount,jdbcType=INTEGER}, #{orderedCount,jdbcType=INTEGER}, #{standbyCount,jdbcType=INTEGER},
+		#{delta,jdbcType=INTEGER}, #{operateType,jdbcType=VARCHAR}, #{relativeNo,jdbcType=VARCHAR},
+		#{operateTime,jdbcType=TIMESTAMP}, #{operateUserId,jdbcType=INTEGER})
+	</insert>
+
+	<select id="listBySaleProductId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_SALE_PRODUCT_INVENTORY_HISTORY
+		where SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

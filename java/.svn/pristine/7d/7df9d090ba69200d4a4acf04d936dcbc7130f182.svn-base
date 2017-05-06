@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.ShareRuleMapper">
+	<resultMap id="BaseResultMap" type="ShareRule">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SHARERULENAME" property="shareRuleName" jdbcType="VARCHAR" />
+		<result column="STARTVALIDTIME" property="startValidTime" jdbcType="TIMESTAMP" />
+		<result column="ENDVALIDTIME" property="endValidTime" jdbcType="TIMESTAMP" />
+		<result column="ROLETYPE" property="roleType" jdbcType="VARCHAR" />
+		<result column="INVITERCONDITIONTYPE" property="inviterConditionType" jdbcType="VARCHAR" />
+		<result column="INVITEDCONDITIONTYPE" property="invitedConditionType" jdbcType="VARCHAR" />
+		<result column="INVITEDUSEPRODUCT" property="invitedUseProduct" jdbcType="VARCHAR" />
+		<result column="INVITERUSEPRODUCT" property="inviterUseProduct" jdbcType="VARCHAR" />
+		<result column="INVITERAWARDTYPE" property="inviterAwardType" jdbcType="VARCHAR" />
+		<result column="INVITEDAWARDTYPE" property="invitedAwardType" jdbcType="VARCHAR" />
+		<result column="INVITERAWARD" property="inviterAward" jdbcType="VARCHAR" />
+		<result column="INVITEDAWARD" property="invitedAward" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="H5DRAWURL" property="h5DrawUrl" jdbcType="VARCHAR" />
+		<result column="DESCRIPTIONURL" property="descriptionUrl" jdbcType="VARCHAR" />
+		<result column="SMSCONTENT" property="smsContent" jdbcType="VARCHAR" />
+		<result column="FRIENDTITLE" property="friendTitle" jdbcType="VARCHAR" />
+		<result column="FRIENDSCONTENT" property="friendContent" jdbcType="VARCHAR" />
+		<result column="BACKGROUNDIMAGEURL" property="backgroundImageUrl" jdbcType="VARCHAR" />
+		<result column="AVATARHEIGHT" property="avatarHeight" jdbcType="VARCHAR" />
+		<result column="MOBILEHEIGHT" property="mobileHeight" jdbcType="VARCHAR" />
+		<result column="QRCODEHEIGHT" property="qrCodeHeight" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,SHARERULENAME,STARTVALIDTIME,ENDVALIDTIME,ROLETYPE,
+		INVITERCONDITIONTYPE,INVITEDCONDITIONTYPE,INVITEDUSEPRODUCT,INVITERUSEPRODUCT,INVITERAWARDTYPE,INVITEDAWARDTYPE,INVITERAWARD,INVITEDAWARD, 
+		STATUS,H5DRAWURL,DESCRIPTIONURL,SMSCONTENT,FRIENDTITLE,FRIENDSCONTENT,BACKGROUNDIMAGEURL,
+		AVATARHEIGHT,MOBILEHEIGHT,QRCODEHEIGHT,CREATEUSERID,CREATETIME,MODIFYUSERID,MODIFYTIME
+	</sql>
+
+	<insert id="save" parameterType="ShareRule">
+		insert into U_SHARE_RULE
+		(SHARERULENAME,STARTVALIDTIME,ENDVALIDTIME,ROLETYPE,INVITERCONDITIONTYPE,INVITEDCONDITIONTYPE,INVITEDUSEPRODUCT,INVITERUSEPRODUCT,INVITERAWARDTYPE,INVITEDAWARDTYPE,INVITERAWARD,INVITEDAWARD,
+		STATUS,H5DRAWURL,DESCRIPTIONURL,SMSCONTENT,FRIENDTITLE,FRIENDSCONTENT,BACKGROUNDIMAGEURL,
+		AVATARHEIGHT,MOBILEHEIGHT,QRCODEHEIGHT,CREATEUSERID,CREATETIME,MODIFYUSERID,MODIFYTIME)
+		values
+		(#{shareRuleName,jdbcType=VARCHAR},
+		#{startValidTime,jdbcType=TIMESTAMP},
+		#{endValidTime,jdbcType=TIMESTAMP},
+		#{roleType,jdbcType=VARCHAR},
+		#{inviterConditionType,jdbcType=VARCHAR},
+		#{invitedConditionType,jdbcType=VARCHAR},
+		#{invitedUseProduct,jdbcType=VARCHAR},
+		#{inviterUseProduct,jdbcType=VARCHAR},
+		#{inviterAwardType,jdbcType=VARCHAR},
+		#{invitedAwardType,jdbcType=VARCHAR},
+		#{inviterAward,jdbcType=VARCHAR},
+		#{invitedAward,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{h5DrawUrl,jdbcType=VARCHAR},
+		#{descriptionUrl,jdbcType=VARCHAR},
+		#{smsContent,jdbcType=VARCHAR},
+		#{friendTitle,jdbcType=VARCHAR},
+		#{friendContent,jdbcType=VARCHAR},
+		#{backgroundImageUrl,jdbcType=VARCHAR},
+		#{avatarHeight,jdbcType=INTEGER},
+		#{mobileHeight,jdbcType=INTEGER},
+		#{qrCodeHeight,jdbcType=INTEGER},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=INTEGER},
+		#{modifyTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<select id="update" parameterType="ShareRule">
+		update U_SHARE_RULE
+		set
+		SHARERULENAME=#{shareRuleName,jdbcType=VARCHAR},
+		STARTVALIDTIME=#{startValidTime,jdbcType=TIMESTAMP},
+		ENDVALIDTIME=#{endValidTime,jdbcType=TIMESTAMP},
+		ROLETYPE=#{roleType,jdbcType=VARCHAR},
+		INVITERCONDITIONTYPE=#{inviterConditionType,jdbcType=VARCHAR},
+		INVITEDCONDITIONTYPE=#{invitedConditionType,jdbcType=VARCHAR},
+		INVITEDUSEPRODUCT=#{invitedUseProduct,jdbcType=VARCHAR},
+		INVITERUSEPRODUCT=#{inviterUseProduct,jdbcType=VARCHAR},
+		INVITERAWARDTYPE=#{inviterAwardType,jdbcType=VARCHAR},
+		INVITEDAWARDTYPE=#{invitedAwardType,jdbcType=VARCHAR},
+		INVITERAWARD=#{inviterAward,jdbcType=VARCHAR},
+		INVITEDAWARD=#{invitedAward,jdbcType=VARCHAR},
+		H5DRAWURL=#{h5DrawUrl,jdbcType=VARCHAR},
+		DESCRIPTIONURL=#{descriptionUrl,jdbcType=VARCHAR},
+		SMSCONTENT=#{smsContent,jdbcType=VARCHAR},
+		FRIENDTITLE=#{friendTitle,jdbcType=VARCHAR},
+		FRIENDSCONTENT=#{friendContent,jdbcType=VARCHAR},
+		BACKGROUNDIMAGEURL=#{backgroundImageUrl,jdbcType=VARCHAR},
+		AVATARHEIGHT=#{avatarHeight,jdbcType=INTEGER},
+		MOBILEHEIGHT=#{mobileHeight,jdbcType=INTEGER},
+		QRCODEHEIGHT=#{qrCodeHeight,jdbcType=INTEGER},
+		MODIFYUSERID
+		=
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP}
+		where ID =#{id,jdbcType=INTEGER}
+	</select>
+	<select id="updateSelective" parameterType="ShareRule">
+		update U_SHARE_RULE
+		<set>
+			<if test="shareRuleName!=null">
+				SHARERULENAME=#{shareRuleName,jdbcType=VARCHAR},
+			</if>
+			<if test="startValidTime!=null">
+				STARTVALIDTIME=#{startValidTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endValidTime!=null">
+				ENDVALIDTIME=#{endValidTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="roleType!=null">
+				ROLETYPE=#{roleType,jdbcType=VARCHAR},
+			</if>
+			<if test="inviterConditionType!=null">
+				INVITERCONDITIONTYPE=#{inviterConditionType,jdbcType=VARCHAR},
+			</if>
+			<if test="invitedConditionType!=null">
+				INVITEDCONDITIONTYPE=#{invitedConditionType,jdbcType=VARCHAR},
+			</if>
+			<if test="invitedUseProduct!=null">
+				INVITEDUSEPRODUCT=#{invitedUseProduct,jdbcType=VARCHAR},
+			</if>
+			<if test="inviterUseProduct!=null">
+				INVITERUSEPRODUCT=#{inviterUseProduct,jdbcType=VARCHAR},
+			</if>
+			<if test="inviterAwardType!=null">
+				INVITERAWARDTYPE=#{inviterAwardType,jdbcType=VARCHAR},
+			</if>
+			<if test="invitedAwardType!=null">
+				INVITEDAWARDTYPE=#{invitedAwardType,jdbcType=VARCHAR},
+			</if>
+			<if test="inviterAward!=null">
+				INVITERAWARD=#{inviterAward,jdbcType=VARCHAR},
+			</if>
+			<if test="invitedAward!=null">
+				INVITEDAWARD=#{invitedAward,jdbcType=VARCHAR},
+			</if>
+			<if test="h5DrawUrl!=null">
+				H5DRAWURL=#{h5DrawUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="descriptionUrl!=null">
+				DESCRIPTIONURL=#{descriptionUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="smsContent!=null">
+				SMSCONTENT=#{smsContent,jdbcType=VARCHAR},
+			</if>
+			<if test="friendTitle!=null">
+				FRIENDTITLE=#{friendTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="friendContent!=null">
+				FRIENDSCONTENT=#{friendContent,jdbcType=VARCHAR},
+			</if>
+			<if test="backgroundImageUrl!=null">
+				BACKGROUNDIMAGEURL=#{backgroundImageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="avatarHeight!=null">
+				AVATARHEIGHT=#{avatarHeight,jdbcType=INTEGER},
+			</if>
+			<if test="mobileHeight!=null">
+				MOBILEHEIGHT=#{mobileHeight,jdbcType=INTEGER},
+			</if>
+			<if test="qrCodeHeight!=null">
+				QRCODEHEIGHT=#{qrCodeHeight,jdbcType=INTEGER},
+			</if>
+			MODIFYUSERID
+			= #{modifyUserId,jdbcType=INTEGER},
+			MODIFYTIME =
+			#{modifyTime,jdbcType=TIMESTAMP}
+		</set>
+		where ID =#{id,jdbcType=INTEGER}
+	</select>
+	<select id="findShareRules" resultMap="BaseResultMap" parameterType="ShareRuleQuery">
+		select
+		<include refid="Base_Column_List" />
+		from U_SHARE_RULE
+		<where>
+			<if test="shareRuleName != null">
+				and SHARERULENAME like CONCAT('%',#{shareRuleName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="roleType != null">
+				and ROLETYPE = #{roleType,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null">
+				and STATUS = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="startValidTime != null">
+				and STARTVALIDTIME &gt;= #{startValidTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endValidTime != null">
+				and ENDVALIDTIME &lt;= #{endValidTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by CREATETIME desc
+	</select>
+
+	<select id="listShareRules" resultMap="BaseResultMap" parameterType="ShareRuleQuery">
+		select
+		<include refid="Base_Column_List" />
+		from U_SHARE_RULE
+		<where>
+			<if test="shareRuleName != null">
+				and SHARERULENAME like CONCAT('%',#{shareRuleName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="roleType != null">
+				and ROLETYPE = #{roleType,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null">
+				and STATUS = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="startValidTime != null">
+				and STARTVALIDTIME &gt;= #{startValidTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endValidTime != null">
+				and ENDVALIDTIME &lt;= #{endValidTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		order by CREATETIME desc
+	</select>
+	<select id="loadById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_SHARE_RULE
+		where
+		ID = #{ruleId,jdbcType=INTEGER}
+	</select>
+	<select id="loadProgressing" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_SHARE_RULE
+		where
+		STARTVALIDTIME &lt;= #{nowTime,jdbcType=TIMESTAMP}
+		and ENDVALIDTIME &gt;=
+		#{nowTime,jdbcType=TIMESTAMP}
+		and STATUS &lt;&gt;#{status,jdbcType=VARCHAR}
+	</select>
+	<select id="listByValidTime" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_SHARE_RULE
+		where
+		((STARTVALIDTIME &lt;= #{endValidTime,jdbcType=TIMESTAMP}
+		and ENDVALIDTIME &gt;=
+		#{startValidTime,jdbcType=TIMESTAMP}
+		)
+		or (STARTVALIDTIME &lt;= #{endValidTime,jdbcType=TIMESTAMP}
+		and ENDVALIDTIME &gt;=
+		#{startValidTime,jdbcType=TIMESTAMP}))
+		and STATUS &lt;&gt;#{status,jdbcType=VARCHAR}
+	</select>
+	<select id="listShareRulesByStatus" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_SHARE_RULE
+		where STATUS &lt;&gt;#{status,jdbcType=VARCHAR}
+	</select>
+
+	<select id="updateStatusById" resultMap="BaseResultMap">
+		update U_SHARE_RULE
+		set STATUS = #{updateStatus,jdbcType=VARCHAR},
+		MODIFYUSERID = #{updateUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{updateTime,jdbcType=TIMESTAMP}
+		where
+		ID =
+		#{shareRuleId,jdbcType=INTEGER}
+		and STATUS &lt;&gt; #{updateStatus,jdbcType=VARCHAR}
+	</select>
+</mapper>

@@ -1,0 +1,341 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var param = {
+		currentPage : 1,
+		pageSize : 10,
+		pageCount : 0,
+		totalCount : 0
+	};
+	function updatePageInfo() {
+		if (param['totalCount'] < 1) {
+			$(".main_pagination").hide();
+		} else {
+			$(".main_pagination").show()
+		}
+		var html = [];
+		var i = 1;
+		var j = 5;
+		if (param['pageCount'] >= 5) {
+			i = (param['currentPage'] + 2) <= param['pageCount'] ? ((param['currentPage'] - 2 >= 1) ? (param['currentPage'] - 2)
+					: 1)
+					: (param['pageCount'] - 4);
+			j = i + 4;
+		} else {
+			j = param['pageCount'];
+		}
+		if (param['currentPage'] == 1) {
+			html.push('<span class="page_prev">&lt;&lt; 上一页</span>');
+		} else {
+			html
+					.push('<a onclick="goPage('
+							+ (param['currentPage'] - 1)
+							+ ')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');
+		}
+		for (; i <= j; i++) {
+			if (i == param['currentPage']) {
+				html.push('<a href="javascript:void(0);" class="bg_on">');
+				html.push(i);
+				html.push('</a>');
+			} else {
+				html.push('<a onclick="goPage(');
+				html.push(i);
+				html.push(');" href="javascript:void(0);" >');
+				html.push(i);
+				html.push('</a>');
+			}
+		}
+		if (param['currentPage'] == param['pageCount']) {
+			html.push('<span class="page_next">下一页 &gt;&gt;</span>');
+		} else {
+			html
+					.push('<a onclick="goPage('
+							+ (param['currentPage'] + 1)
+							+ ')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');
+		}
+		$("#pageItem").html(html.join(''));
+		$("#pageCount").html(param['pageCount']);
+		$("#totalCount").html(param['totalCount']);
+	}
+	function goPage(pageNo) {
+		var pattern = /\d+/;
+		if (!pattern.test(parseInt(pageNo)))
+			return;
+		if (parseInt(pageNo) < 1) {
+			if (param['currentPage'] != 1) {
+				showBox('提示信息', '您输入的页码超出正常范围', 'alert');
+			} else {
+				showBox('提示信息', '当前已经是第一页', 'alert');
+			}
+			return;
+		}
+		if (pageNo > param['pageCount']) {
+			if (param['currentPage'] != param['pageCount']) {
+				showBox('提示信息', '您输入的页码超出正常范围', 'alert');
+			} else {
+				showBox('提示信息', '当前已经是最后一页', 'alert');
+			}
+			return;
+		}
+		dataSubmit(pageNo);
+	}
+	function dataSubmit(pageNo) {
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(pageNo))) {
+			param.currentPage = pageNo;
+		}
+		$('#start').val(param.currentPage);
+		$('#pageSize').val(param.pageSize);
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$
+				.ajax({
+					type : 'post',
+					contentType : 'application/json',
+					data : formJsonStr,
+					dataType : 'json',
+					error : function() {
+						showBox('提示信息', '提交数据失败，请稍后再试', 'alert');
+					},
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+							+ '/seckillproduct/combinationsearch',
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							//特殊处理 尖括号
+							var temp = JSON.stringify(data);
+							temp = encodeString(temp);
+							data = JSON.parse(temp);
+
+							var html = '';
+							var dataList = data.entity.resultList;
+							var id = getUrlParam('id');
+							if (null != dataList && dataList.length > 0) {
+								for (var i = 0, j = dataList.length; i < j; i++) {
+									html += '<tr';
+									if (id == dataList[i].id) {
+										html += ' name="selrow" bgcolor="#c8e3f8"';
+									}
+									html += '><td>';
+									html += ((param.currentPage - 1)
+											* (param.pageSize) + i + 1);
+									html += '</td><td>';
+									html += dataList[i].productName;
+									html += '</td><td>';
+									html += dataList[i].barCode;
+									html += '</td><td>';
+									html += dataList[i].secKillTime / 60;
+									html += '</td><td>';
+									html += toCenti(
+											dataList[i].secKillProductPrice, 2);
+									html += '</td><td>';
+									html += dataList[i].remainCount;
+									html += '</td><td>';
+									html += dataList[i].secKillCount;
+									html += '</td><td>';
+									html += dataList[i].limitOrderCount;
+									html += '</td><td>';
+									html += dataList[i].displayOrder;
+									html += '</td><td>';
+									html += '<permission code="FUNCTION_EDIT_SECKILLPRODUCT_MANAGEMENT">';
+									html += '<a href="javascript:void(0)" onclick="edit('
+											+ dataList[i].id
+											+ ')" class="ablue">编辑</a>&nbsp;&nbsp;&nbsp;';
+									html += '</permission>';
+									html += '<permission code="FUNCTION_VIEWSCENE_SECKILLPRODUCT_MANAGEMENT">';
+									html += '<a href="javascript:void(0)" onclick="viewScene('
+											+ dataList[i].id
+											+ ')" class="ablue">查看场次</a>';
+									html += '</permission>';
+									html += '</td></tr>';
+								}
+							} else {
+								html += '<tr><td colspan="10">暂无数据</td></tr>';
+							}
+							$("#tbody").html(html);
+							param.currentPage = data.entity.currentPage;
+							param.pageCount = data.entity.pageCount;
+							param.totalCount = data.entity.recordCount;
+							updatePageInfo();
+							disposeFunctionPermissions();
+						} else {
+							showBox('提示信息', data.msg, 'alert');
+						}
+					}
+				});
+	}
+	function viewScene(id) {
+		locationHref('/seckill/seckillproduct-viewscene.html?secKillProductId='
+				+ id);
+	}
+	function edit(id) {
+		locationHref('/seckill/seckillproduct-edit.html?secKillProductId=' + id);
+	}
+	function createProduct() {
+		locationHref('/seckill/seckillproduct-add.html');
+	}
+	/*获取返回页面的上次查询条件*/
+	function setParamValue() {
+		$('#productName').val(getUrlParam('productName'));
+		$('#barCode').val(decodeURIComponent(getUrlParam('barCode')));
+		$('#sceneName').val(getUrlParam('sceneName'));
+		$('#storeType').val(getUrlParam('storeType'));
+		$('#orderStatus').val(getUrlParam('orderStatus'));
+		$('#strBeginCreateTime').val(getUrlParam('strBeginCreateTime'));
+		$('#strEndCreateTime').val(getUrlParam('strEndCreateTime'));
+		$('#strBeginAuditTime').val(getUrlParam('strBeginAuditTime'));
+		$('#strEndAuditTime').val(getUrlParam('strEndAuditTime'));
+		if ("" != getUrlParam('pageSize') && "" != getUrlParam('start')) {
+			param.pageSize = getUrlParam('pageSize');
+			param.currentPage = getUrlParam('start');
+		}
+	}
+	function getParamValue() {
+		var passParam = [];
+		var productName = $.trim($("#productName").val());
+		var barCode = $.trim($("#barCode").val());
+		var sceneName = $.trim($("#sceneName").val());
+		var start = $.trim($("#start").val());
+		var pageSize = $.trim($("#pageSize").val());
+
+		passParam.push('productName=' + productName);
+		passParam.push('barCode=' + barCode);
+		passParam.push('sceneName=' + sceneName);
+		passParam.push('start=' + start);
+		passParam.push('pageSize=' + pageSize);
+		return passParam.join('&');
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		setParamValue();
+		dataSubmit();
+	});
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 秒杀管理 &gt; <span>秒杀商品管理</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">秒杀商品管理</div>
+					<div class="complaint_main">
+						<form method="get" id="dataForm">
+							<input type="hidden" id="strRoleIds" name="strRoleIds" /> <input
+								type="hidden" id="userId" name="userId" />
+							<div class="main_search">
+								<dl>
+									<dt>商品名称:</dt>
+									<dt>
+										<input type="text" class="txt grid-12" id="productName"
+											name="productName" />
+									</dd>
+								</dl>
+								<dl>
+									<dt>商品条形码：</dt>
+									<dd>
+										<input type="text" class="txt grid-12" id="barCode"
+											name="barCode" />
+									</dd>
+								</dl>
+								<input type="hidden" id="start" name="start" /> <input
+									type="hidden" id="pageSize" name="pageSize" />
+								<p class="main_search_btn">
+									<permission code="FUNCTION_SEARCH_SECKILLPRODUCT_MANAGEMENT">
+									<input type="button" value="查询" class="btn_sure" id="search"
+										onClick="dataSubmit(1)" /> </permission>
+									<input type="button" value="添加秒杀商品" class="btn_sure"
+										onClick="createProduct();" />
+								</p>
+							</div>
+							<!--搜索结束-->
+						</form>
+						<div class="order_index">
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<th width="40">序号</th>
+										<th width="80">商品名称</th>
+										<th width="80">商品编码</th>
+										<th width="100">抢购时间(单位分)</th>
+										<th width="100">秒杀价</th>
+										<th width="60">活动库存</th>
+										<th width="80">秒中数量</th>
+										<th width="100">限购数量</th>
+										<th width="100">组内排序</th>
+										<th width="100">操作</th>
+									</tr>
+								</thead>
+								<tbody id="tbody"></tbody>
+							</table>
+						</div>
+						<dl class="main_pagination">
+							<dd class="pagination">
+								<span id="pageItem"> <span class="page_prev">&lt;&lt;
+										上一页</span> <a class="bg_on" href="javascript:void(0);">1</a> <a
+									href="javascript:void(0);" onClick="goPage(2);">2</a> <a
+									class="page_next" href="javascript:void(0);"
+									onClick="goPage(2)">下一页 &gt;&gt;</a>
+								</span> <span class="page_no">共<span id="totalCount">0</span>条
+								</span> <span class="page_no">共<span id="pageCount">2</span>页 到第
+									<input type="text"
+									onKeyUp="this.value=this.value.replace(/^0+|\D/g,'')"
+									class="page_txt" id="pageObj">页 <input type="button"
+									onClick="goPage($.trim($('#pageObj').val()));" class="page_btn"
+									value="确定"></span>
+							</dd>
+						</dl>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

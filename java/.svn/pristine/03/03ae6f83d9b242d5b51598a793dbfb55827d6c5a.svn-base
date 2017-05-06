@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleProductHistoryMapper">
+	<resultMap id="BaseResultMap" type="SaleProductHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId"
+			jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode"
+			jdbcType="VARCHAR" />
+		<result column="BRANDCODE" property="brandCode" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTNAME" property="saleProductName" jdbcType="VARCHAR" />
+		<result column="MARKETTIME" property="marketTime" jdbcType="TIMESTAMP" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="AUDITSTATUSCODE" property="auditStatusCode"
+			jdbcType="VARCHAR" />
+		<result column="ENABLEDFLAG" property="enabledFlag" jdbcType="VARCHAR" />
+		<result column="AUDITUSERID" property="auditUserId" jdbcType="INTEGER" />
+   		<result column="AUDITTIME" property="auditTime" jdbcType="TIMESTAMP" />
+    	<result column="AUDITNOTE" property="auditNote" jdbcType="VARCHAR" />
+		<result column="OPERATEUSERID" property="operateUserId"
+			jdbcType="INTEGER" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+		<result column="OPERATEDESC" property="operateDesc" jdbcType="VARCHAR" />
+		<result column="PEROPERCOUNT" property="perOperCount" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEPRODUCTID, STOREID, PRODUCTID, PRODUCTCLASSCODE,
+		BRANDCODE, SALEPRODUCTNAME,MARKETTIME, BARCODE,
+		AUDITSTATUSCODE,ENABLEDFLAG, AUDITUSERID,
+		AUDITTIME,AUDITNOTE,
+		OPERATEUSERID, OPERATETIME,OPERATETYPE, OPERATEDESC,PEROPERCOUNT
+	</sql>
+
+	<insert id="saveSaleProductHistory" parameterType="SaleProductHistory">
+		insert into
+		P_SALE_PRODUCT_HISTORY (SALEPRODUCTID, STOREID,
+		PRODUCTID,PRODUCTCLASSCODE, BRANDCODE,
+		SALEPRODUCTNAME,MARKETTIME, BARCODE,AUDITSTATUSCODE,
+		ENABLEDFLAG,AUDITUSERID,AUDITTIME,AUDITNOTE,
+		OPERATEUSERID, OPERATETIME,OPERATETYPE, OPERATEDESC, PEROPERCOUNT
+		)
+		values
+		(#{saleProductId,jdbcType=INTEGER},
+		#{storeId,jdbcType=INTEGER},#{productId,jdbcType=INTEGER},
+		#{productClassCode,jdbcType=VARCHAR}, #{brandCode,jdbcType=VARCHAR},
+		#{saleProductName,jdbcType=VARCHAR},#{marketTime,jdbcType=TIMESTAMP},
+		#{barCode,jdbcType=VARCHAR},#{auditStatusCode,jdbcType=VARCHAR}, 
+		#{enabledFlag,jdbcType=VARCHAR}, 
+		#{auditUserId,jdbcType=INTEGER}, #{auditTime,jdbcType=TIMESTAMP},
+		#{auditNote,jdbcType=VARCHAR},#{operateUserId,jdbcType=INTEGER},
+		#{operateTime,jdbcType=TIMESTAMP},#{operateType,jdbcType=VARCHAR},
+		#{operateDesc,jdbcType=VARCHAR},#{perOperCount,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<select id="listSaleProductHistoryBySaleProductId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_HISTORY
+		where 
+		SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

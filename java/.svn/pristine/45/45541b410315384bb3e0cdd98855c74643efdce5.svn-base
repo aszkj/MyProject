@@ -1,0 +1,355 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css" rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css" rel="stylesheet"  />
+<script type="text/javascript">
+var param ={
+	currentPage:1,
+	pageSize:10,
+	pageCount:0,
+	totalCount:0
+};
+function updatePageInfo(){
+	if(param['totalCount'] < 1) {$(".main_pagination").hide(); }
+	else {$(".main_pagination").show()}
+	var html=[];
+	var i=1;
+	var j=5;
+	if(param['pageCount']>=5){
+		i=(param['currentPage']+2)<=param['pageCount']?((param['currentPage']-2>=1)?(param['currentPage']-2):1):(param['pageCount']-4);
+		j=i+4;
+	}
+	else{
+		j=param['pageCount'];
+	}
+	if(param['currentPage'] == 1)	{ html.push('<span class="page_prev">&lt;&lt; 上一页</span>');}
+	else{ html.push('<a onclick="goPage('+(param['currentPage']-1)+')" href="javascript:void(0);" class="page_prev">&lt;&lt; 上一页</a>');	}
+	for(;i<=j;i++){
+		if(i==param['currentPage']){
+			html.push('<a href="javascript:void(0);" class="bg_on">');
+			html.push(i);
+			html.push('</a>');
+		}
+		else{
+			html.push('<a onclick="goPage(');
+			html.push(i);
+			html.push(');" href="javascript:void(0);" >');
+			html.push(i);
+			html.push('</a>');
+		}
+	}
+	if(param['currentPage'] == param['pageCount'])	{html.push('<span class="page_next">下一页 &gt;&gt;</span>');	}
+	else {html.push('<a onclick="goPage('+(param['currentPage']+1)+')" href="javascript:void(0);" class="page_next">下一页 &gt;&gt;</a>');}
+	$("#pageItem").html(html.join(''));
+	$("#pageCount").html(param['pageCount']);
+	$("#totalCount").html(param['totalCount']);
+}
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(param['currentPage'] != 1){showBox('提示信息','您输入的页码超出正常范围','alert');}
+		else{ showBox('提示信息','当前已经是第一页','alert');}
+		return;
+	}
+	if(pageNo>param['pageCount']){
+		if(param['currentPage'] != param['pageCount']){showBox('提示信息','您输入的页码超出正常范围','alert');}
+		else{showBox('提示信息','当前已经是最后一页','alert');}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+
+function dataSubmit(pageNo){
+	if(pageNo != 'A'){
+		var pattern = /\d+/;
+		if(pattern.test(parseInt(pageNo))){param.currentPage = pageNo;}
+	}else{
+		pageNo = param.currentPage;
+	}
+	$('#start').val(param.currentPage);
+	$('#pageSize').val(param.pageSize);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType:'application/json',
+		data: formJsonStr,
+		dataType : 'json',
+		error : function(){
+			showBox('提示信息','提交数据失败，请稍后再试','alert');
+		},
+		url:TERMINAL_URL+ OPERATION_SYSTEM_IDENTITY +'/searchRedEnvelopeActivities',
+		beforeSubmit:function(){},
+		success: function(data) {
+			//响应返回的业务处理  
+			if(data.msgCode==1){
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				
+				var html = '';
+				var dataList = data.entity.resultList;
+				var id = getUrlParam('id');
+				if(null != dataList && dataList.length > 0){
+				for(var i=0,j=dataList.length;i<j;i++){
+					var redEnvelopeRewards = dataList[i].redEnvelopeRewards;
+					html += '<tr class="selrow_'+i+'" onmouseover="setBgcolor('+i+')" onmouseout="clearBgcolor('+i+')" ';
+					if(id == dataList[i].id){
+						html += ' bgcolor="#c8e3f8"';
+					}
+					html += '><td rowspan="'+redEnvelopeRewards.length+'">';
+					html += ((param.currentPage-1)*(param.pageSize)+i+1);
+					html += '</td>';
+					html += '<td rowspan="'+redEnvelopeRewards.length+'">';
+					html += dataList[i].activityName;
+					html += '</td>';
+					var prizeName = redEnvelopeRewards[0].prizeName;
+					var rewardType = redEnvelopeRewards[0].rewardType;
+					var releaseCount = redEnvelopeRewards[0].releaseCount;
+					var releaseAmount = redEnvelopeRewards[0].releaseAmount;
+					html += '<td>'+prizeName+'</br>（发放时间：'+redEnvelopeRewards[0].prizeGrantTime+'）</td>';
+					if(rewardType == 'REDENVELOPEREWARDTYPE_COUPON' || rewardType == 'REDENVELOPEREWARDTYPE_VOUCHER'){
+						html += '<td>'+releaseCount+'</td>';
+					}
+					html += '<td rowspan="'+redEnvelopeRewards.length+'">';
+					html += dataList[i].validStartTime + '</br>' + '~' + '</br>' + dataList[i].validEndTime;
+					html += '</td>';
+					html += '<td rowspan="'+redEnvelopeRewards.length+'">';
+					html += dataList[i].createTime;
+					html += '</td>';
+					html += '<td rowspan="'+redEnvelopeRewards.length+'">';
+					html += dataList[i].statusName;
+					html += '</td>';
+					html += '<td rowspan="'+redEnvelopeRewards.length+'">';
+					html += '<permission code="FUNCTION_VIEW_REDENVELOPE_MANAGEMENT">';
+					html += '<a href="javascript:void(0)" onclick="detailActivity('+dataList[i].id+')" class="ablue">查看</a>&nbsp;&nbsp;&nbsp;';
+					html += '</permission>';
+					if(dataList[i].status == 'REDENVELOPEACTIVITYSTATUS_NOT_START' || dataList[i].status == 'REDENVELOPEACTIVITYSTATUS_STARTING'){
+						html += '<permission code="FUNCTION_UPDATE_REDENVELOPE_MANAGEMENT">';
+						html += '<a href="javascript:void(0)" onclick="updateActivity('+dataList[i].id+')" class="ablue">修改</a>&nbsp;&nbsp;&nbsp;';
+						html += '</permission>';
+					}
+					html += '</td>';
+					html += '</tr>';
+					if(redEnvelopeRewards.length > 1){
+						for(var t=1; t<redEnvelopeRewards.length; t++){
+							html += '<tr class="selrow_'+i+'" onmouseover="setBgcolor('+i+')" onmouseout="clearBgcolor('+i+')" ';
+							if(id == dataList[i].id){
+								html += ' bgcolor="#c8e3f8"';
+							}
+							var prizeName = redEnvelopeRewards[t].prizeName;
+							var rewardType = redEnvelopeRewards[t].rewardType;
+							var releaseCount = redEnvelopeRewards[t].releaseCount;
+							var releaseAmount = redEnvelopeRewards[t].releaseAmount;
+							html += '><td>'+prizeName+'</br>（发放时间：'+redEnvelopeRewards[t].prizeGrantTime+'）</td>';
+							if(rewardType == 'REDENVELOPEREWARDTYPE_COUPON' || rewardType == 'REDENVELOPEREWARDTYPE_VOUCHER'){
+								html += '<td>'+releaseCount+'</td>';
+							}
+							html += '</tr>';
+						}
+					}
+				}
+				}else {
+					html += '<tr><td colspan="8">暂无数据</td></tr>';
+				}
+				$("#tbody").html(html);
+				param.currentPage = data.entity.currentPage;
+				param.pageCount = data.entity.pageCount;
+				param.totalCount = data.entity.recordCount;
+				updatePageInfo();
+				disposeFunctionPermissions();
+			}else{
+				showBox('提示信息',data.msg,'alert');
+			}
+		}
+	}); 
+}
+
+function setBgcolor(index){
+	$('.selrow_'+index).css({
+        'background-color':'#c8e3f8'
+    })
+}
+
+function clearBgcolor(index){
+	$('.selrow_'+index).css({
+        'background-color':''
+    })
+}
+
+function addActivity(){
+	locationHref('/redenvelope/redenvelope-mng.html?method=add&'+getParamValue());
+}
+function updateActivity(id){
+	locationHref('/redenvelope/redenvelope-mng.html?method=edit&id='+id+'&'+getParamValue());
+}
+function detailActivity(id){
+	locationHref('/redenvelope/redenvelope-mng.html?method=detail&id='+id+'&'+getParamValue());
+}
+
+/*加载时间控件*/
+function loadTimeInput(){
+	$('#strStartValidTime').datepicker({
+		dateFormat: 'yy-mm-dd',constrainInput:true
+	});
+	$('#strEndValidTime').datepicker({
+		dateFormat: 'yy-mm-dd',constrainInput:true
+	});
+}
+/*获取返回页面的上次查询条件*/
+function setParamValue(){
+	$('#activityName').val(decodeURIComponent(getUrlParam('activityName')));
+	$('#strStartValidTime').val(getUrlParam('strStartValidTime'));
+	$('#strEndValidTime').val(getUrlParam('strEndValidTime'));
+	$('#status').val(getUrlParam('status'));
+	if("" != getUrlParam('pageSize') && "" != getUrlParam('start') ){
+		param.pageSize = getUrlParam('pageSize');
+		param.currentPage = getUrlParam('start');
+	}
+}
+function getParamValue(){
+	var passParam = [];	
+	var activityName = $.trim($("#activityName").val());	
+	var strStartValidTime = $.trim($("#strStartValidTime").val());	
+	var strEndValidTime = $.trim($("#strEndValidTime").val());
+	var status = $.trim($("#status").val());
+	var start = $.trim($('#start').val());
+	var pageSize = $.trim($('#pageSize').val());
+	
+	passParam.push('activityName='+activityName);
+	passParam.push('strStartValidTime='+strStartValidTime);
+	passParam.push('strEndValidTime='+strEndValidTime);
+	passParam.push('status='+status);
+	passParam.push('start=' + start);
+	passParam.push('pageSize=' + pageSize);
+	return passParam.join('&');
+}
+
+$(document).ready(function(e) {
+	loadHtml("headerId","/include/header.html");
+	loadHtml("left_menu_content","/include/leftmenu.html");
+	loadHtml("footerId","/include/footer.html");
+	loadTimeInput();
+	setParamValue();
+	dataSubmit();
+});
+</script>
+</head>
+
+<body id="bodyId">
+<div id="headerId"></div>
+<div class="bread"><a href="/">首页</a> &gt; 红包管理 &gt; <span>红包管理</span></div>
+<div class="main">
+	<div class="clearfix">
+		<div class="content_box">
+			<div class="content">
+				<div class="page_title">红包管理</div>
+				<div class="complaint_main">
+					<form method="get" id="dataForm">
+						<div class="main_search">
+							<dl>
+								<dt>红包游戏名称：</dt>
+								<dd><input type="text" class="txt grid-20" id="activityName" name="activityName" /></dd>
+							</dl>
+							<dl>
+								<dt>有效期：</dt>
+								<dd><input type="text" class="txt grid-11" id="strStartValidTime" name="strStartValidTime" /></dd>
+								<dt class="mlr5">至</dt>
+								<dd><input type="text" class="txt grid-11" id="strEndValidTime" name="strEndValidTime" /></dd>
+							</dl>
+							<dl>
+								<dt>游戏状态：</dt>
+								<dd>
+									<select class="select grid-12" id="status" name="status">
+										<option value="" selected>--请选择--</option>
+										<option value="REDENVELOPEACTIVITYSTATUS_NOT_START">未开始</option>
+										<option value="REDENVELOPEACTIVITYSTATUS_STARTING">已开始</option>
+										<option value="REDENVELOPEACTIVITYSTATUS_END">已结束</option>
+									</select>
+								</dd>
+							</dl>
+							<input type="hidden"  id="start" name="start" />
+							<input type="hidden"  id="pageSize" name="pageSize" />	
+							<p class="main_search_btn">
+							<permission code="FUNCTION_SEARCH_REDENVELOPE_MANAGEMENT">
+								<input type="button" value="查询" class="btn_sure" id="activitySearch" onClick="dataSubmit(1)" /> 
+							</permission>
+							<input type="reset" id="reset" class="btn_gray" value="重置" />
+							<permission code="FUNCTION_ADD_REDENVELOPE_MANAGEMENT">
+								<input type="button" value="新增" class="btn_sure" onClick="addActivity()" />
+							</permission>
+							</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<div class="order_index">
+						<table  class="simple_table" cellpadding="0" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="30">序号</th>
+									<th width="175">红包游戏名称</th>
+									<th width="175">奖励</th>
+									<th width="50">奖励数量</th>
+									<th width="80">有效期</th>
+									<th width="80">创建时间</th>
+									<th width="40">游戏状态</th>
+									<th width="50">操作</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+						<dd class="pagination">
+							<span id="pageItem">
+								<span class="page_prev">&lt;&lt; 上一页</span>
+								<a class="bg_on" href="javascript:void(0);">1</a>
+								<a href="javascript:void(0);" onClick="goPage(2);">2</a>
+								<a class="page_next" href="javascript:void(0);" onClick="goPage(2)">下一页 &gt;&gt;</a>
+							</span>
+							<span class="page_no">共<span id="totalCount">0</span>条</span>
+							<span class="page_no">共<span id="pageCount">2</span>页 到第
+							<input type="text" onKeyUp="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+							<input type="button" onClick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="menu">
+			<div class="aside">
+				<h2 class="aside_title">一里递运营中心</h2>
+				<div id="left_menu_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footerId"></div>
+</body>
+</html>

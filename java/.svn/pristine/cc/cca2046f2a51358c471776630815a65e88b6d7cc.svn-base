@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.UserCouponMapper">
+	<resultMap id="BaseResultMap" type="UserCoupon">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="CONID" property="conId" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="BATCHNO" property="batchNo" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="BEGINTIME" property="beginTime" jdbcType="TIMESTAMP" />
+		<result column="FINDTIME" property="findTime" jdbcType="TIMESTAMP" />
+		<result column="ENDTIME" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="USETIME" property="useTime" jdbcType="TIMESTAMP" />
+		<result column="ACTIVITYID" property="activityId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,CONID,USERID,BATCHNO,STATUS,BEGINTIME,ENDTIME,FINDTIME,USETIME,ACTIVITYID
+	</sql>
+
+	<insert id="save" parameterType="UserCoupon">
+		insert into T_USER_COUPON
+		(CONID,USERID,BATCHNO,STATUS,BEGINTIME,ENDTIME,FINDTIME,USETIME,ACTIVITYID)
+		values
+		(#{conId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER},
+		#{batchNo,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},
+		#{beginTime,jdbcType=TIMESTAMP},#{endTime,jdbcType=TIMESTAMP},
+		#{findTime,jdbcType=TIMESTAMP},
+		#{useTime,jdbcType=TIMESTAMP},#{activityId,jdbcType=INTEGER})
+	</insert>
+
+	<select id="loadUserCouponById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_USER_COUPON where ID =#{id,jdbcType=INTEGER}
+	</select>
+	<select id="loadUserCouponByUserIdAndConId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_USER_COUPON where USERID =#{userId,jdbcType=INTEGER} and CONID
+		=#{conId,jdbcType=INTEGER}
+	</select>
+	<resultMap id="UserCouponInfoMap" type="UserCouponInfo">
+		<result column="USERCOUPONID" property="userCouponId" jdbcType="INTEGER" />
+		<result column="CONID" property="conId" jdbcType="INTEGER" />
+		<result column="CONNAME" property="conName" jdbcType="VARCHAR" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="AMOUNT" property="amount" jdbcType="BIGINT" />
+		<result column="USECONDITION" property="useCondition" jdbcType="BIGINT" />
+		<result column="USERANGECODE" property="useRangeCode" jdbcType="VARCHAR" />
+		<result column="USERANGE" property="useRange" jdbcType="VARCHAR" />
+		<result column="FINDTIME" property="findTime" jdbcType="TIMESTAMP" />
+		<result column="BEGINTIME" property="beginTime" jdbcType="TIMESTAMP" />
+		<result column="ENDTIME" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="USETIME" property="useTime" jdbcType="TIMESTAMP" />
+		<result column="RULE" property="rule" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="findUserCoupons" resultMap="UserCouponInfoMap"
+		parameterType="UserCouponQuery">
+		SELECT
+		C.CONNAME AS CONNAME,
+		C.AMOUNT AS AMOUNT,
+		C.USECONDITION AS
+		USECONDITION,
+		D.USERNAME AS USERNAME,
+		D.USERMOBILE AS PHONE,
+		A.STATUS AS
+		STATUS,
+		A.USETIME AS USETIME,
+		A.FINDTIME AS FINDTIME,
+		A.BEGINTIME AS
+		BEGINTIME,
+		A.ENDTIME AS ENDTIME,
+		B.USERANGECODE AS USERANGECODE,
+		B.USERANGE AS USERANGE
+		FROM T_USER_COUPON A
+		LEFT JOIN T_COUPON B ON
+		A.CONID = B.ID
+		LEFT JOIN T_COUPON_PACKAGE C ON B.CONPACKID = C.ID
+		LEFT
+		JOIN
+		T_SMALLTABLE_USERINFO D ON A.USERID = D.USERID
+		<where>
+			C.ID =#{conPackId,jdbcType=INTEGER}
+			AND A.BATCHNO
+			=#{batchNo,jdbcType=VARCHAR}
+			<if test="status !=null">
+				AND A.STATUS =#{status,jdbcType=VARCHAR}
+			</if>
+			<if test="phone !=null">
+				AND D.USERMOBILE =#{phone,jdbcType=VARCHAR}
+			</if>
+			<if test="startUseTime !=null">
+				AND A.USETIME &gt;= #{startUseTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endUseTime !=null">
+				AND A.USETIME &lt;= #{endUseTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="startGrantTime !=null">
+				AND A.FINDTIME &gt;= #{startGrantTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endGrantTime !=null">
+				AND A.FINDTIME &lt;= #{endGrantTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="startValidTime !=null">
+				AND A.BEGINTIME &gt;= #{startValidTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="endValidTime !=null">
+				AND A.ENDTIME &lt;= #{endValidTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		ORDER BY B.GRANTTIME DESC
+	</select>
+
+	<select id="listByActivityIdAndConId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_USER_COUPON
+		<where>
+			<if test="activityId !=null">
+				ACTIVITYID = #{activityId,jdbcType=INTEGER}
+			</if>
+			<if test="conId !=null">
+				AND CONID = #{conId,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+	<select id="listByActivityIdAndConIdAndUserIdAndStatus"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_USER_COUPON
+		<where>
+			<if test="activityId !=null">
+				ACTIVITYID = #{activityId,jdbcType=INTEGER}
+			</if>
+			<if test="conId !=null">
+				AND CONID = #{conId,jdbcType=INTEGER}
+			</if>
+			<if test="userId !=null">
+				AND USERID = #{userId,jdbcType=INTEGER}
+			</if>
+			<if test="statusList !=null">
+				AND STATUS IN
+				<foreach item="item" index="index" collection="statusList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="listCouponsForNeedAutoUpdateStatus" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_USER_COUPON
+		<where>
+			<if test="statusList !=null">
+				STATUS IN
+				<foreach item="item" index="index" collection="statusList"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<update id="updateStatusById">
+		update T_USER_COUPON
+		set
+		STATUS
+		=#{status,jdbcType=VARCHAR}
+		where ID =#{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateUseCouponById">
+		update T_USER_COUPON
+		set
+		STATUS
+		=#{status,jdbcType=VARCHAR},
+		USETIME = #{useTime,jdbcType=TIMESTAMP}
+		where ID =#{id,jdbcType=INTEGER}
+	</update>
+	<select id="findUserCouponsByRealTimeStatus" resultMap="UserCouponInfoMap">
+		SELECT
+		A.ID AS USERCOUPONID,
+		B.ID AS CONID,
+		C.CONNAME AS CONNAME,
+		A.STATUS AS
+		STATUS,
+		C.AMOUNT AS
+		AMOUNT,
+		C.USECONDITION AS
+		USECONDITION,
+		B.USERANGECODE AS USERANGECODE,
+		B.USERANGE AS USERANGE,
+		A.BEGINTIME AS
+		BEGINTIME,
+		A.ENDTIME AS
+		ENDTIME,
+		B.GRANTTIME AS GRANTTIME,
+		A.USETIME AS
+		USETIME,
+		B.RULE AS
+		RULE
+		FROM
+		T_USER_COUPON A
+		LEFT JOIN T_COUPON B ON
+		A.CONID
+		= B.ID
+		LEFT JOIN
+		T_COUPON_PACKAGE C ON B.CONPACKID = C.ID
+		<where>
+			<if test="userId !=null">
+				AND A.USERID =#{userId,jdbcType=INTEGER}
+			</if>
+			<choose>
+				<when test="isValid == false">
+					AND (A.ENDTIME &lt; #{currentTime,
+					jdbcType=TIMESTAMP}
+					OR A.STATUS = #{usedStatus, jdbcType=VARCHAR})
+				</when>
+				<otherwise>
+					AND (A.BEGINTIME &gt;#{currentTime, jdbcType=TIMESTAMP}
+					OR (A.BEGINTIME &lt;= #{currentTime,
+					jdbcType=TIMESTAMP}
+					AND
+					A.ENDTIME &gt;=#{currentTime, jdbcType=TIMESTAMP}))
+					AND A.STATUS
+					&lt;&gt;
+					#{usedStatus,jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+		</where>
+		ORDER BY A.ENDTIME DESC
+	</select>
+
+	<select id="listValidAndUsebleUserCoupons" resultMap="UserCouponInfoMap">
+		SELECT
+		A.ID AS USERCOUPONID,
+		B.ID AS CONID,
+		C.CONNAME AS CONNAME,
+		A.STATUS AS
+		STATUS,
+		C.AMOUNT AS
+		AMOUNT,
+		C.USECONDITION AS
+		USECONDITION,
+		B.USERANGECODE AS USERANGECODE,
+		B.USERANGE AS USERANGE,
+		A.BEGINTIME AS
+		BEGINTIME,
+		A.ENDTIME AS
+		ENDTIME,
+		B.GRANTTIME AS GRANTTIME,
+		A.USETIME AS
+		USETIME,
+		B.RULE AS
+		RULE
+		FROM
+		T_USER_COUPON A
+		LEFT JOIN T_COUPON B ON
+		A.CONID
+		= B.ID
+		LEFT JOIN T_COUPON_PACKAGE C ON B.CONPACKID = C.ID
+		<where>
+			<if test="userId !=null">
+				AND A.USERID =#{userId,jdbcType=INTEGER}
+			</if>
+			<if test="currentTime != null">
+				AND A.BEGINTIME &lt;= #{currentTime, jdbcType=TIMESTAMP}
+				AND A.ENDTIME &gt;=#{currentTime,
+				jdbcType=TIMESTAMP}
+			</if>
+			<if test="usedStatus != null">
+				AND A.STATUS &lt;&gt; #{usedStatus, jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY A.ENDTIME DESC
+	</select>
+	<select id="loadUserCouponByUserIdAndUserCouponId" resultMap="UserCouponInfoMap">
+		SELECT
+		A.ID AS USERCOUPONID,
+		B.ID AS CONID,
+		C.CONNAME AS CONNAME,
+		A.STATUS AS
+		STATUS,
+		C.AMOUNT AS
+		AMOUNT,
+		C.USECONDITION AS
+		USECONDITION,
+		B.USERANGECODE AS
+		USERANGECODE,
+		B.USERANGE AS USERANGE,
+		A.BEGINTIME AS
+		BEGINTIME,
+		A.ENDTIME AS
+		ENDTIME,
+		B.GRANTTIME AS
+		GRANTTIME,
+		A.USETIME AS
+		USETIME,
+		B.RULE AS
+		RULE
+		FROM
+		T_USER_COUPON A
+		LEFT JOIN T_COUPON B ON
+		A.CONID =
+		B.ID
+		LEFT JOIN
+		T_COUPON_PACKAGE C ON B.CONPACKID = C.ID
+		<where>
+			A.ID = #{userCouponId,jdbcType=INTEGER}
+			<if test="userId != null">
+				and A.USERID=#{userId,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	<select id="getValidUserCouponCountByUserId" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM
+		T_USER_COUPON A
+		LEFT JOIN T_COUPON B ON
+		A.CONID
+		= B.ID
+		LEFT
+		JOIN T_COUPON_PACKAGE C ON B.CONPACKID = C.ID
+		where
+		A.USERID
+		=#{userId,jdbcType=INTEGER}
+		AND
+		(A.BEGINTIME &gt;#{currentTime,
+		jdbcType=TIMESTAMP}
+		OR (A.BEGINTIME &lt;= #{currentTime,
+		jdbcType=TIMESTAMP}
+		AND
+		A.ENDTIME &gt;=#{currentTime,
+		jdbcType=TIMESTAMP}))
+		AND A.STATUS &lt;&gt;
+		#{usedStatus,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getUserCouponByCouponId" resultMap="BaseResultMap">
+		SELECT
+		*
+		FROM
+		T_USER_COUPON t
+		WHERE
+		t.CONID = #{id, jdbcType=INTEGER}
+		AND STATUS IN (
+		'USERCOUPONSSTATUS_RECEIVED',
+		'USERCOUPONSSTATUS_USABLE'
+		)
+		AND ENDTIME
+		&gt; SYSDATE()
+	</select>
+	<select id="getUserCouponByConPackIdAndBatchNo" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		T_USER_COUPON a
+		WHERE
+		a.BATCHNO = #{batchNo,jdbcType=VARCHAR}
+		and
+		a.CONID in (
+		select
+		b.ID
+		from
+		T_COUPON b
+		where
+		b.CONPACKID =
+		#{conPackId,jdbcType=INTEGER}
+		)
+	</select>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.RoleHistoryMapper" >
+  <resultMap id="BaseResultMap" type="RoleHistory" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="ROLEID" property="roleId" jdbcType="INTEGER" />
+    <result column="ROLENAME" property="roleName" jdbcType="VARCHAR" />
+    <result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+    <result column="ROLEDESC" property="roleDesc" jdbcType="VARCHAR" />
+    <result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+    <result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+    <result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, ROLEID, ROLENAME, CUSTOMERTYPE, ROLEDESC, CUSTOMERID, OPERATEUSERID, OPERATETIME, 
+    OPERATETYPE
+  </sql>
+  
+  <insert id="save" parameterType="RoleHistory" >
+    insert into S_ROLE_HISTORY (ROLEID, ROLENAME, 
+      CUSTOMERTYPE, ROLEDESC, CUSTOMERID, 
+      OPERATEUSERID, OPERATETIME, OPERATETYPE)
+    values (#{roleId,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, 
+      #{customerType,jdbcType=VARCHAR}, #{roleDesc,jdbcType=VARCHAR}, 
+      #{customerId,jdbcType=INTEGER}, #{operateUserId,jdbcType=INTEGER}, 
+      #{operateTime,jdbcType=TIMESTAMP}, #{operateType,jdbcType=VARCHAR})
+  </insert>
+  
+  
+  <select id="list" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_ROLE_HISTORY
+  </select>
+  
+  <select id="listByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_ROLE_HISTORY
+    where ROLEID = #{roleId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="listByRoleName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_ROLE_HISTORY
+    where ROLENAME = #{roleName,jdbcType=INTEGER}
+  </select>
+  
+</mapper>

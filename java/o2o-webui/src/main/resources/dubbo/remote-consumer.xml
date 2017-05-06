@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    	http://www.springframework.org/schema/beans/spring-beans.xsd        
+    	http://code.alibabatech.com/schema/dubbo        
+    	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!--关闭所有服务启动时检查依赖的服务是否可用 -->
+	<dubbo:consumer check="false" />
+
+	<!-- 用户域远程接口RPC调用 -->
+	<dubbo:reference id="userService"
+		interface="com.yilidi.o2o.user.service.IUserService" protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="userProfileService"
+		interface="com.yilidi.o2o.user.service.IUserProfileService" protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="userServiceHessian"
+		interface="com.yilidi.o2o.user.service.IUserService" protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="customerService"
+		interface="com.yilidi.o2o.user.service.ICustomerService" />
+	<dubbo:reference id="withdrawApplyService"
+		interface="com.yilidi.o2o.user.service.IWithdrawApplyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="withdrawApplyServiceHessian"
+		interface="com.yilidi.o2o.user.service.IWithdrawApplyService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="accountBindingService"
+		interface="com.yilidi.o2o.user.service.IAccountBindingService" />
+	<dubbo:reference id="accountService"
+		interface="com.yilidi.o2o.user.service.IAccountService" protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="accountServiceHessian"
+		interface="com.yilidi.o2o.user.service.IAccountService" protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="storeSubsidyRecordService"
+		interface="com.yilidi.o2o.user.service.IStoreSubsidyRecordService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="storeSubsidyRecordServiceHessian"
+		interface="com.yilidi.o2o.user.service.IStoreSubsidyRecordService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="storeProductSubsidyService"
+		interface="com.yilidi.o2o.user.service.IStoreProductSubsidyService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="storeProductSubsidyServiceHessian"
+		interface="com.yilidi.o2o.user.service.IStoreProductSubsidyService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="userCrossDomainMainService"
+		interface="com.yilidi.o2o.user.service.crossdomain.IUserCrossDomainMainService" />
+	<dubbo:reference id="loginLogService"
+		interface="com.yilidi.o2o.user.service.ILoginLogService" />
+	<dubbo:reference id="communityService"
+		interface="com.yilidi.o2o.user.service.ICommunityService" protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="communityServiceHessian"
+		interface="com.yilidi.o2o.user.service.ICommunityService" protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="storeProfileService"
+		interface="com.yilidi.o2o.user.service.IStoreProfileService" />
+	<dubbo:reference id="storeEvaluationService"
+		interface="com.yilidi.o2o.user.service.IStoreEvaluationService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="storeEvaluationServiceHessian"
+		interface="com.yilidi.o2o.user.service.IStoreEvaluationService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="saleProductEvaluationService"
+		interface="com.yilidi.o2o.user.service.ISaleProductEvaluationService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="saleProductEvaluationServiceHessian"
+		interface="com.yilidi.o2o.user.service.ISaleProductEvaluationService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="storeDeliveryService"
+		interface="com.yilidi.o2o.user.service.IStoreDeliveryService" />
+	<dubbo:reference id="storeDeliveryOrderRecordService"
+		interface="com.yilidi.o2o.user.service.IStoreDeliveryOrderRecordService" />
+	<dubbo:reference id="consigneeAddressService"
+		interface="com.yilidi.o2o.user.service.IConsigneeAddressService" />
+	<dubbo:reference id="storeFeedbackService"
+		interface="com.yilidi.o2o.user.service.IStoreFeedbackService" />
+	<dubbo:reference id="storeWarehouseService"
+		interface="com.yilidi.o2o.user.service.IStoreWarehouseService" />
+	<dubbo:reference id="userClientTokenService"
+		interface="com.yilidi.o2o.user.service.IUserClientTokenService" />
+	<dubbo:reference id="recommendCustomerStoreService"
+		interface="com.yilidi.o2o.user.service.IRecommendCustomerStoreService" />
+	<dubbo:reference id="connectUserService"
+		interface="com.yilidi.o2o.user.service.IConnectUserService" />
+	<dubbo:reference id="shareRuleService"
+		interface="com.yilidi.o2o.user.service.IShareRuleService" protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="invitedUserShareAwardService"
+		interface="com.yilidi.o2o.user.service.IInvitedUserShareAwardService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="inviterUserShareAwardService"
+		interface="com.yilidi.o2o.user.service.IInviterUserShareAwardService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="buyerFeedbackService"
+		interface="com.yilidi.o2o.user.service.IBuyerFeedbackService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="buyerFeedbackServiceHessian"
+		interface="com.yilidi.o2o.user.service.IBuyerFeedbackService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="userShareCodeService"
+		interface="com.yilidi.o2o.user.service.IUserShareCodeService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="userShareService"
+		interface="com.yilidi.o2o.user.service.IUserShareService" protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="invitedUserShareRecordService"
+		interface="com.yilidi.o2o.user.service.IInvitedUserShareRecordService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="inviterUserShareWeekTopService"
+		interface="com.yilidi.o2o.user.service.IInviterUserShareWeekTopService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="inviterUserShareWeekTopHistoryService"
+		interface="com.yilidi.o2o.user.service.IInviterUserShareWeekTopHistoryService"
+		protocol="${dubbo.protocol.id}" />
+	<!-- 系统域远程接口RPC调用 -->
+	<dubbo:reference id="systemLogService"
+		interface="com.yilidi.o2o.system.service.ISystemLogService" />
+	<dubbo:reference id="systemParamsService"
+		interface="com.yilidi.o2o.system.service.ISystemParamsService" />
+	<dubbo:reference id="systemDictService"
+		interface="com.yilidi.o2o.system.service.ISystemDictService" />
+	<dubbo:reference id="permissionService"
+		interface="com.yilidi.o2o.system.service.IPermissionService" />
+	<dubbo:reference id="roleService"
+		interface="com.yilidi.o2o.system.service.IRoleService" />
+	<dubbo:reference id="rolePermissionService"
+		interface="com.yilidi.o2o.system.service.IRolePermissionService" />
+	<dubbo:reference id="userRoleService"
+		interface="com.yilidi.o2o.system.service.IUserRoleService" />
+	<dubbo:reference id="areaDictService"
+		interface="com.yilidi.o2o.system.service.IAreaDictService" />
+	<dubbo:reference id="smsNotifyMessageService"
+		interface="com.yilidi.o2o.system.service.ISmsNotifyMessageService" />
+	<dubbo:reference id="messageService"
+		interface="com.yilidi.o2o.system.service.IMessageService" />
+	<dubbo:reference id="siteMessagePublishedService"
+		interface="com.yilidi.o2o.system.service.ISiteMessagePublishedService" />
+	<dubbo:reference id="systemMessageService"
+		interface="com.yilidi.o2o.system.service.ISystemMessageService" />
+
+	<!-- 产品域远程接口RPC调用 -->
+	<!--<dubbo:reference id="productERPService" interface="com.yilidi.erp.product.service.IProductERPService" 
+		protocol="${dubbo.protocol.id}" /> -->
+	<dubbo:reference id="productClassService"
+		interface="com.yilidi.o2o.product.service.IProductClassService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="productClassServiceHessian"
+		interface="com.yilidi.o2o.product.service.IProductClassService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="productService"
+		interface="com.yilidi.o2o.product.service.IProductService" protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="productServiceHessian"
+		interface="com.yilidi.o2o.product.service.IProductService" protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="productBrandService"
+		interface="com.yilidi.o2o.product.service.IProductBrandService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="productFavoriteService"
+		interface="com.yilidi.o2o.product.service.IProductFavoriteService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="productBrandServiceHessian"
+		interface="com.yilidi.o2o.product.service.IProductBrandService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="productTempService"
+		interface="com.yilidi.o2o.product.service.IProductTempService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="productTempServiceHessian"
+		interface="com.yilidi.o2o.product.service.IProductTempService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="storeProductSubsidySettingService"
+		interface="com.yilidi.o2o.product.service.IStoreProductSubsidySettingService" />
+	<dubbo:reference id="productProfileService"
+		interface="com.yilidi.o2o.product.service.IProductProfileService" />
+	<dubbo:reference id="productImageService"
+		interface="com.yilidi.o2o.product.service.IProductImageService" />
+	<dubbo:reference id="productPriceService"
+		interface="com.yilidi.o2o.product.service.IProductPriceService" />
+	<dubbo:reference id="saleProductService"
+		interface="com.yilidi.o2o.product.service.ISaleProductService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="saleProductTempService"
+		interface="com.yilidi.o2o.product.service.ISaleProductTempService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="saleProductServiceHessian"
+		interface="com.yilidi.o2o.product.service.ISaleProductService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="saleProductProfileService"
+		interface="com.yilidi.o2o.product.service.ISaleProductProfileService" />
+	<dubbo:reference id="saleProductImageService"
+		interface="com.yilidi.o2o.product.service.ISaleProductImageService" />
+	<dubbo:reference id="saleProductPriceService"
+		interface="com.yilidi.o2o.product.service.ISaleProductPriceService" />
+	<dubbo:reference id="productClassMapStoreTypeService"
+		interface="com.yilidi.o2o.product.service.IProductClassMapStoreTypeService" />
+	<dubbo:reference id="productClassMappingService"
+		interface="com.yilidi.o2o.product.service.IProductClassMappingService" />
+	<dubbo:reference id="advertisementService"
+		interface="com.yilidi.o2o.product.service.IAdvertisementService" />
+	<dubbo:reference id="secKillSceneService"
+		interface="com.yilidi.o2o.product.service.ISecKillSceneService" />
+	<dubbo:reference id="secKillProductService"
+		interface="com.yilidi.o2o.product.service.ISecKillProductService" />
+	<dubbo:reference id="themeService"
+		interface="com.yilidi.o2o.product.service.IThemeService" />
+	<dubbo:reference id="saleZoneService"
+		interface="com.yilidi.o2o.product.service.ISaleZoneService" />
+	<dubbo:reference id="floorService"
+		interface="com.yilidi.o2o.product.service.IFloorService" />
+	<dubbo:reference id="floorProductService"
+		interface="com.yilidi.o2o.product.service.IFloorProductService" />
+	<dubbo:reference id="floorAdvertisementTypeService"
+		interface="com.yilidi.o2o.product.service.IFloorAdvertisementTypeService" />
+	<dubbo:reference id="themeColumnService"
+		interface="com.yilidi.o2o.product.service.IThemeColumnService" />
+	<dubbo:reference id="themeColumnProductService"
+		interface="com.yilidi.o2o.product.service.IThemeColumnProductService" />
+	<dubbo:reference id="redEnvelopeService"
+		interface="com.yilidi.o2o.product.service.IRedEnvelopeService" />
+	<dubbo:reference id="auditProductBatchInfoService"
+		interface="com.yilidi.o2o.product.service.IAuditProductBatchInfoService" />
+	<dubbo:reference id="auditProductService"
+		interface="com.yilidi.o2o.product.service.IAuditProductService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="auditProductServiceHessian"
+		interface="com.yilidi.o2o.product.service.IAuditProductService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="auditProductImageService"
+		interface="com.yilidi.o2o.product.service.IAuditProductImageService" />
+	<dubbo:reference id="buyRewardActivityAuditService"
+		interface="com.yilidi.o2o.product.service.IBuyRewardActivityAuditService" />
+
+	<!-- 销售域远程接口RPC调用 -->
+	<dubbo:reference id="orderService"
+		interface="com.yilidi.o2o.order.service.IOrderService" protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="orderServiceHessian"
+		interface="com.yilidi.o2o.order.service.IOrderService" protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="shopCartService"
+		interface="com.yilidi.o2o.order.service.IShopCartService" />
+	<dubbo:reference id="saleProductInventoryService"
+		interface="com.yilidi.o2o.order.service.ISaleProductInventoryService" />
+	<dubbo:reference id="flittingOrderService"
+		interface="com.yilidi.o2o.order.service.IFlittingOrderService" />
+	<dubbo:reference id="orderConsigneeAddressService"
+		interface="com.yilidi.o2o.order.service.IOrderConsigneeAddressService" />
+	<dubbo:reference id="flittingOrderItemService"
+		interface="com.yilidi.o2o.order.service.IFlittingOrderItemService" />
+	<dubbo:reference id="purchaseOrderServiceHessian"
+		interface="com.yilidi.o2o.order.service.IPurchaseOrderService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="purchaseOrderService"
+		interface="com.yilidi.o2o.order.service.IPurchaseOrderService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="payLogService"
+		interface="com.yilidi.o2o.order.service.IPayLogService" protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="payLogServiceHessian"
+		interface="com.yilidi.o2o.order.service.IPayLogService" protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="stockOutOrderService"
+		interface="com.yilidi.o2o.order.service.IStockOutOrderService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="stockOutOrderServiceHessian"
+		interface="com.yilidi.o2o.order.service.IStockOutOrderService"
+		protocol="${hessian.protocol.id}" />
+	<dubbo:reference id="activityOrderCustomerRecService"
+		interface="com.yilidi.o2o.order.service.IActivityOrderCustomerRecService"
+		protocol="${dubbo.protocol.id}" />
+	<dubbo:reference id="couponService"
+		interface="com.yilidi.o2o.order.service.ICouponService" />
+	<dubbo:reference id="voucherService"
+		interface="com.yilidi.o2o.order.service.IVoucherService" />
+	<dubbo:reference id="saleOrderItemService"
+		interface="com.yilidi.o2o.order.service.ISaleOrderItemService" />
+	<dubbo:reference id="firstOrderCustomerRecService"
+		interface="com.yilidi.o2o.order.service.IFirstOrderCustomerRecService" />
+	<dubbo:reference id="secKillSaleProductInventoryService"
+		interface="com.yilidi.o2o.order.service.ISecKillSaleProductInventoryService" />
+	<dubbo:reference id="orderRefundService"
+		interface="com.yilidi.o2o.order.service.IOrderRefundService" />
+</beans>

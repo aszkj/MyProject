@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.AuditProductImageMapper">
+	<resultMap id="BaseResultMap" type="AuditProductImage">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="BATCHNO" property="batchNo" jdbcType="VARCHAR" />
+		<result column="AUDITPRODUCTID" property="auditProductId" jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="MASTERFLAG" property="masterFlag" jdbcType="VARCHAR" />
+		<result column="IMAGEURL1" property="imageUrl1" jdbcType="VARCHAR" />
+		<result column="IMAGEURL2" property="imageUrl2" jdbcType="VARCHAR" />
+		<result column="IMAGEURL3" property="imageUrl3" jdbcType="VARCHAR" />
+		<result column="IMAGEORDER" property="imageOrder" jdbcType="INTEGER" />
+		<result column="DATARESOURCE" property="dataResource" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, BATCHNO, AUDITPRODUCTID, CHANNELCODE, MASTERFLAG, 
+		IMAGEURL1, IMAGEURL2 , IMAGEURL3, IMAGEORDER, DATARESOURCE,CREATETIME,
+		CREATEUSERID,MODIFYTIME, MODIFYUSERID
+	</sql>
+	<select id="loadById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT_IMAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<insert id="save" parameterType="AuditProductImage" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_AUDIT_PRODUCT_IMAGE (
+		BATCHNO, AUDITPRODUCTID,
+		CHANNELCODE, MASTERFLAG,
+		IMAGEURL1, IMAGEURL2,
+		IMAGEURL3, IMAGEORDER,
+		DATARESOURCE,
+		CREATETIME, CREATEUSERID )
+		values
+		(#{batchNo,jdbcType=VARCHAR},
+		#{auditProductId,jdbcType=INTEGER},
+		#{channelCode,jdbcType=VARCHAR},
+		#{masterFlag,jdbcType=VARCHAR},
+		#{imageUrl1,jdbcType=VARCHAR},
+		#{imageUrl2,jdbcType=VARCHAR},
+		#{imageUrl3,jdbcType=VARCHAR},
+		#{imageOrder,jdbcType=INTEGER},
+		#{dataResource,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER})
+	</insert>
+
+	<delete id="deleteById">
+		delete from
+		P_AUDIT_PRODUCT_IMAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<delete id="deleteByBatchNo">
+		delete from
+		P_AUDIT_PRODUCT_IMAGE
+		where BATCHNO = #{batchNo,jdbcType=VARCHAR}
+	</delete>
+
+	<delete id="deleteByAuditProductIdAndChannelCode">
+		delete from
+		P_AUDIT_PRODUCT_IMAGE
+		where AUDITPRODUCTID = #{auditProductId, jdbcType=INTEGER}
+		and CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteByImageUrl1">
+		delete from
+		P_AUDIT_PRODUCT_IMAGE
+		where IMAGEURL1 = #{imageUrl1, jdbcType=VARCHAR}
+	</delete>
+
+	<update id="updateMasterFlagById">
+		update P_AUDIT_PRODUCT_IMAGE
+		set
+		MASTERFLAG = #{masterFlag,jdbcType=VARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id, jdbcType=INTEGER}
+	</update>
+
+	<update id="updateImageOrderById">
+		update P_AUDIT_PRODUCT_IMAGE
+		set
+		IMAGEORDER = #{imageOrder,jdbcType=INTEGER},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id, jdbcType=INTEGER}
+	</update>
+
+	<update id="updateById" parameterType="AuditProductImage">
+		update
+		P_AUDIT_PRODUCT_IMAGE
+		set
+		MASTERFLAG = #{masterFlag,jdbcType=VARCHAR},
+		IMAGEURL1 = #{imageUrl1,jdbcType=VARCHAR},
+		IMAGEURL2 = #{imageUrl2,jdbcType=VARCHAR},
+		IMAGEURL3 = #{imageUrl3,jdbcType=VARCHAR},
+		IMAGEORDER = #{imageOrder,jdbcType=INTEGER},
+		MODIFYUSERID = #{modifyUserId,jdbcType=VARCHAR},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where ID = #{id, jdbcType=INTEGER}
+	</update>
+
+	<select id="listByAuditProductIdAndChannelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT_IMAGE
+		<where>
+			AUDITPRODUCTID = #{auditProductId,jdbcType=INTEGER}
+			<if test="channelCode != null">
+				and CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="listByBatchNo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_AUDIT_PRODUCT_IMAGE
+		<where>
+			BATCHNO = #{batchNo,jdbcType=VARCHAR}
+		</where>
+	</select>
+
+</mapper>

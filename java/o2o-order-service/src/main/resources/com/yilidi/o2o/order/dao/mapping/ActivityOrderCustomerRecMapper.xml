@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.ActivityOrderCustomerRecMapper">
+	<resultMap id="BaseResultMap" type="ActivityOrderCustomerRec">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="BUYERCUSTOMERID" property="buyerCustomerId" jdbcType="INTEGER" />
+		<result column="ACTIVITYID" property="activityId" jdbcType="INTEGER" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="DEVICEID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="ORDERCOUNT" property="orderCount" jdbcType="INTEGER" />
+		<result column="ADDRESSDETAIL" property="addressDetail" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, BUYERCUSTOMERID, ACTIVITYID,SALEORDERNO, SALEPRODUCTID,DEVICEID,
+		ADDRESSDETAIL,STATUS,ORDERCOUNT,CREATETIME,CREATEUSERID
+	</sql>
+
+	<insert id="save" parameterType="ActivityOrderCustomerRec">
+		insert into T_ACTIVITY_ORDER_CUSTOMER_RE
+		(BUYERCUSTOMERID,ACTIVITYID,SALEORDERNO,
+		SALEPRODUCTID,ORDERCOUNT,DEVICEID,ADDRESSDETAIL,STATUS,
+		CREATETIME,CREATEUSERID)
+		values
+		(#{buyerCustomerId,jdbcType=INTEGER},
+		#{activityId,jdbcType=INTEGER},
+		#{saleOrderNo,jdbcType=VARCHAR},
+		#{saleProductId,jdbcType=INTEGER},
+		#{orderCount,jdbcType=INTEGER},
+		#{deviceId,jdbcType=VARCHAR},
+		#{addressDetail,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="loadOrderCountByBuyerCustomerIdAndActivityIdAndDeviceId" resultType="java.lang.Integer">
+		select max(t.ORDERCOUNT) from
+		(
+		select
+		sum(orderCount) AS ORDERCOUNT
+		from T_ACTIVITY_ORDER_CUSTOMER_RE
+		where 
+		BUYERCUSTOMERID = #{buyerCustomerId,jdbcType=INTEGER}
+			and ACTIVITYID =
+			#{activityId,jdbcType=INTEGER}
+			and SALEPRODUCTID =
+			#{saleProductId,jdbcType=INTEGER}
+		UNION 
+		select
+		sum(orderCount) AS ORDERCOUNT
+		from T_ACTIVITY_ORDER_CUSTOMER_RE
+		where
+			DEVICEID =
+			#{deviceId,jdbcType=VARCHAR}
+			and ACTIVITYID =
+			#{activityId,jdbcType=INTEGER}
+			and SALEPRODUCTID =
+			#{saleProductId,jdbcType=INTEGER}
+			) t
+	</select>
+	<select id="updateStatusBySaleOrderNo">
+		update
+		T_ACTIVITY_ORDER_CUSTOMER_RE
+		set STATUS = #{status,jdbcType=VARCHAR}
+		where
+		SALEORDERNO =
+		#{saleOrderNo,jdbcType=VARCHAR}
+	</select>
+	<select id="loadSaleProductOrderCountByActivityIdAndSaleProductId" resultType="java.lang.Integer">
+		select
+		sum(ORDERCOUNT) as ORDERCOUNT
+		from
+		T_ACTIVITY_ORDER_CUSTOMER_RE
+		<where>
+			<if test="activityId != null">
+				and ACTIVITYID =
+				#{activityId,jdbcType=INTEGER}
+			</if>
+			<if test="saleProductId != null">
+				and SALEPRODUCTID =
+				#{saleProductId,jdbcType=INTEGER}
+			</if>
+			<if test="status != null">
+				and STATUS =
+				#{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

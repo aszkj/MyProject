@@ -1,0 +1,449 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+function goPage(pageNo){
+	var pattern = /\d+/;
+	if(!pattern.test(parseInt(pageNo))) return;
+	if(parseInt(pageNo) < 1){
+		if(TURN_PAGE_PARAMS['currentPage'] != 1){
+			showBox('提示!',"您输入的页码超出正常范围！",'alert');
+		} else { 
+			showBox('提示!',"当前已经是第一页！",'alert');
+		}
+		return;
+	}
+	if(pageNo>TURN_PAGE_PARAMS['pageCount']){
+		if(TURN_PAGE_PARAMS['currentPage'] != TURN_PAGE_PARAMS['pageCount']){
+			showBox('提示!',"您输入的页码超出正常范围！",'alert');
+		} else {
+			showBox('提示!',"当前已经是最后一页！",'alert');
+		}
+		return;	
+	}
+	dataSubmit(pageNo);
+}
+function dataSubmit(pageNo) {
+	$("#tbody").html("");
+	TURN_PAGE_PARAMS.currentPage = pageNo ? pageNo : 1;
+	$('#currentPagesize').val(TURN_PAGE_PARAMS.pageSize);
+	$('#start').val(TURN_PAGE_PARAMS.currentPage);
+	var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+	$.ajax({
+		type : 'post',
+		contentType : 'application/json',
+		data : formJsonStr,
+		dataType : 'json',
+		cache : false,
+		url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listSaleProductEvaluationTemps',
+		beforeSubmit : function() {
+		},
+		error:function(){
+			return;
+		}, //非必须
+		success : function(data) {
+			//响应返回的业务处理  
+			if (data.msgCode == 1) {
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var html = '';
+				if( null != data.entity){
+					var dataList = data.entity.resultList;
+					if (null != dataList && dataList.length > 0) {
+						for (var i = 0, j = dataList.length; i < j; i++) {
+							html += '<tr><td>' + (i+1) + '</td><td>';
+							html += dataList[i].createTime;
+							html += '</td><td>';
+							html += dataList[i].barCode;
+							html += '</td><td>';
+							html += dataList[i].saleProductName==null?'--':dataList[i].saleProductName;
+							html += '</td><td>';
+							html += dataList[i].storeCode==null?'--':dataList[i].storeCode;
+							html += '</td><td>';
+							html += dataList[i].storeName==null?'--':dataList[i].storeName;
+							html += '</td><td>';
+							html += dataList[i].userName==null?'--':dataList[i].userName;
+							html += '</td><td>';
+							html += dataList[i].saleOrderNo==null?'--':dataList[i].saleOrderNo;
+							html += '</td><td>';
+							html += dataList[i].anonymityEvaluate==null?'--':(dataList[i].anonymityEvaluate=='STOREEVALUATIONANONYMITYEVAL_YES')?'是':'否';
+							html += '</td><td>';
+							html += dataList[i].systemEvaluate==null?'--':(dataList[i].systemEvaluate=='STOREEVALUATIONSYSTEMEVAL_YES')?'是':'否';
+							html += '</td><td>';
+							html += dataList[i].content==null?'--':dataList[i].content;
+							html += '</td><td>';
+							html += dataList[i].showStatus==null?'--':(dataList[i].showStatus=='STOREEVALUATIONSTATUS_YES')?'显示':'隐藏';
+							html += '</td></tr>';
+						}
+					} else {
+						html += '<tr><td colspan="12">暂无数据</td></tr>';
+					}
+					$("#tbody").html(html);
+					TURN_PAGE_PARAMS.currentPage = data.entity.currentPage;
+					TURN_PAGE_PARAMS.totalCount = data.entity.recordCount;
+					TURN_PAGE_PARAMS.pageCount = Math.ceil(data.entity.recordCount/data.entity.pageSize);
+					updateFlipLabel();
+				}
+
+			} else {
+				showBox('提示!',data.msg,'alert');
+			}
+		}
+	});
+}
+
+
+	function uploadSubmit() {
+		if($('#uploadFile').val()==''||$('#uploadFile').val()==undefined){
+			return;
+		}
+		$('#uploadBtn').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$("#promptImportMessage").show();
+		$("#promptImportAlert").show();
+		$("#promptImportAlert").html("系统会自动滤除(门店编码与门店名称不对应) 以及 (商品编码及商品名称不对应)的数据行!");;
+		$("#promptImportMessage").html("正在导入商品评论.......");
+		ajax({
+			uploadForm : 'uploadForm',
+			url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+					+ "/uploadToTempForSaleProductEvaluation",
+			dataType : 'json',//非必须.默认text
+			async : false,
+			error : function() {
+				$('#uploadBtn').removeClass().addClass('btn_sure')[0].disabled = false;
+				$("#promptImportMessage").hide();
+			}, //非必须
+			success : function(data) {
+				if (data.msgCode != 1) {
+					if (data.entity != null) {
+						var list = data.entity;
+						var html = "";
+						for ( var o in list) {
+							html += "<p style='white-space:nowrap;'>" + list[o]
+									+ "</p>";
+						}
+						$('#uploadBtn').removeClass().addClass('btn_sure')[0].disabled = false;
+						$("#promptImportMessage").show();
+						$("#promptImportMessage").html(html);
+					} else {
+						$('#uploadBtn').removeClass().addClass('btn_sure')[0].disabled = false;
+						showBox('提示!', data.msg, 'alert');
+					}
+				} else {
+					$('#uploadBtn').removeClass().addClass('btn_sure')[0].disabled = false;
+					$("#promptImportMessage").show();
+					$('#promptImportMessage').text('操作成功');
+					$('#uploadFile').val('');
+					setTimeout(function() {
+						dataSubmit();
+						$('.txta').val('');
+						$("#promptImportMessage").hide();
+					}, 1000);
+				}
+			}//非必须
+		});
+	}
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#startCreateTime').datepicker({
+			dateFormat : 'yy-mm-dd',
+			constrainInput : true
+		});
+		$('#endCreateTime').datepicker({
+			dateFormat : 'yy-mm-dd',
+			constrainInput : true
+		});
+	}
+
+	function dataEditSubmit() {
+		showBox(
+				'确认信息',
+				"确认添加列表中的商品评论到标准库吗？",
+				'confirm',
+				function() {
+					//var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+					$('#dataSubmit').removeClass().addClass('btn_disabled')[0].disabled = true;
+					$("#promptAddMessage").show();
+					$("#promptAddMessage").text("正在添加所有导入的商品评论到标准库.......");
+					var formJsonStr = JSON.stringify(iTsai.form
+							.serialize($('#dataForm')));
+					$
+							.ajax({
+								type : 'post',
+								dataType : 'json',
+								contentType : 'application/json',
+								data : formJsonStr,
+								cache : false,
+								url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+										+ '/addAllTempSaleProductEvaluateToStandard',
+								success : function(data) {
+									if (data.msgCode != 1) {
+										if (null == data.msg) {
+											showBox('提示!', '导入失败！', 'alert');
+										} else {
+											showBox('提示!', data.msg, 'alert');
+										}
+										$("#promptAddMessage").text('导入失败！');
+										$('#dataSubmit').removeClass()
+												.addClass('btn_sure')[0].disabled = false;
+									} else {
+										$('#storeName').val('');
+										$('#userName').val('');
+										$('#content').val('');
+										$('#startCreateTime').val('');
+										$('#endCreateTime').val('');
+										dataSubmit();
+										if (data.entity != null) {
+											var list = data.entity;
+											var html = "";
+											for ( var o in list) {
+												html += "<p style='white-space:nowrap;'>"
+														+ list[o] + "</p>";
+											}
+											$('#dataSubmit').removeClass()
+													.addClass('btn_sure')[0].disabled = false;
+											$("#promptAddMessage").show();
+											$("#promptAddMessage").html(html);
+										} else {
+											$('#dataSubmit').removeClass()
+													.addClass('btn_sure')[0].disabled = false;
+											$("#promptAddMessage").show();
+											$("#promptAddMessage").text('操作成功');
+											$('.txta').val('');
+											setTimeout(function() {
+												$("#promptAddMessage").hide();
+											}, 2000);
+										}
+									}
+								}
+							});
+				})
+	}
+	function change(e) {
+		var src = e.target || window.event.srcElement;
+		var filepath = src.value;
+		var filename = filepath.substring(filepath.lastIndexOf('\\') + 1);
+		$('.txta').val(filename);
+	}
+	$(document).ready(
+			function() {
+				$("#promptAddMessage").hide();
+				$("#promptImportMessage").hide();
+				$("#promptImportAlert").hide();
+				loadHtml("headerId", "/include/header.html");
+				loadHtml("left_menu_content", "/include/leftmenu.html");
+				loadHtml("footerId", "/include/footer.html");
+				//loadSubClass("TOP_LEVEL_CLASS");
+				dataSubmit();
+				loadTimeInput();
+				$('.txta').val('');
+				$("#product_template").attr(
+						"href",
+						DOWNLOAD_FILE_URL
+								+ DOWNLOAD_REPORT_TEMPLATE_RELATIVE_PATH
+								+ "/saleproduct_evaluation_template.xlsx");
+			});
+
+	//清空临时表
+	function deleteAllEvaluationTemps() {
+		showBox(
+				'确认信息',
+				"确认清空未导入的全部临时商品评论吗？",
+				'confirm',
+				function() {
+					$('#deleteAllTemps').removeClass().addClass('btn_disabled')[0].disabled = true;
+					$("#promptAddMessage").show();
+					$("#promptAddMessage").text("正在清理全部的临时商品评论.......");
+					$.ajax({
+						type : 'post',
+						dataType : 'json',
+						cache : false,
+						url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY
+								+ '/deleteAllTempSaleProductEvaluation',
+						success : function(data) {
+							if (data.msgCode != 1) {
+								showBox('提示!', '操作失败!', 'alert');
+								$('#dataSubmit').removeClass().addClass(
+										'btn_sure')[0].disabled = false;
+							} else {
+								dataSubmit();
+								$('#deleteAllTemps').removeClass().addClass(
+										'btn_sure')[0].disabled = false;
+								$("#promptAddMessage").show();
+								$("#promptAddMessage").text('操作成功');
+								$('.txta').val('');
+								setTimeout(function() {
+									$("#promptAddMessage").hide();
+								}, 2000);
+							}
+						}
+					});
+				})
+	}
+</script>
+<style type="text/css">
+html,body {
+	background: #fff;
+}
+</style>
+</head>
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 商品评论管理 &gt;<span>商品评论批量导入</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">商品评论批量导入</div>
+					<!--搜索条件-->
+					<div class="complaint_main">
+						<div class="box_m search_form">
+							<p style="height:30px;line-height:30px">
+								<span style="padding-left: 20px;">点击下载模板：</span> <a class="blue"
+									style="color:blue" id="product_template">商品评论导入模板.xls</a>
+							</p>
+							<form id="uploadForm" enctype="multipart/form-data"
+								onsubmit="uploadSubmit();return false;">
+								<div class="box-dva" style="background:#fff;">
+									<input type="text" class="txta">
+									<p class="box-upa">
+										<input id="uploadFile" class="filea" name="file" type="file"
+											onchange="change(event);" /> <span class="btn_sure">选择文件</span>
+									</p>
+									<div>
+										<input type="submit" value="确定" class="btn_sure" id="uploadBtn" />
+									</div>
+									<br>
+									<span id="promptImportAlert" class="cred" style="display:block;height:20px;width:800px;"></span>
+									<span id="promptImportMessage" class="cred" style="display:block;height:20px;width:800px;"></span>
+								</div>
+							</form>	
+						</div>
+					</div>
+					<form method="post" id="dataForm">
+						<input type="hidden" id="currentPagesize" name="pageSize" value="" />
+						<input type="hidden" id="start" name="start" value="" />
+						<div class="main_search">
+							<!--<dl>
+								<dt>门店名称：</dt>
+								<dd><input type="text" class="txt grid-10" id="storeName" name="storeName" /></dd>
+							</dl>  -->
+							<dl>
+								<dt>商品名称：</dt>
+								<dd><input type="text" class="txt grid-10" id="saleProductName" name="saleProductName" /></dd>
+							</dl>
+							<dl>
+								<dt>评论用户：</dt>
+								<dd><input type="text" class="txt grid-10" id="userName" name="userName" /></dd>
+							</dl>
+							<dl>
+								<dt>评论内容：</dt>
+								<dd><input type="text" class="txt grid-15" id="content" name="content" /></dd>
+							</dl>
+							<dl>
+			                      <dt>评论时间：</dt>
+			                      <dd><input type="text" class="txt grid-10" id="startCreateTime" name="startCreateTime" /></dd>
+			                      <dt class="mlr5">&nbsp;&nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+			                      <dd><input type="text" class="txt grid-10" id="endCreateTime" name="endCreateTime" /></dd>
+		                   	</dl>
+						<p class="main_search_btn">
+							<input type="button" value="查询" class="btn_sure" id="storeEvaluationSearch" onClick="dataSubmit()" />
+							&nbsp;&nbsp;
+							<input type="button" value="清除所有" class="btn_sure" id="deleteAllTemps" onClick="deleteAllEvaluationTemps()" /> 
+						</p>
+						</div>
+						<!--搜索结束-->
+					</form>
+					<!--搜索条件结束-->
+					<div class="order_index">
+						<table class="simple_table" cellpadding="0" cellspacing="0"
+							width="100%">
+							<thead>
+								<tr>
+									<th width="20">序号</th>
+									<th width="100">评论时间</th>
+									<th width="80">商品编码</th>
+									<th width="80">商品名称</th>
+									<th width="60">店铺编码</th>
+									<th width="60">店铺名称</th>
+									<th width="50">评论用户</th>
+									<th width="60">订单号</th>
+									<th width="40">是否匿名评价</th>
+									<th width="40">是否系统评价</th>
+									<th width="80">评价内容</th>
+									<th width="40">显示状态</th>
+								</tr>
+							</thead>
+							<tbody id="tbody">
+							</tbody>
+						</table>
+					</div>
+					<dl class="main_pagination">
+							<dd class="pagination">
+								<span id="pageItem">
+									<span class="page_prev">&lt;&lt; 上一页</span>
+									<a class="bg_on" href="javascript:void(0);">1</a>
+									<a href="javascript:void(0);" onclick="goPage(2);">2</a>
+									<a class="page_next" href="javascript:void(0);" onclick="goPage(2)">下一页 &gt;&gt;</a>
+								</span>
+								<span class="page_no">共<span id="totalCount">0</span>条</span>
+								<span class="page_no">共<span id="pageCount">2</span>页 到第
+								<input type="text" onkeyup="this.value=this.value.replace(/^0+|\D/g,'')" class="page_txt" id="pageObj">页 
+								<input type="button" onclick="goPage($.trim($('#pageObj').val()));" class="page_btn" value="确定"></span>
+							</dd>
+					</dl>
+					<dl>
+							<dt></dt>
+							<dd>
+								<p class="main_search_btn">
+									<input type="button" id="dataSubmit" class="btn_sure" value="添加" onClick="javascript:dataEditSubmit()">
+									<input type="button" id="goBack" class="btn_gray" value="返回" onclick="javascript:history.go(-1);">
+								</p>
+							</dd>
+					</dl>
+					<div id="promptAddMessage" class="cred" style="display:block;height:500px;overflow-y:auto;width:700px;"></div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营平台</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

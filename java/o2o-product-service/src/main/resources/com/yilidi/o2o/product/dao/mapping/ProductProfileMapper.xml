@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductProfileMapper">
+	<resultMap id="BaseResultMap" type="ProductProfile">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PRODUCTID" property="productId" jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="SELLPOINT" property="sellPoint" jdbcType="VARCHAR" />
+		<result column="PRODUCTOWNER" property="productOwner" jdbcType="VARCHAR" />
+		<result column="HOTSALEFLAG" property="hotSaleFlag" jdbcType="VARCHAR" />
+		<result column="SALESTATUS" property="saleStatus" jdbcType="VARCHAR" />
+		<result column="MAINTAINSTOREFLAG" property="maintainStoreFlag" jdbcType="VARCHAR" />
+		<result column="PRODUCTSPEC" property="productSpec" jdbcType="VARCHAR" />
+		<result column="DISPLAYORDER" property="displayOrder" jdbcType="INTEGER" />
+		<result column="CONTENT" property="content" jdbcType="LONGVARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PRODUCTID, CHANNELCODE, SELLPOINT, PRODUCTOWNER,
+		HOTSALEFLAG,SALESTATUS,MAINTAINSTOREFLAG,
+		PRODUCTSPEC,
+		DISPLAYORDER, CONTENT, CREATETIME,
+		CREATEUSERID,MODIFYTIME, MODIFYUSERID
+	</sql>
+
+	<insert id="saveProductProfile" parameterType="ProductProfile">
+		insert into
+		P_PRODUCT_PROFILE (ID, PRODUCTID, CHANNELCODE,
+		SELLPOINT,
+		PRODUCTOWNER,
+		HOTSALEFLAG,SALESTATUS,MAINTAINSTOREFLAG, PRODUCTSPEC, DISPLAYORDER, CONTENT,
+		CREATETIME,
+		CREATEUSERID)
+		values
+		(#{id,jdbcType=INTEGER},
+		#{productId,jdbcType=INTEGER},
+		#{channelCode,jdbcType=VARCHAR},#{sellPoint,jdbcType=VARCHAR},#{productOwner,jdbcType=VARCHAR},
+		#{hotSaleFlag,jdbcType=VARCHAR},#{saleStatus,jdbcType=VARCHAR},#{maintainStoreFlag,jdbcType=VARCHAR},
+		#{productSpec,jdbcType=VARCHAR},#{displayOrder,jdbcType=INTEGER},
+		#{content,jdbcType=LONGVARCHAR},#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER})
+	</insert>
+
+
+	<update id="updateProductProfileById" parameterType="ProductProfile">
+		update P_PRODUCT_PROFILE
+		set
+		SELLPOINT =
+		#{sellPoint,jdbcType=VARCHAR},
+		PRODUCTOWNER = #{productOwner,jdbcType=VARCHAR},
+		HOTSALEFLAG =
+		#{hotSaleFlag,jdbcType=VARCHAR},
+		SALESTATUS = #{saleStatus,jdbcType=VARCHAR},
+		MAINTAINSTOREFLAG =
+		#{maintainStoreFlag,jdbcType=VARCHAR},
+		PRODUCTSPEC = #{productSpec,jdbcType=VARCHAR},
+		DISPLAYORDER =
+		#{displayOrder,jdbcType=INTEGER},
+		CONTENT = #{content,jdbcType=LONGVARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateSaleStatusByProductIdAndChannelCode">
+		update
+		P_PRODUCT_PROFILE
+		set
+		SALESTATUS = #{saleStatus,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		PRODUCTID =
+		#{productId,jdbcType=INTEGER}
+		and
+		CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateHotSaleFlagByProductIdAndChannelCode">
+		update
+		P_PRODUCT_PROFILE
+		set
+		HOTSALEFLAG = #{hotSaleFlag,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		PRODUCTID =
+		#{productId,jdbcType=INTEGER}
+		and
+		CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateProductProfileByProductIdAndChannelCode" parameterType="ProductProfile">
+		update P_PRODUCT_PROFILE
+		set
+		SELLPOINT =
+		#{sellPoint,jdbcType=VARCHAR},
+		PRODUCTOWNER = #{productOwner,jdbcType=VARCHAR},
+		HOTSALEFLAG =
+		#{hotSaleFlag,jdbcType=VARCHAR},
+		SALESTATUS = #{saleStatus,jdbcType=VARCHAR},
+		MAINTAINSTOREFLAG =
+		#{maintainStoreFlag,jdbcType=VARCHAR},
+		PRODUCTSPEC = #{productSpec,jdbcType=VARCHAR},
+		DISPLAYORDER =
+		#{displayOrder,jdbcType=INTEGER},
+		CONTENT = #{content,jdbcType=LONGVARCHAR},
+		MODIFYUSERID = #{modifyUserId,jdbcType=VARCHAR},
+		MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP}
+		where
+		PRODUCTID = #{productId,jdbcType=INTEGER}
+		and
+		CHANNELCODE = #{channelCode,
+		jdbcType=VARCHAR}
+	</update>
+
+	<select id="loadProductProfileById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from
+		P_PRODUCT_PROFILE
+		where
+		ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadProductProfileByProductIdAndChannelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_PROFILE
+		<where>
+			PRODUCTID = #{productId,jdbcType=INTEGER}
+			<if test="channelCode != null">
+				and CHANNELCODE = #{channelCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<delete id="deleteProductProfileById" parameterType="java.lang.Integer">
+		delete from
+		P_PRODUCT_PROFILE
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteProductProfileByProductIdAndChannelCode">
+		delete from
+		P_PRODUCT_PROFILE
+		where
+		PRODUCTID = #{productId,jdbcType=INTEGER}
+		and
+		CHANNELCODE = #{channelCode,
+		jdbcType=VARCHAR}
+	</delete>
+</mapper>

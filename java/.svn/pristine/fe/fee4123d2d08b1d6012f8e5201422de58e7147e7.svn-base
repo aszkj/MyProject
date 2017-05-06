@@ -1,0 +1,353 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN" xmlns:permission>
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico"
+	type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var floorId = getUrlParam("floorId");
+	function searchProduct(){
+		$("#tbody", "#selectedProductsDiv").html();
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#searchForm')));
+		$.ajax({
+			type: 'post',
+			contentType:'application/json',
+			data: formJsonStr,
+			dataType: 'json',
+			cache : false,
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/listProductInfosByFloorId',
+			beforeSubmit:function(){},
+			success: function(data) {
+				//响应返回的业务处理  
+				if(data.msgCode==1){
+					//特殊处理 尖括号
+					var temp = JSON.stringify(data);
+					temp = encodeString(temp);
+					data = JSON.parse(temp);
+					var html = '';
+					var dataList = data.entity;
+					var pId = $("#id").val();
+					if(null != dataList && dataList.length > 0){
+						for(var i=0,j=dataList.length;i<j;i++){
+							var product =dataList[i]; 
+							html += '<tr id="' + product.id + '"><td>';
+							html += product.productName ? product.productName : '---';
+							html += '</td><td>';
+							html += product.barCode;
+							html += '</td><td>';
+							html += product.productSpec;
+							html += '</td><td>';
+							html += product.className;
+							html += '</td><td>';
+							html += toCenti(product.promotionalPrice);
+							html += '</td><td>';
+							if(product.saleStatus == 'PRODUCTSALESTATUS_INIT'){
+								html += '<span class="cred">';
+							}
+							html += product.saleStatusName;
+							if(product.saleStatus == 'PRODUCTSALESTATUS_INIT'){
+								html += '</span>';
+							}
+							html += '</td><td>';
+							html += '<input class="txt grid-10" title="' + product.id + '" id="sort_'+product.id+'" name="sort" value="'+product.displayOrder+'" onkeyup="this.value=this.value.replace(/^0+|\\D/g,\'\')"/><span class="cred prompt"></span>';
+							html += '</td><td>';
+							html += '<a href="javascript:void(0)" onclick="delProduct('
+								+ product.id
+								+ ')" class="ablue">删除</a>'
+							html += '</td></tr>';
+						}
+					}else{
+						html += '<tr><td colspan="8">暂无数据</td></tr>';
+					}
+					$("#tbody", "#selectedProductsDiv").html(html);
+				}else{
+					showBox('提示!',data.msg,'alert');
+				}
+			}
+		});
+	}
+
+	function selectProductSubmit() {
+		var productItemsStr = $("#productItems").val();
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+		$.ajax({
+				type : 'post',
+				contentType : 'application/json',
+				dataType : 'json',
+				data : formJsonStr,
+				error : function() {
+					$('#promptMessage').text('保存数据失败，请稍后再试');
+					$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+				},
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + floorId + '-' + productItemsStr + '/saveFloorProductRelations',
+				beforeSubmit : function() {
+				},
+				success : function(data) {
+					//响应返回的业务处理  
+					if (data.msgCode == 1) {
+						$('#promptMessage').text('保存成功');
+						window.setTimeout(function() {
+							var urlParam = window.location.search;
+							locationHref("/floor/floor-index.html"
+									+ urlParam);
+						}, 1000);
+					} else {
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+						$('#promptMessage').text(data.msg);
+					}
+				}
+			});
+	}
+	
+	function selectProducts() {
+		showBox("选择产品", '/floor/select-product.html?width=800&height=610');
+	}
+
+	function disabledBtn(btnId) {
+		$("#" + btnId).removeClass("btn_sure");
+		$("#" + btnId).addClass("btn_disabled");
+	}
+
+	function useabledBtn(btnId) {
+		$("#" + btnId).removeClass("btn_disabled");
+		$("#" + btnId).addClass("btn_sure");
+	}
+	function comeback() {
+		var urlParam = window.location.search;
+		locationHref('/floor/floor-index.html' + urlParam);
+	}
+	function selectProductSure() {
+		var productItemsStr = "";
+		var splitStr1 = "x", splitStr2 = ",";
+		var flag = true;
+		$("#tbody input").each(
+				function() {
+					if (null == $(this).val() || '' == $.trim($(this).val())) {
+						var spanElement = $(this).next("span.prompt");
+						spanElement.text("请输入排序数字");
+						setTimeout(function() {
+							spanElement.html("");
+						}, 3000);
+						flag = false;
+					}
+					if ($(this).val() > 0 && !$(this).is(":hidden")) {
+						productItemsStr += $(this).attr("title") + splitStr1
+								+ $(this).val() + splitStr2;
+					}
+				})
+		if (!flag) {
+			return;
+		}
+		if (productItemsStr == "") {
+			showBox('提示信息', '请选择产品', 'alert');
+			return;
+		}
+		productItemsStr = productItemsStr.substring(0, productItemsStr.length - 1);
+		$("#productItems").val(productItemsStr);
+		selectProductSubmit();
+	}
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		$("#floorId").val(floorId);
+		loadSubClass("TOP_LEVEL_CLASS");
+		searchProduct();
+	});
+	$(document).on("keyup", "#tbody input[name=productCount]", function() {
+		var value = $(this).val();
+		$(this).val(value.replace(/[^0-9]\D*$/, ''));
+	});
+	function delProduct(productId){
+		$("tr#" + productId).remove();
+	}
+	
+	/* 加载商品分类 */
+	function loadSubClass(productClassCode){
+		$.ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/'+productClassCode+'/getAllNextProductClassByUpCode', 
+			type:'post',
+			dataType:'json',
+			success:function(data){
+				if(data.msgCode != 1) return;
+				//特殊处理 尖括号
+				data = JSON.parse(encodeString(JSON.stringify(data)));
+				if(null != data.entity && data.entity.length > 0){
+					initProductClassSelect(data.entity);
+				}
+			}
+		});
+	}
+	function initProductClassSelect(listProductClass){
+		var	html = '<select class="select grid-15" onchange=changeClassSelect(this)>';
+		  	html += '<option value="">--请选择--</option>';
+			for(var i=0;i<listProductClass.length;i++){
+				html += '<option value="'+listProductClass[i].classCode+'">';
+				html += listProductClass[i].className;
+				html +='</option>'
+			}
+		html += '<select/>';
+		$("#productClassDiv").append(html);
+	}
+
+	function changeClassSelect(ele){
+		var productClass = $(ele);
+		productClass.nextAll().each(function(){
+			$(this).remove();
+		});
+		if(productClass.val()!= ""){
+			$("#productClassCode").val(productClass.val());
+			loadSubClass($.trim($("#productClassCode").val()));
+		}else{
+			var parentClassCode = productClass.prev();
+			if(parentClassCode != null){
+				//如果选择了请选择就默认选择此节点上一个节点的值
+				$("#productClassCode").val(productClass.prev().val());
+			}else{
+				$("#productClassCode").val("TOP_LEVEL_CLASS");
+			}
+		}
+	}
+	
+	function resetbtn(){
+		$("#productName").val("");
+		$("#barCode").val("");
+		$("#productClassCode").val("");
+		$("#productClassDiv").html("");
+		loadSubClass("TOP_LEVEL_CLASS");
+		$("#saleStatus").val("");
+	}
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 专题管理 &gt; <span>关联产品</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">关联产品</div>
+					<div class="complaint_main">
+						<form method="get" id="searchForm"> 
+						<input type="hidden" id="floorId" name="floorId" value="" />
+							<div class="main_search">
+								<dl>
+									<dt>产品名称：</dt>
+									<dd><input type="text" class="txt grid-15" id="productName" name="productName" /></dd>
+								</dl>
+								<dl>
+									<dt>产品条形码：</dt>
+									<dd><input type="text" class="txt grid-15" id="barCode" name="barCode" /></dd>
+								</dl>
+								<dl>
+									<dt>产品分类：</dt>
+									<dd>
+										<input type="hidden" id="productClassCode"
+											name="productClassCode">
+										<div id="productClassDiv">
+											<!-- <select class="select grid-15" id="productClass" name="productClassCode">
+												<option value="" selected>--请选择产品分类--</option>
+											</select> -->
+										</div>
+									</dd>
+								</dl>
+								<dl>
+									<dt>是否上架：</dt>
+									<dd>
+										<select class="select grid-10" id="saleStatus" name="saleStatus" >
+											<option value="">--请选择--</option>
+											<option value="PRODUCTSALESTATUS_INIT">未上架</option>
+											<option value="PRODUCTSALESTATUS_ONSALE">已上架</option>
+											<option value="PRODUCTSALESTATUS_OFFSALE">已下架</option>
+										</select>
+									</dd>
+								</dl>								
+								<p class="main_search_btn">
+								<input type="button" value="查询" class="btn_sure" id="productSearch" onClick="searchProduct()" /> 
+								<input type="button" class="btn_gray" value="重置" onclick="resetbtn()"/>
+								<input type="button" value="选择产品" class="btn_sure" onClick="selectProducts()" />
+								</p>
+							</div>
+							<!--搜索结束-->
+						</form>
+						<form method="get" id="dataForm">							
+							<input type="hidden" id="productItems" name="productItems" value="" />
+						</form>
+						<div id="selectedProductsDiv" class="order_index">
+							<div
+								style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px;">
+								<span style="margin: 10px 10px;">已选择产品</span>
+							</div>
+							<table class="simple_table" cellpadding="0" cellspacing="0"
+								width="100%">
+								<thead>
+									<tr>
+										<!-- 
+										<th width="40" style="background-color: #63ADEE;">序号</th>
+										 -->
+										<th width="80" style="background-color: #63ADEE;">产品名称</th>
+										<th width="80" style="background-color: #63ADEE;">产品条形码</th>
+										<th width="100" style="background-color: #63ADEE;">产品规格</th>
+										<th width="60" style="background-color: #63ADEE;">产品分类</th>
+										<th width="80" style="background-color: #63ADEE;">VIP采购价(元)</th>
+										<th width="120" style="background-color: #63ADEE;">是否上架</th>
+										<th width="120" style="background-color: #63ADEE;">组内排序</th>
+										<th width="80" style="background-color: #63ADEE;">操作</th>
+									</tr>
+								</thead>
+								<tbody id="tbody"></tbody>
+							</table>
+						</div>
+						<div style="text-align: center; margin: 20px 20px;">
+							<input type="button" onclick="javascript:comeback();"
+								class="btn_gray" value="返回" /> <input id="submit"
+								type="button" onclick="selectProductSure()" class="btn_sure"
+								value="确定" /> <span id="promptMessage" class="cred"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.StoreEvaluationMapper">
+	<resultMap id="BaseResultMap" type="StoreEvaluation">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="COINCIDESTAR" property="coincideStar" jdbcType="INTEGER" />
+		<result column="SENDSTAR" property="sendStar" jdbcType="INTEGER" />
+		<result column="ATTITUDESTAR" property="attitudeStar" jdbcType="INTEGER" />
+		<result column="ANONYMITYEVALUATE" property="anonymityEvaluate" jdbcType="VARCHAR" />
+		<result column="SYSTEMEVALUATE" property="systemEvaluate" jdbcType="VARCHAR" />
+		<result column="SHOWSTATUS" property="showStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="StoreEvaluationInfoResultMap" type="StoreEvaluationInfo">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="SALEORDERNO" property="saleOrderNo" jdbcType="VARCHAR" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="COINCIDESTAR" property="coincideStar" jdbcType="INTEGER" />
+		<result column="SENDSTAR" property="sendStar" jdbcType="INTEGER" />
+		<result column="ATTITUDESTAR" property="attitudeStar" jdbcType="INTEGER" />
+		<result column="ANONYMITYEVALUATE" property="anonymityEvaluate" jdbcType="VARCHAR" />
+		<result column="SYSTEMEVALUATE" property="systemEvaluate" jdbcType="VARCHAR" />
+		<result column="SHOWSTATUS" property="showStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="StoreScoreResultMap" type="StoreEvaluationScore">
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORESCORE" property="storeScore" jdbcType="DOUBLE" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, SALEORDERNO, STOREID, USERID, CONTENT,COINCIDESTAR, SENDSTAR, ATTITUDESTAR, 
+		ANONYMITYEVALUATE, SYSTEMEVALUATE, SHOWSTATUS, CREATETIME
+	</sql>
+
+	<insert id="save" parameterType="StoreEvaluation">
+		insert into U_STORE_EVALUATION (SALEORDERNO, STOREID,
+		USERID, CONTENT, COINCIDESTAR, SENDSTAR, ATTITUDESTAR, 
+		ANONYMITYEVALUATE, SYSTEMEVALUATE, SHOWSTATUS, CREATETIME
+		)
+		values (#{saleOrderNo,jdbcType=VARCHAR}, #{storeId,jdbcType=INTEGER},#{userId,jdbcType=INTEGER}, 
+		#{content,jdbcType=VARCHAR},#{coincideStar,jdbcType=INTEGER},
+		#{sendStar,jdbcType=INTEGER},#{attitudeStar,jdbcType=INTEGER},
+		#{anonymityEvaluate,jdbcType=VARCHAR}, #{systemEvaluate,jdbcType=VARCHAR},
+		#{showStatus,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	
+	<insert id="batchSaveTemp" parameterType="java.util.List">
+		insert into U_STORE_EVALUATION_TEMP (SALEORDERNO, STOREID,
+		USERID, CONTENT, COINCIDESTAR, SENDSTAR, ATTITUDESTAR, 
+		ANONYMITYEVALUATE, SYSTEMEVALUATE, SHOWSTATUS, CREATETIME
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+		 (#{item.saleOrderNo,jdbcType=VARCHAR}, #{item.storeId,jdbcType=INTEGER},#{item.userId,jdbcType=INTEGER}, 
+		#{item.content,jdbcType=VARCHAR},#{item.coincideStar,jdbcType=INTEGER},
+		#{item.sendStar,jdbcType=INTEGER},#{item.attitudeStar,jdbcType=INTEGER},
+		#{item.anonymityEvaluate,jdbcType=VARCHAR}, #{item.systemEvaluate,jdbcType=VARCHAR},
+		#{item.showStatus,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}
+		)
+		</foreach>
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from U_STORE_EVALUATION
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_STORE_EVALUATION
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<update id="updateShowStatusById">
+		update U_STORE_EVALUATION
+		set
+		SHOWSTATUS = #{showStatus,jdbcType=VARCHAR}
+		<if test="createTime != null">
+		,CREATETIME = #{createTime,jdbcType=TIMESTAMP} 
+		</if>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="loadDetailById" resultMap="StoreEvaluationInfoResultMap" parameterType="java.lang.Integer">
+		SELECT A.ID, A.STOREID, D.STORECODE, C.CUSTOMERNAME AS STORENAME,A.USERID,B.USERNAME,A.SALEORDERNO,
+		A.COINCIDESTAR,A.SENDSTAR,A.ATTITUDESTAR,A.ANONYMITYEVALUATE,A.SYSTEMEVALUATE,
+		A.CONTENT,A.SHOWSTATUS,A.CREATETIME FROM U_STORE_EVALUATION A
+		LEFT JOIN U_USER B ON A.USERID = B.ID
+		LEFT JOIN U_CUSTOMER C ON A.STOREID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.STOREID = D.STOREID
+		where A.ID = #{id,jdbcType=INTEGER}
+		ORDER BY A.CREATETIME DESC
+	</select>
+	
+	<select id="listByStoreId" resultMap="StoreEvaluationInfoResultMap" parameterType="java.lang.Integer">
+		SELECT A.ID, A.STOREID, D.STORECODE, C.CUSTOMERNAME AS STORENAME,A.USERID,B.USERNAME,A.SALEORDERNO,
+		A.COINCIDESTAR,A.SENDSTAR,A.ATTITUDESTAR,A.ANONYMITYEVALUATE,A.SYSTEMEVALUATE,
+		A.CONTENT,A.SHOWSTATUS,A.CREATETIME FROM U_STORE_EVALUATION A 
+		LEFT JOIN U_USER B ON A.USERID = B.ID
+		LEFT JOIN U_CUSTOMER C ON A.STOREID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.STOREID = D.STOREID
+		where A.STOREID = #{storeId,jdbcType=INTEGER}
+		ORDER BY A.CREATETIME DESC
+	</select>
+	
+	<select id="findStoreEvaluations" resultMap="StoreEvaluationInfoResultMap" parameterType="StoreEvaluateQuery">
+		SELECT A.ID, A.STOREID, D.STORECODE, C.CUSTOMERNAME AS STORENAME,A.USERID,B.USERNAME,A.SALEORDERNO,
+		A.COINCIDESTAR,A.SENDSTAR,A.ATTITUDESTAR,A.ANONYMITYEVALUATE,A.SYSTEMEVALUATE,
+		A.CONTENT,A.SHOWSTATUS,A.CREATETIME FROM U_STORE_EVALUATION A 
+		LEFT JOIN U_USER B ON A.USERID = B.ID
+		LEFT JOIN U_CUSTOMER C ON A.STOREID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.STOREID = D.STOREID
+		<where>
+			1=1
+			<if test="storeName != null">
+				and C.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="userName">
+				and B.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderNo != null">
+				and A.SALEORDERNO = #{saleOrderNo, jdbcType=VARCHAR}
+			</if>
+			<if test="content != null">
+				and A.CONTENT LIKE CONCAT('%',#{content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="systemEvaluate != null">
+				and A.SYSTEMEVALUATE = #{systemEvaluate, jdbcType=VARCHAR}
+			</if>
+			<if test="showStatus != null">
+				and A.SHOWSTATUS = #{showStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<select id="liststoreEvaluationScores" resultMap="StoreScoreResultMap">
+		SELECT  STOREID,AVG(ATTITUDESTAR+SENDSTAR)/2 AS STORESCORE  FROM U_STORE_EVALUATION  
+		<where>
+			1=1
+			<if test="systemEvaluate != null">
+				and SYSTEMEVALUATE = #{systemEvaluate, jdbcType=VARCHAR}
+			</if>
+			<if test="showStatus != null">
+				and SHOWSTATUS = #{showStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		GROUP BY STOREID
+	</select>
+	
+	<select id="listDataForExportStoreEvaluation" resultMap="StoreEvaluationInfoResultMap">
+		SELECT A.ID, A.STOREID, D.STORECODE, C.CUSTOMERNAME AS STORENAME,A.USERID,B.USERNAME,A.SALEORDERNO,
+		A.COINCIDESTAR,A.SENDSTAR,A.ATTITUDESTAR,A.ANONYMITYEVALUATE,A.SYSTEMEVALUATE,
+		A.CONTENT,A.SHOWSTATUS,A.CREATETIME FROM U_STORE_EVALUATION A 
+		LEFT JOIN U_USER B ON A.USERID = B.ID
+		LEFT JOIN U_CUSTOMER C ON A.STOREID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.STOREID = D.STOREID
+		<where>
+			1=1
+			<if test="storeEvaluateQuery.storeName != null">
+				and C.CUSTOMERNAME = #{storeEvaluateQuery.storeName, jdbcType=VARCHAR}
+			</if>
+			<if test="storeEvaluateQuery.storeCode != null">
+				and D.STORECODE = #{storeEvaluateQuery.storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="storeEvaluateQuery.userName">
+				and B.USERNAME = #{storeEvaluateQuery.userName, jdbcType=VARCHAR}
+			</if>
+			<if test="storeEvaluateQuery.saleOrderNo != null">
+				and A.SALEORDERNO = #{storeEvaluateQuery.saleOrderNo, jdbcType=VARCHAR}
+			</if>
+			<if test="storeEvaluateQuery.content != null">
+				and A.CONTENT LIKE CONCAT('%',#{storeEvaluateQuery.content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeEvaluateQuery.systemEvaluate != null">
+				and A.SYSTEMEVALUATE = #{storeEvaluateQuery.systemEvaluate, jdbcType=VARCHAR}
+			</if>
+			<if test="storeEvaluateQuery.showStatus != null">
+				and A.SHOWSTATUS = #{storeEvaluateQuery.showStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="storeEvaluateQuery.startCreateTime != null">
+				and A.CREATETIME &gt;= #{storeEvaluateQuery.startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="storeEvaluateQuery.endCreateTime != null">
+				and A.CREATETIME &lt;= #{storeEvaluateQuery.endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="storeEvaluateQuery.order != null">
+				order by ${storeEvaluateQuery.order}
+				<if test="storeEvaluateQuery.sort != null">
+					${storeEvaluateQuery.sort}
+				</if>
+			</if>
+		</where>
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCountsForExportStoreEvaluation" parameterType="StoreEvaluateQuery" resultType="java.lang.Long">
+		SELECT COUNT(1) FROM U_STORE_EVALUATION A 
+		LEFT JOIN U_USER B ON A.USERID = B.ID
+		LEFT JOIN U_CUSTOMER C ON A.STOREID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.STOREID = D.STOREID
+		<where>
+			1=1
+			<if test="storeName != null">
+				and C.CUSTOMERNAME = #{storeName, jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="userName">
+				and B.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderNo != null">
+				and A.SALEORDERNO = #{saleOrderNo, jdbcType=VARCHAR}
+			</if>
+			<if test="content != null">
+				and A.CONTENT LIKE CONCAT('%',#{content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="systemEvaluate != null">
+				and A.SYSTEMEVALUATE = #{systemEvaluate, jdbcType=VARCHAR}
+			</if>
+			<if test="showStatus != null">
+				and A.SHOWSTATUS = #{showStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	<select id="getAvgStoreScoreByStoreId" parameterType="java.lang.Integer"
+		resultType="java.lang.Double">
+		SELECT AVG(ATTITUDESTAR+SENDSTAR)/2
+		FROM U_STORE_EVALUATION
+		where STOREID = #{storeId,jdbcType=INTEGER}
+	</select>
+	<select id="findStoreEvaluationTemps" resultMap="StoreEvaluationInfoResultMap" parameterType="StoreEvaluateQuery">
+		SELECT A.ID, A.STOREID, D.STORECODE, C.CUSTOMERNAME AS STORENAME,A.USERID,B.USERNAME,A.SALEORDERNO,
+		A.COINCIDESTAR,A.SENDSTAR,A.ATTITUDESTAR,A.ANONYMITYEVALUATE,A.SYSTEMEVALUATE,
+		A.CONTENT,A.SHOWSTATUS,A.CREATETIME FROM U_STORE_EVALUATION_TEMP A 
+		LEFT JOIN U_USER B ON A.USERID = B.ID
+		LEFT JOIN U_CUSTOMER C ON A.STOREID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.STOREID = D.STOREID
+		<where>
+			1=1
+			<if test="storeName != null">
+				and C.CUSTOMERNAME = #{storeName, jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="userName">
+				and B.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderNo != null">
+				and A.SALEORDERNO = #{saleOrderNo, jdbcType=VARCHAR}
+			</if>
+			<if test="content != null">
+				and A.CONTENT LIKE CONCAT('%',#{content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="systemEvaluate != null">
+				and A.SYSTEMEVALUATE = #{systemEvaluate, jdbcType=VARCHAR}
+			</if>
+			<if test="showStatus != null">
+				and A.SHOWSTATUS = #{showStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	<select id="liststoreEvaluationTemps" resultMap="StoreEvaluationInfoResultMap" parameterType="StoreEvaluateQuery">
+		SELECT A.ID, A.STOREID, D.STORECODE, C.CUSTOMERNAME AS STORENAME,A.USERID,B.USERNAME,A.SALEORDERNO,
+		A.COINCIDESTAR,A.SENDSTAR,A.ATTITUDESTAR,A.ANONYMITYEVALUATE,A.SYSTEMEVALUATE,
+		A.CONTENT,A.SHOWSTATUS,A.CREATETIME FROM U_STORE_EVALUATION_TEMP A 
+		LEFT JOIN U_USER B ON A.USERID = B.ID
+		LEFT JOIN U_CUSTOMER C ON A.STOREID = C.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.STOREID = D.STOREID
+		<where>
+			1=1
+			<if test="storeName != null">
+				and C.CUSTOMERNAME = #{storeName, jdbcType=VARCHAR}
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="userName">
+				and B.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+			<if test="saleOrderNo != null">
+				and A.SALEORDERNO = #{saleOrderNo, jdbcType=VARCHAR}
+			</if>
+			<if test="content != null">
+				and A.CONTENT LIKE CONCAT('%',#{content,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="systemEvaluate != null">
+				and A.SYSTEMEVALUATE = #{systemEvaluate, jdbcType=VARCHAR}
+			</if>
+			<if test="showStatus != null">
+				and A.SHOWSTATUS = #{showStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="startCreateTime != null">
+				and A.CREATETIME &gt;= #{startCreateTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="endCreateTime != null">
+				and A.CREATETIME &lt;= #{endCreateTime, jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+	<insert id="batchSaveTempToStandard" parameterType="java.util.List">
+		insert into U_STORE_EVALUATION (SALEORDERNO, STOREID,
+		USERID, CONTENT, COINCIDESTAR, SENDSTAR, ATTITUDESTAR, 
+		ANONYMITYEVALUATE, SYSTEMEVALUATE, SHOWSTATUS, CREATETIME
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+		 (#{item.saleOrderNo,jdbcType=VARCHAR}, #{item.storeId,jdbcType=INTEGER},#{item.userId,jdbcType=INTEGER}, 
+		#{item.content,jdbcType=VARCHAR},#{item.coincideStar,jdbcType=INTEGER},
+		#{item.sendStar,jdbcType=INTEGER},#{item.attitudeStar,jdbcType=INTEGER},
+		#{item.anonymityEvaluate,jdbcType=VARCHAR}, #{item.systemEvaluate,jdbcType=VARCHAR},
+		#{item.showStatus,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}
+		)
+		</foreach>
+	</insert>
+	<delete id="deleteAllStoreEvaluationTemps">
+		delete from U_STORE_EVALUATION_TEMP
+	</delete>
+	<delete id="deletestoreEvaluationTempsByIds" parameterType="java.lang.Integer">
+		delete from U_STORE_EVALUATION_TEMP where ID in (
+			<foreach collection="list" item="item" index="index" separator=",">
+				#{item,jdbcType=INTEGER}
+			</foreach>
+			)
+	</delete>
+</mapper>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.StoreProductSubsidySettingMapper">
+	<resultMap id="BaseResultMap" type="StoreProductSubsidySetting">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<resultMap id="StoreProductSubsidySettingInfoResultMap" type="StoreProductSubsidySettingInfo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="STOREID" property="storeId" jdbcType="INTEGER" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="BARCODE" property="barCode" jdbcType="VARCHAR" />
+		<result column="SALEPRODUCTNAME" property="saleProductName" jdbcType="VARCHAR" />
+		<result column="CLASSNAME" property="className" jdbcType="VARCHAR" />
+		<result column="PARENTNAME" property="parentName" jdbcType="VARCHAR" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, STOREID, SALEPRODUCTID, CREATEUSERID, CREATETIME
+	</sql>
+	
+	<insert id="save" parameterType="StoreProductSubsidySetting" useGeneratedKeys="true" keyProperty="id">
+		insert into P_STORE_PRODUCT_SUBSIDY_SETTING
+		(STOREID,SALEPRODUCTID, CREATEUSERID,CREATETIME)
+		values
+		(#{storeId,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER},
+		#{createUserId,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from P_STORE_PRODUCT_SUBSIDY_SETTING
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<select id="loadStoreProductSubsidy" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_STORE_PRODUCT_SUBSIDY_SETTING
+		<where>
+			1=1
+			<if test="storeId != null">
+				and STOREID = #{storeId,jdbcType=INTEGER}
+			</if>
+			<if test="saleProductId != null">
+				and SALEPRODUCTID = #{saleProductId,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+		
+	<select id="findStoreProductSubsidySettings" resultMap="StoreProductSubsidySettingInfoResultMap" parameterType="StoreProductSubsidySettingQuery">
+    	select A.ID,A.STOREID,A.SALEPRODUCTID,A.CREATETIME,B.BARCODE,B.SALEPRODUCTNAME FROM P_STORE_PRODUCT_SUBSIDY_SETTING A
+		LEFT JOIN P_SALE_PRODUCT B ON A.SALEPRODUCTID=B.ID
+		<where>
+			1=1
+			<if test="storeId != null">
+				and A.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="barCode != null">
+				and B.BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductName != null">
+				and B.SALEPRODUCTNAME like CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeIdList !=null">
+				and A.STOREID IN
+				<foreach item="item" index="index" collection="storeIdList" 
+                   open="(" separator="," close=")">
+                 	 #{item}
+              	</foreach>
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<select id="findStoreProducts" resultMap="StoreProductSubsidySettingInfoResultMap" parameterType="StoreProductSubsidySettingQuery">
+		select SP.ID AS SALEPRODUCTID,SP.STOREID,SP.BARCODE,SP.PRODUCTCLASSCODE,
+		SP.SALEPRODUCTNAME,SP.ENABLEDFLAG,PC.CLASSNAME AS CLASSNAME,PC1.CLASSNAME AS PARENTNAME
+		from P_SALE_PRODUCT SP
+		left join P_PRODUCT_CLASS PC on PC.CLASSCODE = SP.PRODUCTCLASSCODE
+		left join P_PRODUCT_CLASS PC1 on PC.PARENTCODE = PC1.CLASSCODE
+		<where>
+			1=1
+			<if test="saleProductId != null">
+				and SP.ID = #{saleProductId, jdbcType=INTEGER}
+			</if>
+			<if test="storeId != null">
+				and SP.STOREID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="parentCode != null">
+				and PC1.CLASSCODE = #{parentCode, jdbcType=VARCHAR}
+			</if>
+			<if test="productClassCode != null">
+				and SP.PRODUCTCLASSCODE = #{productClassCode, jdbcType=VARCHAR}
+			</if>
+			<if test="saleProductName != null">
+				and SP.SALEPRODUCTNAME like CONCAT('%',#{saleProductName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="barCode != null">
+				and SP.BARCODE = #{barCode, jdbcType=VARCHAR}
+			</if>
+			<if test="enabledFlag != null">
+				and SP.ENABLEDFLAG = #{enabledFlag,jdbcType=VARCHAR}
+			</if>
+			<if test="storeIdList !=null">
+				and SP.STOREID IN
+				<foreach item="item" index="index" collection="storeIdList" 
+                   open="(" separator="," close=")">
+                 	 #{item}
+              	</foreach>
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+
+</mapper>

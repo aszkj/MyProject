@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.FlittingOrderItemHistoryMapper">
+	<resultMap id="BaseResultMap" type="FlittingOrderItemHistory">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="FLITTINGORDERITEMID" property="flittingOrderItemId" jdbcType="INTEGER" />
+		<result column="FLITTINGORDERREJECTID" property="flittingOrderRejectId" jdbcType="INTEGER" />
+		<result column="ORIRECEIVEQUANTITY" property="oriReceiveQuantity" jdbcType="INTEGER" />
+		<result column="ORIREJECTQUANTITY" property="oriRejectQuantity" jdbcType="INTEGER" />
+		<result column="RECEIVEQUANTITY" property="receiveQuantity" jdbcType="INTEGER" />
+		<result column="REJECTQUANTITY" property="rejectQuantity" jdbcType="INTEGER" />
+		<result column="OPERATETYPE" property="operateType" jdbcType="VARCHAR" />
+		<result column="OPERATETIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATEUSERID" property="operateUserId" jdbcType="INTEGER" />
+		<result column="OPERATEDESC" property="operateDesc" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, FLITTINGORDERITEMID, FLITTINGORDERREJECTID, ORIRECEIVEQUANTITY, ORIREJECTQUANTITY, RECEIVEQUANTITY,
+		REJECTQUANTITY, OPERATETYPE, OPERATETIME, OPERATEUSERID, OPERATEDESC
+	</sql>
+
+	<insert id="save" parameterType="FlittingOrderItemHistory" useGeneratedKeys="true" keyProperty="id">
+		insert into T_FLITTING_ORDER_ITEM_HISTORY (
+		FLITTINGORDERITEMID, FLITTINGORDERREJECTID,
+		ORIRECEIVEQUANTITY, ORIREJECTQUANTITY, RECEIVEQUANTITY, REJECTQUANTITY, OPERATETYPE, OPERATETIME, OPERATEUSERID,
+		OPERATEDESC
+		)
+		values(
+		#{flittingOrderItemId,jdbcType=INTEGER},
+		#{flittingOrderRejectId,jdbcType=INTEGER},
+		#{oriReceiveQuantity,jdbcType=INTEGER},
+		#{oriRejectQuantity,jdbcType=INTEGER},
+		#{receiveQuantity,jdbcType=INTEGER},
+		#{rejectQuantity,jdbcType=INTEGER},
+		#{operateType,jdbcType=VARCHAR},
+		#{operateTime,jdbcType=TIMESTAMP},
+		#{operateUserId,jdbcType=INTEGER},
+		#{operateDesc,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="listFlittingOrderItemHistorys" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_FLITTING_ORDER_ITEM_HISTORY
+		where FLITTINGORDERREJECTID = #{flittingOrderRejectId,jdbcType=INTEGER}
+	</select>
+
+</mapper>

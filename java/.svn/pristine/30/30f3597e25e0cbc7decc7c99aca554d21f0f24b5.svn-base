@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.ProductBasicPropsMapper">
+	<resultMap id="BaseResultMap" type="ProductBasicProps">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="PRODUCTCLASSCODE" property="productClassCode"
+			jdbcType="VARCHAR" />
+		<result column="PROPSNAME" property="propsName" jdbcType="VARCHAR" />
+		<result column="PROPSCODE" property="propsCode" jdbcType="VARCHAR" />
+		<result column="PROPSLEVEL" property="propsLevel" jdbcType="VARCHAR" />
+		<result column="PARENTID" property="parentId" jdbcType="INTEGER" />
+		<result column="PROPSDESC" property="propsDesc" jdbcType="VARCHAR" />
+		<result column="SHOWFLAG" property="showFlag" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PRODUCTCLASSCODE, PROPSNAME, PROPSCODE, PROPSLEVEL, PARENTID,
+		PROPSDESC,
+		SHOWFLAG
+	</sql>
+
+	<insert id="insert" parameterType="ProductBasicProps">
+		insert into P_PRODUCT_BASIC_PROPS (ID, PRODUCTCLASSCODE, PROPSNAME,
+		PROPSCODE, PROPSLEVEL, PARENTID,
+		PROPSDESC, SHOWFLAG)
+		values (#{id,jdbcType=INTEGER}, #{productClassCode,jdbcType=VARCHAR},
+		#{propsName,jdbcType=VARCHAR},
+		#{propsCode,jdbcType=VARCHAR}, #{propsLevel,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER},
+		#{propsDesc,jdbcType=VARCHAR}, #{showFlag,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="updateByIdSelective" parameterType="ProductBasicProps">
+		update P_PRODUCT_BASIC_PROPS
+		<set>
+			<if test="productClassCode != null">
+				PRODUCTCLASSCODE = #{productClassCode,jdbcType=VARCHAR},
+			</if>
+			<if test="propsName != null">
+				PROPSNAME = #{propsName,jdbcType=VARCHAR},
+			</if>
+			<if test="propsLevel != null">
+				PROPSLEVEL = #{propsLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="parentId != null">
+				PARENTID = #{parentId,jdbcType=INTEGER},
+			</if>
+			<if test="propsDesc != null">
+				PROPSDESC = #{propsDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="showFlag != null">
+				SHOWFLAG = #{showFlag,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+
+	<select id="listByClassCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from P_PRODUCT_BASIC_PROPS
+		where PRODUCTCLASSCODE = #{classCode,jdbcType=INTEGER}
+	</select>
+
+
+</mapper>

@@ -1,0 +1,924 @@
+<!doctype html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="zh-CN">
+<!--[endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static-resource/images/favicon.ico" type="image/x-icon" />
+<title>一里递运营中心</title>
+<script type="text/javascript" src="/static-resource/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static-resource/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static-resource/js/define.js"></script>
+<script type="text/javascript" src="/static-resource/js/common.js"></script>
+<script type="text/javascript" src="/static-resource/js/module.js"></script>
+<script type="text/javascript" src="/static-resource/js/timepicker.js"></script>
+<script type="text/javascript" src="/static-resource/js/editorplugin/kindeditor.js"></script>
+<script type="text/javascript" src="/static-resource/js/json2.js"></script>
+<script type="text/javascript" src="/static-resource/js/iTsai.form.js"></script>
+<link type="text/css" href="/static-resource/css/base.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/module.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/system.css"
+	rel="stylesheet" />
+<link type="text/css" href="/static-resource/css/timepicker.css"
+	rel="stylesheet" />
+<script type="text/javascript">
+	var selectedProductDatas = {};
+	var vouPackId = getUrlParam("id");
+	function loadVouchersInfo() {
+		var id = getUrlParam("id");
+		var pattern = /\d+/;
+		if (pattern.test(parseInt(id))) {
+
+			ajax({
+				waitTagId : 'bodyId',//非必须,设置等待图标在那个标签里显示
+				url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/' + id + '/getVoucherPackageDetail',
+				data : '',
+				async : false,
+				dataType : 'json',//非必须.默认text
+				error : function() {
+				}, //非必须
+				success : function(data) {
+					/* checkJsonRight(data); */
+					if (data.msgCode != 1) {
+						return;
+					}
+					$("#vouName").html(data.entity.vouName);
+					$("#vouPackId").val(id);
+				}//非必须
+			});
+
+		}
+	}
+	function dataSubmit() {
+		if (!validateData()) {
+			return;
+		}
+		var orderAmountLimit = parseFloat($("#orderAmountLimit").val());
+		$("#orderAmountLimit").val(toMul(orderAmountLimit,1000));
+		$('#submit').removeClass().addClass('btn_disabled')[0].disabled = true;
+		$('#promptMessage').text('正在保存...');
+		var formJsonStr = JSON.stringify(iTsai.form.serialize($('#dataForm')));
+  		$.ajax(
+				{
+					type : 'post',
+					contentType:'application/json',
+					dataType : 'json',
+					data : formJsonStr,
+					error : function() {
+						$('#promptMessage').text('保存数据失败，请稍后再试');
+						$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+						$("#orderAmountLimit").val(toCenti($("#orderAmountLimit").val(),2));
+					},
+					url : TERMINAL_URL + OPERATION_SYSTEM_IDENTITY +'/grantVoucher',
+					beforeSubmit : function() {
+					},
+					success : function(data) {
+						//响应返回的业务处理  
+						if (data.msgCode == 1) {
+							$('#promptMessage').text('保存成功');
+							window.setTimeout(
+											function() {
+												var urlParam=window.location.search;
+												locationHref("/voucher/voucher-index.html"+urlParam);
+											}, 1000);
+						} else {
+							$('#submit').removeClass().addClass('btn_sure')[0].disabled = false;
+							$("#orderAmountLimit").val(toCenti($("#orderAmountLimit").val(),2));
+							$('#promptMessage').text(data.msg);
+						}
+					}
+				}); 
+	}
+	
+	var validate = (function() {
+		return {
+			validateOrderAmount : function() {
+				var orderAmountLimit = $.trim($('#orderAmountLimit').val()), $orderAmountLimitMsg = $('#orderAmountLimitMsg');
+				if(document.getElementById('checkbox1').checked == true){
+					if (!orderAmountLimit) {
+						$orderAmountLimitMsg.html('请填写订单金额！').attr('class', 'error');
+						return false;
+					}
+					if(!checkMoney(orderAmountLimit)){
+						$orderAmountLimitMsg.html('请填写正确的订单金额格式！').attr('class', 'error');
+						return false;
+					}
+				}
+				$orderAmountLimitMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateProClass : function() {
+				var $productClassLimitMsg = $('#productClassLimitMsg');
+				if(document.getElementById('checkbox2').checked == true){
+    				var isc = "";
+    				var obj = document.getElementsByName('proclassname');
+			   		 for(i = 0; i < obj.length; i++){
+			      			if(obj[i].checked == true){
+			       				isc += obj[i].value + ","; 
+			      			}
+			    		}
+    				if(isc.length > 0) {
+    					isc = isc.substring(0, isc.length - 1); //如果获取到,把最后一个逗号去掉
+    					$('#productClassLimit').val(isc);
+    					$productClassLimitMsg.html('</br>').attr('class', 'right');
+						return true;
+    				}else {
+    					$productClassLimitMsg.html('产品品类不能为空!</br>').attr('class', 'error');
+						return false;
+    				}
+				}
+				return true;
+			},
+			validateBusRule : function() {
+				var $businessRuleLimitMsg = $('#businessRuleLimitMsg');
+				if(document.getElementById('checkbox3').checked == true){
+    				var isc = "";
+    				var obj = document.getElementsByName('businessRuleCheckbox');
+			   		 for(i = 0; i < obj.length; i++){
+			      			if(obj[i].checked == true){
+			       				isc += obj[i].value + ","; 
+			      			}
+			    		}
+    				if(isc.length > 0) {
+    					isc = isc.substring(0, isc.length - 1); //如果获取到,把最后一个逗号去掉
+    					$('#businessRuleLimit').val(isc);
+    					$businessRuleLimitMsg.html('').attr('class', 'right');
+						return true;
+    				}else {
+    					$businessRuleLimitMsg.html('业务规则不能为空!</br>').attr('class', 'error');
+						return false;
+    				}
+				}
+				return true;
+			},
+			validateProduct : function() {
+				var $productLimitMsg = $('#productLimitMsg');
+				var selPro = document.getElementById('selectVOUCHERBUSINESSRULELIMIT_SPECIAL_PRODUCT_NO_USE');
+				if(null != selPro && selPro.checked == true){
+    				var isc = "";
+    				$("#tbody", "#selectedProductsDiv").find("tr").each(function() {
+    					isc += $(this).attr("id") + ",";
+    				});
+    				if(isc.length > 0) {
+    					isc = isc.substring(0, isc.length - 1); //如果获取到,把最后一个逗号去掉
+    					$('#productLimit').val(isc);
+    					$productLimitMsg.html('').attr('class', 'right');
+					return true;
+    				}else {
+    					$('#businessRuleLimitMsg').html('').attr('class', '');
+    					$productLimitMsg.html('请至少选择一个特殊商品!</br>').attr('class', 'error');
+					return false;
+    				}
+				}
+				return true;
+			},
+			validateValidStartTime : function() {
+				var validStartTime = $.trim($('#validStartTime').val()), $timeMsg = $('#timeMsg');
+				if (!validStartTime) {
+					$timeMsg.html('请选择开始有效时间！').attr('class', 'error');
+					return false;
+				}
+				$timeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateValidEndTime : function() {
+				var validEndTime = $.trim($('#validEndTime').val()), $timeMsg = $('#timeMsg');
+				if (!validEndTime) {
+					$timeMsg.html('请选择结束有效时间！').attr('class', 'error');
+					return false;
+				}
+				var startTime = new Date($('#validStartTime').val().replace(/-/g,"/"));
+				var endTime = new Date($('#validEndTime').val().replace(/-/g,"/"));
+				if(startTime >= endTime){
+					$timeMsg.html('结束有效时间必须大于开始有效时间！').attr('class', 'error');
+					return false;
+				}
+				$timeMsg.html('').attr('class', 'right');
+				return true;
+			},
+			validateUserNames : function() {
+				var $userNamesMsg = $('#userNamesMsg');
+				var userNames = $.trim($('#userNames').val());
+				if(getRadioValue('grantRange') == 'VOUCHERGRANTRANGE_SINGLE'){
+					if (!userNames) {
+						$userNamesMsg.html('请填写用户登录账号！').attr('class', 'error');
+						return false;
+					}else {
+						$userNamesMsg.html('输入多个登录账号,用英文逗号隔开').attr('class', 'right');
+					}
+				}
+				return true;
+			},
+			validateBuyerUserType : function() {
+				var buyerUserType = $.trim($('#buyerUserType').val()), $buyerUserTypeMsg = $('#buyerUserTypeMsg');
+				if(getRadioValue('grantRange') == 'VOUCHERGRANTRANGE_BATCH'){
+					if (!buyerUserType) {
+						$buyerUserTypeMsg.html('请选择用户类型！').attr('class', 'error');
+						return false;
+					}
+					$buyerUserTypeMsg.html('').attr('class', 'right');
+				}
+				return true;
+			},
+			validateGrantWay : function() {
+				var $grantWayMsg = $('#grantWayMsg');
+				var isc = "";
+    				var obj = document.getElementsByName('grantWay');
+		   		for(i = 0; i < obj.length; i++){
+	      			if(obj[i].checked == true){
+	       				isc += obj[i].value + ","; 
+	      			}
+		    		}
+    				if(isc.length <= 0) {
+    					$grantWayMsg.html('</br>发放方式不能为空!').attr('class', 'error');
+						return false;
+    				}
+				return true;
+			},
+			validateRule : function() {
+				var rule = $.trim($('#rule').val()), $ruleMsg = $('#ruleMsg');
+				if (!rule) {
+					$ruleMsg.html('请填写规则说明！').attr('class', 'error');
+					return false;
+				}
+				$ruleMsg.html('').attr('class', 'right');
+				return true;
+			}
+		}
+	})();
+
+	function getRadioValue(radioName){
+		if (radioName == 'grantRange') {
+			var obj = document.getElementsByName('grantRange');
+			for (i = 0; i < obj.length; i++) {
+				if (obj[i].checked == true) {
+					return obj[i].value;
+				}
+			}
+		}
+	}
+
+	function showErr(errorType) {
+		if (errorType == 'orderAmount') {
+			$('#orderAmountLimitMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'proType') {
+			$('#productClassLimitMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'busRule') {
+			$('#businessRuleLimitMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'validStartTime') {
+			$('#timeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'validEndTime') {
+			$('#timeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'userNames') {
+			$('#userNamesMsg').html('输入多个登录账号,用英文逗号隔开').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'buyerUserType') {
+			$('#buyerUserTypeMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'grantWay') {
+			$('#grantWayMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+		if (errorType == 'rule') {
+			$('#ruleMsg').html('').attr('class', '');
+			$('#promptMessage').html('');
+			return;
+		}
+	}
+
+	function validateData() {
+		if (!validate.validateOrderAmount()) {
+			return false;
+		}
+		if (!validate.validateProClass()) {
+			return false;
+		}
+		if (!validate.validateBusRule()) {
+			return false;
+		}
+		if (!validate.validateProduct()) {
+			return false;
+		}
+		if (!validate.validateValidStartTime()) {
+			return false;
+		}
+		if (!validate.validateValidEndTime()) {
+			return false;
+		}
+		if (!validate.validateUserNames()) {
+			return false;
+		}
+		if (!validate.validateBuyerUserType()) {
+			return false;
+		}
+		if (!validate.validateGrantWay()) {
+			return false;
+		}
+		if (!validate.validateRule()) {
+			return false;
+		}
+		return true;
+	}
+
+	function getGrantRange(a) {
+		if (a == 2) {
+			$('#level').hide();
+			$('#userInfo').show();
+			var obj = document.getElementsByName('grantWay');
+	   		for(i = 0; i < obj.length; i++){
+      			if(obj[i].value == 'VOUCHERGRANTWAY_AUTO_RELEASE'){
+      				obj[i].checked = true; 
+      				doGrantWay(obj[i].value);
+      			}else{
+      				obj[i].disabled = true; 
+      			}
+	    	}
+		} else if (a == 1) {
+			$('#level').show();
+			$('#userNames').val('');
+			$('#userInfo').hide();
+			var obj = document.getElementsByName('grantWay');
+	   		for(i = 0; i < obj.length; i++){
+      			obj[i].disabled = false; 
+      			obj[i].checked = false; 
+	    		}
+		}
+	}	
+	
+	function showOrderAmountLimit(obj){
+		if(obj.checked == true){
+			var html = '';
+			html += '<span style="margin : 5px 0 0 5px; display:block; float:left; width:80px;">订单金额：</span><input type="txt" class="txt grid-10" name="orderAmountLimit" id="orderAmountLimit" ';
+			html += 'onkeyup="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,2})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; " onmousedown=showErr("orderAmount") style="margin : 5px 0 5px 0" ';
+			html += 'onafterpaste="javascript: var myreg=/^[+]?(([1-9]\\d*[.]?)|(0[.]?))(\\d{0,2})?$/;if(!myreg.test(this.value)){this.value=\'\'; }; "></input>&nbsp;<span class="gray">元</span>';
+			html += '<span id="orderAmountLimitMsg" class="cred"></span>';
+			$('#orderLimit').html(html);
+			$('#orderAmountLimitSpan').show();
+		}else{
+			$('#orderLimit').html('');
+			$('#orderAmountLimitSpan').hide();
+		}
+	}
+	
+	function showProductClassLimit(obj){
+		if(obj.checked == true){
+			getList();
+		}else{
+			$('#productClassDiv').html('');
+			$('#productClassDiv').hide();
+			$('#productClassLimitMsg').html('').attr('class', '');
+		}
+	}
+	
+	function showBusinessRuleLimit(obj){
+		if(obj.checked == true){
+			listBusinessRuleLimits();
+		}else{
+			$('#businessRule').html('');
+			$('#businessRuleSpan').hide();
+			$('#businessRuleLimitMsg').html('').attr('class', '');
+		}
+	}
+
+	/*加载时间控件*/
+	function loadTimeInput() {
+		$('#validStartTime').datetimepicker({
+			showHour: false,
+			showMinute: false,
+			showSecond:false,
+			hour: 0,
+			minute: 0,
+			second: 0,
+			constrainInput : true
+		});
+		$('#validEndTime').datetimepicker({
+			showHour: false,
+			showMinute: false,
+			showSecond:false,
+			hour: 23,
+			minute: 59,
+			second: 59,
+			constrainInput : true
+		});
+	}
+
+	function comebackList() {
+		var urlParam=window.location.search;
+		locationHref('/voucher/voucher-index.html'+urlParam);
+	}
+
+	/*加载业务规则限制*/
+	function listBusinessRuleLimits(){
+		var systemDictType = 'VOUCHERBUSINESSRULELIMIT';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				if(mapList != null && mapList.length >0){
+					for(var i=1,length=mapList.length+1;i<length;i++){
+						if(mapList[i-1].id == 'VOUCHERBUSINESSRULELIMIT_SPECIAL_PRODUCT_NO_USE'){
+							html += '<span style="margin : 0 0 0 5px; display:block; float:left; width:150px;"><input type="checkbox" id="select'+mapList[i-1].id+'" name="businessRuleCheckbox" value="'+mapList[i-1].id+'" onmousedown=showErr("busRule") onclick="showProductLimit(this)"><label style="margin-left:5px;" for="selectRole'+mapList[i-1].id+'">'+mapList[i-1].name+'</label></input></span>';
+							html += '<input type="button" id="selectedProductsButton" onclick="doShowProductLimit()" class="btn_sure" value="请选择" style="margin : 0 0 5px 0; display : none"/></br>';
+							html += '<span id="selectedProducts"></span>';
+							html += '<span id="productLimitMsg" class="cred"></span>';
+						}else{
+							html += '<span style="margin : 0 0 0 5px; display:block; float:left; width:150px;"><input type="checkbox" id="select'+mapList[i-1].id+'" name="businessRuleCheckbox" value="'+mapList[i-1].id+'" onmousedown=showErr("busRule")><label style="margin-left:5px;" for="selectRole'+mapList[i-1].id+'">'+mapList[i-1].name+'</label></input></span></br>';
+						}			
+					}
+				}
+				$('#businessRule').html(html);
+				$('#businessRuleSpan').show();
+			}
+		});
+	}
+	
+	function showProductLimit(obj){
+		if(obj.checked == true){
+			$('#selectedProductsButton').show();
+			html = '';
+			html += '<div id="selectedProductsDiv" class="order_index" style="margin : 0 5px 5px 5px">';
+			html += '<div style="height: 30px; line-height: 30px; background-color: #F2F2F2; margin-top: 10px;">';
+			html += '<span style="margin: 10px 10px;">已选择产品</span>';
+			html += '</div>';
+			html += '<table class="simple_table" cellpadding="0" cellspacing="0" width="100%">';
+			html += '<thead>';
+			html += '<tr>';
+			html += '<th width="80" style="background-color: #63ADEE;">产品名称</th>';
+			html += '<th width="80" style="background-color: #63ADEE;">产品条形码</th>';
+			html += '<th width="100" style="background-color: #63ADEE;">产品规格</th>';
+			html += '<th width="60" style="background-color: #63ADEE;">产品分类</th>';
+		    html += '<th width="80" style="background-color: #63ADEE;">VIP采购价(元)</th>';
+		    html += '<th width="120" style="background-color: #63ADEE;">是否上架</th>';
+		    html += '<th width="80" style="background-color: #63ADEE;">操作</th>';
+			html += '</tr>';
+		    html += '</thead>';
+			html += '<tbody id="tbody"></tbody>';
+			html += '</table>';
+			html += '</div>';
+			$('#selectedProducts').html(html);
+		}else{
+			$('#selectedProductsButton').hide();
+			$('#selectedProducts').html('');
+			$('#productLimitMsg').html('').attr('class', '');		
+		}		
+	}
+	
+	function doShowProductLimit(){
+		$('#productLimitMsg').html('').attr('class', '');
+		selectProducts();
+	}
+	
+	function delProduct(productId){
+		$("tr#" + productId).remove();
+		$('#productLimitMsg').html('').attr('class', '');
+		$('#businessRuleLimitMsg').html('').attr('class', '');
+	}
+	
+	function selectProducts() {
+		showBox("选择产品", '/voucher/voucher-select-product.html?width=800&height=650');
+	}
+	
+	//加载用户类型
+	function listBuyerTypeLabelList(val){
+		var systemDictType = 'BUYERUSERTYPELABEL';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				
+				if(mapList != null && mapList.length >0){
+					html='<option value="">--请选择--</option>';
+					for(var i=0,length=mapList.length;i<length;i++){
+						if(val == mapList[i].id){
+							html += '<option selected value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}else{
+							html += '<option value="'+mapList[i].id+'">';
+							html += mapList[i].name;
+							html +='</option>'
+						}
+					}
+				}
+				$('#buyerUserType').html(html);
+			}
+		});
+	}
+	
+	//加载发放方式
+	function listGrantWays(val){
+		var systemDictType = 'VOUCHERGRANTWAY';
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/' + systemDictType + '/getSystemDictInfoList',
+			type:'post',
+			async:false,
+			dataType:'json',
+			error:function(){return;}, 
+			success:function(data){
+				if(data.msgCode!=1){return;}
+				//特殊处理 尖括号
+				var temp = JSON.stringify(data);
+				temp = encodeString(temp);
+				data = JSON.parse(temp);
+				var mapList = data.entity;
+				var html = '';
+				html += '<dl>';
+				html += '<dt>';
+				html += '<span class="cred">*</span>发放方式：';
+				html += '</dt>';
+				html += '<dd>';
+				if(mapList != null && mapList.length >0){
+					for(var i=0,length=mapList.length;i<length;i++){
+						html +='<input type="radio" name="grantWay" value="'+mapList[i].id+'" onclick="doGrantWay(\''+mapList[i].id+'\')" onmousedown=showErr("grantWay") />&nbsp;';
+						html += mapList[i].name;
+						html +='&nbsp;&nbsp;&nbsp;&nbsp;';
+					}
+				}
+				html += '</br>';
+				html += '<span class ="gray">抢红包，只支持“批量发送”和“全部用户”；分享有礼，只支持“批量发送”和“新注册用户”</span>';
+				html += '<span id ="grantWayMsg" class ="cred"></span>';
+				html += '</dd>';
+				html += '</dl>';
+				
+				$('#grantWaySpan').html(html);
+			}
+		});
+	}
+	
+	function doGrantWay(way){
+		/* if(way == 'VOUCHERGRANTWAY_RED_ENVELOPE'){
+			$('#buyerUserType').val('BUYERUSERTYPELABEL_ALL');
+			$('#buyerUserType').attr('disabled',true); 
+		}
+		if(way == 'VOUCHERGRANTWAY_SHARE_GIFT'){
+			$('#buyerUserType').val('BUYERUSERTYPELABEL_NEW_REGISTER');
+			$('#buyerUserType').attr('disabled',true); 
+		}
+		if(way == 'VOUCHERGRANTWAY_AUTO_RELEASE'){
+			var buyerUserType = document.getElementById('buyerUserType');
+			if(buyerUserType.disabled == true){
+				$('#buyerUserType').val('');
+				$('#buyerUserType').attr('disabled',false);
+			}			
+		} */
+	}
+	
+	$(document).ready(function(e) {
+		loadHtml("headerId", "/include/header.html");
+		loadHtml("left_menu_content", "/include/leftmenu.html");
+		loadHtml("footerId", "/include/footer.html");
+		$('#vouPackId').val(vouPackId);
+		loadTimeInput();
+		loadVouchersInfo();
+		listBuyerTypeLabelList();
+		listGrantWays();
+		$('#userInfo').hide();
+		
+		//左边点击文字
+		$("#productClassDiv").on("click",".leftClassName",function(){
+			var obj = $(this).parent();
+			nextShow(obj);
+		});
+		//右边点击文字
+		/* $("#rightBox").on("click",".leftClassName",function(){
+			var obj = $(this).parent();
+			nextShow(obj);
+		}); */
+		//勾选复选框
+		$("#productClassDiv").on("click",".leftClassCode",function(){
+			nextChecked($(this));
+		});
+	});
+	
+	/* 分类 */
+	//得到所有一级分类
+	function getAllProductClass(){
+		var productClassList=[];
+		ajax({
+			url:TERMINAL_URL + OPERATION_SYSTEM_IDENTITY + '/getAllProductClass',
+			type:'post',
+			dataType:'json',
+			async:false,
+			success:function(data){
+				if(data.msgCode!=1)return;
+				productClassList=data.entity;
+			}
+		});
+		return productClassList;
+	}
+
+	//div显示
+	function nextShow(obj){
+		if(obj.children(".leftDiv").is(":visible")){
+			obj.find(".leftDiv").hide();
+		}else{
+			obj.children(".leftDiv").show();
+		}
+	}
+	//复选框选中
+	function nextChecked(obj){
+		var parentDiv = obj.parent("div");
+		var subCheckboxs = obj.parent().children(".leftDiv").find(".leftClassCode");
+		//var upDivs = parentObj.parent(".leftDiv").parents(".leftDiv");
+		if(obj.is(":checked")){
+			checkedUp(parentDiv);
+			subCheckboxs.each(function(){
+				$(this).attr("checked",'true');
+			});
+		}else{
+			/* checkNext(parentDiv); */
+			subCheckboxs.each(function(){
+				$(this).removeAttr("checked");
+			});
+		}
+	}
+	 //递归选中上一级
+	function checkedUp(parentDiv){
+		parentDiv = parentDiv.parent(".leftDiv").parent("div");
+		if(parentDiv[0]){
+			parentDiv.children(".leftClassCode").attr("checked",'true');
+			checkedUp(parentDiv);
+		}
+	} 
+
+	function getList(storeTypeClassCodes){
+		$("#productClassDiv").html(productClassCiv);
+		$('#productClassDiv').show();
+		var productClassList=getAllProductClass();
+		var html='';
+		if(productClassList != null && productClassList.length > 0){
+			$.each(productClassList,function(i,i_item){
+				html+='<div class="leftDiv rightDiv" align="left" style="margin-left:8px;line-height:20px;">';
+				html+='<div class="leftDiv-d rightDiv-d" style="line-height:20px" align="left">';
+				html+='<input class="leftClassCode rightClassCode" value="'+i_item.classCode+'" type="checkbox"';
+				if(storeTypeClassCodes != null && storeTypeClassCodes.length > 0){
+					$.each(storeTypeClassCodes,function(l,l_item){
+						if(i_item.classCode == l_item.classCode){
+							html+='checked="checked"';
+						}
+					});
+				}
+				if(i_item.subClassList == null || i_item.subClassList.length == 0){
+					html+='name="proclassname"';
+				}
+				html+='>';
+				html+='<span class="leftClassName rightClassName" style="cursor:pointer">'+i_item.className+'(';
+				if(i_item.subClassList != null && i_item.subClassList.length > 0){
+					html+=i_item.subClassList.length;	
+				}else{
+					html+=0;	
+				}
+				html+=')</span>';
+				html+='<div class="leftDiv rightDiv" style="line-height:10px;margin-left:12px;display:none" align="left">';
+				if(i_item.subClassList != null && i_item.subClassList.length > 0){
+					$.each(i_item.subClassList,function(j,j_item){
+						html+='<div class="leftDiv-d rightDiv-d" style="line-height:20px" align="left">';
+						html+='<input class="leftClassCode rightClassCode" value="'+j_item.classCode+'" type="checkbox"';
+						if(storeTypeClassCodes != null && storeTypeClassCodes.length > 0){
+							$.each(storeTypeClassCodes,function(l,l_item){
+								if(j_item.classCode == l_item.classCode){
+									html+='checked="checked"';
+								}
+							});
+						}
+						if(j_item.subClassList == null || j_item.subClassList.length == 0){
+							html+='name="proclassname"';
+						}
+						html+='>';
+						html+='<span class="leftClassName rightClassName" style="margin-left:2px;cursor:pointer;color:#0000FF">'+j_item.className+'(';
+						if(j_item.subClassList != null && j_item.subClassList.length > 0){
+							html+=j_item.subClassList.length;	
+						}else{
+							html+=0;	
+						}
+						html+=')</span>';
+						html+='<div class="leftDiv rightDiv" style="line-height:10px;margin-left:15px;display:none" align="left">';
+						if(j_item.subClassList != null && j_item.subClassList.length > 0){
+							$.each(j_item.subClassList,function(k,k_item){
+								html+='<div class="leftDiv-d rightDiv-d" style="line-height:20px" align="left">';
+								html+='<input class="leftClassCode rightClassCode" value="'+k_item.classCode+'" type="checkbox"';
+								if(storeTypeClassCodes != null && storeTypeClassCodes.length > 0){
+									$.each(storeTypeClassCodes,function(l,l_item){
+										if(k_item.classCode == l_item.classCode){
+											html+='checked="checked"';
+										}
+									});
+								}
+								if(k_item.subClassList == null || k_item.subClassList.length == 0){
+									html+='name="proclassname"';
+								}
+								html+='>';
+								html+='<span class="leftClassName rightClassName" style="margin-left:2px;color:#FF0000">'+k_item.className+'</span>';
+								html+='</div>';
+							});
+						}
+						html+='</div></div>';
+					});
+				}
+				html+='</div></div></div>';
+			});
+		}
+		$('#leftBox').html(html);
+	}
+	
+	var productClassCiv = '<table border="1" bordercolor="#CCCCCC" style="border-collapse:collapse;width:560px;">';
+	productClassCiv +='<tr>';
+	productClassCiv +='<td style="height:20px" align="center" valign="middle">可选择产品类别</td>';
+	/* productClassCiv +='<td style="height:20px" align="center" valign="middle">已选择产品类别</td>'; */
+	productClassCiv +='</tr>';
+	productClassCiv +='<tr>';
+	productClassCiv +='<td align="center" valign="top">';
+	productClassCiv +='<div id="leftBox" style="height:280px;width:560px;overflow:auto;"></div>';
+	productClassCiv +='</td>';
+/* 	productClassCiv +='<td align="center" valign="top">';
+	productClassCiv +='<div id="selectFunctionListBox" style="height:280px;width:265px;overflow:auto"></div>';
+	productClassCiv +='</td>'; */
+	productClassCiv +='</tr>';
+	productClassCiv +='</table>';
+</script>
+</head>
+
+<body id="bodyId">
+	<div id="headerId"></div>
+	<div class="bread">
+		<a href="/">首页</a> &gt; 促销管理 &gt; <span>抵用劵发放</span>
+	</div>
+	<div class="main">
+		<div class="clearfix">
+			<div class="content_box">
+				<div class="content">
+					<div class="page_title">抵用劵发放</div>
+					<div class="complaint_main">
+						<form method="post" class="user_form" id="dataForm">
+								<dl>
+									<dt>
+										抵用券包名称：
+									</dt>
+									<dd>
+										<span id="vouName" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>限制范围：
+									</dt>
+									<dd>
+										<input type="checkbox" id="checkbox1" name="orderAmountLimitCheckbox" onclick="showOrderAmountLimit(this)"/>&nbsp;订单金额限制</br>
+										<span id="orderAmountLimitSpan" class="disn"><span id= "orderLimit" style="border: 1px dashed;display:block"></span></span>
+		   								<input type="checkbox" id="checkbox2" name="productClassLimitCheckbox" onclick="showProductClassLimit(this)" />&nbsp;产品品类限制</br>		   																
+										<div id= "productClassDiv" class="disn">
+											<!-- <table border="1" bordercolor="#CCCCCC" style="border-collapse:collapse;width:560px;">
+												<tr>
+													<td style="height:20px" align="center" valign="middle">可选择产品类别</td>
+													<td style="height:20px" align="center" valign="middle">已选择产品类别</td>
+												</tr>
+												<tr>
+													<td align="center" valign="top">
+														<div id="functionListBox" style="height:280px;width:265px;overflow:auto;"></div>
+													</td>
+													<td align="center" valign="top">
+														<div id="selectFunctionListBox" style="height:280px;width:265px;overflow:auto"></div>
+													</td>
+												</tr>
+											</table> -->
+										</div>
+										<span id ="productClassLimitMsg" class ="cred"></span>	
+										<input type="checkbox" id="checkbox3" name="businessRuleLimitCheckbox" onclick="showBusinessRuleLimit(this)" />&nbsp;业务规则限制</br>		   																
+										<span id= "businessRuleSpan" class="disn"><span id= "businessRule" style="border: 1px dashed;display:block"></span></span>
+										<span id ="businessRuleLimitMsg" class ="cred"></span>			
+									</dd>
+								</dl>
+								<input type="hidden" name="productClassLimit" id="productClassLimit"/>
+								<input type="hidden" name="businessRuleLimit" id="businessRuleLimit"/>
+								<input type="hidden" name="productLimit" id="productLimit"/>								
+								<dl>
+									<dt>
+										<span class="cred">*</span>有效期：
+									</dt>
+									<dd><input type="text" class="txt grid-20" id="validStartTime" name="validStartTime" onmousedown="showErr('validStartTime')" onkeydown="return false;"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										至
+										<input type="text" class="txt grid-20" id="validEndTime" name="validEndTime" onmousedown="showErr('validEndTime')" onkeydown="return false;"/>
+										<span id="timeMsg" class="cred"></span>
+									</dd>
+								</dl>
+								<dl>
+									<dt>
+										<span class="cred">*</span>发放范围：
+									</dt>
+									<dd>
+										<input type="radio" id="radio5" name="grantRange" value="VOUCHERGRANTRANGE_BATCH" checked='checked' onclick="getGrantRange(1)"/>&nbsp;批量发送&nbsp;&nbsp;&nbsp;
+		   								<input type="radio" id="radio6" name="grantRange" value="VOUCHERGRANTRANGE_SINGLE" onclick="getGrantRange(2)"/>&nbsp;单独发送&nbsp;&nbsp;&nbsp;
+									</dd>
+								</dl>
+							<div id="level">
+								<dl>
+									<dt>
+										<span class="cred">*</span>用户类型：
+									</dt>
+									<dd>
+										<select class="select grid-46" id="buyerUserType" name="buyerUserType"
+											onmousedown="showErr('buyerUserType')"></select>&nbsp;&nbsp; <span
+											class="cred" id="buyerUserTypeMsg"></span>
+									</dd>
+								</dl>
+							</div>
+							<div id="userInfo">
+								<dl>
+									<dt>
+										<span class="cred">*</span>用户登录账号：
+									</dt>
+									<dd>
+										<input type="text" class="txt grid-45" id="userNames" name="userNames" onmousedown="showErr('userNames')">&nbsp;&nbsp;
+										<span id="userNamesMsg" class="gray">输入多个登录账号,用英文逗号隔开</span>
+									</dd>
+								</dl>
+							</div>
+							<span id="grantWaySpan"></span>
+							<dl>
+								<dt>
+									<span class="cred">*</span>规则说明：
+								</dt>
+								<dd>
+									<textarea type="text" class="txt grid-46"id="rule" name="rule" onmousedown="showErr('rule')" rows="8" maxlength="256"></textarea>&nbsp;&nbsp;
+									<span class="gray">以文字描述此抵用券的规则；</span>&nbsp;&nbsp;
+									<span id="ruleMsg" class="cred"></span>
+								</dd>
+							</dl>
+							<br/>
+							<dl>
+								<dt></dt>
+								<dd>
+									<p class="main_search_btn">
+										<input type="button" class="btn_sure" value="保存" id="submit" onClick="dataSubmit()">  
+										<input type="button" id="goBack" class="btn_gray" value="返回" onclick="javascript:comebackList();">
+										<span id="promptMessage" class="cred"></span>
+									</p>
+								</dd>
+							</dl>
+							<input type="hidden"  id="vouPackId" name="vouPackId" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="menu">
+				<div class="aside">
+					<h2 class="aside_title">一里递运营中心</h2>
+					<div id="left_menu_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footerId"></div>
+</body>
+</html>

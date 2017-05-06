@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.UserRedEnvelopeActivityMapper">
+	<resultMap id="BaseResultMap" type="UserRedEnvelopeActivity">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="REDENVELOPEACTIVITYID" property="redEnvelopeActivityId" jdbcType="INTEGER" />
+		<result column="USERID" property="userId" jdbcType="INTEGER" />
+		<result column="PLAYCOUNT" property="playCount" jdbcType="INTEGER" />
+		<result column="REDENVELOPECOUNT" property="redEnvelopeCount" jdbcType="INTEGER" />
+		<result column="PLAYDATE" property="playDate" jdbcType="DATE" />
+		<result column="LASTPLAYTIME" property="lastPlayTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, REDENVELOPEACTIVITYID, USERID, PLAYCOUNT, REDENVELOPECOUNT, PLAYDATE, LASTPLAYTIME
+	</sql>
+
+	<insert id="save" parameterType="UserRedEnvelopeActivity" useGeneratedKeys="true" keyProperty="id">
+		insert into P_USER_RED_ENVELOPE_ACTIVITY 
+		(REDENVELOPEACTIVITYID, USERID, PLAYCOUNT, REDENVELOPECOUNT, PLAYDATE, LASTPLAYTIME)
+		values (#{redEnvelopeActivityId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+		#{playCount,jdbcType=INTEGER}, #{redEnvelopeCount,jdbcType=INTEGER},
+		#{playDate,jdbcType=DATE}, #{lastPlayTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<update id="updateById" parameterType="UserRedEnvelopeActivity">
+		update P_USER_RED_ENVELOPE_ACTIVITY
+		set
+		PLAYCOUNT = PLAYCOUNT + 1,
+		LASTPLAYTIME = #{lastPlayTime,jdbcType=TIMESTAMP}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateByIdWithCountLimit">
+		update P_USER_RED_ENVELOPE_ACTIVITY
+		set
+		PLAYCOUNT = PLAYCOUNT + 1,
+		LASTPLAYTIME = #{record.lastPlayTime,jdbcType=TIMESTAMP}
+		where ID = #{record.id,jdbcType=INTEGER}
+		and PLAYCOUNT + 1 &lt;= #{playCountLimit,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateByIdWithRedEnvelopeCount">
+		update P_USER_RED_ENVELOPE_ACTIVITY
+		set
+		REDENVELOPECOUNT = REDENVELOPECOUNT + 1
+		where ID = #{recordId,jdbcType=INTEGER}
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_USER_RED_ENVELOPE_ACTIVITY
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="loadByActivityIdAndUserIdAndPlayDate" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_USER_RED_ENVELOPE_ACTIVITY
+		where REDENVELOPEACTIVITYID = #{redEnvelopeActivityId,jdbcType=INTEGER}
+		and USERID = #{userId,jdbcType=INTEGER}
+		and PLAYDATE = #{playDate,jdbcType=DATE}
+	</select>
+
+</mapper>

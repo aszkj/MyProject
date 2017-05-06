@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.product.dao.SaleProductImageMapper">
+	<resultMap id="BaseResultMap" type="SaleProductImage">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="CHANNELCODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="MASTERFLAG" property="masterFlag" jdbcType="VARCHAR" />
+		<result column="IMAGEURL1" property="imageUrl1" jdbcType="VARCHAR" />
+		<result column="IMAGEURL2" property="imageUrl2" jdbcType="VARCHAR" />
+		<result column="IMAGEURL3" property="imageUrl3" jdbcType="VARCHAR" />
+		<result column="IMAGEORDER" property="imageOrder" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SALEPRODUCTID, CHANNELCODE, MASTERFLAG, IMAGEURL1,
+		IMAGEURL2 , IMAGEURL3, IMAGEORDER, CREATETIME,
+		CREATEUSERID,MODIFYTIME, MODIFYUSERID
+	</sql>
+	<select id="loadSaleProductImageById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_IMAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<insert id="saveSaleProductImage" parameterType="SaleProductImage" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		P_SALE_PRODUCT_IMAGE
+		(ID, SALEPRODUCTID, CHANNELCODE,
+		MASTERFLAG, IMAGEURL1,
+		IMAGEURL2,
+		IMAGEURL3,
+		IMAGEORDER,CREATETIME,
+		CREATEUSERID )
+		values
+		(#{id,jdbcType=INTEGER}, #{saleProductId,jdbcType=INTEGER},
+		#{channelCode,jdbcType=VARCHAR}
+		,#{masterFlag,jdbcType=VARCHAR},
+		#{imageUrl1,jdbcType=VARCHAR}, #{imageUrl2,jdbcType=VARCHAR},
+		#{imageUrl3,jdbcType=VARCHAR}, #{imageOrder,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER})
+	</insert>
+
+	<delete id="deleteSaleProductImageById" parameterType="java.lang.Integer">
+		delete
+		from
+		P_SALE_PRODUCT_IMAGE
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<update id="updateMasterFlagDisabled">
+		update P_SALE_PRODUCT_IMAGE
+		set MASTERFLAG = '0',
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME
+		=#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		SALEPRODUCTID = #{saleProductId,
+		jdbcType=INTEGER}
+		and CHANNELCODE =
+		#{channelCode,jdbcType=VARCHAR}
+		and
+		MASTERFLAG = '1'
+	</update>
+
+	<update id="updateMasterFlagById">
+		update P_SALE_PRODUCT_IMAGE
+		set MASTERFLAG = '1',
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME
+		=#{modifyTime,jdbcType=TIMESTAMP}
+		where
+		ID = #{id, jdbcType=INTEGER}
+	</update>
+
+
+	<update id="updateSortById">
+		update P_SALE_PRODUCT_IMAGE
+		set IMAGEORDER =
+		#{sort,jdbcType=INTEGER}
+		where
+		ID = #{id, jdbcType=INTEGER}
+	</update>
+
+	<select id="listSaleProductImagesBySaleProductIdAndChannelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_IMAGE
+		where SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER}
+		and CHANNELCODE =
+		#{channelCode,jdbcType=VARCHAR}
+	</select>
+
+	<update id="updateSaleProductImage" parameterType="SaleProductImage" useGeneratedKeys="true" keyProperty="id">
+		update
+		P_SALE_PRODUCT_IMAGE
+		set
+		MASTERFLAG = #{masterFlag,jdbcType=VARCHAR},
+		MODIFYUSERID =
+		#{modifyUserId,jdbcType=INTEGER},
+		MODIFYTIME =
+		#{modifyTime,jdbcType=TIMESTAMP},
+		IMAGEURL1 =
+		#{imageUrl1,jdbcType=VARCHAR},
+		IMAGEURL2 =
+		#{imageUrl2,jdbcType=VARCHAR},
+		IMAGEURL3 =
+		#{imageUrl3,jdbcType=VARCHAR},
+		IMAGEORDER =
+		#{imageOrder,jdbcType=INTEGER}
+		where
+		ID =
+		#{id, jdbcType=INTEGER}
+	</update>
+	<select id="loadSaleProductImageMasterBySaleProductIdAndChannelCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from P_SALE_PRODUCT_IMAGE
+		where SALEPRODUCTID =
+		#{saleProductId,jdbcType=INTEGER}
+		and MASTERFLAG =
+		#{masterFlag,jdbcType=VARCHAR}
+		<if test="channelCode != null">
+			and CHANNELCODE =
+			#{channelCode,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+</mapper>

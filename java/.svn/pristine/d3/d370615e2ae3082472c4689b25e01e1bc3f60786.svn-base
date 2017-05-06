@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.user.dao.AccountMapper">
+	<resultMap id="BaseResultMap" type="Account">
+		<id column="ACCOUNTID" property="accountId" jdbcType="INTEGER" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="ACCOUNTTYPECODE" property="accountTypeCode" jdbcType="VARCHAR" />
+		<result column="CURRENTBALANCE" property="currentBalance" jdbcType="BIGINT" />
+		<result column="FREEZEAMOUNT" property="freezeAmount" jdbcType="BIGINT" />
+		<result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATEUSERID" property="createUserId" jdbcType="INTEGER" />
+		<result column="MODIFYTIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFYUSERID" property="modifyUserId" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<resultMap id="AccountRelatedInfoResultMap" type="AccountRelatedInfo">
+		<id column="ACCOUNTID" property="accountId" jdbcType="INTEGER" />
+		<result column="CUSTOMERID" property="customerId" jdbcType="INTEGER" />
+		<result column="STORENAME" property="storeName" jdbcType="VARCHAR" />
+		<result column="STORECODE" property="storeCode" jdbcType="VARCHAR" />
+		<result column="CURRENTBALANCE" property="currentBalance" jdbcType="BIGINT" />
+		<result column="TOTALACCOUNT" property="totalAccount" jdbcType="BIGINT" />
+		<result column="CASHACCOUNT" property="cashAccount" jdbcType="BIGINT" />
+		<result column="PRODCUTACCOUNT" property="prodcutAccount" jdbcType="BIGINT" />
+		<result column="COUPONACCOUNT" property="couponAccount" jdbcType="BIGINT" />
+		<result column="LOGISTICSACCOUNT" property="logisticsAccount" jdbcType="BIGINT" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="ACCOUNTTYPECODE" property="accountTypeCode" jdbcType="VARCHAR" />
+		<result column="TELPHONE" property="telPhone" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ACCOUNTID, CUSTOMERID, ACCOUNTTYPECODE, CURRENTBALANCE, FREEZEAMOUNT,
+		CREATETIME, CREATEUSERID,
+		MODIFYTIME,
+		MODIFYUSERID
+	</sql>
+
+	<insert id="save" parameterType="Account">
+		insert into U_ACCOUNT (CUSTOMERID, ACCOUNTTYPECODE,
+		CURRENTBALANCE,
+		FREEZEAMOUNT, CREATETIME, CREATEUSERID
+		)
+		values (#{customerId,jdbcType=INTEGER},
+		#{accountTypeCode,jdbcType=VARCHAR},
+		#{currentBalance,jdbcType=BIGINT}, #{freezeAmount,jdbcType=BIGINT},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserId,jdbcType=INTEGER}
+		)
+	</insert>
+
+
+	<update id="updateByIdSelective" parameterType="Account">
+		update U_ACCOUNT
+		<set>
+			<if test="currentBalance != null">
+				CURRENTBALANCE = #{currentBalance,jdbcType=BIGINT},
+			</if>
+			<if test="freezeAmount != null">
+				FREEZEAMOUNT = #{freezeAmount,jdbcType=BIGINT},
+			</if>
+			<if test="modifyTime != null">
+				MODIFYTIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyUserId != null">
+				MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ACCOUNTID = #{accountId,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateBalanceIncreaseById">
+		update U_ACCOUNT
+		set CURRENTBALANCE = CURRENTBALANCE + #{delta,jdbcType=BIGINT},
+		MODIFYTIME = CURRENT_TIME,
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where ACCOUNTID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateBalanceDecreaseById">
+		update U_ACCOUNT
+		set CURRENTBALANCE = CURRENTBALANCE - #{delta,jdbcType=BIGINT},
+		MODIFYTIME = CURRENT_TIME,
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where ACCOUNTID = #{id,jdbcType=INTEGER} and CURRENTBALANCE - #{delta,jdbcType=BIGINT} &gt;= 0
+	</update>
+
+	<update id="updateUnFreezeAllById">
+		update U_ACCOUNT
+		set CURRENTBALANCE = CURRENTBALANCE + FREEZEAMOUNT,
+		FREEZEAMOUNT = FREEZEAMOUNT -
+		FREEZEAMOUNT,
+		MODIFYTIME = CURRENT_TIME,
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where ACCOUNTID =
+		#{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateUnFreezePartById">
+		update U_ACCOUNT
+		set CURRENTBALANCE = CURRENTBALANCE + #{delta,jdbcType=BIGINT},
+		FREEZEAMOUNT = FREEZEAMOUNT
+		- #{delta,jdbcType=BIGINT},
+		MODIFYTIME = CURRENT_TIME,
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where ACCOUNTID =
+		#{id,jdbcType=INTEGER}
+		and FREEZEAMOUNT - #{delta,jdbcType=BIGINT} &gt;= 0
+	</update>
+
+	<update id="updateFreezeById">
+		update U_ACCOUNT
+		set CURRENTBALANCE = CURRENTBALANCE - #{delta,jdbcType=BIGINT},
+		FREEZEAMOUNT = FREEZEAMOUNT
+		+ #{delta,jdbcType=BIGINT},
+		MODIFYTIME = CURRENT_TIME,
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where ACCOUNTID =
+		#{id,jdbcType=INTEGER}
+		and CURRENTBALANCE - #{delta,jdbcType=BIGINT} &gt;= 0
+	</update>
+
+	<update id="updateForConsumeDeposit">
+		update U_ACCOUNT
+		set FREEZEAMOUNT = FREEZEAMOUNT - #{delta,jdbcType=BIGINT},
+		MODIFYTIME = CURRENT_TIME,
+		MODIFYUSERID = #{modifyUserId,jdbcType=INTEGER}
+		where ACCOUNTID = #{id,jdbcType=INTEGER} and FREEZEAMOUNT - #{delta,jdbcType=BIGINT} &gt;= 0
+	</update>
+
+	<select id="loadById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_ACCOUNT
+		where ACCOUNTID = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="listByCustomerId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from U_ACCOUNT
+		where CUSTOMERID = #{customerId,jdbcType=INTEGER}
+	</select>
+
+	<select id="loadByCustomerIdAndAccountTypeCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from U_ACCOUNT
+		where CUSTOMERID = #{customerId,jdbcType=INTEGER}
+		and ACCOUNTTYPECODE = #{typeCode, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findAccountsForCustomerBalance" resultMap="AccountRelatedInfoResultMap"
+		parameterType="CustomerBalanceQuery">
+		select A.ACCOUNTID,A.CUSTOMERID,A.ACCOUNTTYPECODE,A.CURRENTBALANCE,C.USERNAME,B.CUSTOMERTYPE,C.PHONE AS TELPHONE
+		from U_ACCOUNT A left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		left join U_USER C on B.MASTERUSERID = C.ID
+		<where>
+			1=1
+			<if test="accountTypeCode != null">
+				and A.ACCOUNTTYPECODE = #{accountTypeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				and B.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and C.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+			<if test="telPhone != null">
+				and C.PHONE = #{telPhone, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<select id="listDataForExportUserAccount" resultMap="AccountRelatedInfoResultMap">
+		select A.ACCOUNTID,A.CUSTOMERID,A.ACCOUNTTYPECODE,A.CURRENTBALANCE,C.USERNAME,B.CUSTOMERTYPE,C.PHONE AS TELPHONE
+		from U_ACCOUNT A left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		left join U_USER C on B.MASTERUSERID = C.ID
+		<where>
+			1=1
+			<if test="customerBalanceQuery.accountTypeCode != null">
+				and A.ACCOUNTTYPECODE = #{customerBalanceQuery.accountTypeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="customerBalanceQuery.customerType != null">
+				and B.CUSTOMERTYPE = #{customerBalanceQuery.customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="customerBalanceQuery.userName != null">
+				and C.USERNAME = #{customerBalanceQuery.userName, jdbcType=VARCHAR}
+			</if>
+			<if test="customerBalanceQuery.telPhone != null">
+				and C.PHONE = #{customerBalanceQuery.telPhone, jdbcType=VARCHAR}
+			</if>
+			<if test="customerBalanceQuery.order != null">
+				order by ${customerBalanceQuery.order}
+				<if test="customerBalanceQuery.sort != null">
+					${customerBalanceQuery.sort}
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<select id="getCountsForExportUserAccount" parameterType="CustomerBalanceQuery" resultType="java.lang.Long">
+		select COUNT(*)
+		from U_ACCOUNT A left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		left join U_USER C on B.MASTERUSERID = C.ID
+		<where>
+			1=1
+			<if test="accountTypeCode != null">
+				and A.ACCOUNTTYPECODE = #{accountTypeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="customerType != null">
+				and B.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null">
+				and C.USERNAME = #{userName, jdbcType=VARCHAR}
+			</if>
+			<if test="telPhone != null">
+				and C.PHONE = #{telPhone, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+	</select>
+	
+	<!-- 统计每个门店用户的所有补贴金额(优惠券补贴+产品差价补贴+物流补贴)-->
+	<select id="countSellerTotalSubsidyBalance" resultType="java.lang.Long" parameterType="java.lang.Integer">
+		SELECT SUM(CURRENTBALANCE) TOTALSUBSIDY FROM U_ACCOUNT
+		WHERE ACCOUNTTYPECODE in('ACCOUNTTYPECODE_COUPONSUBSIDY','ACCOUNTTYPECODE_PRODCUTPRICESUBSIDY','ACCOUNTTYPECODE_LOGISTICSSUBSIDY')
+		AND CUSTOMERID = #{id,jdbcType=INTEGER}
+		GROUP BY CUSTOMERID
+	</select>
+	
+	<!-- 统计每个门店用户的所有可提现金额(现金账本+优惠券补贴+产品差价补贴)-->
+	<select id="countSellerTotalWithdrawBalance" resultType="java.lang.Long" parameterType="java.lang.Integer">
+		SELECT SUM(CURRENTBALANCE) TOTALSUBSIDY FROM U_ACCOUNT
+		WHERE ACCOUNTTYPECODE in('ACCOUNTTYPECODE_CASH','ACCOUNTTYPECODE_COUPONSUBSIDY','ACCOUNTTYPECODE_PRODCUTPRICESUBSIDY')
+		AND CUSTOMERID = #{id,jdbcType=INTEGER}
+		GROUP BY CUSTOMERID
+	</select>
+	
+	<select id="findCountSellerAccountsBalance" resultMap="AccountRelatedInfoResultMap"
+		parameterType="CustomerBalanceQuery">
+		SELECT A.ACCOUNTID, A.CUSTOMERID,D.STORECODE,B.CUSTOMERNAME AS STORENAME, B.CUSTOMERTYPE,
+		A.ACCOUNTTYPECODE,SUM(A.CURRENTBALANCE) AS TOTALACCOUNT,
+		SUM(CASE WHEN A.ACCOUNTTYPECODE='ACCOUNTTYPECODE_CASH' THEN A.CURRENTBALANCE END) AS CASHACCOUNT,
+		SUM(CASE WHEN A.ACCOUNTTYPECODE='ACCOUNTTYPECODE_PRODCUTPRICESUBSIDY' THEN A.CURRENTBALANCE END) AS PRODCUTACCOUNT,
+		SUM(CASE WHEN A.ACCOUNTTYPECODE='ACCOUNTTYPECODE_COUPONSUBSIDY' THEN A.CURRENTBALANCE END) AS COUPONACCOUNT,
+		SUM(CASE WHEN A.ACCOUNTTYPECODE='ACCOUNTTYPECODE_LOGISTICSSUBSIDY' THEN A.CURRENTBALANCE END) AS LOGISTICSACCOUNT
+		FROM U_ACCOUNT A
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.CUSTOMERID = D.STOREID
+		<where>
+			1=1
+			<if test="customerType != null">
+				and B.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="storeId != null">
+				and A.CUSTOMERID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+		GROUP BY A.CUSTOMERID
+	</select>
+
+	<select id="listDataForExportSellerAccount" resultMap="AccountRelatedInfoResultMap">
+		SELECT A.ACCOUNTID, A.CUSTOMERID,D.STORECODE,B.CUSTOMERNAME AS STORENAME, B.CUSTOMERTYPE,
+		A.ACCOUNTTYPECODE,SUM(A.CURRENTBALANCE) AS TOTALACCOUNT,
+		SUM(CASE WHEN A.ACCOUNTTYPECODE='ACCOUNTTYPECODE_CASH' THEN A.CURRENTBALANCE END) AS CASHACCOUNT,
+		SUM(CASE WHEN A.ACCOUNTTYPECODE='ACCOUNTTYPECODE_PRODCUTPRICESUBSIDY' THEN A.CURRENTBALANCE END) AS PRODCUTACCOUNT,
+		SUM(CASE WHEN A.ACCOUNTTYPECODE='ACCOUNTTYPECODE_COUPONSUBSIDY' THEN A.CURRENTBALANCE END) AS COUPONACCOUNT,
+		SUM(CASE WHEN A.ACCOUNTTYPECODE='ACCOUNTTYPECODE_LOGISTICSSUBSIDY' THEN A.CURRENTBALANCE END) AS LOGISTICSACCOUNT
+		FROM U_ACCOUNT A
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.CUSTOMERID = D.STOREID
+		<where>
+			1=1
+			<if test="customerBalanceQuery.customerType != null">
+				and B.CUSTOMERTYPE = #{customerBalanceQuery.customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="customerBalanceQuery.storeId != null">
+				and A.CUSTOMERID = #{customerBalanceQuery.storeId, jdbcType=INTEGER}
+			</if>
+			<if test="customerBalanceQuery.storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{customerBalanceQuery.storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="customerBalanceQuery.storeCode != null">
+				and D.STORECODE = #{customerBalanceQuery.storeCode, jdbcType=VARCHAR}
+			</if>
+			<if test="customerBalanceQuery.order != null">
+				order by ${customerBalanceQuery.order}
+				<if test="customerBalanceQuery.sort != null">
+					${customerBalanceQuery.sort}
+				</if>
+			</if>
+		</where>
+		GROUP BY A.CUSTOMERID
+		limit #{startLineNum, jdbcType=BIGINT},#{pageSize, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCountsForExportSellerAccount" parameterType="CustomerBalanceQuery" resultType="java.lang.Long">
+		SELECT COUNT(*) FROM (SELECT A.ACCOUNTID, A.CUSTOMERID,D.STORECODE,B.CUSTOMERNAME AS STORENAME, B.CUSTOMERTYPE
+		FROM U_ACCOUNT A
+		left join U_CUSTOMER B on A.CUSTOMERID = B.ID
+		LEFT JOIN U_STORE_PROFILE D ON A.CUSTOMERID = D.STOREID
+		<where>
+			1=1
+			<if test="customerType != null">
+				and B.CUSTOMERTYPE = #{customerType, jdbcType=VARCHAR}
+			</if>
+			<if test="storeId != null">
+				and A.CUSTOMERID = #{storeId, jdbcType=INTEGER}
+			</if>
+			<if test="storeName != null">
+				and B.CUSTOMERNAME LIKE CONCAT('%',#{storeName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="storeCode != null">
+				and D.STORECODE = #{storeCode, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="order != null">
+			order by ${order}
+			<if test="sort != null">
+				${sort}
+			</if>
+		</if>
+		GROUP BY A.CUSTOMERID) E
+	</select>
+</mapper>

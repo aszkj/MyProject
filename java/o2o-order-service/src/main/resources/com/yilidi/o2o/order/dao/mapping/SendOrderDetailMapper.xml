@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.order.dao.SendOrderDetailMapper">
+	<resultMap id="BaseResultMap" type="SendOrderDetail">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="SENDORDERID" property="sendOrderId" jdbcType="INTEGER" />
+		<result column="SALEORDERITEMID" property="saleOrderItemId" jdbcType="INTEGER" />
+		<result column="SALEPRODUCTID" property="saleProductId" jdbcType="INTEGER" />
+		<result column="QUANTITY" property="quantity" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SENDORDERID, SALEORDERITEMID, SALEPRODUCTID, QUANTITY
+	</sql>
+
+	<insert id="save" parameterType="SendOrderDetail">
+		insert into T_SEND_ORDER_DETAIL (SENDORDERID, SALEORDERITEMID, SALEPRODUCTID, QUANTITY)
+		values (#{sendOrderId,jdbcType=INTEGER}, #{saleOrderItemId,jdbcType=INTEGER},
+		#{saleProductId,jdbcType=INTEGER}, #{quantity,jdbcType=INTEGER})
+	</insert>
+
+	<select id="listBySendOrderId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from T_SEND_ORDER_DETAIL
+		where SENDORDERID = #{sendOrderId,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

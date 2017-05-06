@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yilidi.o2o.system.dao.SysOperationLogMapper" >
+  <resultMap id="BaseResultMap" type="SysOperationLog" >
+    <id column="LOGID" property="logId" jdbcType="INTEGER" />
+    <result column="USERID" property="userId" jdbcType="INTEGER" />
+    <result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+    <result column="MODUEL" property="moduel" jdbcType="VARCHAR" />
+    <result column="REQUESTURL" property="requestUrl" jdbcType="VARCHAR" />
+    <result column="REQUESTMETHOD" property="requestMethod" jdbcType="VARCHAR" />
+    <result column="REMOTEIP" property="remoteIp" jdbcType="VARCHAR" />
+    <result column="USERAGENT" property="userAgent" jdbcType="VARCHAR" />
+    <result column="COSTTIME" property="costTime" jdbcType="INTEGER" />
+    <result column="CREATETIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="REQUESTPARAMS" property="requestParams" jdbcType="LONGVARCHAR" />
+    <result column="EXCEPTIONMSG" property="exceptionMsg" jdbcType="LONGVARCHAR" />
+    <result column="LOGTYPE" property="logType" jdbcType="VARCHAR" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    LOGID, USERID, USERNAME, MODUEL, REQUESTURL, REQUESTMETHOD, REMOTEIP, USERAGENT, COSTTIME, REQUESTPARAMS, EXCEPTIONMSG
+    CREATETIME, LOGTYPE
+  </sql>
+ 
+  <select id="list" resultType="SysOperationLog" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_SYSTEM_OPERATION_LOG
+  </select>
+
+ <!-- 
+    	增加 useGeneratedKeys="true" 和  keyProperty="logId" 属性，可以获取新增加记录的
+    	主键ID的数据
+  --> 
+  <insert id="save" parameterType="SysOperationLog"  useGeneratedKeys="true" keyProperty="logId">
+    insert into S_SYSTEM_OPERATION_LOG (USERID, USERNAME, MODUEL, 
+      REQUESTURL, REQUESTMETHOD, REMOTEIP, 
+      USERAGENT, COSTTIME, CREATETIME, 
+      REQUESTPARAMS, EXCEPTIONMSG, LOGTYPE)
+    values (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{moduel,jdbcType=VARCHAR}, 
+      #{requestUrl,jdbcType=VARCHAR}, #{requestMethod,jdbcType=VARCHAR}, #{remoteIp,jdbcType=VARCHAR}, 
+      #{userAgent,jdbcType=VARCHAR}, #{costTime,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{requestParams,jdbcType=LONGVARCHAR}, #{exceptionMsg,jdbcType=LONGVARCHAR}, #{logType,jdbcType=VARCHAR})
+  </insert>
+  
+  	<delete id="deleteById" parameterType="integer">
+		delete from S_SYSTEM_OPERATION_LOG
+		where LOGID = #{id,jdbcType=INTEGER}
+	</delete>
+  
+  </mapper>
