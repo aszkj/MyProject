@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/account_bg">
+
+        <TextView
+                android:id="@+id/account_header_flag_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.Normal.White"
+                android:layout_margin="@dimen/margin_normal"/>
+
+        <TextView
+                android:id="@+id/account_spend_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance"
+                android:textSize="@dimen/account_spend_text_size"
+                android:textColor="@color/colorYellow"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/account_spend_margin_left"
+                android:layout_marginStart="@dimen/account_spend_margin_left"/>
+    </RelativeLayout>
+
+    <LinearLayout
+            android:id="@+id/account_store_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_normal_height"
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:paddingLeft="@dimen/normal_margin_lr"
+            android:paddingRight="@dimen/normal_margin_lr"
+            android:gravity="center_vertical">
+
+        <ImageView
+                android:id="@+id/account_image_flag_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:id="@+id/account_store_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.Normal"
+                android:layout_marginLeft="@dimen/normal_text_gap"
+                android:layout_marginStart="@dimen/normal_text_gap"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/normal_margin_lr"
+            android:paddingRight="@dimen/normal_margin_lr"
+            android:background="@color/white"
+            android:layout_marginTop="@dimen/normal_margin_top">
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="@dimen/item_small_height"
+                      android:orientation="horizontal"
+                      android:paddingLeft="@dimen/margin_small"
+                      android:paddingRight="@dimen/margin_small"
+                      android:gravity="center_vertical">
+
+            <TextView
+                    android:id="@+id/account_type_content_flag_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Normal.Secondary"/>
+
+            <TextView
+                    android:id="@+id/account_type_content_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Normal"/>
+        </LinearLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+                android:id="@+id/account_order_layout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_small_height"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/margin_small"
+                android:paddingRight="@dimen/margin_small"
+                android:visibility="gone">
+
+            <TextView
+                    android:id="@+id/account_order_flag_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Normal.Secondary"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/account_order_flag"/>
+
+            <TextView
+                    android:id="@+id/account_order_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Normal"
+                    android:layout_toRightOf="@id/account_order_flag_view"
+                    android:layout_toEndOf="@id/account_order_flag_view"
+                    android:layout_centerVertical="true"/>
+
+            <ImageView android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:background="@mipmap/right_arrow"
+                       android:layout_alignParentEnd="true"
+                       android:layout_alignParentRight="true"
+                       android:layout_centerVertical="true"/>
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="@dimen/item_small_height"
+                      android:orientation="horizontal"
+                      android:paddingLeft="@dimen/margin_small"
+                      android:paddingRight="@dimen/margin_small"
+                      android:gravity="center_vertical">
+
+            <TextView
+                    android:id="@+id/account_time_flag_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Normal.Secondary"
+                    android:text="@string/account_time_flag"/>
+
+            <TextView
+                    android:id="@+id/account_time_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Normal"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

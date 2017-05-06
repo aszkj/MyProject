@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/search_layout"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_more_brand"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_normal_height"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/brand_margin_small"
+        android:paddingRight="@dimen/brand_margin_small">
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="热门品牌"/>
+
+        <ImageView
+            android:id="@+id/more_brand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/profile_more"/>
+
+        <TextView
+            style="@style/TextAppearance.Small.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/more_brand"
+            android:text="查看更多"/>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/brand_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/item_bottom_height"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/margin_small"
+        android:paddingLeft="@dimen/margin_smaller"
+        android:paddingRight="@dimen/margin_smaller"
+        android:paddingTop="@dimen/margin_small"
+        android:scrollbars="none"/>
+</LinearLayout>

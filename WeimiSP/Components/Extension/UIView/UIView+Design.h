@@ -1,0 +1,41 @@
+//
+//  UIView+Design.h
+//  
+//
+//  Created by 1 on 15/4/21.
+//
+//
+
+#import <UIKit/UIKit.h>
+
+@interface UIView (Design)
+
+@property(nonatomic)IBInspectable CGFloat cornerRadius;
+@property(nonatomic)IBInspectable UIColor *borderColor;
+@property(nonatomic)IBInspectable CGFloat borderWidth;
+
+@property (nonatomic) IBInspectable UIColor *barTintGradientColorStart;
+@property (nonatomic) IBInspectable UIColor *barTintGradientColorEnd;
+@property (nonatomic) IBInspectable NSArray *gradientColors;
+@property (nonatomic) CAGradientLayer *gradientLayer;
+
+- (void)drawGradientColor;
+- (void)setBarTintGradientColors:(NSArray *)barTintGradientColors;
+
+
+@end
+
+@interface UIView (Frame)
+@property (nonatomic, assign) CGFloat x;
+@property (nonatomic, assign) CGFloat y;
+@property (nonatomic, assign) CGFloat maxX;
+@property (nonatomic, assign) CGFloat maxY;
+@property (nonatomic, assign) CGFloat centerX;
+@property (nonatomic, assign) CGFloat centerY;
+@property (nonatomic, assign) CGFloat width;
+@property (nonatomic, assign) CGFloat height;
+@property (nonatomic, assign) CGSize size;
+@property (nonatomic, assign) CGPoint origin;
+
+@end
+

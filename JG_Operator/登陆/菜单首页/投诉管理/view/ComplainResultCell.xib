@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" restorationIdentifier="ComplainResultCell" selectionStyle="default" indentationWidth="10" rowHeight="99" id="lPe-i7-82r" customClass="ComplainResultCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="99"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lPe-i7-82r" id="JWS-Jw-f7e">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="98.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="处理结果:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6s9-rx-BBI">
+                        <rect key="frame" x="16" y="8" width="63" height="21"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="63" id="bJV-jj-jD1"/>
+                            <constraint firstAttribute="height" constant="21" id="cwL-V2-BaT"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <animations/>
+                <constraints>
+                    <constraint firstItem="6s9-rx-BBI" firstAttribute="leading" secondItem="JWS-Jw-f7e" secondAttribute="leading" constant="16" id="5Cn-28-EpS"/>
+                    <constraint firstItem="6s9-rx-BBI" firstAttribute="top" secondItem="JWS-Jw-f7e" secondAttribute="top" constant="8" id="sHW-KT-jdt"/>
+                </constraints>
+            </tableViewCellContentView>
+            <animations/>
+            <connections>
+                <outlet property="titleLab" destination="6s9-rx-BBI" id="FIo-tX-0Yb"/>
+            </connections>
+            <point key="canvasLocation" x="308" y="150.5"/>
+        </tableViewCell>
+    </objects>
+</document>

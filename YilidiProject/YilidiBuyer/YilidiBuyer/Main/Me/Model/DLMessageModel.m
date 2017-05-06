@@ -1,0 +1,63 @@
+//
+//  DLMessageModel.m
+//  YilidiBuyer
+//
+//  Created by 曾勇兵 on 17/3/29.
+//  Copyright © 2017年 yld. All rights reserved.
+//
+
+#import "DLMessageModel.h"
+
+@implementation DLMessageModel
+-(instancetype)initWithDefaultDataDic:(NSDictionary *)dic{
+    
+    
+    self = [super initWithDefaultDataDic:dic];
+    if (self) {
+        self.typeValue = dic[@"typeValue"];
+        self.msgId = dic[@"msgId"];
+        self.msgTime = dic[@"msgTime"];
+        if (isEmpty(dic[@"msgAbstract"])) {
+            self.msgAbstract = @"";
+        }else{
+            self.msgAbstract = dic[@"msgAbstract"];
+        }
+        
+        if (isEmpty(dic[@"msgTime"])) {
+            self.msgTime = @"";
+        }else{
+            self.msgTime = dic[@"msgTime"];
+        }
+        
+        self.typeName = dic[@"typeName"];
+        self.msgContent = dic[@"msgContent"];
+
+        self.msgTitle = dic[@"msgTitle"];
+        self.directType = dic[@"directType"];
+        self.directCode = dic[@"directCode"];
+        self.msgImage = dic[@"msgImage"];
+    }
+    
+    return self;
+    
+}
+
+@end
+
+@implementation DLMessageModel (setMessageModel)
+
+
++(NSArray *)objectMessageModelArr:(NSArray *)array {
+    NSMutableArray *arr = [NSMutableArray arrayWithCapacity:array.count];
+    for (NSDictionary *dic in array) {
+        DLMessageModel *model = [[DLMessageModel alloc]initWithDefaultDataDic:dic];
+        
+        [arr addObject:model];
+    }
+    
+    return [arr mutableCopy];
+    
+    
+}
+
+@end

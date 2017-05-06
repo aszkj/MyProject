@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include
+        android:id="@+id/order_list_title"
+        layout="@layout/main_tool_bar"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.yldbkd.www.library.android.pullRefresh.PullToRefreshListView
+            android:id="@+id/order_list_layout"
+            style="@style/Widget.ListView.Order"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scrollbars="none"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_nodata"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/iv_nodata"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="@mipmap/order_nodata"
+                android:gravity="center"/>
+
+            <TextView
+                style="@style/TextAppearance.Normal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_nodata"
+                android:layout_marginTop="@dimen/margin_big"
+                android:gravity="center"
+                android:text="@string/order_nodata"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/progress_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="@dimen/loading_side"
+                android:layout_height="@dimen/loading_side"
+                android:background="@mipmap/loading_bg"
+                android:indeterminateDrawable="@drawable/progress"/>
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

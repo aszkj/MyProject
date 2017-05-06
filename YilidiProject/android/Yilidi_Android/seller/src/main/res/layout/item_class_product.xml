@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/class_product_list_item_height"
+                android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/ll_product"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/margin_big"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_class_product_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_big"/>
+
+        <ImageView
+            android:id="@+id/iv_class_product_image"
+            android:layout_width="@dimen/class_product_width"
+            android:layout_height="@dimen/class_product_height"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginLeft="@dimen/margin_large"
+            android:layout_marginRight="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"/>
+
+        <TextView
+            android:id="@+id/tv_class_product_name"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="2"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_1_px"
+        android:layout_below="@id/ll_product"
+        android:background="@mipmap/product_line"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ll_product"
+        android:layout_marginLeft="@dimen/margin_big"
+        android:layout_marginRight="@dimen/margin_big">
+
+        <TextView
+            android:id="@+id/tv_class_product_sale_count"
+            style="@style/TextAppearance.Small.Light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:id="@+id/tv_class_product_retail_price"
+            style="@style/TextAppearance.Small.Light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_second"/>
+
+        <TextView
+            android:id="@+id/tv_class_product_promotional_price"
+            style="@style/TextAppearance.Small.Light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_third"/>
+
+        <TextView
+            android:id="@+id/tv_class_product_stock_num"
+            style="@style/TextAppearance.Small.Light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_fourth"/>
+    </RelativeLayout>
+</RelativeLayout>

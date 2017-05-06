@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aEW-0E-Iew">
+                    <rect key="frame" x="12" y="14" width="15" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="15" id="KE8-Fi-cvt"/>
+                        <constraint firstAttribute="height" constant="15" id="dLc-AI-ah2"/>
+                    </constraints>
+                    <state key="normal" backgroundImage="icon_add"/>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="请填写收货地址" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TI0-5L-qsI">
+                    <rect key="frame" x="35" y="11" width="108" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="NGF-0j-WYh"/>
+                        <constraint firstAttribute="width" constant="108" id="uK7-sp-oUN"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" red="0.55294117647058827" green="0.55686274509803924" blue="0.5607843137254902" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mc4-uj-FVF">
+                    <rect key="frame" x="354" y="14" width="7" height="12"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="7" id="mGp-4m-YEx"/>
+                        <constraint firstAttribute="height" constant="12" id="ngu-hY-LPG"/>
+                    </constraints>
+                    <state key="normal" backgroundImage="icon_06"/>
+                </button>
+                <button opaque="NO" tag="1" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B8b-A0-j3K">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="42"/>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="B8b-A0-j3K" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="1eV-03-7bp"/>
+                <constraint firstItem="aEW-0E-Iew" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="12" id="6NG-s9-tiM"/>
+                <constraint firstAttribute="trailing" secondItem="mc4-uj-FVF" secondAttribute="trailing" constant="14" id="9vt-fE-EWp"/>
+                <constraint firstAttribute="bottom" secondItem="B8b-A0-j3K" secondAttribute="bottom" id="FS0-lZ-5rd"/>
+                <constraint firstItem="mc4-uj-FVF" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="N26-gP-7HX"/>
+                <constraint firstItem="TI0-5L-qsI" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="N4y-la-wH6"/>
+                <constraint firstAttribute="trailing" secondItem="B8b-A0-j3K" secondAttribute="trailing" id="VNw-En-DLO"/>
+                <constraint firstItem="aEW-0E-Iew" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="ePZ-yX-1Zi"/>
+                <constraint firstItem="B8b-A0-j3K" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="fyo-LU-F8n"/>
+                <constraint firstItem="TI0-5L-qsI" firstAttribute="leading" secondItem="aEW-0E-Iew" secondAttribute="trailing" constant="8" id="kIM-mE-5MP"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="299.5" y="230"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="icon_06" width="7" height="12"/>
+        <image name="icon_add" width="16" height="16"/>
+    </resources>
+</document>

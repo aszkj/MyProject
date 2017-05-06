@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="NoActivityView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="暂无一里递活动" translatesAutoresizingMaskIntoConstraints="NO" id="sXx-pr-akI">
+                    <constraints>
+                        <constraint firstAttribute="width" constant="159" id="33O-O0-7gr"/>
+                        <constraint firstAttribute="height" constant="100" id="fDR-Il-lU9"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="暂无一里递活动" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gab-in-eVG">
+                    <constraints>
+                        <constraint firstAttribute="width" constant="162" id="2pU-yB-SgV"/>
+                        <constraint firstAttribute="height" constant="21" id="JMR-1x-SbH"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.20000000298023224" green="0.20000000298023224" blue="0.20000000298023224" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lly-69-L96">
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="Hfs-8V-grK"/>
+                        <constraint firstAttribute="width" constant="239" id="ezl-go-7UF"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <state key="normal" title="阿里，正在积极的筹备活动中~您可以先去">
+                        <color key="titleColor" red="0.40000000596046448" green="0.40000000596046448" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kbf-PS-UDI">
+                    <constraints>
+                        <constraint firstAttribute="width" constant="59" id="sD7-0A-cuj"/>
+                        <constraint firstAttribute="height" constant="30" id="tDi-1e-B6K"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <state key="normal" title="首页&gt;">
+                        <color key="titleColor" red="1" green="0.33333334329999997" blue="0.33333334329999997" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="butttonClick:" destination="iN0-l3-epB" eventType="touchUpInside" id="Eac-yb-Ojn"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="逛逛" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SPw-R4-lnz">
+                    <constraints>
+                        <constraint firstAttribute="width" constant="42" id="8Kl-rz-4lD"/>
+                        <constraint firstAttribute="height" constant="21" id="huq-0h-Xbk"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" red="0.40000000596046448" green="0.40000000596046448" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="0.93333333730697632" green="0.93333333730697632" blue="0.93333333730697632" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="SPw-R4-lnz" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" constant="136.5" id="7WX-3U-FgG"/>
+                <constraint firstItem="lly-69-L96" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" constant="-31" id="8Zx-aD-8UO"/>
+                <constraint firstItem="SPw-R4-lnz" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="300" id="KY0-z4-fGv"/>
+                <constraint firstItem="lly-69-L96" firstAttribute="top" secondItem="sXx-pr-akI" secondAttribute="bottom" constant="36" id="ONv-kp-Rjo"/>
+                <constraint firstItem="sXx-pr-akI" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="160" id="WFx-Fi-vqX"/>
+                <constraint firstItem="gab-in-eVG" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="evB-pL-QqO"/>
+                <constraint firstItem="gab-in-eVG" firstAttribute="top" secondItem="sXx-pr-akI" secondAttribute="bottom" constant="19" id="fAI-mw-PkP"/>
+                <constraint firstItem="Kbf-PS-UDI" firstAttribute="top" secondItem="sXx-pr-akI" secondAttribute="bottom" constant="36" id="hpr-Nf-ovS"/>
+                <constraint firstItem="sXx-pr-akI" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="jpG-c5-Gl6"/>
+                <constraint firstItem="Kbf-PS-UDI" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" constant="99" id="tR7-8a-ggg"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="75.5" y="85.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="暂无一里递活动" width="159" height="100"/>
+    </resources>
+</document>

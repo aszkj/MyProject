@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/download_dialog"
+                android:layout_margin="20dp">
+
+    <TextView
+            android:id="@+id/update_progress_text"
+            style="@style/TextAppearance.Large.Blue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/update_zero"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"/>
+
+    <ProgressBar
+            android:id="@+id/update_progress"
+            android:layout_below="@id/update_progress_text"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:paddingLeft="-1dp"
+            android:paddingRight="-1dp"
+            android:background="@drawable/progress_bg"
+            android:progressDrawable="@drawable/progress_horizontal"/>
+
+    <TextView
+            android:id="@+id/cancel"
+            android:layout_below="@id/update_progress"
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:padding="15dp"
+            android:textColor="@color/progress_cancel"
+            android:text="@string/dialog_cancel"/>
+
+</RelativeLayout>

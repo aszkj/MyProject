@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="QuickBodyTestHomeController">
+            <connections>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SOi-MV-Z12" userLabel="phoneTestView">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="telephone2x.png" translatesAutoresizingMaskIntoConstraints="NO" id="PZx-be-iDk">
+                            <rect key="frame" x="53" y="47" width="266" height="202"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="PZx-be-iDk" secondAttribute="height" multiplier="133:101" id="8os-Hj-bjW"/>
+                                <constraint firstAttribute="width" constant="266" id="ZcV-zU-7qM"/>
+                                <constraint firstAttribute="height" constant="202" id="zKi-Bl-a4f"/>
+                            </constraints>
+                            <variation key="default">
+                                <mask key="constraints">
+                                    <exclude reference="ZcV-zU-7qM"/>
+                                    <exclude reference="zKi-Bl-a4f"/>
+                                </mask>
+                            </variation>
+                        </imageView>
+                        <textView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" scrollEnabled="NO" text="1 .把你的食指放在你手机背面的摄像头上，以确保它们已完全被覆盖。                                                                                         " translatesAutoresizingMaskIntoConstraints="NO" id="AZh-kS-oat">
+                            <rect key="frame" x="35" y="276" width="315" height="55"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="55" id="vIW-Xr-Wi8"/>
+                            </constraints>
+                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                        </textView>
+                        <textView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" scrollEnabled="NO" text="2 .保持住这个姿势直到测试完成。" translatesAutoresizingMaskIntoConstraints="NO" id="zfD-tD-L09">
+                            <rect key="frame" x="35" y="326" width="302" height="39"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="39" id="8f7-bY-btT"/>
+                            </constraints>
+                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                        </textView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x1u-bN-rNp">
+                            <rect key="frame" x="40" y="379" width="289" height="34"/>
+                            <color key="backgroundColor" red="0.35294117650000001" green="0.76862745099999996" blue="0.94509803920000002" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="34" id="GGg-Oz-nMA"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                            <state key="normal" title="开始测试">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="5"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                            <connections>
+                                <action selector="beginQuickTestAction:" destination="-1" eventType="touchUpInside" id="hCx-28-Lv2"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" red="0.92156862750000001" green="0.92156862750000001" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="x1u-bN-rNp" secondAttribute="trailing" constant="46" id="0Wl-VK-YBS"/>
+                        <constraint firstItem="x1u-bN-rNp" firstAttribute="leading" secondItem="SOi-MV-Z12" secondAttribute="leading" constant="40" id="4La-2C-G6F"/>
+                        <constraint firstItem="zfD-tD-L09" firstAttribute="top" secondItem="AZh-kS-oat" secondAttribute="bottom" constant="-5" id="701-YH-tVZ"/>
+                        <constraint firstItem="AZh-kS-oat" firstAttribute="top" secondItem="PZx-be-iDk" secondAttribute="bottom" constant="27" id="BfD-jH-ysv"/>
+                        <constraint firstAttribute="trailing" secondItem="zfD-tD-L09" secondAttribute="trailing" constant="38" id="Cg8-Fa-rPH"/>
+                        <constraint firstItem="zfD-tD-L09" firstAttribute="top" secondItem="AZh-kS-oat" secondAttribute="bottom" id="FVi-0j-Kes"/>
+                        <constraint firstAttribute="trailing" secondItem="PZx-be-iDk" secondAttribute="trailing" constant="56" id="GA6-xN-OfC"/>
+                        <constraint firstAttribute="centerX" secondItem="PZx-be-iDk" secondAttribute="centerX" id="NNF-v7-30b"/>
+                        <constraint firstItem="x1u-bN-rNp" firstAttribute="top" secondItem="zfD-tD-L09" secondAttribute="bottom" constant="14" id="Smc-ON-sh3"/>
+                        <constraint firstItem="AZh-kS-oat" firstAttribute="leading" secondItem="SOi-MV-Z12" secondAttribute="leading" constant="35" id="aim-hq-waQ"/>
+                        <constraint firstItem="PZx-be-iDk" firstAttribute="leading" secondItem="SOi-MV-Z12" secondAttribute="leading" constant="53" id="n36-I6-hIL"/>
+                        <constraint firstItem="zfD-tD-L09" firstAttribute="leading" secondItem="SOi-MV-Z12" secondAttribute="leading" constant="35" id="pVv-9R-6A0"/>
+                        <constraint firstAttribute="trailing" secondItem="AZh-kS-oat" secondAttribute="trailing" constant="25" id="wlr-Y7-apb"/>
+                        <constraint firstItem="PZx-be-iDk" firstAttribute="top" secondItem="SOi-MV-Z12" secondAttribute="top" constant="47" id="ypV-37-eT5"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="NNF-v7-30b"/>
+                            <exclude reference="FVi-0j-Kes"/>
+                        </mask>
+                    </variation>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="SOi-MV-Z12" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="7Fd-M9-y3B"/>
+                <constraint firstAttribute="bottom" secondItem="SOi-MV-Z12" secondAttribute="bottom" id="FKs-BX-GfM"/>
+                <constraint firstItem="SOi-MV-Z12" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="S1k-UD-JnX"/>
+                <constraint firstAttribute="trailing" secondItem="SOi-MV-Z12" secondAttribute="trailing" id="SDT-Fd-dav"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="telephone2x.png" width="793" height="607"/>
+    </resources>
+</document>

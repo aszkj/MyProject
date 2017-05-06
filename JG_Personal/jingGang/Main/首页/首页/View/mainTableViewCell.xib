@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="92" id="KGk-i7-Jjw" customClass="mainTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="92"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="91"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="per_bg_daflut.png" translatesAutoresizingMaskIntoConstraints="NO" id="3if-5b-vh6">
+                        <rect key="frame" x="8" y="8" width="75" height="75"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="75" id="2Lo-v5-0xJ"/>
+                            <constraint firstAttribute="width" constant="75" id="gWz-4B-tjD"/>
+                        </constraints>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="home_back_word.png" translatesAutoresizingMaskIntoConstraints="NO" id="J13-T1-iWx">
+                        <rect key="frame" x="85" y="8" width="227" height="75"/>
+                        <animations/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="控制宠物皮屑能有效净化室内空气" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="llL-7t-guJ">
+                        <rect key="frame" x="98" y="10" width="209" height="18"/>
+                        <animations/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.96533696339999997" green="0.96533696339999997" blue="0.96533696339999997" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="雾霾严重污染，室外空气污染我们无法操控，但是室内空气我们却可以注意保持良好。" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bia-HF-97y">
+                        <rect key="frame" x="98" y="34" width="209" height="49"/>
+                        <animations/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" red="0.74901960784313726" green="0.9137254901960784" blue="0.94117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <animations/>
+                <constraints>
+                    <constraint firstItem="J13-T1-iWx" firstAttribute="leading" secondItem="3if-5b-vh6" secondAttribute="trailing" constant="2" id="1Tc-qd-6Rg"/>
+                    <constraint firstItem="J13-T1-iWx" firstAttribute="bottom" secondItem="3if-5b-vh6" secondAttribute="bottom" id="2Gp-6o-ms0"/>
+                    <constraint firstItem="llL-7t-guJ" firstAttribute="trailing" secondItem="J13-T1-iWx" secondAttribute="trailing" constant="-5" id="4Fg-0Q-Vqo"/>
+                    <constraint firstItem="Bia-HF-97y" firstAttribute="leading" secondItem="llL-7t-guJ" secondAttribute="leading" id="4gD-2C-iPE"/>
+                    <constraint firstItem="3if-5b-vh6" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="NOn-cE-X0o"/>
+                    <constraint firstItem="llL-7t-guJ" firstAttribute="top" secondItem="J13-T1-iWx" secondAttribute="top" constant="2" id="NvK-bv-nQa"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="J13-T1-iWx" secondAttribute="trailing" id="OMu-Ih-RwB"/>
+                    <constraint firstItem="J13-T1-iWx" firstAttribute="top" secondItem="3if-5b-vh6" secondAttribute="top" id="T6M-YZ-Ghg"/>
+                    <constraint firstItem="3if-5b-vh6" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="anN-VN-cFO"/>
+                    <constraint firstItem="llL-7t-guJ" firstAttribute="leading" secondItem="J13-T1-iWx" secondAttribute="leading" constant="13" id="c7a-lM-nMl"/>
+                    <constraint firstItem="Bia-HF-97y" firstAttribute="trailing" secondItem="llL-7t-guJ" secondAttribute="trailing" id="h8E-eu-ias"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="3if-5b-vh6" secondAttribute="bottom" constant="0.5" id="ks0-1K-ikm"/>
+                    <constraint firstItem="Bia-HF-97y" firstAttribute="top" secondItem="llL-7t-guJ" secondAttribute="bottom" constant="6" id="mfY-WY-GoO"/>
+                    <constraint firstItem="Bia-HF-97y" firstAttribute="bottom" secondItem="J13-T1-iWx" secondAttribute="bottom" id="s0B-lc-ny6"/>
+                </constraints>
+            </tableViewCellContentView>
+            <animations/>
+            <connections>
+                <outlet property="bg_img" destination="J13-T1-iWx" id="Bko-t6-b69"/>
+                <outlet property="left_img" destination="3if-5b-vh6" id="j6f-Tq-6St"/>
+                <outlet property="name_lab" destination="llL-7t-guJ" id="gOH-l7-ykH"/>
+                <outlet property="sub_lab" destination="Bia-HF-97y" id="1M0-sf-ftz"/>
+            </connections>
+            <point key="canvasLocation" x="-96" y="281"/>
+        </tableViewCell>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="188" id="8Ra-8a-uxZ" customClass="mainTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="185"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8Ra-8a-uxZ" id="775-Hf-f56">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="184"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lzt-Fa-K66">
+                        <rect key="frame" x="8" y="8" width="145" height="173"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cjC-Ow-XTy">
+                                <rect key="frame" x="-2" y="45" width="150" height="120"/>
+                                <animations/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AnO-a0-ecf">
+                                <rect key="frame" x="0.0" y="8" width="145" height="36"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pNK-Sv-hIQ">
+                                <rect key="frame" x="63" y="135" width="85" height="21"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="0.092177428109996185" blue="0.096261023988604477" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </view>
+                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DRg-Dc-5Oz">
+                        <rect key="frame" x="167" y="8" width="145" height="173"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="r71-5o-8xd">
+                                <rect key="frame" x="0.0" y="45" width="150" height="120"/>
+                                <animations/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2rs-US-Wo4">
+                                <rect key="frame" x="0.0" y="8" width="140" height="36"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rTb-Xt-xqv">
+                                <rect key="frame" x="65" y="136" width="85" height="21"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="0.092177428110000001" blue="0.09626102399" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R1X-j9-uOY">
+                        <rect key="frame" x="160" y="0.0" width="1" height="184"/>
+                        <animations/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <animations/>
+            </tableViewCellContentView>
+            <animations/>
+            <connections>
+                <outlet property="left_img2" destination="cjC-Ow-XTy" id="3Ci-WL-f5D"/>
+                <outlet property="line_lab" destination="R1X-j9-uOY" id="5TK-Xv-0PN"/>
+                <outlet property="prise_left_lab" destination="pNK-Sv-hIQ" id="CAB-gq-idd"/>
+                <outlet property="prise_reight_lab" destination="rTb-Xt-xqv" id="Bjr-Xl-6Tp"/>
+                <outlet property="right_img2" destination="r71-5o-8xd" id="ORt-dC-FkO"/>
+                <outlet property="sub_left_lab" destination="AnO-a0-ecf" id="2sa-ao-dnP"/>
+                <outlet property="sub_right_lab" destination="2rs-US-Wo4" id="tcE-Wz-sTk"/>
+            </connections>
+            <point key="canvasLocation" x="-96" y="502.5"/>
+        </tableViewCell>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="92" id="KHJ-ic-MPD" customClass="mainTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="92"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KHJ-ic-MPD" id="Fl2-io-aTq">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="91"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="home_back_word.png" translatesAutoresizingMaskIntoConstraints="NO" id="nTw-t7-TJh">
+                        <rect key="frame" x="85" y="0.0" width="235" height="87"/>
+                        <animations/>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="per_bg_daflut.png" translatesAutoresizingMaskIntoConstraints="NO" id="Svc-o0-rFY">
+                        <rect key="frame" x="0.0" y="0.0" width="83" height="87"/>
+                        <animations/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E8Z-Ku-P7H">
+                        <rect key="frame" x="91" y="8" width="131" height="26"/>
+                        <animations/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.96533696339999997" green="0.96533696339999997" blue="0.96533696339999997" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="地址：" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B1M-PL-bxu">
+                        <rect key="frame" x="91" y="60" width="49" height="21"/>
+                        <animations/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.96533696339999997" green="0.96533696339999997" blue="0.96533696339999997" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WOU-qp-wzA">
+                        <rect key="frame" x="141" y="59" width="171" height="24"/>
+                        <animations/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.96533696339999997" green="0.96533696339999997" blue="0.96533696339999997" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="asY-vH-wX9">
+                        <rect key="frame" x="263" y="35" width="49" height="21"/>
+                        <animations/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.96533696339999997" green="0.96533696339999997" blue="0.96533696339999997" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <animations/>
+            </tableViewCellContentView>
+            <animations/>
+            <connections>
+                <outlet property="address_lab3" destination="WOU-qp-wzA" id="ZFj-O0-mP2"/>
+                <outlet property="distance_lab3" destination="B1M-PL-bxu" id="k3D-wF-PU9"/>
+                <outlet property="left_img3" destination="Svc-o0-rFY" id="6ia-jx-YUr"/>
+                <outlet property="name_lab3" destination="E8Z-Ku-P7H" id="bse-mA-UHx"/>
+                <outlet property="statu_lab3" destination="asY-vH-wX9" id="Uq5-9n-Sm3"/>
+            </connections>
+            <point key="canvasLocation" x="-96" y="712"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="home_back_word.png" width="456" height="134"/>
+        <image name="per_bg_daflut.png" width="640" height="1136"/>
+    </resources>
+</document>

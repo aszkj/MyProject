@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="DLHomeTopView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="67"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1L6-ZV-ol0" userLabel="bgViewRed">
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                </view>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="foe-8k-rNf" userLabel="bgViewWhite">
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </view>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="homeNav" translatesAutoresizingMaskIntoConstraints="NO" id="tzr-Mv-Gev" userLabel="homeNavBgImgView"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AwT-Cu-4hQ" userLabel="searchTitleButton">
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="39" id="bq6-AV-bam"/>
+                        <constraint firstAttribute="height" constant="11" id="h4E-jr-8uD"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <state key="normal" title="搜索"/>
+                    <connections>
+                        <action selector="beginSearchAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="ZdN-qM-fWw"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Ca-nK-8Fg" userLabel="searchButton">
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="29" id="BBI-Mq-i5F"/>
+                        <constraint firstAttribute="width" constant="27" id="R0B-xR-7XN"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <state key="normal" image="homeTopSearch3"/>
+                    <connections>
+                        <action selector="beginSearchAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="FW0-31-t0m"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Iea-kZ-Wd5" userLabel="scanButton">
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="27" id="aBe-TB-i1x"/>
+                        <constraint firstAttribute="height" constant="29" id="kbK-z8-cYc"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <state key="normal" image="scanHome"/>
+                    <connections>
+                        <action selector="scanGoodsAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="GcB-AA-VMO"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hXl-fQ-CXO" userLabel="scanTitleButton">
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="39" id="Z1E-7v-Txk"/>
+                        <constraint firstAttribute="height" constant="11" id="lKF-br-LDV"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <state key="normal" title="扫一扫"/>
+                    <connections>
+                        <action selector="scanGoodsAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="gJh-wH-fCh"/>
+                    </connections>
+                </button>
+                <view alpha="0.40000000000000002" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YPE-jh-aWQ">
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="25" id="Z57-8K-MXy"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="4"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="请选择附近小区" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="60a-IS-g0w">
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="0zs-pg-2td"/>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="108" id="zzB-Ls-yg8"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Po2-t2-Wcy" userLabel="clickCommunityNameButton">
+                    <frame key="frameInset" minX="117" minY="29" width="158" height="25"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="31" id="Fx2-El-NoM"/>
+                        <constraint firstAttribute="height" constant="30" id="QPL-Ru-42m"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="Fx2-El-NoM"/>
+                            <exclude reference="QPL-Ru-42m"/>
+                        </mask>
+                    </variation>
+                    <connections>
+                        <action selector="selecteShopAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="5JD-0s-7i4"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fgd-Vm-L69" userLabel="locationButton">
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="16" id="7tW-wu-7AT"/>
+                        <constraint firstAttribute="width" constant="13" id="Sw6-oy-bkU"/>
+                    </constraints>
+                    <state key="normal" backgroundImage="homeLocation"/>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="Po2-t2-Wcy" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="3eL-Qt-NTb"/>
+                <constraint firstItem="YPE-jh-aWQ" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" multiplier="0.67" id="70P-pV-Ke0"/>
+                <constraint firstAttribute="trailing" secondItem="1L6-ZV-ol0" secondAttribute="trailing" id="By0-Lz-UAg"/>
+                <constraint firstAttribute="trailing" secondItem="tzr-Mv-Gev" secondAttribute="trailing" id="E5e-pO-MnJ"/>
+                <constraint firstItem="foe-8k-rNf" firstAttribute="leading" secondItem="1L6-ZV-ol0" secondAttribute="leading" id="Ewe-Wl-nIM"/>
+                <constraint firstItem="hXl-fQ-CXO" firstAttribute="top" secondItem="Iea-kZ-Wd5" secondAttribute="bottom" constant="-3" id="EzE-n5-eCj"/>
+                <constraint firstItem="1L6-ZV-ol0" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="HNP-7y-GiZ"/>
+                <constraint firstItem="tzr-Mv-Gev" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="KnH-Ew-17x"/>
+                <constraint firstItem="foe-8k-rNf" firstAttribute="bottom" secondItem="1L6-ZV-ol0" secondAttribute="bottom" id="LXR-dP-qNC"/>
+                <constraint firstAttribute="trailing" secondItem="5Ca-nK-8Fg" secondAttribute="trailing" constant="16" id="Nfa-xx-u4P"/>
+                <constraint firstItem="YPE-jh-aWQ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="29" id="PaY-O2-vmU"/>
+                <constraint firstItem="Po2-t2-Wcy" firstAttribute="trailing" secondItem="YPE-jh-aWQ" secondAttribute="trailing" id="PlL-9y-xfS"/>
+                <constraint firstItem="tzr-Mv-Gev" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="QPW-fP-AJZ"/>
+                <constraint firstItem="YPE-jh-aWQ" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Smc-iJ-rrb"/>
+                <constraint firstItem="Po2-t2-Wcy" firstAttribute="top" secondItem="YPE-jh-aWQ" secondAttribute="top" id="UCl-cU-6Qh"/>
+                <constraint firstItem="Po2-t2-Wcy" firstAttribute="bottom" secondItem="YPE-jh-aWQ" secondAttribute="bottom" id="WKZ-eE-BFQ"/>
+                <constraint firstItem="foe-8k-rNf" firstAttribute="trailing" secondItem="1L6-ZV-ol0" secondAttribute="trailing" id="WlO-q1-Uxp"/>
+                <constraint firstItem="60a-IS-g0w" firstAttribute="leading" secondItem="fgd-Vm-L69" secondAttribute="trailing" constant="1" id="Yh8-jZ-ka0"/>
+                <constraint firstAttribute="bottom" secondItem="tzr-Mv-Gev" secondAttribute="bottom" id="Zbz-SM-4Sw"/>
+                <constraint firstItem="Po2-t2-Wcy" firstAttribute="leading" secondItem="YPE-jh-aWQ" secondAttribute="leading" id="dX2-uT-llE"/>
+                <constraint firstItem="60a-IS-g0w" firstAttribute="centerX" secondItem="YPE-jh-aWQ" secondAttribute="centerX" constant="5" id="dYd-4w-T1m"/>
+                <constraint firstItem="foe-8k-rNf" firstAttribute="top" secondItem="1L6-ZV-ol0" secondAttribute="top" id="dm8-JL-kUB"/>
+                <constraint firstItem="hXl-fQ-CXO" firstAttribute="centerX" secondItem="Iea-kZ-Wd5" secondAttribute="centerX" id="e6O-Cd-eum"/>
+                <constraint firstItem="Iea-kZ-Wd5" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="19" id="exK-rE-rln"/>
+                <constraint firstItem="5Ca-nK-8Fg" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="22" id="iQj-i8-e0K"/>
+                <constraint firstItem="AwT-Cu-4hQ" firstAttribute="top" secondItem="5Ca-nK-8Fg" secondAttribute="bottom" constant="-3" id="j5h-Ra-bBk"/>
+                <constraint firstItem="60a-IS-g0w" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="31" id="jaH-bN-NVj"/>
+                <constraint firstItem="1L6-ZV-ol0" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="lP2-Lp-onu"/>
+                <constraint firstItem="60a-IS-g0w" firstAttribute="centerY" secondItem="YPE-jh-aWQ" secondAttribute="centerY" id="mz1-t5-Sdq"/>
+                <constraint firstItem="Iea-kZ-Wd5" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="22" id="n4W-vV-eRU"/>
+                <constraint firstItem="60a-IS-g0w" firstAttribute="centerY" secondItem="fgd-Vm-L69" secondAttribute="centerY" id="r8V-kj-dUb"/>
+                <constraint firstItem="AwT-Cu-4hQ" firstAttribute="centerX" secondItem="5Ca-nK-8Fg" secondAttribute="centerX" id="wvP-b6-fNy"/>
+                <constraint firstAttribute="bottom" secondItem="1L6-ZV-ol0" secondAttribute="bottom" id="xDn-VE-JzL"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="3eL-Qt-NTb"/>
+                </mask>
+            </variation>
+            <connections>
+                <outlet property="bgView" destination="1L6-ZV-ol0" id="Un8-5I-xYP"/>
+                <outlet property="bgViewWhite" destination="foe-8k-rNf" id="uid-fF-tfA"/>
+                <outlet property="communityLabelWidthConstraint" destination="zzB-Ls-yg8" id="bM2-Pf-mXK"/>
+                <outlet property="communityNameBgView" destination="YPE-jh-aWQ" id="6V5-9q-bI7"/>
+                <outlet property="communityNameLabel" destination="60a-IS-g0w" id="XJf-Ma-IU7"/>
+                <outlet property="homeNavBgImgView" destination="tzr-Mv-Gev" id="WWU-aa-z82"/>
+                <outlet property="scanButton" destination="Iea-kZ-Wd5" id="pqe-Su-q0K"/>
+                <outlet property="scanTitleButton" destination="hXl-fQ-CXO" id="pv3-YN-W5j"/>
+                <outlet property="searchButton" destination="5Ca-nK-8Fg" id="1Ny-ED-8dS"/>
+                <outlet property="searchTitleButton" destination="AwT-Cu-4hQ" id="i2B-zA-8Dq"/>
+            </connections>
+            <point key="canvasLocation" x="23.5" y="-165.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="homeLocation" width="13" height="16"/>
+        <image name="homeNav" width="375" height="64"/>
+        <image name="homeTopSearch3" width="20" height="20"/>
+        <image name="scanHome" width="20" height="20"/>
+    </resources>
+</document>

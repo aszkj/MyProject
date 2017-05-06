@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/profile_user_bg_height"
+                android:background="@mipmap/profile_user_background"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/profile_user_info_height">
+
+                    <ImageView
+                        android:id="@+id/profile_setting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/setting"/>
+
+                    <ImageView
+                        android:id="@+id/profile_message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@mipmap/message"/>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_profile_image_view"
+                        android:layout_width="@dimen/profile_icon_bg_height"
+                        android:layout_height="@dimen/profile_icon_bg_height"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/profile_item_gap"
+                        android:background="@mipmap/head_image_bg">
+
+                        <com.yldbkd.www.library.android.viewCustomer.CircleImageView
+                            android:id="@+id/user_logo"
+                            android:layout_width="@dimen/profile_icon_height"
+                            android:layout_height="@dimen/profile_icon_height"
+                            android:layout_centerInParent="true"/>
+
+                        <ImageView
+                            android:id="@+id/profile_user_image_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentRight="true"/>
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/profile_user_name_view"
+                        style="@style/TextAppearance.Largest.White"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/rl_profile_image_view"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/margin_bigger"
+                        android:textStyle="bold"/>
+
+                    <LinearLayout
+                        android:id="@+id/ll_expired_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/profile_user_name_view"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/margin_normal"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/profile_expired_date_view"
+                            style="@style/TextAppearance.Small.White"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="@dimen/margin_small"
+                            />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:id="@+id/profile_update_member_layout"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@color/little_trans"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="@dimen/margin_big"
+                        android:paddingRight="@dimen/normal_margin_lr">
+
+                        <ImageView
+                            android:id="@+id/iv_member_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:background="@mipmap/member"/>
+
+                        <TextView
+                            android:id="@+id/tv_member_text"
+                            style="@style/TextAppearance.Bigger.White"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/margin_big"
+                            android:layout_marginRight="@dimen/normal_text_gap"
+                            android:layout_toRightOf="@id/iv_member_image"
+                            android:text="@string/profile_update_member"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/profile_join_layout"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/default_1_px"
+                        android:layout_weight="1"
+                        android:background="@color/little_trans"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="@dimen/margin_big"
+                        android:paddingRight="@dimen/normal_margin_lr">
+
+                        <ImageView
+                            android:id="@+id/iv_join_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:background="@mipmap/join"/>
+
+                        <TextView
+                            style="@style/TextAppearance.Bigger.White"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/margin_big"
+                            android:layout_marginRight="@dimen/normal_text_gap"
+                            android:layout_toRightOf="@id/iv_join_image"
+                            android:text="@string/profile_join"/>
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/profile_order"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_big_height"
+                android:background="@color/white"
+                android:paddingLeft="@dimen/margin_big"
+                android:paddingRight="@dimen/margin_big">
+
+                <TextView
+                    style="@style/TextAppearance.Normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/order_mine"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/profile_more"/>
+            </RelativeLayout>
+
+            <include layout="@layout/divider_layout"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/profile_item_middle_height"
+                android:background="@color/white"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/profile_order_wait_pay"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingBottom="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/order_wait_pay"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/order_wait_pay_text"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_order_wait_receive"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingBottom="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/order_wait_receive"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/order_waitReceive"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_order_evalution"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingBottom="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/order_evalution"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/order_evalution"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_order_refund"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingBottom="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/order_refund"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/order_refund"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <include layout="@layout/divider_layout"/>
+
+            <RelativeLayout
+                android:id="@+id/profile_pruse"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_big_height"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@color/white"
+                android:paddingLeft="@dimen/margin_big"
+                android:paddingRight="@dimen/margin_big">
+
+                <TextView
+                    style="@style/TextAppearance.Normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/profile_purse"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/profile_more"/>
+            </RelativeLayout>
+
+            <include layout="@layout/divider_layout"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/profile_item_middle_height"
+                android:background="@color/white"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/profile_money"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingBottom="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/money"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/profile_money"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_lm"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingBottom="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/lm"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/profile_lm"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_coupon"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingBottom="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small">
+
+                    <ImageView
+                        android:id="@+id/coupon_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/coupon"/>
+
+                    <ImageView
+                        android:layout_width="@dimen/profile_coupon_show_bg"
+                        android:layout_height="@dimen/profile_coupon_show_bg"
+                        android:layout_marginLeft="@dimen/profile_coupon_show_margin_left"
+                        android:layout_toRightOf="@id/coupon_image"
+                        android:src="@mipmap/cart_num_bg"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/profile_coupon_text"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_voucher"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingBottom="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/voucher"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/profile_voucher_text"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <include layout="@layout/divider_layout"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/profile_margin_bottom"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/margin_big"
+                android:paddingRight="@dimen/margin_big">
+
+                <RelativeLayout
+                    android:id="@+id/profile_collect_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/item_normal_height">
+
+                    <ImageView
+                        android:id="@+id/collect_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/profile_collect"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/margin_big"
+                        android:layout_toRightOf="@id/collect_image"
+                        android:text="@string/profile_collect"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/profile_more"/>
+                </RelativeLayout>
+
+                <include layout="@layout/divider_layout"/>
+
+                <RelativeLayout
+                    android:id="@+id/profile_share_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/item_normal_height">
+
+                    <ImageView
+                        android:id="@+id/share_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/profile_share"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/margin_big"
+                        android:layout_toRightOf="@id/share_image"
+                        android:text="@string/profile_share"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/profile_more"/>
+                </RelativeLayout>
+
+                <include layout="@layout/divider_layout"/>
+
+                <RelativeLayout
+                    android:id="@+id/profile_shopping_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/item_normal_height">
+
+                    <ImageView
+                        android:id="@+id/shopping_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/profile_shopping"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/margin_big"
+                        android:layout_toRightOf="@id/shopping_image"
+                        android:text="@string/profile_shopping"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/profile_more"/>
+                </RelativeLayout>
+
+                <include layout="@layout/divider_layout"/>
+
+                <RelativeLayout
+                    android:id="@+id/profile_funs_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/item_normal_height">
+
+                    <ImageView
+                        android:id="@+id/funs_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/profile_funs"/>
+
+                    <TextView
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/margin_big"
+                        android:layout_toRightOf="@id/funs_image"
+                        android:text="@string/profile_funs"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/profile_more"/>
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

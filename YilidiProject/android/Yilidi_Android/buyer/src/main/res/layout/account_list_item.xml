@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/money_item_height"
+                android:background="@color/white"
+                android:paddingLeft="@dimen/margin_lager"
+                android:paddingRight="@dimen/margin_lager">
+
+    <TextView
+        android:id="@+id/account_note_tv"
+        style="@style/TextAppearance.Big"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_big"/>
+
+    <TextView
+        android:id="@+id/account_note_date_tv"
+        style="@style/TextAppearance.Small.Secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/account_note_tv"/>
+
+    <TextView
+        android:id="@+id/account_note_money_tv"
+        style="@style/TextAppearance.Big"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>

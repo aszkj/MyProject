@@ -1,0 +1,1 @@
+CREATE TABLE "main"."modelCache" (key VARCHAR PRIMARY KEY  NOT NULL  UNIQUE, value BLOB )

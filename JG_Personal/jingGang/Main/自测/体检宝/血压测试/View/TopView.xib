@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="31"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ygp-Gm-4iQ" userLabel="topView">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="31"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="未采集到稳定的血压，请按住屏幕开始测量" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Et-Ye-q3R">
+                            <rect key="frame" x="64" y="7" width="247" height="18"/>
+                            <animations/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="18" id="9nc-lA-uE6"/>
+                                <constraint firstAttribute="width" constant="285" id="WzR-zp-Ev8"/>
+                                <constraint firstAttribute="width" constant="249" id="X8f-cb-xTZ"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                            <variation key="default">
+                                <mask key="constraints">
+                                    <exclude reference="WzR-zp-Ev8"/>
+                                    <exclude reference="X8f-cb-xTZ"/>
+                                </mask>
+                            </variation>
+                        </label>
+                        <imageView userInteractionEnabled="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="iconfont-tishi_看图王.png" translatesAutoresizingMaskIntoConstraints="NO" id="L1Z-vh-tTe">
+                            <rect key="frame" x="48" y="9" width="15" height="15"/>
+                            <animations/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="15" id="PHS-nV-4lo"/>
+                                <constraint firstAttribute="width" constant="15" id="SI3-7U-3bl"/>
+                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="20" id="g7w-Jt-Feh"/>
+                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="zj7-6D-IVc"/>
+                            </constraints>
+                            <variation key="default">
+                                <mask key="constraints">
+                                    <exclude reference="g7w-Jt-Feh"/>
+                                    <exclude reference="zj7-6D-IVc"/>
+                                </mask>
+                            </variation>
+                        </imageView>
+                    </subviews>
+                    <animations/>
+                    <color key="backgroundColor" red="0.85882352939999995" green="0.84705882349999995" blue="0.85098039219999999" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="31" id="2Df-Vm-mGR"/>
+                        <constraint firstAttribute="trailing" secondItem="7Et-Ye-q3R" secondAttribute="trailing" constant="8" id="EI0-om-QFp"/>
+                        <constraint firstAttribute="centerY" secondItem="L1Z-vh-tTe" secondAttribute="centerY" id="HuG-Xn-Ngv"/>
+                        <constraint firstAttribute="centerY" secondItem="7Et-Ye-q3R" secondAttribute="centerY" id="bFV-sX-zw9"/>
+                        <constraint firstItem="7Et-Ye-q3R" firstAttribute="top" secondItem="ygp-Gm-4iQ" secondAttribute="top" constant="6" id="f1j-Jg-3vV"/>
+                        <constraint firstItem="7Et-Ye-q3R" firstAttribute="leading" secondItem="L1Z-vh-tTe" secondAttribute="trailing" constant="1" id="hnR-VC-BCT"/>
+                        <constraint firstAttribute="centerX" secondItem="7Et-Ye-q3R" secondAttribute="centerX" id="jkq-0c-kOw"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="EI0-om-QFp"/>
+                            <exclude reference="f1j-Jg-3vV"/>
+                        </mask>
+                    </variation>
+                </view>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="ygp-Gm-4iQ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="01i-lH-IYF"/>
+                <constraint firstAttribute="trailing" secondItem="ygp-Gm-4iQ" secondAttribute="trailing" id="5bj-6d-eVb"/>
+                <constraint firstItem="ygp-Gm-4iQ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="8pv-Ph-qtj"/>
+                <constraint firstAttribute="bottom" secondItem="ygp-Gm-4iQ" secondAttribute="bottom" id="HaE-w6-fdc"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="286.5" y="93.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="iconfont-tishi_看图王.png" width="33" height="33"/>
+    </resources>
+</document>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_smaller_height"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr">
+
+        <TextView
+            android:id="@+id/tv_item_allot_order_no"
+            style="@style/TextAppearance.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_item_allot_order_status"
+            style="@style/TextAppearance.Normal.Blue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/allot_list_item_image_height"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="@dimen/allot_list_item_image_width"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/iv_item_allot_order_image_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@mipmap/allot_form_warehouse" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="@dimen/default_1_px"
+            android:layout_height="match_parent"
+            android:background="@color/dividerColor" />
+
+        <TextView
+            android:id="@+id/tv_item_allot_order_address"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="2" />
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_smaller_height"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr">
+
+        <TextView
+            android:id="@+id/tv_item_allot_order_time"
+            style="@style/TextAppearance.Small.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/tv_item_allot_order_count"
+            style="@style/TextAppearance.Normal.Red"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center_vertical|end" />
+
+        <TextView
+            android:id="@+id/tv_item_allot_order_amount"
+            style="@style/TextAppearance.Normal.Red"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center_vertical|end" />
+    </LinearLayout>
+</LinearLayout>

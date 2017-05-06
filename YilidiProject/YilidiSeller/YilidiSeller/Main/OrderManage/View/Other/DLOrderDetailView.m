@@ -1,0 +1,353 @@
+//
+//  DLOrderDetailView.m
+//  YilidiSeller
+//
+//  Created by yld on 16/6/7.
+//  Copyright © 2016年 yld. All rights reserved.
+//
+
+#import "DLOrderDetailView.h"
+#import "MycommonTableView.h"
+#import "DLOrderDetailCell.h"
+#import "ProjectRelativeMaco.h"
+#import "DateManager.h"
+#import "AlertViewManager.h"
+#import <Masonry/Masonry.h>
+#import "DLOrderDetailHeardView.h"
+#import "NSString+Teshuzifu.h"
+#import "ProjectStandardUIDefineConst.h"
+
+const CGFloat adressPartHeight = 50;
+const CGFloat otherTimeViewHeight = 25.0f;
+const CGFloat bottomViewHeight = 88.0f;
+
+@interface DLOrderDetailView()
+@property (weak, nonatomic) IBOutlet MycommonTableView *orderDetailGoodsTableView;
+@property (weak, nonatomic) IBOutlet UILabel *shipWayMarkLabel;
+@property (nonatomic, strong)DLOrderDetailHeardView *selfTakeUserInfoView;
+@property (weak, nonatomic) IBOutlet UIView *orderDetailContentView;
+@property (weak, nonatomic) IBOutlet UILabel *orderStatusLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderCustomerNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderCustomerPhoneNumberLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderCustomerAdressLabel;
+@property (weak, nonatomic) IBOutlet UIButton *orderDistanceButton;
+@property (weak, nonatomic) IBOutlet UILabel *orderGoodsReachTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *goodsCountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *totalAmountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *favoriteMountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *shipAmountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderAmountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderNoLabel;
+@property (weak, nonatomic) IBOutlet UILabel *takeOrderTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *deliveryMethodLabel;
+@property (weak, nonatomic) IBOutlet UILabel *shipTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *payWayLabel;
+@property (weak, nonatomic) IBOutlet UILabel *payTimeLabel;
+@property (weak, nonatomic) IBOutlet UIView *oterhTimeView;
+@property (weak, nonatomic) IBOutlet UILabel *oterTimeNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *otherTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *deliveryTimeMarkLabel;
+@property (weak, nonatomic) IBOutlet UILabel *goodsTypeMarkLabel;
+@property (weak, nonatomic) IBOutlet UITextField *orderNoteTextfiled;
+@property (weak, nonatomic) IBOutlet UIButton *bottomButton;
+@property (weak, nonatomic) IBOutlet UIView *bottomView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *orderGoodsTableHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *otherTimeViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *customerAdressViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomViewHeightConstraint;
+
+@property (weak, nonatomic) IBOutlet UILabel *orderStatusDescriptionLabel;
+@property (weak, nonatomic) IBOutlet UIView *orderStatusDescriptionView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *orderStatusDescriptionViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *shipInfoHeaderView;
+@end
+
+@implementation DLOrderDetailView
+
+- (void)awakeFromNib {
+    
+    [self _initOrderDetailTableView];
+}
+
+- (void)_bottomButtonClickLogic {
+    
+    if (self.comeForTheShipCode) {
+        emptyBlock(self.ensureCustomerRecieveGoodsBlock);
+    }else if (self.detailModel.orderStatus == OrderStatus_ReadyToTakeOrder){
+        [self _takeTheOrderAlert];
+    }else if (self.detailModel.orderStatus == OrderStatus_ReadyToDeliveryGoods){
+        emptyBlock(self.ensureDeliverGoodsBlock);
+    }
+}
+
+- (void)_takeTheOrderAlert {
+    AlertViewManager *alertManager = [[AlertViewManager alloc] init];
+    NSString *alertTitle = @"确认接单吗？";
+    //两个action
+    [alertManager showAlertViewWithControllerTitle:alertTitle message:alertTitle controllerStyle:UIAlertControllerStyleAlert isHaveTextField:NO actionTitle:@"立即接单" actionStyle:UIAlertActionStyleDefault alertViewAction:^(UIAlertAction *action) {
+        emptyBlock(self.ensureTakeTheOrderBlock);
+    } otherActionTitle:@"不接单" otherActionStyle:UIAlertActionStyleDefault otherAlertViewAction:^(UIAlertAction *action) {
+        emptyBlock(self.cancelTakeOrderBlock);
+    }];
+}
+
+- (IBAction)locationButtonClick:(id)sender {
+    
+    emptyBlock(self.locationBlock,self.detailModel.takeOrderCustomerInfo.customerLatitude.floatValue,self.detailModel.takeOrderCustomerInfo.customerLongtitude.floatValue,self.orderCustomerNameLabel.text,self.orderCustomerAdressLabel.text);
+}
+
+- (IBAction)bottomButtonAction:(id)sender {
+    [self _bottomButtonClickLogic];
+}
+
+- (IBAction)callCustomerAction:(id)sender {
+    if (!isEmpty(self.detailModel.takeOrderCustomerInfo.customerPhoneNumber)) {
+        [Util dialWithPhoneNumber:self.detailModel.takeOrderCustomerInfo.customerPhoneNumber];
+    }
+}
+
+- (void)_assignData {
+    self.orderStatusLabel.text = self.detailModel.orderStatusStr;
+    self.orderCustomerNameLabel.text = self.detailModel.takeOrderCustomerInfo.customerName;
+    self.orderCustomerPhoneNumberLabel.text = self.detailModel.takeOrderCustomerInfo.customerPhoneNumber;
+    self.orderCustomerAdressLabel.text = self.detailModel.takeOrderCustomerInfo.customerAdress;
+    [self.orderDistanceButton setTitle:jFormat(@"%.2fkm",self.detailModel.takeOrderCustomerInfo.customerDistanceAwayFromYou.floatValue/1000
+) forState:UIControlStateNormal];
+    NSString *reachTime = [[DateManager sharedManager] afterAnHourTimeWithTheBasicTime:self.detailModel.orderPayTime];
+    self.orderGoodsReachTimeLabel.text = jFormat(@"送达时间：%@",reachTime);
+    self.goodsCountLabel.text = jFormat(@"商品金额（%@件）",self.detailModel.orderGoodsCount
+);
+    self.totalAmountLabel.attributedText = kDefaultRMBStrWithPrice(self.detailModel.totalAmount.floatValue);
+    self.orderAmountLabel.attributedText = kDefaultRMBStrWithPrice(self.detailModel.orderGoodsAmount.floatValue);
+    self.favoriteMountLabel.attributedText = kDefaultRMBStrWithPrice(self.detailModel.perfectAmount.floatValue);
+    self.shipAmountLabel.attributedText = kDefaultRMBStrWithPrice(self.detailModel.shipAmount.floatValue);
+
+    self.orderNoLabel.text = self.detailModel.orderNo;
+    self.takeOrderTimeLabel.text = self.detailModel.orderCreateTime;
+    [self _configureShipWayUi];
+    [self _configureOrderStatusDescriptionUI];
+    self.payWayLabel.text = self.detailModel.payWayStr;
+    self.payTimeLabel.text = self.detailModel.orderPayTime;
+    if (!isEmpty(self.detailModel.orderNote)) {
+        self.orderNoteTextfiled.text = self.detailModel.orderNote;
+    }
+    NSString *keyWords = @"推荐";
+    NSString *searchResultStr = @"送货上门（推荐）";
+    NSRange keyWordsRange = [searchResultStr rangeOfString:keyWords];
+    NSMutableAttributedString *attriString = [[NSMutableAttributedString alloc] initWithString:searchResultStr];
+    UIColor *rangeColor = KSelectedBgColor;
+    [attriString addAttribute:NSForegroundColorAttributeName value:rangeColor
+                        range:keyWordsRange];
+//    self.deliveryMethodLabel.attributedText = attriString;
+    if (self.detailModel.orderShipWay == ShipWay_DeliveryGoodsHome) {
+        self.deliveryMethodLabel.attributedText = attriString;
+        self.deliveryTimeMarkLabel.text = @"配送时间：";
+        self.goodsTypeMarkLabel.text = @"商品信息";
+        if (isEmpty(self.detailModel.shipTime)) {
+            self.shipTimeLabel.text=@"最快一小时之内到达";
+        }else{
+            self.shipTimeLabel.text = self.detailModel.shipTime;
+        }
+    }else if (self.detailModel.orderShipWay == ShipWay_SelfTake) {
+        self.deliveryMethodLabel.text = self.detailModel.deliveryModeName;
+        self.deliveryTimeMarkLabel.text = @"自提时间：";
+        self.shipTimeLabel.text = @"于今日营业结束前自提";
+        self.goodsTypeMarkLabel.text = @"自提信息";
+    }
+    [self _configureOtherTimeView];
+    [self _configureBottomButton];
+    [self _assignGoodsData];
+    [self _configureUIForSelfTakeOrderCondition];
+}
+
+- (void)_configureShipWayUi {
+    
+}
+
+- (void)_configureOtherTimeView {
+    BOOL showOtherTimeView;
+    NSString *otherTimeTitle = nil;
+    NSString *otherTime = nil;
+    switch (self.detailModel.orderStatus) {
+        case OrderStatus_ReadyToDeliveryGoods:
+        {
+            otherTimeTitle = @"接单时间";
+            otherTime = self.detailModel.acceptTime;
+            showOtherTimeView = YES;
+        }
+            break;
+        case OrderStatus_ReadyToEnsureCustomerRecieveGoods:
+        {
+            otherTimeTitle = @"发货时间";
+            otherTime = self.detailModel.bestTime;
+            showOtherTimeView = YES;
+
+        }
+            break;
+        case OrderStatus_HasFinished:
+        case OrderStatus_HasComment:
+        {
+            otherTimeTitle = @"完成时间";
+            otherTime = self.detailModel.finishTime;
+            showOtherTimeView = YES;
+
+        }
+            break;
+        case OrderStatus_HasCanceled:
+        case OrderStatus_HasRefunded:
+        case OrderStatus_Refunding:
+        {
+            otherTimeTitle = @"取消时间";
+            otherTime = self.detailModel.cancelTime;
+            showOtherTimeView = YES;
+        }
+            break;
+        default:
+        {
+            showOtherTimeView = NO;
+
+        }
+            break;
+    }
+    
+    if (showOtherTimeView) {
+        self.oterhTimeView.hidden = NO;
+        self.otherTimeViewHeightConstraint.constant = otherTimeViewHeight;
+        self.oterTimeNameLabel.text = otherTimeTitle;
+        self.otherTimeLabel.text = otherTime;
+    }else {
+        self.oterhTimeView.hidden = YES;
+        self.otherTimeViewHeightConstraint.constant = 0;
+
+    }
+}
+
+- (void)_configureOrderStatusDescriptionUI {
+    BOOL showOrderStatusDescriptionPart = !isEmpty(self.detailModel.statusDesc);
+    self.orderStatusDescriptionView.hidden = !showOrderStatusDescriptionPart;
+    CGFloat orderStatusDescriptionPartHeight = 0.0f;
+    if (showOrderStatusDescriptionPart) {
+        self.orderStatusDescriptionLabel.text = self.detailModel.statusDesc;
+        orderStatusDescriptionPartHeight = [self.detailModel.statusDesc getSizeWithWidth:kScreenWidth-85 fontSize:13].height + 25;
+    }
+    self.orderStatusDescriptionViewHeightConstraint.constant = orderStatusDescriptionPartHeight;
+    [self layoutIfNeeded];
+    
+}
+
+- (void)_configureUIForSelfTakeOrderCondition {
+    CGFloat userAdressPartHeight = 0;
+    if (self.detailModel.orderShipWay == ShipWay_SelfTake) {
+        userAdressPartHeight = 1;
+        self.selfTakeUserInfoView.hidden = NO;
+        [self _configureSelfTakeOrderUserInfoUi];
+    }else if (self.detailModel.orderShipWay == ShipWay_DeliveryGoodsHome) {
+        userAdressPartHeight = adressPartHeight;
+        if (_selfTakeUserInfoView) {
+            _selfTakeUserInfoView.hidden = YES;
+        }
+    }
+    self.customerAdressViewHeightConstraint.constant = userAdressPartHeight;
+}
+
+- (void)_configureSelfTakeOrderUserInfoUi {
+    
+    [self.selfTakeUserInfoView.orderDistanceButton setTitle:jFormat(@"%.2fkm",self.detailModel.takeOrderCustomerInfo.customerDistanceAwayFromYou.floatValue/1000
+                                               ) forState:UIControlStateNormal];
+    [self.selfTakeUserInfoView.selfTakeUserPhoneNumberButton setTitle:self.detailModel.buyerMobile forState:UIControlStateNormal];
+    WEAK_SELF
+    self.selfTakeUserInfoView.locationBlock = ^{
+        emptyBlock(weak_self.locationBlock,weak_self.detailModel.takeOrderCustomerInfo.customerLatitude.floatValue,weak_self.detailModel.takeOrderCustomerInfo.customerLongtitude.floatValue,weak_self.orderCustomerNameLabel.text,weak_self.orderCustomerAdressLabel.text);
+    };
+    
+    self.selfTakeUserInfoView.buyerPhoneBlock = ^{
+        if (!isEmpty(weak_self.detailModel.buyerMobile)) {
+            [Util dialWithPhoneNumber:weak_self.detailModel.buyerMobile];
+        }
+    };
+}
+
+- (void)_configureBottomButton{
+    BOOL bottomButtonHidden;
+    NSString *bottomButtonTitle = nil;
+    switch (self.detailModel.orderStatus) {
+        case OrderStatus_ReadyToTakeOrder:
+        {
+            bottomButtonHidden = NO;
+            bottomButtonTitle = @"确认接单";
+        }
+            break;
+        case OrderStatus_ReadyToDeliveryGoods:
+        {
+            bottomButtonHidden = NO;
+            bottomButtonTitle = @"确认发货";
+        }
+            break;
+        default:
+        {
+            bottomButtonHidden = YES;
+        }
+            break;
+    }
+    self.bottomButton.hidden = bottomButtonHidden;
+    self.bottomView.hidden = bottomButtonHidden;
+    self.bottomViewHeightConstraint.constant = bottomButtonHidden ? 0 : bottomViewHeight;
+    [self.bottomButton setTitle:bottomButtonTitle forState:UIControlStateNormal];
+    
+}
+
+- (void)_configureBottomButtonForEnsureCustomerRecieveGoods {
+    if (self.comeForTheShipCode) {
+        self.bottomButton.hidden = NO;
+        self.bottomView.hidden = NO;
+        self.bottomViewHeightConstraint.constant = bottomViewHeight;
+        NSString *title = self.detailModel.orderShipWay == ShipWay_DeliveryGoodsHome ? @"确认收货" : @"确认提货";
+        [self.bottomButton setTitle:title forState:UIControlStateNormal];
+    }
+}
+
+- (void)setComeForTheShipCode:(BOOL)comeForTheShipCode {
+    _comeForTheShipCode = comeForTheShipCode;
+    [self _configureBottomButtonForEnsureCustomerRecieveGoods];
+}
+
+- (void)_assignGoodsData {
+    self.orderDetailGoodsTableView.dataLogicModule.currentDataModelArr = [self.detailModel.orderGoods mutableCopy];
+
+    [self.orderDetailGoodsTableView reloadData];
+    self.orderGoodsTableHeightConstraint.constant = self.orderDetailGoodsTableView.dataLogicModule.currentDataModelArr.count * kOrderDetailCellHeight;
+}
+
+- (void)setDetailModel:(MerchantOrderDetailModel *)detailModel {
+    _detailModel = detailModel;
+    [self _assignData];
+}
+
+-(void)_initOrderDetailTableView {
+    
+    self.orderDetailGoodsTableView.cellHeight = kOrderDetailCellHeight;
+    [self.orderDetailGoodsTableView configurecellNibName:@"DLOrderDetailCell" configurecellData:^(UITableView *tableView, id cellModel, UITableViewCell *cell) {
+        DLOrderDetailCell *goodsCell = (DLOrderDetailCell *)cell;
+        GoodsModel *goodsModel = (GoodsModel *)cellModel;
+        [goodsCell setCellModel:goodsModel];
+        
+    }];
+}
+
+- (DLOrderDetailHeardView *)selfTakeUserInfoView{
+    if (!_selfTakeUserInfoView) {
+        _selfTakeUserInfoView = BoundNibView(@"DLOrderDetailHeardView", DLOrderDetailHeardView);
+        [self.orderDetailContentView addSubview:_selfTakeUserInfoView];
+        [_selfTakeUserInfoView mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.top.mas_equalTo(80);
+            make.top.mas_equalTo(self.shipInfoHeaderView.mas_bottom);
+            make.left.right.mas_equalTo(self.orderDetailContentView);
+            make.height.mas_equalTo(81);
+        }];
+    }
+    return _selfTakeUserInfoView;
+}
+
+
+
+@end

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <include layout="@layout/action_bar_main" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/stat_margin_top"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/ll_statistics_vip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/stat_item_margin"
+            android:background="@mipmap/statistics_bg"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.Big"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/stat_item_text_margin_top"
+                android:text="@string/statistics_vip_count" />
+
+            <TextView
+                android:id="@+id/tv_statistics_vip"
+                style="@style/TextAppearance.Large.Red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/stat_item_text_gap" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_statistics_order_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/stat_item_margin"
+            android:background="@mipmap/statistics_bg"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.Big"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/stat_item_text_margin_top"
+                android:text="@string/statistics_order_back" />
+
+            <TextView
+                android:id="@+id/tv_statistics_order_back"
+                style="@style/TextAppearance.Large.Red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/stat_item_text_gap" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginLeft="@dimen/stat_item_margin"
+        android:layout_marginRight="@dimen/stat_item_margin"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/ll_statistics_order_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/stat_item_margin"
+            android:background="@mipmap/statistics_bg"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.Big"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/stat_item_text_margin_top"
+                android:text="@string/statistics_order_count" />
+
+            <TextView
+                android:id="@+id/tv_statistics_order_count"
+                style="@style/TextAppearance.Large.Red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/stat_item_text_gap" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_statistics_null"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/stat_item_margin"
+            android:background="@mipmap/statistics_bg"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <TextView
+                style="@style/TextAppearance.Big"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/stat_item_text_margin_top"
+                android:text="@string/statistics_order_count" />
+
+            <TextView
+                android:id="@+id/tv_statistics_null"
+                style="@style/TextAppearance.Large.Red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/stat_item_text_gap" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

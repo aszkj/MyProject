@@ -1,0 +1,48 @@
+//
+//  Merchants_JingGang.pch
+//  Merchants_JingGang
+//
+//  Created by thinker on 15/9/1.
+//  Copyright (c) 2015年 RayTao. All rights reserved.
+//
+
+#ifndef Merchants_JingGang_Merchants_JingGang_pch
+#define Merchants_JingGang_Merchants_JingGang_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#import <CocoaLumberjack/CocoaLumberjack.h>
+#import <Masonry/Masonry.h>
+#import "NSObject+MJExtension.h"
+#import "VApiManager.h"
+#import "Global.h"
+#import "Util.h"
+#import "UIBarButtonItem+WNXBarButtonItem2.h"
+#import "UIButton+Block.h"
+#import "NSObject+MJExtension.h"
+#import "UIViewController+SetProjectDefaultAttribute.h"
+#import <UITableView+FDTemplateLayoutCell/UITableView+FDTemplateLayoutCell.h>
+#import <MBProgressHUD/MBProgressHUD.h>
+#import <MJRefresh/MJRefresh.h>
+#import <MJExtension/MJExtension.h>
+#import <SDWebImage/UIImageView+WebCache.h>
+#import "VApiManager.h"
+#import "UIViewController+Extension.h"
+#import "UIImage+SizeAndTintColor.h"
+#import "UIView+Frame.h"
+#import "MJRefresh.h"
+
+#ifdef DEBUG // 处于开发阶段
+#define JGLog(...) NSLog(__VA_ARGS__)
+#else // 处于发布阶段
+#define JGLog(...)
+#endif
+// RGB颜色
+#define JGColor(r, g, b,a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:a]
+
+// 随机色
+#define JGRandomColor JGColor(arc4random_uniform(256), arc4random_uniform(256), arc4random_uniform(256),1)
+
+
+#endif

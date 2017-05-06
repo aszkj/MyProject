@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/ll_date_view"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/white"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_width_small">
+
+        <TextView
+            android:id="@+id/date_picker_cancel"
+            style="@style/TextAppearance.Bigger.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_lager"
+            android:text="@string/popupwindow_cancel"/>
+
+        <TextView
+            android:id="@+id/date_picker_ok"
+            style="@style/TextAppearance.Bigger.Orange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/margin_lager"
+            android:text="@string/popupwindow_confilm"/>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <DatePicker
+        android:id="@+id/date_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dialog_date_margin"
+        android:calendarViewShown="false"
+        android:endYear="2038"
+        android:startYear="1970">
+    </DatePicker>
+</LinearLayout>

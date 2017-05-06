@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="GlobleErrorView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VTo-Sm-Mz2">
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e71-K5-5wE">
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="6XG-ck-wW5"/>
+                                <constraint firstAttribute="height" constant="30" id="Rds-gf-4Nh"/>
+                                <constraint firstAttribute="height" constant="60" id="iyK-Zp-QmR"/>
+                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="199" id="lNo-pe-9EE"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <state key="normal">
+                                <color key="titleColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <variation key="default">
+                                <mask key="constraints">
+                                    <exclude reference="6XG-ck-wW5"/>
+                                    <exclude reference="iyK-Zp-QmR"/>
+                                    <exclude reference="lNo-pe-9EE"/>
+                                </mask>
+                            </variation>
+                            <connections>
+                                <action selector="reloadAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="va2-KO-JFz"/>
+                            </connections>
+                        </button>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nodate-6+.png" translatesAutoresizingMaskIntoConstraints="NO" id="prS-6F-Q3V">
+                            <constraints>
+                                <constraint firstAttribute="height" constant="60" id="I3h-IM-X17"/>
+                                <constraint firstAttribute="width" constant="152" id="Vf3-T2-p5E"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="e71-K5-5wE" secondAttribute="trailing" id="8bG-Gz-NVs"/>
+                        <constraint firstItem="prS-6F-Q3V" firstAttribute="top" secondItem="VTo-Sm-Mz2" secondAttribute="top" constant="25" id="Sf0-TE-53N"/>
+                        <constraint firstAttribute="width" constant="221" id="YNE-En-nPF"/>
+                        <constraint firstAttribute="centerX" secondItem="prS-6F-Q3V" secondAttribute="centerX" id="YnZ-Zp-UqO"/>
+                        <constraint firstAttribute="height" constant="202" id="ddh-Hg-ncc"/>
+                        <constraint firstItem="e71-K5-5wE" firstAttribute="top" secondItem="prS-6F-Q3V" secondAttribute="bottom" constant="16" id="r6A-jD-rRT"/>
+                        <constraint firstItem="e71-K5-5wE" firstAttribute="leading" secondItem="VTo-Sm-Mz2" secondAttribute="leading" id="rGV-DP-mkW"/>
+                        <constraint firstAttribute="centerX" secondItem="e71-K5-5wE" secondAttribute="centerX" id="xAj-j1-y0Q"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="0.94509803921568625" green="0.94509803921568625" blue="0.94509803921568625" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="centerY" secondItem="VTo-Sm-Mz2" secondAttribute="centerY" id="Ahl-CA-Ea4"/>
+                <constraint firstAttribute="centerX" secondItem="VTo-Sm-Mz2" secondAttribute="centerX" id="Egd-lm-Q0N"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="alertButton" destination="e71-K5-5wE" id="Yd4-c1-Yvf"/>
+                <outlet property="showImgStatusWidthConstraint" destination="Vf3-T2-p5E" id="LZx-Dh-8jg"/>
+                <outlet property="showStatusImgView" destination="prS-6F-Q3V" id="2Gf-gv-JXG"/>
+                <outlet property="showStatusImgViewHeightConstraint" destination="I3h-IM-X17" id="CLM-Kw-7gS"/>
+            </connections>
+            <point key="canvasLocation" x="454.5" y="20.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="nodate-6+.png" width="9" height="5"/>
+    </resources>
+</document>

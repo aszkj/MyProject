@@ -1,0 +1,28 @@
+//
+//  DLMessageModel.h
+//  YilidiBuyer
+//
+//  Created by 曾勇兵 on 17/3/29.
+//  Copyright © 2017年 yld. All rights reserved.
+//
+
+#import "BaseModel.h"
+
+@interface DLMessageModel : BaseModel
+@property (nonatomic,strong)NSNumber *typeValue;
+@property (nonatomic,copy)NSNumber *msgId;
+@property (nonatomic,strong)NSString *msgTime;
+@property (nonatomic,strong)NSString *msgAbstract;
+@property (nonatomic,copy)NSString *msgContent;
+@property (nonatomic,strong)NSString *typeName;
+@property (nonatomic,strong)NSString *msgTitle;
+@property (nonatomic,strong)NSNumber *directType;
+@property (nonatomic,strong)NSString *directCode;
+@property (nonatomic,strong)NSString *msgImage;
+@end
+
+@interface DLMessageModel (setMessageModel)
+
++(NSArray *)objectMessageModelArr:(NSArray *)array;
+@end
+

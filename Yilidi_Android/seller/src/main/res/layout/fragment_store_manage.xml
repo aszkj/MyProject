@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/action_bar_main"/>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|end"
+            android:text="@string/store_image"/>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin_lr"
+            android:layout_weight="3">
+
+            <ImageView
+                android:id="@+id/tv_store_manage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@mipmap/store_bg"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|end"
+            android:text="@string/store_name"/>
+
+        <TextView
+            android:id="@+id/tv_store_manage_name"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:layout_weight="3"
+            android:gravity="center_vertical"/>
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|end"
+            android:text="@string/store_business"/>
+
+        <TextView
+            android:id="@+id/tv_store_manage_business"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:layout_weight="3"
+            android:gravity="center_vertical"/>
+    </LinearLayout>
+
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|end"
+            android:text="@string/store_deduce_price"/>
+
+        <TextView
+            android:id="@+id/tv_store_manage_deduce_price"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:layout_weight="3"
+            android:gravity="center_vertical"/>
+    </LinearLayout>
+
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|end"
+            android:text="@string/store_hot_line"/>
+
+        <TextView
+            android:id="@+id/tv_store_manage_hot_line"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:layout_weight="3"
+            android:gravity="center_vertical"/>
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|end"
+            android:text="@string/store_area"/>
+
+        <TextView
+            android:id="@+id/tv_store_manage_area"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:layout_weight="3"
+            android:gravity="center_vertical"/>
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|end"
+            android:text="@string/store_address"/>
+
+        <TextView
+            android:id="@+id/tv_store_manage_address"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:layout_weight="3"
+            android:gravity="center_vertical"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|end"
+            android:text="@string/store_status"/>
+
+        <com.yldbkd.www.library.android.viewCustomer.SwitchButton
+            android:id="@+id/sb_store_status"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:layout_weight="3"
+            app:cursor="@mipmap/cursor"
+            app:moveDuration="50"
+            app:selectedBG="@color/switch_button_on_bg"
+            app:shadow="@drawable/switch_button_shadow"
+            app:shadowExpand="@dimen/submit_order_shadow_expand"
+            app:shadowXDiff="0dp"
+            app:shadowYDiff="@dimen/submit_order_shadow_y_diff"
+            app:status="OFF"
+            app:trackPadding="@dimen/submit_order_trackPadding"
+            app:trackWidth="@dimen/submit_order_track_width"
+            app:unselectedBG="@color/switch_button_select_bg"/>
+    </LinearLayout>
+</LinearLayout>

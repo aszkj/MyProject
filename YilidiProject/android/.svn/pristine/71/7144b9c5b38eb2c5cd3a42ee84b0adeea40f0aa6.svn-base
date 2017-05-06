@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:cube_ptr="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background">
+
+    <com.yldbkd.www.library.android.pullRefresh.FixRequestDisallowPtrFrameLayout
+        android:id="@+id/refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        cube_ptr:ptr_duration_to_close="300"
+        cube_ptr:ptr_duration_to_close_header="1500"
+        cube_ptr:ptr_keep_header_when_refresh="true"
+        cube_ptr:ptr_pull_to_fresh="false"
+        cube_ptr:ptr_ratio_of_header_height_to_refresh="1.2"
+        cube_ptr:ptr_resistance="1.7">
+
+        <ListView
+            android:id="@+id/home_refresh_list_view"
+            style="@style/Widget.ListView.Home.Store"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </com.yldbkd.www.library.android.pullRefresh.FixRequestDisallowPtrFrameLayout>
+
+    <include layout="@layout/home_fragment_empty"/>
+
+    <include
+        layout="@layout/home_tool_bar"/>
+
+    <include
+        layout="@layout/home_search_tool_bar"
+        android:visibility="gone"/>
+
+</RelativeLayout>

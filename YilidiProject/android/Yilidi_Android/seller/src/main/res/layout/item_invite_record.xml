@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/item_small_height"
+    android:background="@color/white"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/normal_margin_lr"
+    android:paddingRight="@dimen/normal_margin_lr">
+
+    <TextView
+        android:id="@+id/tv_item_invite_mobile"
+        style="@style/TextAppearance.Normal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3" />
+
+    <TextView
+        android:id="@+id/tv_item_invite_user"
+        style="@style/TextAppearance.Normal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3" />
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr">
+
+        <TextView
+            android:id="@+id/tv_item_vip_flag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingLeft="@dimen/margin_tiny"
+            android:paddingRight="@dimen/margin_tiny"
+            style="@style/TextAppearance.Small.White"
+            android:background="@drawable/button_red" />
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="270dp"
+              android:layout_height="wrap_content"
+              android:background="@drawable/download_dialog"
+              android:padding="@dimen/normal_margin_lr"
+              android:orientation="vertical">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Large"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/three_dialog_title"/>
+
+    <Button
+            android:id="@+id/first_button"
+            android:background="@drawable/button_white_gray_selector"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_normal_height"
+            android:layout_marginTop="@dimen/margin_big"
+            android:gravity="center"/>
+
+    <Button
+            android:id="@+id/second_button"
+            android:background="@drawable/button_white_gray_selector"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_normal_height"
+            android:layout_marginTop="@dimen/margin_big"
+            android:gravity="center"
+            android:text="@string/dialog_cancel"/>
+
+    <Button
+            android:id="@+id/cancel_button"
+            android:background="@drawable/button_white_gray_selector"
+            style="@style/TextAppearance.Normal.Red"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_normal_height"
+            android:layout_marginTop="@dimen/margin_big"
+            android:gravity="center"
+            android:text="@string/dialog_cancel"/>
+</LinearLayout>

@@ -1,0 +1,116 @@
+//
+//  UIViewController+adLinkDataJumpHandler.m
+//  YilidiBuyer
+//
+//  Created by mm on 16/12/3.
+//  Copyright © 2016年 yld. All rights reserved.
+//
+
+#import "UIViewController+adLinkDataJumpHandler.h"
+#import "DLGoodsAllClassVC.h"
+#import "DLSeckillActivityVC.h"
+#import "DLRedPacketEntrancePageVC.h"
+#import "DLGoodsdetailVC.h"
+#import "DLClassificationZoneVC.h"
+#import "DLVipAndPennyGoodsVC.h"
+#import "DLInfoMationVC.h"
+#import "DLShowFloorGoodsVC.h"
+#import "ProjectRelativeKey.h"
+#import "ProjectRelativeDefineNotification.h"
+
+@implementation UIViewController (adLinkDataJumpHandler)
+
+- (void)registerLinkDataJumpNotification {
+    [kNotification addObserver:self selector:@selector(observeToGoodsDetail:) name:KNotificationLookGoodsDetail object:nil];
+    [kNotification addObserver:self selector:@selector(observeToPerfectGoods:) name:KNotificationLookPerfectGoods object:nil];
+    [kNotification addObserver:self selector:@selector(observeToGoodsClassPage:) name:KNotificationLookGoodsClassPage object:nil];
+    [kNotification addObserver:self selector:@selector(observeToSpecialSubjectPage:) name:KNotificationLookSpecialSubjectGoods object:nil];
+    [kNotification addObserver:self selector:@selector(observeToSeckillActivityPage:) name:KNotificationComeToSeckillActivityPage object:nil];
+    [kNotification addObserver:self selector:@selector(observeToLookRedPacketPage:) name:KNotificationLookRedPacketPage object:nil];
+    [kNotification addObserver:self selector:@selector(observeToInfoMationPage:) name:KNotificationComeToInfoMationPage object:nil];
+}
+
+#pragma mark ---------------------PageNavigate Method------------------------------
+- (void)_enterGoodsClassPageWithClassCode:(NSDictionary *)infoDic {
+    DLGoodsAllClassVC *allGoodsShowVC = [[DLGoodsAllClassVC alloc] init];
+    allGoodsShowVC.infoDic = infoDic;
+    [self.navigationController pushViewController:allGoodsShowVC animated:YES];
+}
+
+- (void)_enterSeckillActivityPage {
+    DLSeckillActivityVC *seckillActivityVC = [[DLSeckillActivityVC alloc] init];
+    [self.navigationController pushViewController:seckillActivityVC animated:YES];
+}
+
+- (void)_enterRedPacketEntrancePage {
+    DLRedPacketEntrancePageVC *redPacketEntrancePage = [[DLRedPacketEntrancePageVC alloc] init];
+    [self.navigationController pushViewController:redPacketEntrancePage animated:YES];
+}
+
+- (void)_enterGoodsDetailWithGoodsId:(NSString *)goodsId {
+    DLGoodsdetailVC *goodsDetailVC = [[DLGoodsdetailVC alloc] init];
+    goodsDetailVC.goodsId = goodsId;
+    [self.navigationController pushViewController:goodsDetailVC animated:YES];
+}
+
+- (void)_enterSpecialSubjectPage:(NSDictionary *)infoDic {
+    DLClassificationZoneVC *classSpecialVC = [[DLClassificationZoneVC alloc] init];
+    classSpecialVC.infoDic = infoDic;
+    [self.navigationController pushViewController:classSpecialVC animated:YES];
+}
+
+- (void)_enterPerfectGoodsPageWithPerfectGoodsNumber:(NSDictionary *)infoDic {
+    DLVipAndPennyGoodsVC *perfectGoodsVC = [[DLVipAndPennyGoodsVC alloc] init];
+    perfectGoodsVC.infoDic = infoDic;
+    [self.navigationController pushViewController:perfectGoodsVC animated:YES];
+}
+
+- (void)_enterInfoMationPage:(NSDictionary *)infoDic {
+    DLInfoMationVC *infoMationVC = [[DLInfoMationVC alloc] init];
+    infoMationVC.infoDic = infoDic;
+    [self.navigationController pushViewController:infoMationVC animated:YES];
+}
+
+- (void)_enterFloorGoodsPage:(NSDictionary *)info {
+    DLShowFloorGoodsVC *floorVC = [[DLShowFloorGoodsVC alloc]init];
+    floorVC.infoDic = info;
+    [self.navigationController pushViewController:floorVC animated:YES];
+}
+
+#pragma mark ---------------------Observe Method------------------------------
+- (void)observeToGoodsDetail:(NSNotification *)info {
+    [self _enterGoodsDetailWithGoodsId:info.object[kLinkDataKeyGoodsDetail]];
+}
+
+- (void)observeToPerfectGoods:(NSNotification *)info {
+    [self _enterPerfectGoodsPageWithPerfectGoodsNumber:info.object];
+}
+
+- (void)observeToSeckillActivityPage:(NSNotification *)info {
+    [self _enterSeckillActivityPage];
+}
+
+- (void)observeToLookRedPacketPage:(NSNotification *)info  {
+    [self _enterRedPacketEntrancePage];
+}
+
+- (void)observeToSpecialSubjectPage:(NSNotification *)info {
+    [self _enterSpecialSubjectPage:info.object];
+}
+
+- (void)observeToFloorGoodsPage:(NSNotification *)info {
+    [self _enterFloorGoodsPage:info.object];
+    
+}
+
+- (void)observeToGoodsClassPage:(NSNotification *)info {
+    [self _enterGoodsClassPageWithClassCode:info.object];
+}
+
+- (void)observeToInfoMationPage:(NSNotification *)info {
+    [self _enterInfoMationPage:info.object];
+}
+
+
+
+@end

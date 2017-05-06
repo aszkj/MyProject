@@ -1,0 +1,36 @@
+//
+//  AppInitResponse.m
+//  VApiSDK_iOS
+//
+//  Created by duocai on 14-6-16.
+//  Copyright (c) 2014年 duocai. All rights reserved.
+//
+
+#import "PhysicalDescriptionResponse.h"
+
+@implementation PhysicalDescriptionResponse
++(NSDictionary *) JSONKeyPathsByPropertyKey {
+    return @{
+             @"errorCode":@"code",
+             @"msg":@"msg",
+             @"subCode":@"sub_code",
+             @"subMsg":@"sub_msg",
+			@"physical":@"physical",
+			@"physicalArr":@"physicalArr",
+			@"physicalType":@"physicalType"
+             };
+}
+
++(NSValueTransformer *) physicalTransformer
+{
+    return [NSValueTransformer mtl_JSONDictionaryTransformerWithModelClass:[PhysicalResult class]];
+}
++(NSValueTransformer *) physicalArrTransformer
+{
+    return [NSValueTransformer mtl_JSONDictionaryTransformerWithModelClass:[PhysicalResult class]];
+}
++(NSValueTransformer *) physicalTypeTransformer
+{
+    return [NSValueTransformer mtl_JSONDictionaryTransformerWithModelClass:[PhysicalTypeApiBO class]];
+}
+@end

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="DLGoodsClassView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="497"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Ylf-ye-5mi" customClass="MycommonTableView">
+                    <color key="backgroundColor" red="0.93333333333333335" green="0.93333333333333335" blue="0.93333333333333335" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </tableView>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="voC-a1-WWF" customClass="MyCommonCollectionView">
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="yNZ-xI-zsZ">
+                        <size key="itemSize" width="50" height="50"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="voC-a1-WWF" firstAttribute="leading" secondItem="Ylf-ye-5mi" secondAttribute="trailing" id="3VL-Wa-iWy"/>
+                <constraint firstAttribute="bottom" secondItem="Ylf-ye-5mi" secondAttribute="bottom" id="5Dm-04-CkB"/>
+                <constraint firstAttribute="bottom" secondItem="voC-a1-WWF" secondAttribute="bottom" id="A7u-cw-tAP"/>
+                <constraint firstItem="Ylf-ye-5mi" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="bW7-sS-qdO"/>
+                <constraint firstItem="voC-a1-WWF" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="dNv-CY-Ixy"/>
+                <constraint firstItem="Ylf-ye-5mi" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="fib-nh-vsF"/>
+                <constraint firstAttribute="trailing" secondItem="voC-a1-WWF" secondAttribute="trailing" id="hq6-Ap-dQ0"/>
+                <constraint firstItem="Ylf-ye-5mi" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" multiplier="0.221" id="lDX-NR-q1o"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="goodsFirstCategaryTableView" destination="Ylf-ye-5mi" id="EfN-j8-otD"/>
+                <outlet property="goodsSecondLevelClassCollectionView" destination="voC-a1-WWF" id="lnj-wT-FYw"/>
+            </connections>
+            <point key="canvasLocation" x="-30.5" y="25.5"/>
+        </view>
+    </objects>
+</document>

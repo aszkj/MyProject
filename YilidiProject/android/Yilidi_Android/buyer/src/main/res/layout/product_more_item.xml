@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/product_more_item_layout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/home_product_height"
+                android:background="@color/white">
+
+    <LinearLayout android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:layout_centerInParent="true">
+
+        <Button
+                android:id="@+id/more_product_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/find_more"
+                style="@style/TextAppearance.Normal"
+                android:paddingTop="@dimen/margin_tiny"
+                android:paddingBottom="@dimen/margin_tiny"
+                android:paddingLeft="@dimen/margin_small"
+                android:paddingRight="@dimen/margin_small"
+                android:background="@drawable/button_white_gray_selector"/>
+
+        <TextView
+                android:id="@+id/more_product_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_smaller"
+                android:layout_gravity="center_horizontal"
+                style="@style/TextAppearance.Small.Secondary"/>
+    </LinearLayout>
+</RelativeLayout>

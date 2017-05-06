@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="CalenderHeaderCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JL4-8x-Zpb">
+                        <rect key="frame" x="12" y="9" width="25" height="25"/>
+                        <animations/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="25" id="Grn-Lc-wGU"/>
+                            <constraint firstAttribute="height" constant="25" id="b5K-St-O0G"/>
+                        </constraints>
+                        <state key="normal" backgroundImage="left.png">
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="preDayAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="mb4-fN-B5b"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T8L-MM-wjz">
+                        <rect key="frame" x="79" y="7" width="163" height="30"/>
+                        <animations/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="30" id="Nl6-N8-3CB"/>
+                            <constraint firstAttribute="width" constant="163" id="tlQ-LM-fCo"/>
+                        </constraints>
+                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <state key="normal">
+                            <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="displayTimeCalenderAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Oxp-UP-tEA"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C4J-bP-vKS">
+                        <rect key="frame" x="282" y="9" width="25" height="25"/>
+                        <animations/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="25" id="aoY-Qt-LTw"/>
+                            <constraint firstAttribute="width" constant="25" id="wjB-20-lw8"/>
+                        </constraints>
+                        <state key="normal" backgroundImage="rightDay.png">
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="nextDayAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="HaM-cU-rMK"/>
+                        </connections>
+                    </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3dp-jC-S9D">
+                        <rect key="frame" x="79" y="7" width="163" height="30"/>
+                        <animations/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <animations/>
+                <constraints>
+                    <constraint firstItem="T8L-MM-wjz" firstAttribute="top" secondItem="3dp-jC-S9D" secondAttribute="top" id="8OM-9F-2r4"/>
+                    <constraint firstAttribute="trailing" secondItem="C4J-bP-vKS" secondAttribute="trailing" constant="13" id="MJL-D1-u3R"/>
+                    <constraint firstAttribute="centerY" secondItem="T8L-MM-wjz" secondAttribute="centerY" id="Phx-eT-Xgw"/>
+                    <constraint firstAttribute="centerX" secondItem="T8L-MM-wjz" secondAttribute="centerX" id="Qs0-4p-QIb"/>
+                    <constraint firstItem="T8L-MM-wjz" firstAttribute="trailing" secondItem="3dp-jC-S9D" secondAttribute="trailing" id="ULf-Ch-jKn"/>
+                    <constraint firstItem="JL4-8x-Zpb" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="4" id="Wyl-GY-ZjM"/>
+                    <constraint firstAttribute="centerY" secondItem="C4J-bP-vKS" secondAttribute="centerY" id="XEL-SF-vbv"/>
+                    <constraint firstItem="T8L-MM-wjz" firstAttribute="bottom" secondItem="3dp-jC-S9D" secondAttribute="bottom" id="die-7u-kcU"/>
+                    <constraint firstItem="T8L-MM-wjz" firstAttribute="leading" secondItem="3dp-jC-S9D" secondAttribute="leading" id="eXL-nI-MYS"/>
+                    <constraint firstAttribute="centerY" secondItem="JL4-8x-Zpb" secondAttribute="centerY" id="woc-6U-Ukw"/>
+                </constraints>
+            </tableViewCellContentView>
+            <animations/>
+            <connections>
+                <outlet property="timeButton" destination="T8L-MM-wjz" id="gsH-M5-W8c"/>
+                <outlet property="timeLabel" destination="3dp-jC-S9D" id="odo-Zh-U5s"/>
+            </connections>
+            <point key="canvasLocation" x="222" y="275"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="left.png" width="77" height="77"/>
+        <image name="rightDay.png" width="77" height="77"/>
+    </resources>
+</document>

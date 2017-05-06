@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/account_bg">
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+            <ImageView
+                    android:id="@+id/account_flag_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/account_flag_bg"/>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/normal_margin_top"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:id="@+id/account_flag_name_view"
+                        style="@style/TextAppearance.Normal.White"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/account_flag_name"/>
+
+                <TextView
+                        android:id="@+id/account_money_flag_view"
+                        style="@style/TextAppearance.Normal.Yellow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/money_flag"/>
+
+                <TextView
+                        android:id="@+id/account_amount_view"
+                        style="@style/TextAppearance.Bigger.Yellow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_small_height"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/normal_margin_lr"
+            android:paddingRight="@dimen/normal_margin_lr"
+            android:text="@string/account_title_name"/>
+
+    <com.yldbkd.www.library.android.pullRefresh.PullToRefreshListView
+            android:id="@+id/account_list_view"
+            style="@style/Widget.ListView.Profile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:paddingLeft="@dimen/normal_margin_lr"
+            android:paddingRight="@dimen/normal_margin_lr"/>
+</LinearLayout>

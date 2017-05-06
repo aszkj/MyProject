@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WSJSelectCityViewController">
+            <connections>
+                <outlet property="seachText" destination="r5X-Az-oAY" id="qRP-xT-Gzk"/>
+                <outlet property="tableView" destination="p3Q-qx-XbY" id="1hw-cn-Vnz"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UDK-z3-5Ad">
+                    <rect key="frame" x="15" y="10" width="290" height="35"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="search for.png" translatesAutoresizingMaskIntoConstraints="NO" id="YJ7-6n-hne">
+                            <rect key="frame" x="8" y="8" width="20" height="20"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="20" id="TkN-og-6ep"/>
+                                <constraint firstAttribute="width" constant="20" id="sBI-g2-VRO"/>
+                            </constraints>
+                        </imageView>
+                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="城市/行政区/拼音" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="r5X-Az-oAY">
+                            <rect key="frame" x="36" y="3" width="250" height="30"/>
+                            <color key="textColor" red="0.70196078431372544" green="0.70196078431372544" blue="0.70196078431372544" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                            <textInputTraits key="textInputTraits" returnKeyType="search"/>
+                            <connections>
+                                <outlet property="delegate" destination="-1" id="OUg-zC-nSG"/>
+                            </connections>
+                        </textField>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="r5X-Az-oAY" firstAttribute="top" secondItem="UDK-z3-5Ad" secondAttribute="top" constant="3" id="29B-dV-J5O"/>
+                        <constraint firstAttribute="bottom" secondItem="r5X-Az-oAY" secondAttribute="bottom" constant="2" id="Qmk-kB-lv8"/>
+                        <constraint firstItem="YJ7-6n-hne" firstAttribute="top" secondItem="UDK-z3-5Ad" secondAttribute="top" constant="8" id="g3m-0l-jww"/>
+                        <constraint firstItem="r5X-Az-oAY" firstAttribute="leading" secondItem="YJ7-6n-hne" secondAttribute="trailing" constant="8" id="mS6-Zo-wJG"/>
+                        <constraint firstItem="YJ7-6n-hne" firstAttribute="leading" secondItem="UDK-z3-5Ad" secondAttribute="leading" constant="8" id="pDC-Xt-2Ee"/>
+                        <constraint firstAttribute="height" constant="35" id="sOC-RV-NEa"/>
+                        <constraint firstAttribute="trailing" secondItem="r5X-Az-oAY" secondAttribute="trailing" constant="4" id="ukz-oy-W0o"/>
+                    </constraints>
+                </view>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="grouped" separatorStyle="none" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="p3Q-qx-XbY">
+                    <rect key="frame" x="0.0" y="53" width="320" height="515"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="x82-zC-bq0"/>
+                        <outlet property="delegate" destination="-1" id="Tnc-c4-AsI"/>
+                    </connections>
+                </tableView>
+            </subviews>
+            <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.93725490196078431" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="p3Q-qx-XbY" secondAttribute="bottom" id="9OZ-vf-PVK"/>
+                <constraint firstAttribute="trailing" secondItem="p3Q-qx-XbY" secondAttribute="trailing" id="EjQ-sR-8gL"/>
+                <constraint firstItem="UDK-z3-5Ad" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="15" id="WUJ-kx-OX7"/>
+                <constraint firstItem="UDK-z3-5Ad" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="10" id="Xnc-UV-kNy"/>
+                <constraint firstItem="p3Q-qx-XbY" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Y1S-Z5-yYf"/>
+                <constraint firstItem="p3Q-qx-XbY" firstAttribute="top" secondItem="UDK-z3-5Ad" secondAttribute="bottom" constant="8" id="hpY-XJ-AOU"/>
+                <constraint firstAttribute="trailing" secondItem="UDK-z3-5Ad" secondAttribute="trailing" constant="15" id="yzI-bN-dG6"/>
+            </constraints>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="search for.png" width="28" height="28"/>
+    </resources>
+</document>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="ShopCartView">
+            <rect key="frame" x="0.0" y="0.0" width="36" height="33"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tx9-LK-SHd">
+                    <rect key="frame" x="5" y="4" width="20" height="21"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="25" id="QUn-Wi-0hH"/>
+                        <constraint firstAttribute="height" constant="19" id="V8D-XR-oDL"/>
+                        <constraint firstAttribute="width" constant="19" id="oy6-fh-Ft4"/>
+                        <constraint firstAttribute="width" constant="25" id="q2F-TI-dGh"/>
+                    </constraints>
+                    <state key="normal" backgroundImage="iconfont-gouwuche---Assistor.png">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="QUn-Wi-0hH"/>
+                            <exclude reference="q2F-TI-dGh"/>
+                        </mask>
+                    </variation>
+                    <connections>
+                        <action selector="cominToShopCartAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="f5j-9f-g3Y"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ep8-cd-IEP">
+                    <rect key="frame" x="22" y="0.0" width="14" height="14"/>
+                    <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="14" id="bCW-HW-Hza"/>
+                        <constraint firstAttribute="height" constant="14" id="stt-23-hYA"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="8"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="9"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="ep8-cd-IEP" secondAttribute="trailing" constant="-1" id="K1y-ot-xxr"/>
+                <constraint firstAttribute="centerY" secondItem="tx9-LK-SHd" secondAttribute="centerY" id="POf-L9-Okl"/>
+                <constraint firstItem="ep8-cd-IEP" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Tq0-Ba-7bq"/>
+                <constraint firstAttribute="centerX" secondItem="tx9-LK-SHd" secondAttribute="centerX" id="zPz-nr-g2h"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="shopNumberLabel" destination="ep8-cd-IEP" id="6Wn-Tz-Hav"/>
+            </connections>
+            <point key="canvasLocation" x="276" y="229.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="iconfont-gouwuche---Assistor.png" width="56" height="55"/>
+    </resources>
+</document>

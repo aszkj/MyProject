@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="DLMemberProductCell">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="90"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <frame key="frameInset" width="375" height="89"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="pVu-Bw-vO3">
+                        <constraints>
+                            <constraint firstAttribute="height" constant="65" id="6Af-HJ-1kU"/>
+                            <constraint firstAttribute="width" constant="65" id="HzA-Nc-mXn"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="￥30" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yIT-Ur-UWv">
+                        <constraints>
+                            <constraint firstAttribute="width" constant="78" id="cS4-2M-nIh"/>
+                            <constraint firstAttribute="height" constant="21" id="rJt-gC-NGz"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.99607843139999996" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="X1" textAlignment="justified" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fgm-gz-JVc">
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="CGb-pG-5Xm"/>
+                            <constraint firstAttribute="width" constant="30" id="wNT-sC-QBq"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="卖西瓜啊卖西瓜卖西瓜啊卖西瓜" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3cg-wW-z8C">
+                        <constraints>
+                            <constraint firstAttribute="height" constant="48" id="2By-Or-YzH"/>
+                            <constraint firstAttribute="width" constant="265" id="HcL-Em-d23"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="fgm-gz-JVc" secondAttribute="trailing" constant="16" id="0Ii-Pk-9w1"/>
+                    <constraint firstItem="pVu-Bw-vO3" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="19" id="102-Fe-KbX"/>
+                    <constraint firstItem="yIT-Ur-UWv" firstAttribute="leading" secondItem="pVu-Bw-vO3" secondAttribute="trailing" constant="26" id="3rs-34-KIe"/>
+                    <constraint firstItem="fgm-gz-JVc" firstAttribute="top" secondItem="3cg-wW-z8C" secondAttribute="bottom" constant="9" id="6NO-1F-4sA"/>
+                    <constraint firstItem="3cg-wW-z8C" firstAttribute="leading" secondItem="pVu-Bw-vO3" secondAttribute="trailing" constant="26" id="De4-L9-c6c"/>
+                    <constraint firstItem="3cg-wW-z8C" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="L4M-OM-rZd"/>
+                    <constraint firstItem="yIT-Ur-UWv" firstAttribute="top" secondItem="3cg-wW-z8C" secondAttribute="bottom" constant="8" id="NhM-s4-hA9"/>
+                    <constraint firstAttribute="trailing" secondItem="3cg-wW-z8C" secondAttribute="trailing" id="fRf-hM-2bN"/>
+                    <constraint firstItem="pVu-Bw-vO3" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="mhM-xM-6nE"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="count" destination="fgm-gz-JVc" id="LOV-pf-ark"/>
+                <outlet property="productImage" destination="pVu-Bw-vO3" id="dfr-Ry-QAe"/>
+                <outlet property="productName" destination="3cg-wW-z8C" id="hcV-qm-oVS"/>
+                <outlet property="productPrice" destination="yIT-Ur-UWv" id="z7D-DF-MYZ"/>
+            </connections>
+            <point key="canvasLocation" x="301.5" y="250"/>
+        </tableViewCell>
+    </objects>
+</document>

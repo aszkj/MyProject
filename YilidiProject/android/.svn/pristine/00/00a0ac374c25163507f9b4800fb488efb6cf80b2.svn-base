@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/classification_second_item_height">
+
+    <ImageView
+        android:id="@+id/second_image"
+        android:layout_width="@dimen/classification_second_image_width"
+        android:layout_height="@dimen/classification_second_image_width"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_big"
+        android:src="@mipmap/seller_logo"/>
+
+    <TextView
+        android:id="@+id/second_name_text"
+        style="@style/TextAppearance.Normal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/second_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_small"
+        android:ellipsize="end"
+        android:singleLine="true"/>
+
+</RelativeLayout>

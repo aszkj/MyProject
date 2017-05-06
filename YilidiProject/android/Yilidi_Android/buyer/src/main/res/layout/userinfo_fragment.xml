@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <RelativeLayout
+            android:id="@+id/rl_user_logo"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/image_big"
+            android:layout_marginRight="@dimen/margin_small">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/user_logo"/>
+
+            <ImageView
+                android:id="@+id/more_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+
+            <com.yldbkd.www.library.android.viewCustomer.CircleImageView
+                android:id="@+id/user_logo"
+                android:layout_width="@dimen/image_normal"
+                android:layout_height="@dimen/image_normal"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margin_big"
+                android:layout_toLeftOf="@id/more_view"/>
+
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_nickname"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_bigger_height"
+            android:layout_marginRight="@dimen/margin_small">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/nickname"/>
+
+            <ImageView
+                android:id="@+id/more_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+
+            <TextView
+                android:id="@+id/tv_nickname"
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margin_big"
+                android:layout_toLeftOf="@id/more_nickname"/>
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_gender"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_bigger_height"
+            android:layout_marginRight="@dimen/margin_small">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/gender"/>
+
+            <ImageView
+                android:id="@+id/more_sex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+
+            <TextView
+                android:id="@+id/tv_sex"
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margin_big"
+                android:layout_toLeftOf="@id/more_sex"/>
+
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_birthday"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_bigger_height"
+            android:layout_marginRight="@dimen/margin_small">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/birthday"/>
+
+            <ImageView
+                android:id="@+id/more_birthday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+
+            <TextView
+                android:id="@+id/tv_birthday"
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margin_big"
+                android:layout_toLeftOf="@id/more_birthday"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_user_level"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_bigger_height"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_lager">
+
+        <TextView
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/user_level"/>
+
+        <TextView
+            android:id="@+id/tv_user_level"
+            style="@style/TextAppearance.Bigger.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/margin_small"/>
+    </RelativeLayout>
+</LinearLayout>

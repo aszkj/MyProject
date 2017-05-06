@@ -1,0 +1,15 @@
+!首页的疯抢倒计时workflow
+1===============>刚开始进来进行倒计时流程
+==>a:请求网络获取活动模型，得到当前场活动结束时间currentActivityEndTime(或),b:再根据当前服务器时间currentServerTime和currentActivityEndTime算出leftCount,并显示UI
+
+2===============>倒计时到了流程
+==>a,b
+
+2===============>从首页进入后台，然后再进入前台
+
+currentServerTime < currentActivityEndTime
+==>b
+currentServerTime >= currentActivityEndTime
+==>a,b
+
+

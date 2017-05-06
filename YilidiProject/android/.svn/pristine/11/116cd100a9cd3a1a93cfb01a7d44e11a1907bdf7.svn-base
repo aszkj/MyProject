@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/home_toll_bar_layout"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tool_bar_height"
+                android:background="@drawable/tool_bar_bg">
+
+    <LinearLayout
+        android:id="@+id/ll_scan_view"
+        android:layout_width="@dimen/tool_bar_button_width"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/scan_selector"
+            android:visibility="visible"/>
+
+        <TextView
+            style="@style/TextAppearance.Smaller.White"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_tool_bar_scan"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_search_view"
+        android:layout_width="@dimen/tool_bar_button_width"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/search_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/search_selector"/>
+
+        <TextView
+            style="@style/TextAppearance.Smaller.White"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/location_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tool_bar_location_height"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/ll_search_view"
+        android:layout_toRightOf="@id/ll_scan_view"
+        android:background="@drawable/home_location_bg"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/location_flag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@mipmap/location_flag"/>
+
+        <TextView
+            android:id="@+id/location_text_view"
+            style="@style/TextAppearance.Bigger.White"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/padding_little"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxWidth="@dimen/tool_bar_context_max_width"
+            android:minWidth="@dimen/tool_bar_context_min_width"
+            android:singleLine="true"
+            android:text="@string/home_location_empty"/>
+    </LinearLayout>
+</RelativeLayout>

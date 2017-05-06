@@ -1,0 +1,11 @@
+!本项目设置cookie workFlow
+//设置cookie，正常流程下，是将登陆后返回的Set-Cookie在登陆后调用其他接口的时候再次带过去，本项目是sesionid
+//但是本项目登陆后有一个sessionid(sessionid),退出登陆后有一个sessionid(uilogin_sessionid),
+流程是==>登陆后（普通登陆、QQ、微信登陆）==>保存sessionid==>登陆之后调用其他接口将该sessionid带到cookie中，
+==>退出登陆了清除缓存sessionid
+==>退出登陆后，如果调用了验证码的接口，那么验证码接口会返回未登录状态下的uilogin_sessionid==>保存该未登录状态下的uilogin_sessionid，然后未登录状态下，再调用其它接口（不包括三种登陆）将该uilogin_sessionid带到cookie中
+
+
+//注意，缓存sessionid的时候会清除uilogin_sessionid，同理缓存uilogin_sessionid的时候会清除sessionid
+就是说应用只会存在一种sessionid,登陆状态下的sessionid，或者未登录状态下的uilogin_sessionid，
+那么调用接口设置cookie的时候，只会判断那个不为空，就说明应用处于那种状态下，就设置那个sessionid

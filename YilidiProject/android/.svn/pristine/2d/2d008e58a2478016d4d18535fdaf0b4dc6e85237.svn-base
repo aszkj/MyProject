@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_bottom_height"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_order_detail_settle_count"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center" />
+
+        <View
+            android:layout_width="@dimen/default_1_px"
+            android:layout_height="match_parent"
+            android:background="@color/dividerColor" />
+
+        <TextView
+            android:id="@+id/tv_order_detail_settle_price"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:padding="@dimen/normal_margin_lr">
+
+                <TextView
+                    style="@style/TextAppearance.Normal.Red"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/order_detail_back_title" />
+
+                <TextView
+                    style="@style/TextAppearance.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/order_detail_back_content_1" />
+
+                <TextView
+                    style="@style/TextAppearance.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/order_detail_back_content_2" />
+
+                <TextView
+                    style="@style/TextAppearance.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/order_detail_back_content_3" />
+
+                <TextView
+                    style="@style/TextAppearance.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/order_detail_back_content_4" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/TextAppearance.Normal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_small_height"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/normal_margin_lr"
+                android:paddingRight="@dimen/normal_margin_lr"
+                android:text="@string/order_detail_back_info" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_order_detail_settle_products"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

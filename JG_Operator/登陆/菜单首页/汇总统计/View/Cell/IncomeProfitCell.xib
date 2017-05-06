@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="75" id="KGk-i7-Jjw" customClass="IncomeProfitCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="75"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="74"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tMF-o4-ZRo">
+                        <rect key="frame" x="8" y="8" width="304" height="30"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6dv-nb-ang">
+                                <rect key="frame" x="135" y="5" width="35" height="21"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" red="0.87843137250000003" green="0.88235294119999996" blue="0.8862745098" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="6dv-nb-ang" firstAttribute="centerX" secondItem="tMF-o4-ZRo" secondAttribute="centerX" id="O69-OX-e1c"/>
+                            <constraint firstAttribute="bottom" secondItem="6dv-nb-ang" secondAttribute="bottom" constant="4" id="QxO-PA-8RU"/>
+                            <constraint firstItem="6dv-nb-ang" firstAttribute="top" secondItem="tMF-o4-ZRo" secondAttribute="top" constant="5" id="jEy-hz-ULQ"/>
+                            <constraint firstAttribute="height" constant="30" id="xPt-wg-KJn"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XsH-IM-rNi">
+                        <rect key="frame" x="8" y="38" width="304" height="30"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="交易金额" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l8f-Pc-HiW">
+                                <rect key="frame" x="124" y="5" width="56" height="21"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" red="0.76078431369999999" green="0.76470588240000004" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="l8f-Pc-HiW" secondAttribute="bottom" constant="4" id="Bq2-63-9LJ"/>
+                            <constraint firstAttribute="height" constant="30" id="BzU-55-SuO"/>
+                            <constraint firstItem="l8f-Pc-HiW" firstAttribute="top" secondItem="XsH-IM-rNi" secondAttribute="top" constant="5" id="G7G-DE-5oh"/>
+                            <constraint firstItem="l8f-Pc-HiW" firstAttribute="centerX" secondItem="XsH-IM-rNi" secondAttribute="centerX" id="K5L-Xi-tlj"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <animations/>
+                <constraints>
+                    <constraint firstItem="XsH-IM-rNi" firstAttribute="top" secondItem="tMF-o4-ZRo" secondAttribute="bottom" id="3aV-o8-FvB"/>
+                    <constraint firstAttribute="trailing" secondItem="XsH-IM-rNi" secondAttribute="trailing" constant="8" id="4p8-0y-IDe"/>
+                    <constraint firstItem="tMF-o4-ZRo" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="NXS-JO-TcG"/>
+                    <constraint firstAttribute="trailing" secondItem="tMF-o4-ZRo" secondAttribute="trailing" constant="8" id="ekc-wU-3Sq"/>
+                    <constraint firstItem="XsH-IM-rNi" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="ocb-e4-MwQ"/>
+                    <constraint firstItem="tMF-o4-ZRo" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="qMQ-gV-lBH"/>
+                </constraints>
+            </tableViewCellContentView>
+            <animations/>
+            <connections>
+                <outlet property="labelIncome" destination="l8f-Pc-HiW" id="rrL-s4-zTj"/>
+                <outlet property="labelIncomePrice" destination="6dv-nb-ang" id="HDU-fV-PWt"/>
+            </connections>
+            <point key="canvasLocation" x="291" y="269.5"/>
+        </tableViewCell>
+    </objects>
+</document>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_small_height">
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/invite_code_2d_title" />
+
+        <ImageView
+            android:id="@+id/iv_invite_code_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@mipmap/close" />
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout" />
+
+    <TextView
+        style="@style/TextAppearance.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/normal_margin_top"
+        android:layout_marginTop="@dimen/normal_margin_top"
+        android:text="@string/invite_code_2d_content_1" />
+
+    <ImageView
+        android:id="@+id/iv_invite_image_2d"
+        android:layout_width="@dimen/invite_code_image_wh"
+        android:layout_height="@dimen/invite_code_image_wh"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        style="@style/TextAppearance.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/normal_margin_top"
+        android:text="@string/invite_code_2d_content_2" />
+
+    <TextView
+        android:id="@+id/tv_invite_code_2d_code"
+        style="@style/TextAppearance.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/normal_margin_top" />
+</LinearLayout>

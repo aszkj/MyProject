@@ -1,0 +1,96 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.1'
+    }
+}
+apply plugin: 'com.android.application'
+
+repositories {
+    jcenter()
+}
+
+android {
+    signingConfigs {
+        configSign {
+            keyAlias 'yldbkd'
+            keyPassword '123456'
+            storeFile file('yldbkd.jks')
+            storePassword '123456'
+        }
+    }
+
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 21
+        // 个推配置信息
+        manifestPlaceholders = [
+                GETUI_APP_ID    : "k8mcsoh71y5anQ9JrouZi6",
+                GETUI_APP_KEY   : "cStr4aDsOy8XMLtraYBs0A",
+                GETUI_APP_SECRET: "7YGnr9wG7QAsMbPMsbjRn1",
+                PACKAGE_NAME    : "com.yldbkd.www.seller.android"
+        ]
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86", "x86_64"
+        }
+    }
+
+    sourceSets {
+        main {
+            jni.srcDirs = []
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.configSign
+
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        def fileName = "yldbkd_seller.apk"
+                        String path = outputFile.parent + "/${variant.productFlavors.get(0).name}" +
+                                "${variant.productFlavors.versionName}"
+                        output.outputFile = new File(path, fileName)
+                    }
+                }
+            }
+
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        _test {
+            applicationId "com.yldbkd.www.seller.android"
+            versionName "0.5.30"
+            versionCode 30
+        }
+        _release {
+            applicationId "com.yldbkd.www.seller.android"
+            versionName "0.6.1"
+            versionCode 12
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':utilslibrary')
+    compile 'com.getui:sdk:2.9.0.0'
+}

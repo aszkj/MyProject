@@ -1,0 +1,548 @@
+//
+//  DLMeVC.m
+//  YilidiBuyer
+//
+//  Created by yld on 16/4/16.
+//  Copyright © 2016年 yld. All rights reserved.
+//
+
+#import "DLMeVC.h"
+#import "DLMineCell.h"
+#import "DLHomeSpecialItemCollectionViewCell.h"
+#import "DLHomeSpecialItemModel.h"
+#import "ProjectRelativeMaco.h"
+#import "ProjectRelativeKey.h"
+#import "DLMembershipDetailsVC.h"
+#import "DLMyNewsVC.h"
+#import "DLAboutUsVC.h"
+#import "DLMeHeaderView.h"
+#import "DLAdressListVC.h"
+#import "DLMefooterView.h"
+#import "DLChangePasswordVC.h"
+#import "GlobleConst.h"
+#import "DLBaseNavController.h"
+#import "ProjectRelativeDefineNotification.h"
+#import "UIViewController+showShopCartPage.h"
+#import "UserDataManager.h"
+#import "DLVipAndPennyGoodsVC.h"
+#import "DLMainTabBarController.h"
+#import "DLShareVC.h"
+#import "AFNHttpRequestOPManager+DLUnNomalApi.h"
+#import "DLMyWalletVC.h"
+#import "DLAccountBalanceVC.h"
+#import "DLFeedbackVC.h"
+#import "UIView+BlockGesture.h"
+const CGFloat headerDefaultHeight = 226.0f;
+const CGFloat sectionHeaderHight = 5.0f;
+static NSString *meCellIdentifier = @"meCellIdentifier";
+
+@interface DLMeVC ()<UIScrollViewDelegate,UITableViewDelegate,UITableViewDataSource,UIImagePickerControllerDelegate,UINavigationControllerDelegate,MBProgressHUDDelegate>
+
+{
+    MBProgressHUD *HUD;
+    CGFloat progressValue;
+    
+    
+}
+
+
+@property (strong, nonatomic) IBOutlet UIImageView *headerImage;
+@property (strong, nonatomic) IBOutlet UIImageView *isMembersImage;
+@property (strong, nonatomic) IBOutlet UIImageView *joinImage;
+@property (strong, nonatomic) IBOutlet UILabel *isMembersLabel;
+@property (strong, nonatomic) IBOutlet UIImageView *isVIPImage;
+
+@property (weak, nonatomic) IBOutlet UIView *headerView;
+@property (weak, nonatomic) IBOutlet UITableView *meTableView;
+@property (nonatomic,strong)DLMefooterView *footerView;
+@property (nonatomic,strong)DLMeHeaderView *meheaderView;
+@property (nonatomic, assign)CGFloat scrollMaxScrollHeight;
+
+@property (nonatomic, copy)NSDictionary *meDataDic;
+
+@property (strong, nonatomic) IBOutlet UIButton *userPhone;
+
+@property (strong, nonatomic) IBOutlet UILabel *membersTimer;
+
+@property (strong, nonatomic) IBOutlet UILabel *isVipLabel;
+
+
+
+@end
+
+@implementation DLMeVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self _init];
+}
+
+-(void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:YES];
+    [self _requestUserInfo];
+    [self registerShowShowCartPageNotification];
+    
+    self.navigationController.navigationBar.hidden =YES;
+    
+
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    
+    
+}
+
+
+-(void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [kNotification removeObserver:self];
+    self.navigationController.navigationBar.hidden =NO;
+}
+
+#pragma mark ------------------------Init---------------------------------
+-(void)_init {
+    WEAK_SELF
+    [self.headerImage  addTapActionWithBlock:^(UIGestureRecognizer *gestureRecoginzer) {
+       
+        [weak_self alertControllerShow];
+        
+    }];
+
+    [self _initMeTableView];
+  
+}
+
+
+
+-(void)_initMeTableView {
+    self.meTableView.delegate = self;
+    self.meTableView.dataSource = self;
+    self.meTableView.rowHeight = 173.0f;
+    
+    [self.meTableView registerNib:[UINib nibWithNibName:@"DLMineCell" bundle:nil] forCellReuseIdentifier:meCellIdentifier];
+
+    JLog(@"rect2%@",NSStringFromCGRect(self.meTableView.frame));
+}
+
+#pragma mark ------------------------Private------------------------------
+#pragma mark ------------------------Api----------------------------------
+- (void)_requestLogout {
+    [self showLoadingHub];
+    [AFNHttpRequestOPManager postWithParameters:nil subUrl:kUrl_Logout block:^(NSDictionary *resultDic, NSError *error) {
+        [self hideLoadingHub];
+        [kNotification postNotificationName:KNofiticationLogout object:nil];
+        [kUserDefaults setObject:nil forKey:YiLiDiSessionID];
+        [kUserDefaults synchronize];
+        [self _enterLoginPage];
+    }];
+}
+
+- (void)_loadUserInfo {
+
+
+    NSDictionary *dic= [kUserDefaults objectForKey:KUserInfoKey];
+    [_userPhone setTitle:dic[@"userName"] forState:UIControlStateNormal];
+    [_membersTimer setText:[NSString stringWithFormat:@"有效期至%@",dic[@"vipExpireDate"]]];
+    NSLog(@"image:%@",dic[@"userImageUrl"]);
+    
+    [self.headerImage sd_setImageWithURL:dic[@"userImageUrl"] placeholderImage:[UIImage imageNamed:@"默认头像"]];
+    
+    
+    
+    
+    switch ([dic[@"memberType"] intValue]) {
+        case 0:
+//            [_isMembersImage setImage:[UIImage imageNamed:@"noMembersTwo"]];
+            // [_headerImage setImage:[UIImage imageNamed:@"nomembers"]];
+            [_isVIPImage setImage:[UIImage imageNamed:@"普通"]];
+            _membersTimer.hidden=YES;
+            _isVipLabel.text =@"升级为铂金会员";
+            _isMembersLabel.text = @"普通用户";
+            break;
+            
+        case 1:
+//            [_isMembersImage setImage:[UIImage imageNamed:@"ismembers"]];
+//            [_headerImage setImage:[UIImage imageNamed:@"头像"]];
+            _isVipLabel.text =@"已成为铂金会员";
+            _isMembersLabel.text = @"VIP用户";
+            _membersTimer.hidden=NO;
+             
+            break;
+            
+        default:
+            break;
+    }
+    
+    
+
+}
+
+- (void)_requestUserInfo {
+    
+    [AFNHttpRequestOPManager postWithParameters:self.requestParam subUrl:kUrl_GetUserInfo block:^(NSDictionary *resultDic, NSError *error) {
+        
+        if (isEmpty(resultDic[EntityKey])) {
+            return;
+        }
+        
+        NSString *vipExpireDate;
+        if (isEmpty(resultDic[EntityKey][@"vipExpireDate"])) {
+            
+            vipExpireDate = @"";
+        }else{
+            vipExpireDate = resultDic[EntityKey][@"vipExpireDate"];
+            
+        }
+        
+        NSDictionary *data=[NSDictionary dictionary];
+        data=@{@"memberType":resultDic[EntityKey][@"memberType"],@"userName":resultDic[EntityKey][@"userName"],@"vipExpireDate":vipExpireDate,@"userImageUrl":resultDic[EntityKey][@"userImageUrl"],@"userId":resultDic[EntityKey][@"userId"]};
+        [kUserDefaults setObject:data forKey:KUserInfoKey];
+        [kUserDefaults synchronize];
+        
+        [self _loadUserInfo];
+        
+    }];
+    
+}
+
+- (void)_updataUserImage:(NSString *)imageUrl {
+    
+    WEAK_SELF
+    [AFNHttpRequestOPManager postWithParameters:@{@"userImageUrl":imageUrl} subUrl:kUrl_PostUserHeaderUrl block:^(NSDictionary *resultDic, NSError *error) {
+        if (error.code==1) {
+             [weak_self _requestUserInfo];
+        }else{
+        
+            [Util ShowAlertWithOnlyMessage:@"头像更新失败"];
+        }
+       
+    }];
+    
+}
+
+
+#pragma mark ------------------------View Event---------------------------
+
+- (IBAction)exitButtonClick:(id)sender {
+        WEAK_SELF
+        [self showSimplyAlertWithTitle:@"提示" message:@"退出当前账户" sureAction:^(UIAlertAction *action) {
+            [weak_self _requestLogout];
+        } cancelAction:^(UIAlertAction *action) {
+
+        }];
+
+    
+}
+
+- (IBAction)upgradeMembersClick:(id)sender {
+    
+    DLVipAndPennyGoodsVC  *updateVipPage = [[DLVipAndPennyGoodsVC alloc]init];
+    updateVipPage.pageTitle = @"升级VIP";
+    updateVipPage.h5typeCode = H5PAGETYPE_UPGRADE_VIP;
+    [self navigatePushViewController:updateVipPage animate:YES];
+
+}
+
+- (IBAction)joinDealersClick:(id)sender {
+    
+    DLAboutUsVC  *aboutVC = [[DLAboutUsVC alloc]init];
+    aboutVC.titleLabel = @"全面招募";
+    aboutVC.typeCode =H5PAGETYPE_PARTNER_JOIN;
+    [self navigatePushViewController:aboutVC animate:YES];
+
+}
+
+
+
+
+#pragma mark ------------------------Page Navigate---------------------------
+
+- (void)_enterLoginPage {
+
+    DLMainTabBarController *main = [[DLMainTabBarController alloc]init];
+    [UIApplication sharedApplication].keyWindow.rootViewController = main;
+}
+
+
+#pragma mark ------------------------Delegate-----------------------------
+- (void)alertControllerShow {
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请选择" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    UIAlertAction *cancelButton = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
+    
+    UIAlertAction *cameralButton = [UIAlertAction actionWithTitle:@"相机" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            
+            UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
+            UIImagePickerController *imageCameral = [[UIImagePickerController alloc] init];
+            imageCameral.sourceType = sourceType;
+            imageCameral.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+            imageCameral.delegate = self;
+            imageCameral.allowsEditing = YES;
+            [self presentViewController:imageCameral animated:YES completion:nil];
+            
+        }else {
+            
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"该设备不支持照相功能" preferredStyle:UIAlertControllerStyleAlert];
+            
+            UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleCancel handler:nil];
+            
+            [alert addAction:cancel];
+            
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+        
+    }];
+    
+    UIAlertAction *photoButton = [UIAlertAction actionWithTitle:@"从相册中选取" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        UIImagePickerController *imagePhoto = [[UIImagePickerController alloc] init];
+        imagePhoto.sourceType = sourceType;
+        imagePhoto.delegate = self;
+        imagePhoto.allowsEditing = YES;
+        [self presentViewController:imagePhoto animated:YES completion:nil];
+        
+    }];
+    
+    [alert addAction:cancelButton];
+    [alert addAction:cameralButton];
+    [alert addAction:photoButton];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+#pragma mark - UIAlertControllerDelegate
+- (void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+
+    
+    [self saveImage:image withName:[self currentDate]];
+    [self showLoadingHubWithText:@"上传中"];
+
+    NSData *data = UIImageJPEGRepresentation(image, 0.5);
+    WEAK_SELF
+    [AFNHttpRequestOPManager postUserHeadImageData:data imageUrl:[self currentDate] subUrl:kUrl_PostUserImage block:^(NSDictionary *resultDic, NSError *error) {
+        if (error.code==1) {
+            [weak_self hideHubForText:@"上传成功"];
+            
+//            self.headerImage.image = image;
+            
+            
+            [weak_self _updataUserImage:resultDic[@"entity"]];
+            
+        }else{
+            [weak_self hideHubForText:@"上传失败"];
+            
+        }
+        
+    }];
+    
+    
+}
+
+
+
+//保存到本地图片
+- (void) saveImage:(UIImage *)image withName:(NSString *)imageName {
+    NSData *currentImage = UIImageJPEGRepresentation(image, 0.5);
+    NSString *file = [NSHomeDirectory() stringByAppendingPathComponent:@"photoAlbum"];
+    NSString *photoPath = [file stringByAppendingPathComponent:imageName];
+    [currentImage writeToFile:photoPath atomically:YES];
+    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+}
+
+//设置照片的名称保存格式
+- (NSString *) currentDate {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyyMMddHHmmss"];
+    NSDate *currentDate = [NSDate date];
+    NSString *currentDateString = [dateFormatter stringFromDate:currentDate];
+    NSString *imageFileName = [NSString stringWithFormat:@"%@.png", currentDateString];
+    
+    return imageFileName;
+}
+
+#pragma mark - tableViewDelegate
+
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    
+    return 1;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+   
+    DLMineCell *cell = [self.meTableView dequeueReusableCellWithIdentifier:meCellIdentifier forIndexPath:indexPath];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+    if (!cell) {
+        cell  = [[DLMineCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"meCellIdentifier"];
+    }
+    WEAK_SELF
+    cell.adressBlock = ^{
+        DLAdressListVC *adressVC = [[DLAdressListVC alloc]init];
+        adressVC.comeToAdresModuleType = ComeToAdresModule_FromManageAdress;
+        [weak_self navigatePushViewController:adressVC animate:YES];
+
+    };
+    
+    cell.changePasswordBlock = ^{
+        DLChangePasswordVC *changeVC = [[DLChangePasswordVC alloc]init];
+        changeVC.titleLabel = @"修改密码";
+        [weak_self navigatePushViewController:changeVC animate:YES];
+
+    };
+    
+    cell.mallBlock = ^{
+    
+        [weak_self showSimplyAlertWithTitle:@"提示" message:@"暂未开启,敬请期待" sureAction:^(UIAlertAction *action) {
+            
+        }];
+    };
+    
+    cell.fanZoneBlock = ^{
+        
+        [weak_self showSimplyAlertWithTitle:@"提示" message:@"暂未开启,敬请期待" sureAction:^(UIAlertAction *action) {
+            
+        }];
+    };
+    
+    cell.shareBlock = ^{
+//        [weak_self showSimplyAlertWithTitle:@"提示" message:@"暂未开启,敬请期待" sureAction:^(UIAlertAction *action) {
+//            
+//        }];
+        DLShareVC  *updateVipPage = [[DLShareVC alloc]init];
+        [weak_self navigatePushViewController:updateVipPage animate:YES];
+    };
+    
+    cell.commonProblemsBlock = ^{
+        DLAboutUsVC *aboutVC =[[DLAboutUsVC alloc]init];
+        aboutVC.titleLabel = @"常见问题";
+        aboutVC.typeCode = H5PAGETYPE_COMMON_QUESTION;
+        [weak_self navigatePushViewController:aboutVC animate:YES];
+    };
+    
+    cell.aboutUsBlock = ^{
+        DLAboutUsVC  *aboutVC = [[DLAboutUsVC alloc]init];
+        aboutVC.titleLabel = @"关于我们";
+        aboutVC.typeCode=H5PAGETYPE_ABOUT_US;
+        [self navigatePushViewController:aboutVC animate:YES];
+    };
+    
+    cell.feedBackBlock = ^{
+        DLFeedbackVC *feedbackVC =[[DLFeedbackVC alloc]init];
+        [weak_self navigatePushViewController:feedbackVC animate:YES];
+        
+    };
+   
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    [self.meTableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+
+    return 104.0f;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+   
+
+    return 69.0f;
+    
+   
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+
+    return self.meheaderView;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
+
+    return self.footerView;
+}
+
+
+#pragma mark ------------------------Notification-------------------------
+
+#pragma mark ------------------------Getter / Setter----------------------
+- (DLMeHeaderView*)meheaderView{
+    
+    if (!_meheaderView) {
+        _meheaderView = BoundNibView(@"DLMeHeaderView", DLMeHeaderView);
+        
+    }
+    
+    WEAK_SELF
+    _meheaderView.myWalletBlock = ^{
+
+        DLMyWalletVC *myWalletVC = [[DLMyWalletVC alloc]init];
+        myWalletVC.index = 0;
+        [weak_self navigatePushViewController:myWalletVC animate:YES];
+        
+    };
+    _meheaderView.balanceBlock = ^{
+        DLAccountBalanceVC *balanceVC = [[DLAccountBalanceVC alloc]init];
+        balanceVC.pageTitle = @"账户余额";
+        balanceVC.balanceStr = @"余额(元)";
+        balanceVC.balanceDetailStr = @"余额明细";
+        [weak_self navigatePushViewController:balanceVC animate:YES];
+    
+       
+    };
+    
+    _meheaderView.limiBlock = ^{
+        DLAccountBalanceVC *balanceVC = [[DLAccountBalanceVC alloc]init];
+        balanceVC.pageTitle = @"里米明细";
+        balanceVC.balanceStr = @"里米(积分)";
+        balanceVC.balanceDetailStr = @"里米明细";
+        [weak_self navigatePushViewController:balanceVC animate:YES];
+        
+    };
+    
+    _meheaderView.couponsBlock = ^{
+        
+        DLMyWalletVC *myWalletVC = [[DLMyWalletVC alloc]init];
+        myWalletVC.index = 0;
+        [weak_self navigatePushViewController:myWalletVC animate:YES];
+        
+    };
+    
+    _meheaderView.vouchersBlock = ^{
+        DLMyWalletVC *myWalletVC = [[DLMyWalletVC alloc]init];
+        myWalletVC.index = 1;
+        [weak_self navigatePushViewController:myWalletVC animate:YES];
+    };
+    
+    return _meheaderView;
+    
+}
+
+
+- (DLMefooterView *)footerView{
+
+    if (!_footerView) {
+        _footerView = BoundNibView(@"DLMefooterView", DLMefooterView);
+    }
+    
+    
+    return _footerView;
+}
+
+
+
+@end

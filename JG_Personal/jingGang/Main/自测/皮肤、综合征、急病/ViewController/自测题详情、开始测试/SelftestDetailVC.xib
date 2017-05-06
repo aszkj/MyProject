@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SelftestDetailVC">
+            <connections>
+                <outlet property="beginTestBottonView" destination="gbU-Zn-7Fe" id="EVL-O4-aMC"/>
+                <outlet property="selfTestTitleLabel" destination="Fyc-rN-YyU" id="uEN-RA-m7j"/>
+                <outlet property="st_DetailWebView" destination="FT4-Uu-SeZ" id="keu-lQ-WfU"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <webView contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FT4-Uu-SeZ">
+                    <rect key="frame" x="0.0" y="31" width="375" height="572"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </webView>
+                <button opaque="NO" alpha="0.94999999999999996" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gbU-Zn-7Fe">
+                    <rect key="frame" x="15" y="543" width="345" height="50"/>
+                    <color key="backgroundColor" red="0.35294117650000001" green="0.76862745099999996" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="P0i-sb-eUH"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="开始测试">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="5"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="beginTest:" destination="-1" eventType="touchUpInside" id="Ngl-9z-APp"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fyc-rN-YyU">
+                    <rect key="frame" x="0.0" y="4" width="375" height="21"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="Fyc-rN-YyU" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="17" id="57T-Pd-05P"/>
+                <constraint firstItem="FT4-Uu-SeZ" firstAttribute="top" secondItem="Fyc-rN-YyU" secondAttribute="bottom" id="7EY-Bb-nSu"/>
+                <constraint firstItem="FT4-Uu-SeZ" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="CnY-xP-9nN"/>
+                <constraint firstItem="Fyc-rN-YyU" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="17" id="Ds3-07-6wr"/>
+                <constraint firstAttribute="trailing" secondItem="gbU-Zn-7Fe" secondAttribute="trailing" constant="15" id="XK8-qj-bLw"/>
+                <constraint firstAttribute="bottom" secondItem="gbU-Zn-7Fe" secondAttribute="bottom" constant="10" id="cgo-1V-Qgz"/>
+                <constraint firstItem="gbU-Zn-7Fe" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="15" id="ftL-e6-1hG"/>
+                <constraint firstAttribute="bottom" secondItem="FT4-Uu-SeZ" secondAttribute="bottom" id="jtR-9I-dkf"/>
+                <constraint firstItem="FT4-Uu-SeZ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="nSt-pZ-COH"/>
+                <constraint firstAttribute="trailing" secondItem="FT4-Uu-SeZ" secondAttribute="trailing" id="oGw-4b-qGy"/>
+                <constraint firstAttribute="trailing" secondItem="Fyc-rN-YyU" secondAttribute="trailing" id="wcc-Tz-7EA"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="nSt-pZ-COH"/>
+                </mask>
+            </variation>
+            <point key="canvasLocation" x="342.5" y="218.5"/>
+        </view>
+    </objects>
+</document>

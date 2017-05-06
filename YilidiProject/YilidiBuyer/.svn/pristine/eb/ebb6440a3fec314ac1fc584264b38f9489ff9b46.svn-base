@@ -1,0 +1,572 @@
+//
+//  AppDelegate.m
+//  YilidiBuyer
+//
+//  Created by yld on 16/4/15.
+//  Copyright © 2016年 yld. All rights reserved.
+//
+
+#import "AppDelegate.h"
+#import "DLMainTabBarController.h"
+#import <Aspects/Aspects.h>
+#import <IQKeyboardManager/IQKeyboardManager.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
+#import "DLLoginVC.h"
+#import "ShopCartGoodsManager.h"
+#import "GuideViewController.h"
+#import "ProjectRelativeKey.h"
+#import "GlobleConst.h"
+#import <AlipaySDK/AlipaySDK.h>
+#import "WXApi.h"
+#import "WXinPayResponseModel.h"
+#import "DLCacheManager.h"
+#import "ProjectRelativeDefineNotification.h"
+#import "AliPayResponseModel.h"
+#import "ShopCartGoodsManager+goodsCache.h"
+#import <TencentOpenAPI/TencentOAuth.h>
+#import "CordovaH5UrlManager.h"
+#import "UManager.h"
+#import <AudioToolbox/AudioToolbox.h>
+#import <AVFoundation/AVFoundation.h>
+#import <UserNotifications/UserNotifications.h>
+#import "GeTuiSdk.h"
+#import "NSObject+MJExtension.h"
+#import "ThirdPlatFormConst.h"
+#import "PushMessageManager.h"
+
+@interface AppDelegate ()<GeTuiSdkDelegate,UNUserNotificationCenterDelegate>
+
+@end
+
+@implementation AppDelegate
+
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // Override point for customization after application launch.
+    self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+    [self.window makeKeyAndVisible];
+    
+    [self _configureKeyBoard];
+    
+    [self _configureLog];
+    
+    [self _configureThirdPlatForm];
+    
+    [self _entrance];
+    
+    [self _configureCordova];
+    [Util ShowAlertWithOnlyMessage:launchOptions.JSONString];
+    [[PushMessageManager sharedManager] handleAppLaunchMessage:launchOptions];
+
+    return YES;
+}
+
+- (void)_isInstallationQQAndWechat{
+    // 检测是否安装了微信
+    if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"weixin://"]]) {
+        [kUserDefaults setObject:@"NO" forKey:IsInstallationWechat];
+        [kUserDefaults synchronize];
+        
+//        NSLog(@"未安装微信");
+    }else{
+    
+        [kUserDefaults setObject:@"YES" forKey:IsInstallationWechat];
+        [kUserDefaults synchronize];
+        
+
+    }
+
+}
+
+- (void)_configureUM {
+    [UManager configureUM];
+}
+
+- (void)_configureCordova {
+    [[CordovaH5UrlManager sharedManager] beginDownLoadH5Url];
+}
+
+- (void)_configureThirdPlatForm {
+    
+    [self _conficureWXin];
+    
+    [self _configureUM];
+    
+    [self _configureGeTui];
+
+}
+
+- (void)_conficureWXin {
+    
+    [WXApi registerApp:WxAppid];
+    
+    [self _isInstallationQQAndWechat];
+
+}
+
+- (void)_entrance {
+    
+    BOOL isAppFirstLauched = [[kUserDefaults valueForKey:@"isAppFirstLauched"] boolValue];
+    if (isAppFirstLauched) {
+        [self _enterMain];
+    }else {
+        [self _enterGuidePage];
+    }
+}
+
+- (void)_configureLog {
+    // 实例化 lumberjack
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    // 允许颜色
+    [[DDTTYLogger sharedInstance] setColorsEnabled:YES];
+}
+
+- (void)_configureSDWebImg {
+    SDWebImageDownloader *imgDownloader = SDWebImageManager.sharedManager.imageDownloader;
+    imgDownloader.headersFilter  = ^NSDictionary *(NSURL *url, NSDictionary *headers) {
+        
+        NSFileManager *fm = [[NSFileManager alloc] init];
+        NSString *imgKey = [SDWebImageManager.sharedManager cacheKeyForURL:url];
+        NSString *imgPath = [SDWebImageManager.sharedManager.imageCache defaultCachePathForKey:imgKey];
+        NSDictionary *fileAttr = [fm attributesOfItemAtPath:imgPath error:nil];
+        
+        NSMutableDictionary *mutableHeaders = [headers mutableCopy];
+        
+        NSDate *lastModifiedDate = nil;
+        
+        if (fileAttr.count > 0) {
+            if (fileAttr.count > 0) {
+                lastModifiedDate = (NSDate *)fileAttr[NSFileModificationDate];
+            }
+            
+        }
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+        formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+        formatter.dateFormat = @"EEE, dd MMM yyyy HH:mm:ss z";
+        
+        NSString *lastModifiedStr = [formatter stringFromDate:lastModifiedDate];
+        lastModifiedStr = lastModifiedStr.length > 0 ? lastModifiedStr : @"";
+        [mutableHeaders setValue:lastModifiedStr forKey:@"If-Modified-Since"];
+        
+        return mutableHeaders;
+    };
+}
+
+- (void)_configureKeyBoard {
+    
+    [[IQKeyboardManager sharedManager] setShouldResignOnTouchOutside:YES];
+    [[IQKeyboardManager sharedManager] setEnableAutoToolbar:NO];
+
+}
+
+- (void)_configureHookInfo {
+#ifdef DEBUG
+    [UIViewController aspect_hookSelector:@selector(viewDidAppear:)
+                              withOptions:AspectPositionAfter
+                               usingBlock:^(id<AspectInfo> aspectInfo) {
+                                   DDLogVerbose(@"view did appear: %@",                                   [aspectInfo instance]);
+                               } error:NULL];
+#else
+    
+#endif
+
+    
+}
+
+- (void)_enterLogin {
+    DLLoginVC *loginVc = [[DLLoginVC alloc] init];
+    loginVc.enterFromLoginOrLogout = YES;
+    self.window.rootViewController = loginVc;
+}
+
+- (void)_enterMain {
+    
+    DLMainTabBarController *mainVC = [[DLMainTabBarController alloc] init];
+//    [UIApplication sharedApplication].keyWindow.rootViewController = mainVC;
+    self.window.rootViewController = mainVC;
+    
+}
+
+- (void)_enterGuidePage {
+    //引导页面
+    GuideViewController *guideVC = [[GuideViewController alloc] init];
+    self.window.rootViewController = guideVC;
+}
+- (void)applicationWillResignActive:(UIApplication *)application {
+    [[ShopCartGoodsManager sharedManager] doShopCartCache];
+    [[DLCacheManager sharedManager] doCache];
+    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
+    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+}
+
+
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    
+    return [WXApi handleOpenURL:url delegate:self];
+}
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation
+{
+    [self handleAliCallBackUrl:url];
+    
+    return [WXApi handleOpenURL:url delegate:self];
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString*, id> *)options {
+    [self handleAliCallBackUrl:url];
+    [TencentOAuth HandleOpenURL:url];
+    return [WXApi handleOpenURL:url delegate:self];
+//    return YES;
+}
+
+
+- (void)handleAliCallBackUrl:(NSURL *)url {
+    //跳转支付宝钱包进行支付，处理支付结果
+    JLog(@"平台 url %@",url.absoluteString);
+    [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
+        JLog(@"ali pay result = %@",resultDic);
+        AliPayResponseModel *responseModel = [[AliPayResponseModel alloc] initWithDefaultDataDic:resultDic];
+        [kNotification postNotificationName:KNotificationAliPayResult object:responseModel];
+    }];
+    
+}
+
+
+
+-(void)onResp:(BaseResp *)resp{
+    
+    if ([resp isKindOfClass:[PayResp class]]) {
+        PayResp *wxResp = (PayResp *)resp;
+        WXinPayResponseModel *wxResponseModel = [[WXinPayResponseModel alloc] init];
+        wxResponseModel.weixinResp = wxResp;
+        [kNotification postNotificationName:KNotificationWXPayResult object:wxResponseModel];
+    }
+    if ([resp isKindOfClass:[SendMessageToWXResp class]]){
+    
+        NSString *message;
+        if(resp.errCode == 0) {
+            message = @"分享成功";
+        }else{
+            message = @"分享失败";
+        }
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+        [alert show];
+        
+    }
+    
+    if ([resp isKindOfClass:[SendAuthResp class]]) {
+        SendAuthResp *aresp = (SendAuthResp *)resp;
+        if (aresp.errCode == 0) { // 用户同意
+            NSLog(@"errCode = %d", aresp.errCode);
+            NSLog(@"code = %@", aresp.code);
+            
+            
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"wechatLogin" object:aresp.code];
+        } else if (aresp.errCode == -2) {
+            NSLog(@"用户取消");
+        } else if (aresp.errCode == -4) {
+            NSLog(@"用户拒绝");
+        } else {
+            NSLog(@"errCode = %d", aresp.errCode);
+            NSLog(@"code = %@", aresp.code);
+        }
+
+    }
+    
+}
+
+
+// 获取用户信息
+- (void)getUserInfo {
+    NSString *url = [NSString stringWithFormat:@"https://api.weixin.qq.com/sns/userinfo?access_token=%@&openid=%@", self.access_token, self.openid];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSURL *zoneUrl = [NSURL URLWithString:url];
+        NSString *zoneStr = [NSString stringWithContentsOfURL:zoneUrl encoding:NSUTF8StringEncoding error:nil];
+        NSData *data = [zoneStr dataUsingEncoding:NSUTF8StringEncoding];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (data) {
+                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+                NSLog(@"openid = %@", [dic objectForKey:@"openid"]);
+                NSLog(@"nickname = %@", [dic objectForKey:@"nickname"]);
+                NSLog(@"sex = %@", [dic objectForKey:@"sex"]);
+                NSLog(@"country = %@", [dic objectForKey:@"country"]);
+                NSLog(@"province = %@", [dic objectForKey:@"province"]);
+                NSLog(@"city = %@", [dic objectForKey:@"city"]);
+                NSLog(@"headimgurl = %@", [dic objectForKey:@"headimgurl"]);
+                NSLog(@"unionid = %@", [dic objectForKey:@"unionid"]);
+                NSLog(@"privilege = %@", [dic objectForKey:@"privilege"]);
+            }
+        });
+    });
+}
+
+
+
+
+- (void)_configureGeTui {
+    
+    // 通过个推平台分配的appId、 appKey 、appSecret 启动SDK，注：该方法需要在主线程中调用
+    [GeTuiSdk startSdkWithAppId:kGtAppId appKey:kGtAppKey appSecret:kGtAppSecret delegate:self];
+    
+    [GeTuiSdk runBackgroundEnable:YES];
+    //如果不延时有时候就是不走获取token代理方法。。
+    [self performSelector:@selector(registerUserNotification) withObject:self afterDelay:1];
+    
+    
+}
+
+
+#pragma mark - 用户通知(推送) _自定义方法
+/** 注册用户通知 */
+- (void)registerUserNotification {
+    
+    /*
+     注册通知(推送)
+     申请App需要接受来自服务商提供推送消息
+     */
+
+    if ([[UIDevice currentDevice].systemVersion floatValue] >= 10.0) {
+        //iOS10特有
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        // 必须写代理，不然无法监听通知的接收与点击
+        center.delegate = self;
+        [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound) completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            if (granted) {
+                // 点击允许
+                NSLog(@"注册成功");
+                [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+                    NSLog(@"%@", settings);
+                }];
+            } else {
+                // 点击不允许
+                NSLog(@"注册失败");
+            }
+        }];
+    }else if ([[UIDevice currentDevice].systemVersion floatValue] >8.0){
+    
+        // 定义用户通知类型(Remote.远程 - Badge.标记 Alert.提示 Sound.声音)
+        UIUserNotificationType types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
+        
+        // 定义用户通知设置
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+        
+        // 注册用户通知 - 根据用户通知设置
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        
+    }else if ([[UIDevice currentDevice].systemVersion floatValue] < 8.0) {
+        //iOS8系统以下
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound];
+    }
+    // 注册获得device Token
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+    
+    
+}
+
+
+
+
+#pragma mark - 远程通知(推送)回调
+
+/** 远程通知注册成功委托 */
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    NSString *sellerToken = [[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+    sellerToken = [sellerToken stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSLog(@"\n>>>[DeviceToken Success]:%@\n\n", sellerToken);
+    
+    
+    NSString *usertoken = [kUserDefaults objectForKey:BUYERTOKEN];
+    if (usertoken==nil) {
+        [kUserDefaults setObject:sellerToken forKey:BUYERTOKEN];
+        [kUserDefaults synchronize];
+        
+    }
+    //向个推服务器注册deviceToken
+    [GeTuiSdk registerDeviceToken:sellerToken];
+}
+
+/** 远程通知注册失败委托 */
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+    NSLog(@"\n>>>[DeviceToken Error]:%@\n\n", error.description);
+}
+
+
+
+#pragma mark - Background Fetch 接口回调
+//后台刷新数据
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    /// Background Fetch 恢复SDK 运行
+    
+    [GeTuiSdk resume];
+    completionHandler(UIBackgroundFetchResultNewData);
+}
+
+/** APP已经接收到“远程”通知(推送) - (App运行在后台/App运行在前台) */
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    application.applicationIconBadgeNumber = 0; // 标签
+    
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
+    [GeTuiSdk resetBadge];
+    
+    NSLog(@"\n>>>[Receive RemoteNotification]:%@\n\n", userInfo);
+}
+
+//#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+#pragma mark - 10.0离线消息回调
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
+    NSDictionary * userInfo = notification.request.content.userInfo;
+    UNNotificationRequest *request = notification.request; // 收到推送的请求
+    UNNotificationContent *content = request.content; // 收到推送的消息内容
+    NSNumber *badge = content.badge;  // 推送消息的角标
+    NSString *body = content.body;    // 推送消息体
+    UNNotificationSound *sound = content.sound;  // 推送消息的声音
+    NSString *subtitle = content.subtitle;  // 推送消息的副标题
+    NSString *title = content.title;  // 推送消息的标题
+    
+    if([notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
+        NSLog(@"iOS10 前台收到远程通知:%@", userInfo);
+        completionHandler(UNNotificationPresentationOptionBadge|UNNotificationPresentationOptionSound|UNNotificationPresentationOptionAlert); // 需要执行这个方法，选择是否提醒用户，有Badge、Sound、Alert三种类型可以设置
+    }
+    else {
+        // 判断为本地通知
+        NSLog(@"iOS10 前台收到本地通知:{\nbody:%@，\ntitle:%@,\nsubtitle:%@,\nbadge：%@，\nsound：%@，\nuserInfo：%@\n}",body,title,subtitle,badge,sound,userInfo);
+    }
+    
+    PushMessageModel *pushMessageModel = [[PushMessageModel alloc] init];
+    pushMessageModel.isOffLineMessage = YES;
+    pushMessageModel.userHasClickedThisMessage = YES;
+    //    [[PushMessageManager sharedManager] handlePushMessage:pushMessageModel];
+    
+    
+}
+
+//- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler
+//{
+//    NSDictionary * userInfo = response.notification.request.content.userInfo;
+//    UNNotificationRequest *request = response.notification.request; // 收到推送的请求
+//    UNNotificationContent *content = request.content; // 收到推送的消息内容
+//    NSNumber *badge = content.badge;  // 推送消息的角标
+//    NSString *body = content.body;    // 推送消息体
+//    UNNotificationSound *sound = content.sound;  // 推送消息的声音
+//    NSString *subtitle = content.subtitle;  // 推送消息的副标题
+//    NSString *title = content.title;  // 推送消息的标题
+//    if([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
+//        NSLog(@"iOS10 收到远程通知:%@",userInfo);
+//        
+//    }
+//    else {
+//        // 判断为本地通知
+//        NSLog(@"iOS10 收到本地通知:{\nbody:%@，\ntitle:%@,\nsubtitle:%@,\nbadge：%@，\nsound：%@，\nuserInfo：%@\n}",body,title,subtitle,badge,sound,userInfo);
+//    }
+//    PushMessageModel *pushMessageModel = [[PushMessageModel alloc] initWithDefaultDataDic:userInfo];
+//    pushMessageModel.isOffLineMessage = YES;
+//    pushMessageModel.userHasClickedThisMessage = YES;
+//    [[PushMessageManager sharedManager] handlePushMessage:pushMessageModel];
+//
+//    // Warning: UNUserNotificationCenter delegate received call to -userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler: but the completion handler was never called.
+//    completionHandler();  // 系统要求执行这个方法
+//    
+//    
+//}
+//#else
+#pragma mark - 9.0离线消息回调
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+    
+    // 处理APN
+    DDLogWarn(@"\n>>>[个推收到离线消息]:%@\n\n", userInfo);
+    
+    completionHandler(UIBackgroundFetchResultNewData);
+    PushMessageModel *pushMessageModel = [[PushMessageModel alloc] initWithDefaultDataDic:userInfo];
+    pushMessageModel.isOffLineMessage = YES;
+    pushMessageModel.userHasClickedThisMessage = YES;
+    [[PushMessageManager sharedManager] handlePushMessage:pushMessageModel];
+}
+
+//#endif
+#pragma mark - 个推透传消息接收通道 在线/离线
+- (void)GeTuiSdkDidReceivePayloadData:(NSData *)payloadData andTaskId:(NSString *)taskId andMsgId:(NSString *)msgId andOffLine:(BOOL)offLine fromGtAppId:(NSString *)appId {
+    
+    // [4]: 收到个推消息
+    NSString *payloadMsg = nil;
+    if (payloadData) {
+        payloadMsg = [[NSString alloc] initWithBytes:payloadData.bytes length:payloadData.length encoding:NSUTF8StringEncoding];
+    }
+    
+    NSString *msg = [NSString stringWithFormat:@"taskId=%@,messageId:%@,payloadMsg:%@%@", taskId, msgId, payloadMsg, offLine ? @"<离线消息>" : payloadMsg];
+    
+    
+    NSDictionary *data = (NSDictionary *)payloadMsg.JSONObject;
+    DDLogWarn(@"\n>>>[个推收到消息]:%@\n\n", data);
+    
+    PushMessageModel *pushMessageModel = [[PushMessageModel alloc] init];
+    pushMessageModel.isOffLineMessage = offLine;
+    pushMessageModel.userHasClickedThisMessage = NO;
+    pushMessageModel.messageContent = payloadMsg;
+    [[PushMessageManager sharedManager] handlePushMessage:pushMessageModel];
+    
+    // 汇报个推自定义事件
+    [GeTuiSdk sendFeedbackMessage:90001 andTaskId:taskId andMsgId:msgId];
+}
+
+#pragma mark - GeTuiSdkdelegate 注册回调，获取CID信息
+/** SDK启动成功返回cid */
+- (void)GeTuiSdkDidRegisterClient:(NSString *)clientId {
+    
+    NSString *userclientId = [kUserDefaults objectForKey:CLIENTID];
+    if (userclientId==nil) {
+        [kUserDefaults setObject:clientId forKey:CLIENTID];
+        [kUserDefaults synchronize];
+        
+    }
+    
+    [self cacelbadge];
+    [GeTuiSdk resetBadge];
+    
+    
+    DDLogVerbose(@"\n>>>[GeTuiSdk RegisterClient]:%@\n\n", clientId);
+    
+}
+
+/** SDK遇到错误回调 */
+- (void)GeTuiSdkDidOccurError:(NSError *)error {
+    //个推错误报告，集成步骤发生的任何错误都在这里通知，如果集成后，无法正常收到消息，查看这里的通知。
+    DDLogVerbose(@"\n>>>[GexinSdk error]:%@\n\n", [error localizedDescription]);
+}
+
+- (void)cacelbadge {
+    // 更新显示的徽章个数
+    NSInteger badge = [UIApplication sharedApplication].applicationIconBadgeNumber;
+    badge = 0;
+    [UIApplication sharedApplication].applicationIconBadgeNumber = badge;
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    [[ShopCartGoodsManager sharedManager] doShopCartCache];
+    [[DLCacheManager sharedManager] doCache];
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
+    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+@end

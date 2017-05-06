@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="70" id="KGk-i7-Jjw" customClass="DLSearchAdressCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="69.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="研祥科技大厦" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8FD-JI-CLl">
+                        <rect key="frame" x="30" y="15" width="282" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="SPG-kJ-cr1"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="科兴科学院A栋503" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VkW-Eu-pmG">
+                        <rect key="frame" x="30" y="35" width="282" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="21" id="MWm-7p-1xR"/>
+                            <constraint firstAttribute="height" constant="21" id="wvo-PK-Pnz"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" red="0.54509803921568623" green="0.54509803921568623" blue="0.54509803921568623" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="MWm-7p-1xR"/>
+                            </mask>
+                        </variation>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3A7-vu-Pdh">
+                        <rect key="frame" x="0.0" y="68" width="320" height="1"/>
+                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="diG-j3-7Hb"/>
+                        </constraints>
+                    </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sXi-oL-UjY">
+                        <rect key="frame" x="5" y="25" width="20" height="20"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="S2d-Ra-vVJ"/>
+                            <constraint firstAttribute="width" constant="20" id="WjF-Im-DLX"/>
+                        </constraints>
+                        <state key="normal" image="locateBlue"/>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="3A7-vu-Pdh" secondAttribute="bottom" id="2GC-1M-5U5"/>
+                    <constraint firstItem="sXi-oL-UjY" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="5" id="EvZ-fR-uVJ"/>
+                    <constraint firstItem="8FD-JI-CLl" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="30" id="FBD-yB-Yln"/>
+                    <constraint firstItem="VkW-Eu-pmG" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="30" id="GYX-qw-gmW"/>
+                    <constraint firstAttribute="trailing" secondItem="3A7-vu-Pdh" secondAttribute="trailing" id="Pjq-ea-PTX"/>
+                    <constraint firstItem="8FD-JI-CLl" firstAttribute="centerY" secondItem="sXi-oL-UjY" secondAttribute="centerY" id="SY4-jS-JLE"/>
+                    <constraint firstItem="3A7-vu-Pdh" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="UxG-6Y-8uw"/>
+                    <constraint firstAttribute="trailing" secondItem="8FD-JI-CLl" secondAttribute="trailing" constant="8" id="ZXN-Yj-Nnd"/>
+                    <constraint firstItem="8FD-JI-CLl" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="bP6-4y-Pfj"/>
+                    <constraint firstItem="sXi-oL-UjY" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ehT-6Y-HYz"/>
+                    <constraint firstAttribute="trailing" secondItem="VkW-Eu-pmG" secondAttribute="trailing" constant="8" id="gu3-fq-1hE"/>
+                    <constraint firstItem="sXi-oL-UjY" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="hir-ng-vkz"/>
+                    <constraint firstItem="VkW-Eu-pmG" firstAttribute="top" secondItem="8FD-JI-CLl" secondAttribute="bottom" constant="-1" id="rfi-7K-Euj"/>
+                </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="hir-ng-vkz"/>
+                        <exclude reference="SY4-jS-JLE"/>
+                    </mask>
+                </variation>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="detailSearchAdressLabel" destination="VkW-Eu-pmG" id="vYd-KX-J6V"/>
+                <outlet property="mainSearchAdressLabel" destination="8FD-JI-CLl" id="VoF-xg-jnz"/>
+            </connections>
+            <point key="canvasLocation" x="127" y="203"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="locateBlue" width="12" height="15"/>
+    </resources>
+</document>

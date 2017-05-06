@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="DLGoodsSearchTopView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I4v-Zp-PEX">
+                    <rect key="frame" x="43" y="4" width="283" height="32"/>
+                    <subviews>
+                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="搜索附近商品" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xQw-Jk-jGq">
+                            <rect key="frame" x="25" y="5" width="232" height="20"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="20" id="eZz-zb-XMW"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits" returnKeyType="search"/>
+                            <connections>
+                                <outlet property="delegate" destination="-1" id="cWV-Ct-jot"/>
+                            </connections>
+                        </textField>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N0F-IX-Xah">
+                            <rect key="frame" x="265" y="10" width="13" height="13"/>
+                            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="13" id="X41-mX-FHY"/>
+                                <constraint firstAttribute="width" constant="13" id="Yr4-oW-Ozd"/>
+                            </constraints>
+                            <state key="normal" backgroundImage="clear"/>
+                            <connections>
+                                <action selector="clearTextFieldAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="xE1-W6-N74"/>
+                            </connections>
+                        </button>
+                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="VfB-Xm-foF">
+                            <rect key="frame" x="0.0" y="29" width="283" height="3"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="3" id="4sE-xa-EhC"/>
+                            </constraints>
+                        </imageView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n1W-PC-3t5">
+                            <rect key="frame" x="3" y="5" width="22" height="22"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="22" id="DxX-Pn-qlg"/>
+                                <constraint firstAttribute="width" constant="22" id="OX1-fq-Vha"/>
+                            </constraints>
+                            <state key="normal" backgroundImage="搜索slight"/>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" red="0.92941176470588238" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstItem="N0F-IX-Xah" firstAttribute="leading" secondItem="xQw-Jk-jGq" secondAttribute="trailing" constant="6" id="2Wd-mX-Rio"/>
+                        <constraint firstItem="VfB-Xm-foF" firstAttribute="leading" secondItem="I4v-Zp-PEX" secondAttribute="leading" id="7Fs-yp-CO4"/>
+                        <constraint firstAttribute="bottom" secondItem="VfB-Xm-foF" secondAttribute="bottom" id="8UD-SR-4AZ"/>
+                        <constraint firstItem="N0F-IX-Xah" firstAttribute="centerY" secondItem="I4v-Zp-PEX" secondAttribute="centerY" id="O7n-Mg-sXx"/>
+                        <constraint firstAttribute="trailing" secondItem="VfB-Xm-foF" secondAttribute="trailing" id="Txf-NN-TIQ"/>
+                        <constraint firstItem="xQw-Jk-jGq" firstAttribute="leading" secondItem="I4v-Zp-PEX" secondAttribute="leading" constant="25" id="Utd-IJ-OdU"/>
+                        <constraint firstItem="n1W-PC-3t5" firstAttribute="centerY" secondItem="I4v-Zp-PEX" secondAttribute="centerY" id="agz-eN-7JB"/>
+                        <constraint firstItem="xQw-Jk-jGq" firstAttribute="centerY" secondItem="I4v-Zp-PEX" secondAttribute="centerY" id="lxB-Py-Zb0"/>
+                        <constraint firstAttribute="height" constant="32" id="qRe-IY-Hxe"/>
+                        <constraint firstAttribute="trailing" secondItem="N0F-IX-Xah" secondAttribute="trailing" constant="5" id="sEk-ko-eDW"/>
+                        <constraint firstItem="n1W-PC-3t5" firstAttribute="leading" secondItem="I4v-Zp-PEX" secondAttribute="leading" constant="3" id="uYs-qD-ddk"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="3"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5xA-63-xEv">
+                    <rect key="frame" x="331" y="6" width="40" height="28"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="28" id="QzC-L8-zHt"/>
+                        <constraint firstAttribute="width" constant="40" id="Tpl-Bm-fKz"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <state key="normal" title="取消">
+                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                    </state>
+                    <state key="selected" title="搜索"/>
+                    <connections>
+                        <action selector="cancelOrSearchAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="xah-bt-D5n"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wia-jm-oNB">
+                    <rect key="frame" x="8" y="8" width="25" height="25"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="25" id="5BR-Q4-Sa7"/>
+                        <constraint firstAttribute="width" constant="25" id="pfA-Zh-DTa"/>
+                    </constraints>
+                    <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <state key="normal" backgroundImage="back"/>
+                    <connections>
+                        <action selector="backAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="RY8-B1-yiT"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="wia-jm-oNB" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="3oS-SU-M5e"/>
+                <constraint firstItem="I4v-Zp-PEX" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="4cX-oJ-Uhz"/>
+                <constraint firstAttribute="trailing" secondItem="5xA-63-xEv" secondAttribute="trailing" constant="4" id="A4b-B5-utn"/>
+                <constraint firstItem="5xA-63-xEv" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="IvN-rt-gDx"/>
+                <constraint firstItem="5xA-63-xEv" firstAttribute="leading" secondItem="I4v-Zp-PEX" secondAttribute="trailing" constant="5" id="TDj-mF-Y0h"/>
+                <constraint firstItem="I4v-Zp-PEX" firstAttribute="leading" secondItem="wia-jm-oNB" secondAttribute="trailing" constant="10" id="YbW-05-GMY"/>
+                <constraint firstItem="wia-jm-oNB" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="uxA-9N-dBF"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="cancelOrSearchButton" destination="5xA-63-xEv" id="rnx-T1-tKY"/>
+                <outlet property="clearTextFieldButton" destination="N0F-IX-Xah" id="JRe-9s-n85"/>
+                <outlet property="searchBgView" destination="I4v-Zp-PEX" id="PgJ-a3-H8T"/>
+                <outlet property="searchTextField" destination="xQw-Jk-jGq" id="fXX-3J-TBM"/>
+            </connections>
+            <point key="canvasLocation" x="244.5" y="-62"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="back" width="30" height="30"/>
+        <image name="clear" width="13" height="13"/>
+        <image name="搜索slight" width="22" height="22"/>
+    </resources>
+</document>

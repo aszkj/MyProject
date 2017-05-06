@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/TextAppearance.Normal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_smaller_height"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr"
+        android:text="@string/allot_order_detail_info" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_normal_height"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Normal.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center_vertical|end"
+                android:text="@string/allot_order_detail_no" />
+
+            <TextView
+                android:id="@+id/tv_allot_order_detail_no"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:gravity="center_vertical" />
+        </LinearLayout>
+
+        <include layout="@layout/divider_layout" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_normal_height"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Normal.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center_vertical|end"
+                android:text="@string/allot_order_detail_from" />
+
+            <TextView
+                android:id="@+id/tv_allot_order_detail_from"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:gravity="center_vertical" />
+        </LinearLayout>
+
+        <include layout="@layout/divider_layout" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_normal_height"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Normal.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center_vertical|end"
+                android:text="@string/allot_order_detail_to" />
+
+            <TextView
+                android:id="@+id/tv_allot_order_detail_to"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:gravity="center_vertical" />
+        </LinearLayout>
+
+        <include layout="@layout/divider_layout" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_normal_height"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Normal.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center_vertical|end"
+                android:text="@string/allot_order_detail_time" />
+
+            <TextView
+                android:id="@+id/tv_allot_order_detail_time"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:gravity="center_vertical" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_allot_order_detail_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/divider_layout" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_normal_height"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.Normal.Secondary"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:gravity="center_vertical|end"
+                    android:text="@string/allot_order_detail_count" />
+
+                <TextView
+                    android:id="@+id/tv_allot_order_detail_count"
+                    style="@style/TextAppearance.Normal"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="7"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+
+            <include layout="@layout/divider_layout" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_normal_height"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.Normal.Secondary"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:gravity="center_vertical|end"
+                    android:text="@string/allot_order_detail_real_count" />
+
+                <TextView
+                    android:id="@+id/tv_allot_order_detail_real_count"
+                    style="@style/TextAppearance.Normal.Red"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="7"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        style="@style/TextAppearance.Normal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_smaller_height"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr"
+        android:text="@string/allot_order_detail_product" />
+</LinearLayout>

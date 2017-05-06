@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/content_height_big"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <ImageView
+            android:id="@+id/store_info_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <RelativeLayout
+            android:id="@+id/product_store_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/margin_big">
+
+            <RelativeLayout
+                android:id="@+id/rl_store_info_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/product_store_name_view"
+                    style="@style/TextAppearance.Normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <RatingBar
+                    android:id="@+id/store_rating_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/little_start_height"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_toRightOf="@id/product_store_name_view"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:progressDrawable="@drawable/rating_bar_little_evalution"
+                    android:stepSize="0.1"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rl_store_info_view"
+                android:layout_marginTop="@dimen/margin_smaller">
+
+                <TextView
+                    android:id="@+id/product_store_business_time_view"
+                    style="@style/TextAppearance.Small.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/product_store_transfer_view"
+                    style="@style/TextAppearance.Small.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:id="@+id/ll_no_product_detail"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/detail_logo_icon_width"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/buyer_nodetail"/>
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:text="@string/product_detail_empty"/>
+
+    </LinearLayout>
+
+    <include layout="@layout/product_detail_more_view"/>
+</LinearLayout>

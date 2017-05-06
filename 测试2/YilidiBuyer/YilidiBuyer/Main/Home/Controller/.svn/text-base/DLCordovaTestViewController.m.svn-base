@@ -1,0 +1,55 @@
+//
+//  DLCordovaTestViewController.m
+//  YilidiBuyer
+//
+//  Created by mm on 16/12/1.
+//  Copyright © 2016年 yld. All rights reserved.
+//
+
+#import "DLCordovaTestViewController.h"
+#import "HaleyPlugin.h"
+#import "GlobleConst.h"
+
+@interface DLCordovaTestViewController ()
+
+@end
+
+@implementation DLCordovaTestViewController
+
+- (void)viewDidLoad {
+    
+    //    self.wwwFolderName = @"http://";
+    [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recievie:) name:@"haha" object:nil];
+    //    self.startPage = @"http://www.baidu.com";
+    [self performSelector:@selector(testAA) withObject:nil afterDelay:1];
+}
+
+- (void)recievie:(NSNotification *)info {
+    NSLog(@"haha");
+}
+
+- (void)testAA  {
+ 
+    self.wwwFolderName = @"www";
+    self.startPage = @"index";
+    NSURL *url = [self performSelector:@selector(appUrl)];
+    if (url)
+    {
+        NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url];
+        [self.webViewEngine loadRequest:request];
+    }
+
+    HaleyPlugin *plugin = (HaleyPlugin *)[self getCommandInstance:@"HaleyPlugin"];
+    plugin.jsTransValueBlock = ^{
+        NSLog(@"hehe");
+    };
+    NSString *setCookie = [kUserDefaults objectForKey:KSetCookieKey];
+    NSDictionary *userInfo = [kUserDefaults objectForKey:KUserInfoKey];
+    [plugin.webViewEngine evaluateJavaScript:[NSString stringWithFormat:@"callMe('%@')",@"我"] completionHandler:^(id o, NSError *error) {
+    }];
+    
+}
+
+@end

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/class_product_list_item_height"
+    android:background="@color/white"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/normal_margin_lr"
+    android:paddingRight="@dimen/normal_margin_lr">
+
+    <ImageView
+        android:id="@+id/iv_item_allot_order_detail_product"
+        android:layout_width="@dimen/class_product_width"
+        android:layout_height="@dimen/class_product_height"
+        android:layout_gravity="center_vertical" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/normal_margin_zero"
+        android:layout_marginLeft="@dimen/small_margin_lr"
+        android:layout_marginRight="@dimen/normal_margin_zero"
+        android:layout_marginStart="@dimen/small_margin_lr"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_item_allot_order_detail_product_name"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin_top">
+
+            <TextView
+                android:id="@+id/tv_item_allot_order_detail_product_count"
+                style="@style/TextAppearance.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true">
+
+                <LinearLayout
+                    android:id="@+id/ll_item_allot_order_detail_actual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
+
+                    <TextView
+                        style="@style/TextAppearance.Small.Red"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/allot_order_detail_product_change" />
+
+                    <ImageView
+                        android:id="@+id/iv_item_allot_order_detail_product_minus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@mipmap/minus" />
+
+                    <TextView
+                        android:id="@+id/iv_item_allot_order_detail_product_num"
+                        style="@style/TextAppearance.Normal"
+                        android:layout_width="@dimen/allot_cart_num_width"
+                        android:layout_height="wrap_content"
+                        android:gravity="center" />
+
+                    <ImageView
+                        android:id="@+id/iv_item_allot_order_detail_product_plus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@mipmap/plus_gray" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_item_allot_order_detail_product_actual"
+                    style="@style/TextAppearance.Small.Red"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

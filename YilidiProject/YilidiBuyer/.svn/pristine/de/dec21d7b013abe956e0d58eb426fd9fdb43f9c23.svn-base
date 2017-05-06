@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="DLMefooterView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="客服热线：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4pL-EO-CIc">
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="hng-IA-qZv"/>
+                        <constraint firstAttribute="width" constant="75" id="z0V-f3-pWp"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" red="0.16078431372549018" green="0.61960784313725492" blue="0.94509803921568625" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oha-5V-KCP">
+                    <constraints>
+                        <constraint firstAttribute="width" constant="112" id="NbB-Mr-IqR"/>
+                        <constraint firstAttribute="height" constant="30" id="x7S-bn-Mqy"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <state key="normal" title="4001-333-866">
+                        <color key="titleColor" red="0.16078431372549018" green="0.61960784313725492" blue="0.94509803921568625" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="phoneButtonClick:" destination="iN0-l3-epB" eventType="touchUpInside" id="11w-qp-7hH"/>
+                    </connections>
+                </button>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bluePhone" translatesAutoresizingMaskIntoConstraints="NO" id="fCv-6k-wO6">
+                    <constraints>
+                        <constraint firstAttribute="height" constant="15" id="Xx7-gw-08K"/>
+                        <constraint firstAttribute="width" constant="15" id="hBl-Sn-PwP"/>
+                    </constraints>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="oha-5V-KCP" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" constant="40.5" id="BkD-hX-EEC"/>
+                <constraint firstItem="fCv-6k-wO6" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="26" id="Oaw-cU-3Qi"/>
+                <constraint firstItem="oha-5V-KCP" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="19" id="QKh-YX-wqK"/>
+                <constraint firstItem="4pL-EO-CIc" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" constant="-37" id="Zlv-8Q-fGx"/>
+                <constraint firstItem="fCv-6k-wO6" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" constant="-86" id="ap8-ev-LF8"/>
+                <constraint firstItem="4pL-EO-CIc" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="23" id="dey-0f-Ub5"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <userDefinedRuntimeAttributes>
+                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                    <real key="value" value="0.0"/>
+                </userDefinedRuntimeAttribute>
+            </userDefinedRuntimeAttributes>
+            <point key="canvasLocation" x="446.5" y="240.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="bluePhone" width="15" height="15"/>
+    </resources>
+</document>

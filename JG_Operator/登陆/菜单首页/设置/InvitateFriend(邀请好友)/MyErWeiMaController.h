@@ -1,0 +1,13 @@
+//
+//  InvitateFriendController.h
+//  jingGang
+//
+//  Created by 张康健 on 15/10/27.
+//  Copyright (c) 2015年 yi jiehuang. All rights reserved.
+//
+
+#import "XKO_BaseViewController.h"
+
+@interface MyErWeiMaController : XKO_BaseViewController
+
+@end

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.yldbkd.www.library.android.pullRefresh.PullToRefreshListView
+            android:id="@+id/location_list_refresh_layout"
+            style="@style/Widget.ListView.Profile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/normal_margin_top"/>
+
+        <RelativeLayout
+            android:id="@+id/search_empty_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/search_history_empty_height"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/TextAppearance.Normal.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/address_nearby_empty"/>
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

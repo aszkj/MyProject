@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background">
+
+    <include layout="@layout/search_tool_bar"/>
+
+    <com.yldbkd.www.library.android.pullRefresh.PullToRefreshGridView
+        android:id="@+id/gv_search_product"
+        style="@style/Widget.GridView.Home.Product"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_title_bar"
+        android:layout_marginBottom="@dimen/item_bottom_height"
+        android:layout_marginTop="@dimen/default_1_px"
+        android:background="@color/dividerColor"
+        android:gravity="center"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_nodata"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_title_bar"
+        android:gravity="center_horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/iv_nodata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/store_nodata_top"
+            android:gravity="center"
+            android:src="@mipmap/store_nodata"
+            android:text="@string/store_nodata"/>
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_nodata"
+            android:layout_marginBottom="@dimen/padding_normal"
+            android:layout_marginTop="@dimen/margin_big"
+            android:gravity="center"
+            android:text="@string/store_nodata"/>
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/cart_bottom"
+        layout="@layout/cart_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_bottom_height"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

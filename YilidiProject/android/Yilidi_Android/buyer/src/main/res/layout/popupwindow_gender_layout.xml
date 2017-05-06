@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/black_trans_bg">
+
+    <LinearLayout
+        android:id="@+id/ll_gender_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_small_height"
+            android:gravity="center"
+            android:text="@string/choose_gender_content"/>
+
+        <include layout="@layout/divider_layout"/>
+
+        <TextView
+            android:id="@+id/choose_male_tv"
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_normal_height"
+            android:gravity="center"
+            android:text="@string/male"/>
+
+        <include layout="@layout/divider_layout"/>
+
+        <TextView
+            android:id="@+id/choose_female_tv"
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_normal_height"
+            android:gravity="center"
+            android:text="@string/female"/>
+
+        <include layout="@layout/divider_layout"/>
+
+        <TextView
+            android:id="@+id/cancel"
+            style="@style/TextAppearance.Bigger.Red"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_normal_height"
+            android:gravity="center"
+            android:text="@string/popupwindow_cancel"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/empty_popupwindow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_gender_view"/>
+</RelativeLayout>

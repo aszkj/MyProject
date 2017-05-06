@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="NodataShowView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VTo-Sm-Mz2">
+                    <rect key="frame" x="77" y="233" width="221" height="202"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nodate-6+.png" translatesAutoresizingMaskIntoConstraints="NO" id="prS-6F-Q3V">
+                            <rect key="frame" x="71" y="25" width="80" height="59"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="59" id="I3h-IM-X17"/>
+                                <constraint firstAttribute="width" constant="80" id="Vf3-T2-p5E"/>
+                            </constraints>
+                        </imageView>
+                        <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e71-K5-5wE">
+                            <rect key="frame" x="11" y="100" width="199" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="199" id="44T-Jy-rrx"/>
+                                <constraint firstAttribute="height" constant="30" id="6XG-ck-wW5"/>
+                                <constraint firstAttribute="height" constant="30" id="Rds-gf-4Nh"/>
+                                <constraint firstAttribute="height" constant="60" id="iyK-Zp-QmR"/>
+                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="199" id="lNo-pe-9EE"/>
+                            </constraints>
+                            <state key="normal">
+                                <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <variation key="default">
+                                <mask key="constraints">
+                                    <exclude reference="6XG-ck-wW5"/>
+                                    <exclude reference="iyK-Zp-QmR"/>
+                                    <exclude reference="lNo-pe-9EE"/>
+                                </mask>
+                            </variation>
+                            <connections>
+                                <action selector="reloadAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="va2-KO-JFz"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="prS-6F-Q3V" firstAttribute="top" secondItem="VTo-Sm-Mz2" secondAttribute="top" constant="25" id="Sf0-TE-53N"/>
+                        <constraint firstAttribute="width" constant="221" id="YNE-En-nPF"/>
+                        <constraint firstAttribute="centerX" secondItem="prS-6F-Q3V" secondAttribute="centerX" id="YnZ-Zp-UqO"/>
+                        <constraint firstAttribute="height" constant="202" id="ddh-Hg-ncc"/>
+                        <constraint firstItem="e71-K5-5wE" firstAttribute="top" secondItem="prS-6F-Q3V" secondAttribute="bottom" constant="16" id="r6A-jD-rRT"/>
+                        <constraint firstAttribute="centerX" secondItem="e71-K5-5wE" secondAttribute="centerX" id="xAj-j1-y0Q"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="0.92156862745098034" green="0.92156862745098034" blue="0.92156862745098034" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstAttribute="centerY" secondItem="VTo-Sm-Mz2" secondAttribute="centerY" id="Ahl-CA-Ea4"/>
+                <constraint firstAttribute="centerX" secondItem="VTo-Sm-Mz2" secondAttribute="centerX" id="Egd-lm-Q0N"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="alertButton" destination="e71-K5-5wE" id="Yd4-c1-Yvf"/>
+                <outlet property="showImgStatusWidthConstraint" destination="Vf3-T2-p5E" id="LZx-Dh-8jg"/>
+                <outlet property="showStatusImgView" destination="prS-6F-Q3V" id="2Gf-gv-JXG"/>
+                <outlet property="showStatusImgViewHeightConstraint" destination="I3h-IM-X17" id="CLM-Kw-7gS"/>
+            </connections>
+            <point key="canvasLocation" x="454.5" y="20.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="nodate-6+.png" width="206" height="152"/>
+    </resources>
+</document>

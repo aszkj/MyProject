@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <RelativeLayout
+        android:id="@+id/coupon_message_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/message_type_item_height"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <RelativeLayout
+            android:id="@+id/message_coupon_icon"
+            android:layout_width="@dimen/message_image_point_width"
+            android:layout_height="@dimen/message_image_point_height"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/coupon_message_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"/>
+
+            <ImageView
+                android:id="@+id/message_point_coupon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/message_point"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/more_coupon_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/more"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_smaller"
+            android:layout_marginRight="@dimen/margin_small"
+            android:layout_toLeftOf="@id/more_coupon_message"
+            android:layout_toRightOf="@id/message_coupon_icon"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/coupon_message_title"
+                    style="@style/TextAppearance.Bigger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/coupon_message_time"
+                    style="@style/TextAppearance.Smaller.Light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/coupon_message_content"
+                style="@style/TextAppearance.Small.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_smaller"
+                android:ellipsize="end"
+                android:singleLine="true"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <RelativeLayout
+        android:id="@+id/refund_message_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/message_type_item_height"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <RelativeLayout
+            android:id="@+id/message_money_icon"
+            android:layout_width="@dimen/message_image_point_width"
+            android:layout_height="@dimen/message_image_point_height"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/refund_message_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"/>
+
+            <ImageView
+                android:id="@+id/message_point_refund"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/message_point"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/more_refund_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/more"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_smaller"
+            android:layout_marginRight="@dimen/margin_small"
+            android:layout_toLeftOf="@id/more_refund_message"
+            android:layout_toRightOf="@id/message_money_icon"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/refund_message_title"
+                    style="@style/TextAppearance.Bigger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/refund_message_time"
+                    style="@style/TextAppearance.Smaller.Light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/refund_message_content"
+                style="@style/TextAppearance.Small.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_smaller"
+                android:ellipsize="end"
+                android:singleLine="true"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <RelativeLayout
+        android:id="@+id/activity_message_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/message_type_item_height"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <RelativeLayout
+            android:id="@+id/message_activity_icon"
+            android:layout_width="@dimen/message_image_point_width"
+            android:layout_height="@dimen/message_image_point_height"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/activity_message_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"/>
+
+            <ImageView
+                android:id="@+id/message_point_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/message_point"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/more_activity_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/more"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_smaller"
+            android:layout_marginRight="@dimen/margin_small"
+            android:layout_toLeftOf="@id/more_activity_message"
+            android:layout_toRightOf="@id/message_activity_icon"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/activity_message_title"
+                    style="@style/TextAppearance.Bigger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/activity_message_time"
+                    style="@style/TextAppearance.Smaller.Light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/activity_message_content"
+                style="@style/TextAppearance.Small.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_smaller"
+                android:ellipsize="end"
+                android:singleLine="true"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout"/>
+</LinearLayout>

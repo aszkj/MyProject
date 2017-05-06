@@ -1,0 +1,101 @@
+package domain;
+
+option java_package = "vc.thinker.weme.pb.domain";
+option java_outer_classname = "MessageProtos";
+
+
+message ProtoMessage {
+
+	enum Model {
+		SYSTEM = 0;
+		CHAT = 1;
+		BEHAVIOUR = 2;
+	}
+	enum ContentType{
+		image = 0;
+		music = 1;
+		news =2;
+		text=3;
+		video=4;
+		shortvideo=5;
+		voice=6;
+		compoment=7;
+		location = 8;
+	}
+
+	enum ComponentViewType {
+		desc = 0;
+		detail= 1;
+	}
+	enum ComponentStatus {
+		normal = 0;
+		expire = 1;
+	}
+	enum MessageType{
+		SEND = 0;
+		RECEIVE = 1;
+	}
+
+	 message Component {
+	 	optional string id = 1;
+		optional string name = 2 ;
+		optional string url = 3;
+		optional string version = 4;
+		optional string desc = 6;
+		optional ComponentViewType viewType = 7;
+		optional ComponentStatus status = 8;
+		optional string orderCode = 9;
+		optional string taskId = 10;
+	 }
+
+
+	 message Content{
+		optional ContentType msgtype = 1;
+		optional string content =2;
+		optional string url =3;
+		optional string picUrl =4;
+		optional string mediaId =5;
+		optional string format =6;
+		optional string recognition =7;
+		optional string location_X =8;
+		optional string location_Y =9;
+		optional string scale =10;
+		optional string label =11;
+		optional string title =12;
+		optional string description =13;
+		optional int32 width = 14;
+		optional int32 height = 15;
+		optional string code = 16;
+		optional Component component = 17;
+		optional int64 duration = 18;
+	 }
+	message Message{
+		optional Model model = 1;
+
+		optional Content content = 2;
+
+
+		optional string channel = 3;
+
+		optional string id = 4;
+
+		optional string localId = 5;
+		optional MessageType msgType = 6 [default = RECEIVE];
+
+		optional string uid = 7;
+
+		optional int64 timestamp = 8;
+		optional string ownerId = 9;
+
+	}
+
+	message Point {
+		optional double x = 1;
+		optional double y = 2;
+	}
+	optional string accessToken = 1;
+	optional string broadcastId = 2;
+	optional Point geo = 3;
+	required Message  message = 4;
+
+}

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="DLSelectCouponView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="552"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view alpha="0.59999999999999998" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Obh-1P-rMY">
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ISX-Zz-v26">
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="选择优惠券" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wae-X9-agp">
+                            <constraints>
+                                <constraint firstAttribute="height" constant="21" id="RAV-cV-3Fv"/>
+                                <constraint firstAttribute="width" constant="86" id="zDQ-in-0Ng"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WYn-8F-imF">
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="16" id="4Lh-Iz-Id5"/>
+                                <constraint firstAttribute="width" constant="16" id="lxa-Bu-0Pk"/>
+                            </constraints>
+                            <state key="normal" backgroundImage="close"/>
+                            <connections>
+                                <action selector="closeAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="kzD-ze-9yd"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M90-Tn-Omd">
+                            <frame key="frameInset" minX="303" minY="-1" width="72" height="43"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="72" id="won-ij-kpd"/>
+                            </constraints>
+                            <connections>
+                                <action selector="closeAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="n69-tW-Chm"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="M90-Tn-Omd" secondAttribute="trailing" id="0Li-HL-Tbe"/>
+                        <constraint firstAttribute="trailing" secondItem="WYn-8F-imF" secondAttribute="trailing" constant="8" id="1js-us-yrx"/>
+                        <constraint firstItem="wae-X9-agp" firstAttribute="centerY" secondItem="ISX-Zz-v26" secondAttribute="centerY" id="7vP-HT-Xwh"/>
+                        <constraint firstItem="WYn-8F-imF" firstAttribute="centerY" secondItem="ISX-Zz-v26" secondAttribute="centerY" id="BoE-G9-hix"/>
+                        <constraint firstAttribute="bottom" secondItem="M90-Tn-Omd" secondAttribute="bottom" id="Zuf-LN-Vbb"/>
+                        <constraint firstItem="M90-Tn-Omd" firstAttribute="top" secondItem="ISX-Zz-v26" secondAttribute="top" id="hkP-Lh-eK1"/>
+                        <constraint firstItem="wae-X9-agp" firstAttribute="centerX" secondItem="ISX-Zz-v26" secondAttribute="centerX" id="mrP-YK-5Ou"/>
+                        <constraint firstAttribute="height" constant="44" id="tuY-Un-HmI"/>
+                    </constraints>
+                </view>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ghH-LG-mdI" customClass="MycommonTableView">
+                    <color key="backgroundColor" red="0.96470588235294119" green="0.96470588235294119" blue="0.96470588235294119" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="300" id="WaK-1P-KrN"/>
+                    </constraints>
+                </tableView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EBy-HN-9UK">
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="不使用优惠券" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hCL-hb-ErW">
+                            <constraints>
+                                <constraint firstAttribute="height" constant="21" id="wAR-K3-c7f"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ko6-0n-1lc">
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="20" id="2f4-gx-uEe"/>
+                                <constraint firstAttribute="height" constant="20" id="61a-Ed-iD1"/>
+                            </constraints>
+                            <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <state key="normal" backgroundImage="未勾选"/>
+                            <state key="selected" backgroundImage="勾选"/>
+                            <connections>
+                                <action selector="donotUseTicketAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="kDf-oE-vtA"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="Ko6-0n-1lc" firstAttribute="centerY" secondItem="EBy-HN-9UK" secondAttribute="centerY" id="7VK-gY-Q91"/>
+                        <constraint firstItem="hCL-hb-ErW" firstAttribute="leading" secondItem="EBy-HN-9UK" secondAttribute="leading" constant="14" id="b7B-dz-I68"/>
+                        <constraint firstAttribute="trailing" secondItem="Ko6-0n-1lc" secondAttribute="trailing" constant="23" id="k7A-k7-IJo"/>
+                        <constraint firstItem="hCL-hb-ErW" firstAttribute="centerY" secondItem="EBy-HN-9UK" secondAttribute="centerY" id="nYn-Uk-966"/>
+                        <constraint firstItem="hCL-hb-ErW" firstAttribute="centerY" secondItem="EBy-HN-9UK" secondAttribute="centerY" id="vDZ-m9-EAf"/>
+                        <constraint firstAttribute="height" constant="44" id="vsM-kS-hu2"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="EBy-HN-9UK" secondAttribute="trailing" id="9Wm-Wx-ZZQ"/>
+                <constraint firstAttribute="bottom" secondItem="EBy-HN-9UK" secondAttribute="bottom" id="D2f-63-SJ8"/>
+                <constraint firstAttribute="trailing" secondItem="Obh-1P-rMY" secondAttribute="trailing" id="JFY-iq-alZ"/>
+                <constraint firstItem="EBy-HN-9UK" firstAttribute="top" secondItem="ghH-LG-mdI" secondAttribute="bottom" id="Lst-ij-roq"/>
+                <constraint firstAttribute="bottom" secondItem="Obh-1P-rMY" secondAttribute="bottom" id="SCP-qH-5xT"/>
+                <constraint firstItem="ghH-LG-mdI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="SaB-1w-tNm"/>
+                <constraint firstItem="ghH-LG-mdI" firstAttribute="top" secondItem="ISX-Zz-v26" secondAttribute="bottom" id="ack-O5-QOD"/>
+                <constraint firstItem="EBy-HN-9UK" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="hEB-hn-rtw"/>
+                <constraint firstItem="Obh-1P-rMY" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="j2Y-UW-fw2"/>
+                <constraint firstItem="ISX-Zz-v26" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="pzf-s0-r4h"/>
+                <constraint firstAttribute="trailing" secondItem="ISX-Zz-v26" secondAttribute="trailing" id="tcv-4e-PDo"/>
+                <constraint firstAttribute="trailing" secondItem="ghH-LG-mdI" secondAttribute="trailing" id="uCz-0j-3tK"/>
+                <constraint firstItem="Obh-1P-rMY" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="vH3-n7-Jhs"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="donotUseTicketTypeLabel" destination="hCL-hb-ErW" id="gZ0-5J-03t"/>
+                <outlet property="donotUseTicketViewBottomConstraint" destination="D2f-63-SJ8" id="uja-f3-gG5"/>
+                <outlet property="notUseTicketButton" destination="Ko6-0n-1lc" id="QNl-rU-HAa"/>
+                <outlet property="selectCouponTableView" destination="ghH-LG-mdI" id="DEH-GF-UTu"/>
+                <outlet property="selectTicketTypeLabel" destination="wae-X9-agp" id="N85-fB-IxV"/>
+            </connections>
+            <point key="canvasLocation" x="-5.5" y="-75"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="close" width="16" height="16"/>
+        <image name="勾选" width="22" height="22"/>
+        <image name="未勾选" width="20" height="20"/>
+    </resources>
+</document>

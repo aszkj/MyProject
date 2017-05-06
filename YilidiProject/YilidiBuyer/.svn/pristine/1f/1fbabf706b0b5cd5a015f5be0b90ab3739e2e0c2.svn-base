@@ -1,0 +1,316 @@
+//
+//  ShopCartViewModel.m
+//  YilidiBuyer
+//
+//  Created by yld on 16/5/3.
+//  Copyright © 2016年 yld. All rights reserved.
+//
+
+#import "ShopCartViewModel.h"
+#import "DLShopCartModel.h"
+#import "NSObject+setModelIndexPath.h"
+#import "GlobleConst.h"
+#import "ShopCartGoodsManager+updateShopCart.h"
+#import "ShopCartGoodsManager.h"
+#import "AdressModel.h"
+#import "StoreModel.h"
+#import "ProjectRelativeKey.h"
+#import "ShopCartGoodsManager+shopCartInfo.h"
+
+@interface ShopCartViewModel()
+
+@property (nonatomic,strong)ShopCartGoodsManager *shopCartManager;
+
+@end
+
+@implementation ShopCartViewModel
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.isEditing = NO;
+        RAC(self,totalPrice) = RACObserve(self.shopCartManager, totalPrice);
+        self.shopCartTotalNumber = self.shopCartManager.shopCartGoodsNumber;
+        RAC(self,shopCartTotalNumber) = RACObserve(self.shopCartManager, shopCartGoodsNumber);
+        RAC(self,selectedShopCartGoodsNumber) = RACObserve(self.shopCartManager, selectedShopCartGoodsNumber);
+        RAC(self,shopCartIsEmpty) = [RACObserve(self, shopCartTotalNumber) map:^NSNumber*(NSNumber *shopCartNumber) {
+            return @(!shopCartNumber.integerValue);
+        }];
+        self.shopName = [CommunityDataManager sharedManager].currentStore.storeName;
+    }
+    return self;
+}
+
+#pragma mark -------------------Private Method----------------------
+/**
+ *  计算价格，商品选中，取消选中，删除，加减数量，都会去计算价格
+ */
+- (void)_calculateShopCartTotalPrice {
+    self.selectedGoodsJonedIdStr = [self _getSelectedGoodsIdStr];
+    if (isEmpty(self.selectedGoodsJonedIdStr)) {
+        self.totalPrice = 0.0f;
+        return;
+    }
+
+    self.requestParam = @{@"cartItems":self.selectedGoodsJonedIdStr};
+    
+    [AFNHttpRequestOPManager getInfoWithSubUrl:kUrl_CalculateShopCartTotalPrice parameters:self.requestParam block:^(id result, NSError *error) {
+        self.totalPrice = [result[@"data"][@"totalAmount"] floatValue];
+    }];
+}
+
+/**
+ *  得到选中的商品的ID拼接字符串
+ */
+-(NSString *)_getSelectedGoodsIdStr {
+    
+    NSArray *tempSelectedGoodsArr = self.selectedGoodsArr;
+    NSMutableArray *goodsShopCartIdArr = [NSMutableArray arrayWithCapacity:tempSelectedGoodsArr.count];
+    for (DLShopCartModel *shopCartModel in tempSelectedGoodsArr) {
+        NSString *idChengNumberStr = [NSString stringWithFormat:@"%@x%@",shopCartModel.goodsId,shopCartModel.goodsNumber];
+        [goodsShopCartIdArr addObject:idChengNumberStr];
+    }
+    return [goodsShopCartIdArr componentsJoinedByString:@";"];
+}
+
+/**
+ *  选中取消选中商品
+ */
+- (void)_setGoodsModels:(NSArray *)goods seleted:(BOOL)selected{
+    
+    for (GoodsModel *selecteDeselctModel in goods) {
+        for (GoodsModel *shopCartModel in self.shopCartList) {
+            if ([selecteDeselctModel.goodsId isEqualToString:shopCartModel.goodsId]) {
+                shopCartModel.selected = selected;
+            }
+        }
+    }
+}
+
+/**
+ *检查是否都选中了
+ */
+-(BOOL)_checkAllGoodsSelected {
+    
+    for (GoodsModel *model in self.shopCartList) {
+        if (!model.selected) {
+            return NO;
+        }
+    }
+    return YES;
+}
+
+-(void)_selectDeselctGoodsSignalWithParamGoods:(NSArray*)goods
+                                     selected:(BOOL)selected
+                                   isAllGoods:(BOOL)isAllGoods
+{
+    
+    [self _setGoodsModels:goods seleted:selected];
+    
+    [self _dealWheatherAllSelectedWithSelectedDeselectedGoods:goods selected:selected];
+    
+    [self _setWillRreshIndexPathsByArr:goods];
+    
+    NSArray *selectedDeselectedGoodIdsArr = [goods sui_map:^NSString *(GoodsModel* goodsModel, NSUInteger index) {
+        return goodsModel.goodsId;
+    }];
+    if (isAllGoods) {
+        [self.shopCartManager selectDeselecteAllShopCartGoodsSelected:selected];
+    }else {
+        [self.shopCartManager selectDeselecteShopCartGoodsOfGoodsIds:selectedDeselectedGoodIdsArr selected:selected];
+    }
+
+}
+
+
+
+- (void)_dealWheatherAllSelectedWithSelectedDeselectedGoods:(NSArray *)goods selected:(BOOL)selected{
+    if (goods.count > 1) {
+        self.allSelected = [self _checkAllGoodsSelected];
+    }else {
+        if (goods.count == 1) {
+            GoodsModel *model = goods.firstObject;
+            if (self.shopCartList.count == 1) {
+                self.allSelected = model.selected;
+            }else {
+                if (!model.selected) {
+                    self.allSelected = model.selected;
+                }else {
+                    self.allSelected = [self _checkAllGoodsSelected];
+                }
+            }
+        }
+    }
+}
+
+-(void)_setWillRreshIndexPathsByArr:(NSArray *)willFreshGoods {
+    
+    NSArray *willFreshIndexPaths = [willFreshGoods sui_map:^NSIndexPath *(GoodsModel* model, NSUInteger index) {
+        return [NSIndexPath indexPathForRow:model.modelAtIndexPath.row inSection:0];
+    }];
+    self.willFreshIndexPaths = willFreshIndexPaths;
+}
+
+
+
+
+#pragma mark -------------------Getter/Setter Method----------------------
+-(ShopCartGoodsManager *)shopCartManager {
+    
+    if (!_shopCartManager) {
+        _shopCartManager = [ShopCartGoodsManager sharedManager];
+    }
+    return _shopCartManager;
+}
+
+
+-(NSArray *)selectedGoodsArr {
+    
+    NSMutableArray *selectedGoodsArr = [NSMutableArray arrayWithCapacity:self.shopCartList.count];
+    for (DLShopCartModel *model in self.shopCartList) {
+        if (model.selected) {
+            [selectedGoodsArr addObject:model];
+        }
+    }
+    return [selectedGoodsArr copy];
+}
+
+- (void)setShopCartTotalNumber:(NSInteger)shopCartTotalNumber {
+    
+    self.shopCartIsEmpty = !shopCartTotalNumber;
+    if (_shopCartTotalNumber != shopCartTotalNumber || !shopCartTotalNumber) {
+        _shopCartTotalNumber = shopCartTotalNumber;
+    }
+}
+
+-(NSString *)selectedGoodsJonedShopCartIdStr {
+    
+    NSArray *selectedArr = [self selectedGoodsArr];
+    NSArray *tempArr = [selectedArr sui_map:^NSString *(DLShopCartModel *model, NSUInteger index) {
+        return model.cartId;
+    }];
+    return [tempArr componentsJoinedByString:@";"];
+}
+
+
+#pragma mark -------------------Function Method----------------------
+- (RACSignal *)trigerShopCartTotalNumberSignal {
+
+    @weakify(self);
+    return [AFNHttpRequestOPManager rac_GetInfoWithSubUrl:kUrl_GetShopCartTotalNumber parameters:nil subScribeResultBlock:^RACDisposable *(id result, NSError *error, id<RACSubscriber> subscriber) {
+        NSInteger totalNumber = [result[@"data"][@"totalNumber"] integerValue];
+        @strongify(self);
+        self.shopCartTotalNumber = totalNumber;
+        [subscriber sendNext:@(totalNumber)];
+        [subscriber sendCompleted];
+        return nil;
+    }];
+}
+
+- (RACSignal *)trigerShopCartlistRequestSignal {
+    
+    NSMutableDictionary *requestParam = [NSMutableDictionary dictionaryWithCapacity:0];
+    NSArray *shopCartGoods = [ShopCartGoodsManager sharedManager].allGoodsIdToNumberArr;
+    if (shopCartGoods.count >0) {
+        [requestParam setObject:shopCartGoods forKey:@"cartInfo"];
+    }else {
+        [requestParam setObject:@[] forKey:@"cartInfo"];
+        self.shopCartIsEmpty = YES;
+//        return nil;
+    }
+    [requestParam setObject:kCommunityId forKey:KCommutityIdKey];
+    [requestParam setObject:kCommunityStoreId forKey:KStoreIdKey];
+    @weakify(self);
+   return [AFNHttpRequestOPManager rac_PostWithSubUrl:kUrl_ConfirmShopCartData parameters:requestParam subScribeResultBlock:^RACDisposable *(id result, NSError *error, id<RACSubscriber> subscriber) {
+       @strongify(self);
+       NSArray *shopCartList = result[EntityKey][@"shopCartList"];
+       NSDictionary *shopCartDic = shopCartList.firstObject;
+       NSArray *shopCartGoodsArr = shopCartDic[@"saleProductList"];
+       self.shopName = shopCartDic[@"storeName"];
+       self.deliveryTime = shopCartDic[@"deliveryTimeNote"];
+       self.pickUpTimeNote = shopCartDic[@"pickUpTimeNote"];
+       NSDictionary *resultAdress = result[EntityKey][@"consigneeAddress"];
+       if (isEmpty(resultAdress) || isEmpty(resultAdress[@"addressId"])) {
+           self.defaultAdressModel = nil;
+       }else {
+           self.defaultAdressModel = [[AdressModel alloc] initWithDefaultDataDic:resultAdress];
+           self.defaultAdressModel.isInDeliveryRange = YES;
+           self.defaultAdressModel.displayAdress = resultAdress[@"address"];
+       }
+       
+       self.shopCartStoreModel = [[StoreModel alloc] initWithDefaultDataDic:shopCartDic];
+       if (isEmpty(shopCartGoodsArr)) {
+           shopCartGoodsArr = @[];
+       }
+       NSArray *transFeredArr = [shopCartGoodsArr sui_map:^GoodsModel *(NSDictionary* obj, NSUInteger index) {
+           GoodsModel *model = [[GoodsModel alloc] initWithDefaultDataDic:obj];
+           model.limitBuyNumber = obj[@"limitCount"];
+           model.goodsOnShelf = obj[@"productStatus"];
+           model.goodsNumber = obj[@"cartNum"];
+           model.goodsActivitys = obj[@"activityInfoList"];
+           return model;
+       }];
+       if (error.code == 1) {
+           [[ShopCartGoodsManager sharedManager] updateShopCartGoodsDicWithGoodsArr:transFeredArr isSychronizeShopCart:NO];
+       }
+        [subscriber sendNext:transFeredArr];
+        [subscriber sendCompleted];
+
+        return nil;
+    }];
+
+}
+
+- (RACSignal *)trigerShopCartGoodsNumberChangeSignalWithParamGoodsModel:(GoodsModel *)goodsModel
+
+{
+    
+    return nil;
+}
+
+- (RACSignal *)trigerSelectDeselctGoodsSignalWithParamGoods:(NSArray*)goods
+                                                   selected:(BOOL)selected
+{
+    RACSubject *selectSubject = [RACSubject subject];
+   
+    [self _selectDeselctGoodsSignalWithParamGoods:goods selected:selected isAllGoods:NO];
+    
+    return selectSubject;
+}
+
+- (RACSignal *)trigerDeleteGoodsSignalWithParamGoods:(NSArray*)deleteGoods {
+    
+    NSAssert(deleteGoods.count>0, @"delete goods can not small than 0");
+    NSMutableArray *delelteGoodsIds = [NSMutableArray arrayWithCapacity:deleteGoods.count];
+    NSMutableIndexSet *deleteIndexSets = [[NSMutableIndexSet alloc] init];
+    for (GoodsModel *selectedeleteModel in deleteGoods) {
+        [delelteGoodsIds addObject:selectedeleteModel.goodsId];
+        [deleteIndexSets addIndex:selectedeleteModel.modelAtIndexPath.row];
+    }
+    
+    RACSubject *deleteGoodsSubject = [RACSubject subject];
+    afterSecondsLoadData(0.1,
+                         [self _setWillRreshIndexPathsByArr:deleteGoods];
+                         [self.shopCartList removeObjectsAtIndexes:deleteIndexSets];
+                         [self.shopCartList setIndexPathInselfContainer];
+                         [self.shopCartManager deleteGoodsOfGoodsIds:(NSArray *)delelteGoodsIds];
+                         [deleteGoodsSubject sendNext:@"success"];
+                         [deleteGoodsSubject sendCompleted];
+                         )
+    return deleteGoodsSubject;
+}
+
+- (RACSignal *)trigerAllSelectedDeselectedSignalWithParamSelected:(BOOL)setSelected {
+    RACSubject *selectSubject = [RACSubject subject];
+    [self _selectDeselctGoodsSignalWithParamGoods:self.shopCartList selected:setSelected isAllGoods:YES];
+    return selectSubject;
+}
+
+- (RACSignal *)trigerClearShopCartSinal {
+
+    return [self trigerDeleteGoodsSignalWithParamGoods:self.shopCartList];
+}
+
+
+@end

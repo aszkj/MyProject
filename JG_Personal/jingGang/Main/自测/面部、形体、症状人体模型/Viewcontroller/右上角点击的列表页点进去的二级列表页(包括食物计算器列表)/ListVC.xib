@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ListVC">
+            <connections>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="zzhuangAllTable" destination="ryJ-qY-ht5" id="j7Y-qc-7UI"/>
+                <outlet property="zzhuangCureTable" destination="yUT-gE-I9n" id="jXh-di-dxf"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ryJ-qY-ht5" customClass="ZhengZhuangAllTableView">
+                    <rect key="frame" x="0.0" y="0.0" width="187.5" height="603"/>
+                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                </tableView>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="yUT-gE-I9n" customClass="ZhengZhuangCureTable">
+                    <rect key="frame" x="187.5" y="0.0" width="187.5" height="603"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </tableView>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="yUT-gE-I9n" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="3mx-iR-QbX"/>
+                <constraint firstAttribute="bottom" secondItem="yUT-gE-I9n" secondAttribute="bottom" id="7Is-Uw-R8q"/>
+                <constraint firstItem="yUT-gE-I9n" firstAttribute="width" secondItem="ryJ-qY-ht5" secondAttribute="width" id="J2N-DY-2oN"/>
+                <constraint firstItem="ryJ-qY-ht5" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="OEE-hG-nfB"/>
+                <constraint firstAttribute="trailing" secondItem="yUT-gE-I9n" secondAttribute="trailing" id="WeZ-b4-yBm"/>
+                <constraint firstItem="yUT-gE-I9n" firstAttribute="leading" secondItem="ryJ-qY-ht5" secondAttribute="trailing" id="j6S-x3-9S6"/>
+                <constraint firstAttribute="bottom" secondItem="ryJ-qY-ht5" secondAttribute="bottom" id="mxr-Pp-xiO"/>
+                <constraint firstItem="ryJ-qY-ht5" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="yco-gT-vOn"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="317.5" y="306.5"/>
+        </view>
+    </objects>
+</document>

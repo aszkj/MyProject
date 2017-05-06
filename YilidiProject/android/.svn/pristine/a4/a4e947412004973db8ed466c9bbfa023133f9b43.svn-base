@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="horizontal"
+              android:paddingBottom="10dip"
+              android:paddingTop="10dp">
+
+    <ProgressBar
+        android:id="@+id/pull_to_refresh_progress"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="@dimen/process_width"
+        android:layout_height="@dimen/process_height"
+        android:layout_marginLeft="@dimen/margin_small"
+        android:layout_marginRight="@dimen/margin_small"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/processing"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/pull_to_refresh_image"
+        android:layout_width="@dimen/arrow_width"
+        android:layout_height="@dimen/arrow_height"
+        android:layout_marginLeft="@dimen/margin_small"
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"/>
+
+    <TextView
+        android:id="@+id/pull_to_refresh_text"
+        style="@style/TextAppearance.PullRefresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/pull_to_refresh_pull_label"/>
+
+</LinearLayout>

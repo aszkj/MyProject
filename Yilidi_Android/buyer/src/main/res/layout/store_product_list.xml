@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background">
+
+    <com.yldbkd.www.library.android.pullRefresh.PullToRefreshGridView
+            android:id="@+id/lv_store_product"
+            style="@style/Widget.GridView.Home.Product"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/dividerColor"
+            android:gravity="center"
+            android:scrollbars="none"
+            android:layout_marginBottom="@dimen/item_bottom_height"/>
+
+    <RelativeLayout
+            android:id="@+id/rl_nodata"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:gravity="center_horizontal">
+
+        <ImageView
+                android:id="@+id/iv_nodata"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="100dip"
+                android:layout_centerHorizontal="true"
+                android:background="@mipmap/store_nodata"/>
+
+        <TextView
+                style="@style/TextAppearance.Normal"
+                android:layout_below="@+id/iv_nodata"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/store_nodata"
+                android:layout_marginTop="@dimen/margin_big"/>
+    </RelativeLayout>
+</RelativeLayout>

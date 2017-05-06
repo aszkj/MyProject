@@ -1,0 +1,416 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="@android:style/Theme.Light.NoTitleBar"></style>
+
+    <!-- activity anim -->
+    <style name="AnimMove" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/left_push_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/left_push_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/right_push_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/right_push_out</item>
+    </style>
+
+    <style name="Anim_style" parent="android:Theme.NoTitleBar">
+        <item name="android:windowAnimationStyle">@style/AnimMove</item>
+    </style>
+
+    <style name="TransStyle" parent="android:Theme.NoTitleBar">
+        <item name="android:windowBackground">@color/trans_bg</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="Widget"/>
+    <!-- 字体 -->
+    <style name="TextAppearance" parent="@android:style/TextAppearance"/>
+
+    <style name="TextAppearance.RedEnvelopCountDown" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_red_envelop_countdown</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Coupon" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_coupon</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextAppearance.RedEnvelopCount" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_largeer</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.RedEnvelopAmount" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_largeer</item>
+        <item name="android:textColor">@color/red_envelop_coupon_amount</item>
+    </style>
+
+    <style name="TextAppearance.RedEnvelopType" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textColor">@color/red_envelop_coupon_amount</item>
+    </style>
+
+    <style name="TextAppearance.Large" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Largest" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_largest</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Largest.White" parent="TextAppearance.Largest">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextAppearance.Large.Red" parent="TextAppearance.Large">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.Large.White" parent="TextAppearance.Large">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextAppearance.Large.Blue" parent="TextAppearance.Large">
+        <item name="android:textColor">@color/colorBlue</item>
+    </style>
+
+    <style name="TextAppearance.Large.Yellow" parent="TextAppearance.Large">
+        <item name="android:textColor">@color/colorYellow</item>
+    </style>
+
+    <style name="TextAppearance.Bigger.Yellow" parent="TextAppearance.Bigger">
+        <item name="android:textColor">@color/colorYellow</item>
+    </style>
+
+    <style name="TextAppearance.Bigger.Light" parent="TextAppearance.Bigger">
+        <item name="android:textColor">@color/lightText</item>
+    </style>
+
+    <style name="TextAppearance.Bigger" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_big</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Bigger.Red" parent="TextAppearance.Bigger">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.Bigger.Blue" parent="TextAppearance.Bigger">
+        <item name="android:textColor">@color/colorBlue</item>
+    </style>
+
+    <style name="TextAppearance.Bigger.Secondary" parent="TextAppearance.Bigger">
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.Bigger.Orange" parent="TextAppearance.Bigger">
+        <item name="android:textColor">@color/colorOrange</item>
+    </style>
+
+    <style name="TextAppearance.Bigger.White" parent="TextAppearance.Bigger">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextAppearance.Normal" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_normal</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Normal.White" parent="TextAppearance.Normal">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextAppearance.Normal.Red" parent="TextAppearance.Normal">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.Normal.Blue" parent="TextAppearance.Normal">
+        <item name="android:textColor">@color/colorBlue</item>
+    </style>
+
+    <style name="TextAppearance.Normal.Yellow" parent="TextAppearance.Normal">
+        <item name="android:textColor">@color/colorYellow</item>
+    </style>
+
+    <style name="TextAppearance.Normal.Secondary" parent="TextAppearance.Normal">
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.Normal.Light" parent="TextAppearance.Normal">
+        <item name="android:textColor">@color/lightText</item>
+    </style>
+
+    <style name="TextAppearance.Small" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Small.Blue" parent="TextAppearance.Small">
+        <item name="android:textColor">@color/colorBlue</item>
+    </style>
+
+    <style name="TextAppearance.Small.Orange" parent="TextAppearance.Small">
+        <item name="android:textColor">@color/colorOrange</item>
+    </style>
+
+    <style name="TextAppearance.Small.White" parent="TextAppearance.Small">
+        <item name="android:textColor">@color/background</item>
+    </style>
+
+    <style name="TextAppearance.Small.Yellow" parent="TextAppearance.Small">
+        <item name="android:textColor">@color/colorYellow</item>
+    </style>
+
+    <style name="TextAppearance.Small.Secondary" parent="TextAppearance.Small">
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.Small.Light" parent="TextAppearance.Small">
+        <item name="android:textColor">@color/lightText</item>
+    </style>
+
+    <style name="TextAppearance.Small.Red" parent="TextAppearance.Small">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.Smaller" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_smaller</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Smaller.Yellow" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_smaller</item>
+        <item name="android:textColor">@color/colorYellow</item>
+    </style>
+
+    <style name="TextAppearance.Smaller.White" parent="TextAppearance.Smaller">
+        <item name="android:textColor">@color/background</item>
+    </style>
+
+    <style name="TextAppearance.Smaller.Secondary" parent="TextAppearance.Smaller">
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.Smaller.Light" parent="TextAppearance.Smaller">
+        <item name="android:textColor">@color/lightText</item>
+    </style>
+
+    <style name="TextAppearance.Tiny" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_tiny</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Tiny.White" parent="TextAppearance.Tiny">
+        <item name="android:textColor">@color/background</item>
+    </style>
+
+    <style name="TextAppearance.Tiny.Secondary" parent="TextAppearance.Tiny">
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.Tiny.Light" parent="TextAppearance.Tiny">
+        <item name="android:textColor">@color/lightText</item>
+    </style>
+
+    <!-- 布局 -->
+    <style name="MainTabBottom">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:background">@null</item>
+        <item name="android:paddingTop">@dimen/margin_normal</item>
+        <item name="android:paddingBottom">@dimen/margin_small</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:button">@null</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">@dimen/text_size_smaller</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <!-- grid -->
+    <style name="Widget.GridView" parent="@style/Widget">
+        <item name="android:fadingEdge">none</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+        <item name="android:scrollingCache">false</item>
+        <item name="android:cacheColorHint">@null</item>
+        <item name="android:stretchMode">columnWidth</item>
+        <item name="android:fastScrollEnabled">false</item>
+        <item name="android:isScrollContainer">false</item>
+        <item name="android:horizontalSpacing">0dp</item>
+        <item name="android:verticalSpacing">0dp</item>
+    </style>
+
+    <style name="Widget.GridView.Home.Classify" parent="Widget.GridView">
+
+    </style>
+
+    <style name="Widget.GridView.Home.Functions" parent="Widget.GridView"/>
+
+    <style name="Widget.GridView.Home.Product" parent="Widget.GridView">
+        <item name="android:horizontalSpacing">@dimen/default_1_px</item>
+        <item name="android:verticalSpacing">@dimen/default_1_px</item>
+        <item name="android:numColumns">2</item>
+    </style>
+
+    <!-- list -->
+    <style name="Widget.ListView" parent="@style/Widget">
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:fadingEdge">none</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+        <item name="android:scrollingCache">false</item>
+        <item name="android:cacheColorHint">@null</item>
+        <item name="android:divider">@null</item>
+        <item name="android:fastScrollEnabled">false</item>
+    </style>
+
+    <style name="Widget.ListView.Home.Store" parent="Widget.ListView">
+        <item name="android:divider">@color/background</item>
+        <item name="android:dividerHeight">@dimen/home_product_gap</item>
+    </style>
+
+    <style name="Widget.ListView.Home.Area" parent="Widget.ListView">
+        <item name="android:divider">@color/background</item>
+        <item name="android:dividerHeight">@dimen/normal_margin_top</item>
+    </style>
+
+    <style name="Widget.ListView.Profile" parent="Widget.ListView">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">@dimen/default_1_px</item>
+    </style>
+
+    <style name="Widget.ListView.Cart.Product" parent="Widget.ListView">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">@dimen/default_1_px</item>
+    </style>
+
+    <style name="Widget.ListView.Evalution" parent="Widget.ListView">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">@dimen/default_1_px</item>
+    </style>
+
+    <style name="Widget.ListView.EvalutionEdit" parent="Widget.ListView">
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:dividerHeight">@dimen/padding_little</item>
+    </style>
+
+    <style name="Widget.ListView.Brand.Classity" parent="Widget.ListView">
+    </style>
+
+    <style name="Widget.ListView.Cart.Store" parent="Widget.ListView">
+        <item name="android:divider">@color/background</item>
+        <item name="android:dividerHeight">@dimen/margin_normal</item>
+    </style>
+
+    <style name="Widget.ListView.Address" parent="Widget.ListView">
+        <item name="android:divider">@color/background</item>
+        <item name="android:dividerHeight">@dimen/margin_normal</item>
+    </style>
+
+    <style name="Widget.ListView.Confirm.Cart" parent="Widget.ListView">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">@dimen/default_1_px</item>
+    </style>
+
+    <style name="Widget.ListView.History" parent="Widget.ListView">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">@dimen/default_1_px</item>
+    </style>
+
+    <style name="Widget.ListView.Status" parent="Widget.ListView">
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:dividerHeight">@dimen/margin_small</item>
+    </style>
+
+    <style name="Widget.ListView.OrderDetailStatus" parent="Widget.ListView">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">@dimen/default_1_px</item>
+    </style>
+
+    <style name="Widget.ListView.Coupon" parent="Widget.ListView">
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">@dimen/margin_small</item>
+    </style>
+
+    <style name="Widget.ListView.Order" parent="Widget.ListView">
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:dividerHeight">@dimen/margin_normal</item>
+    </style>
+
+    <style name="Widget.ListView.Seckill" parent="Widget.ListView">
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:dividerHeight">@dimen/margin_normal</item>
+    </style>
+
+    <style name="Widget.ListView.Evaluation" parent="Widget.ListView">
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:dividerHeight">@dimen/margin_normal</item>
+    </style>
+    <!--商品大类型列表-->
+    <style name="Widget.ListView.Product.MainType" parent="Widget.ListView">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">@dimen/divider_height_small</item>
+    </style>
+    <!--商品列表-->
+    <style name="Widget.ListView.Product" parent="Widget.ListView">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">@dimen/margin_normal</item>
+    </style>
+    <!--商品分类详情-->
+    <style name="Widget.ListView.ClassProduct" parent="Widget.ListView">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">@dimen/margin_normal</item>
+    </style>
+
+    <!-- label -->
+    <style name="Label" parent="@style/Widget">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/button_white_gray_selector</item>
+    </style>
+
+    <style name="Label.Search" parent="Label">
+        <item name="android:paddingTop">@dimen/search_label_padding_top</item>
+        <item name="android:paddingBottom">@dimen/search_label_padding_top</item>
+        <item name="android:paddingLeft">@dimen/search_label_padding_left</item>
+        <item name="android:paddingRight">@dimen/search_label_padding_left</item>
+        <item name="android:textSize">@dimen/text_size_smaller</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <!-- RatingBar -->
+    <style name="RatingBar" parent="android:Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/rating_bar_layer</item>
+    </style>
+
+    <!-- 权重 宽度 -->
+    <style name="WeightWidth">
+        <item name="android:layout_width">@dimen/zero</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+    <!-- 权重 高度 -->
+    <style name="WeightHeight">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/zero</item>
+    </style>
+    <!--商品详情底部-->
+    <style name="ProductDetailBottom">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@null</item>
+        <item name="android:paddingTop">@dimen/margin_bigger</item>
+        <item name="android:paddingBottom">@dimen/margin_small</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:button">@null</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">@dimen/text_size_smaller</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="Widget.GridView.Search.Product" parent="Widget.GridView">
+        <item name="android:numColumns">2</item>
+    </style>
+
+</resources>

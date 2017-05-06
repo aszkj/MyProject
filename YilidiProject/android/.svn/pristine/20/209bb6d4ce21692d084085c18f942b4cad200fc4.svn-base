@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/cart_address_layout"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height_normal"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/margin_bigger">
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@color/white"
+            android:text="@string/cart_send_way"/>
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout_2"/>
+
+    <com.yldbkd.www.buyer.android.viewCustomer.CartSectionView
+        android:id="@+id/cart_sectionview"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:layout_centerInParent="true">
+    </com.yldbkd.www.buyer.android.viewCustomer.CartSectionView>
+
+    <include layout="@layout/divider_layout"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_margin_top"
+        android:background="@mipmap/address_side"/>
+
+    <RelativeLayout
+        android:id="@+id/cart_address_empty_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_address_height"
+        android:background="@color/cart_address_empty_bg">
+
+        <ImageView
+            android:id="@+id/cart_address_empty_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:background="@mipmap/address_add_flag"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/cart_address_empty_image_view"
+            android:layout_toRightOf="@id/cart_address_empty_image_view"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.Big"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/cart_address_empty_text1"/>
+
+            <TextView
+                style="@style/TextAppearance.Small.Light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/cart_address_empty_text2"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/cart_address_detail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_address_height"
+        android:background="@color/cart_address_empty_bg"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/cart_address_detail_consignee_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/cart_address_detail_phone_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/cart_address_phone_margin"
+            android:layout_marginRight="@dimen/cart_address_phone_margin"
+            android:layout_toEndOf="@id/cart_address_detail_consignee_view"
+            android:layout_toRightOf="@id/cart_address_detail_consignee_view"/>
+
+        <TextView
+            android:id="@+id/cart_address_detail_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cart_address_detail_consignee_view"
+            android:layout_marginTop="@dimen/margin_big"
+            android:ellipsize="end"
+            android:maxLines="2"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/cart_toke_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_address_height"
+        android:background="@color/cart_address_empty_bg"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/store_name_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/store_time_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_tiny"
+            />
+
+        <TextView
+            android:id="@+id/store_address_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:ellipsize="end"
+            android:maxLines="2"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_normal"
+        android:background="@mipmap/address_side"/>
+
+    <include layout="@layout/divider_layout"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_small_height"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <TextView
+            android:id="@+id/tv_store_name"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:id="@+id/tv_store_transfer_desc"
+            style="@style/TextAppearance.Small.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+</LinearLayout>

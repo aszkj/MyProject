@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <LinearLayout
+        android:id="@+id/cart_empty_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@mipmap/cart_empty_bg"/>
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/cart_empty_text_margin_top"
+            android:text="@string/cart_address_empty_text3"/>
+
+        <Button
+            style="@style/TextAppearance.Bigger.White"
+            android:id="@+id/cart_empty_btn"
+            android:layout_width="@dimen/button_normal_width"
+            android:layout_height="@dimen/button_normal_height"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin_big"
+            android:background="@drawable/cart_nodata"
+            android:text="@string/cart_empty_button"/>
+    </LinearLayout>
+</RelativeLayout>

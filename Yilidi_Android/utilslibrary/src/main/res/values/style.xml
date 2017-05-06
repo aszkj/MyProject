@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextAppearance" parent="@android:style/TextAppearance"/>
+
+    <!-- Pull to Refresh -->
+    <style name="TextAppearance.PullRefresh" parent="TextAppearance">
+        <item name="android:textSize">@dimen/pull_to_refresh</item>
+        <item name="android:textColor">@color/pull_refresh</item>
+    </style>
+    <!-- loading anim -->
+    <style name="loading_small" parent="@android:style/Widget.ProgressBar.Small">
+        <item name="android:indeterminateDrawable">@anim/progress_bar_anim</item>
+        <item name="android:layout_width">21dip</item>
+        <item name="android:layout_height">21dip</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="TextAppearance.Normal" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_normal</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Big" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_big</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Large" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.Normal.Red" parent="TextAppearance.Normal">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.Normal.Secondary" parent="TextAppearance.Normal">
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.Big.Secondary" parent="TextAppearance.Big">
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.Big.Red" parent="TextAppearance.Big">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+</resources>

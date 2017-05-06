@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:myAndroid="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background"
+                android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_tool_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/main_tool_bar"/>
+
+        <include layout="@layout/divider_layout"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="gone"
+        >
+
+        <include layout="@layout/divider_layout"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/normal_margin_lr"
+            android:paddingRight="@dimen/normal_margin_lr">
+
+            <Button
+                android:id="@+id/btn_cancel"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dip"
+                android:layout_height="@dimen/button_normal_height"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_small"
+                android:layout_weight="1"
+                android:background="@drawable/button_white_gray_selector"
+                android:text="@string/order_to_cancel"/>
+
+            <Button
+                android:id="@+id/btn_confirm"
+                style="@style/TextAppearance.Normal.Red"
+                android:layout_width="0dip"
+                android:layout_height="@dimen/button_normal_height"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_small"
+                android:layout_weight="1"
+                android:background="@drawable/button_yellow_selector"
+                android:text="@string/order_to_pay"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_bottom"
+        android:layout_below="@id/ll_tool_title"
+        android:orientation="vertical">
+
+        <com.yldbkd.www.library.android.viewCustomer.PagerSlidingTabStrip
+            android:id="@+id/detail_page_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_small_height"
+            android:background="@color/white"
+            myAndroid:pstsDividerColor="@color/white"
+            myAndroid:pstsIndicatorBeforeColor="@color/primaryText"
+            myAndroid:pstsIndicatorColor="@color/shape_order_status_bg_checked"
+            myAndroid:pstsIndicatorHeight="@dimen/indicator_height"
+            myAndroid:pstsIndicatorTxtColor="@color/shape_order_status_bg_checked"
+            myAndroid:pstsUnderlineHeight="0dip"/>
+
+        <include layout="@layout/divider_layout"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+        <include layout="@layout/divider_layout"/>
+    </LinearLayout>
+
+
+</RelativeLayout>

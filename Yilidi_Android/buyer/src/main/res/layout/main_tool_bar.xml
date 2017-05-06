@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/main_toor_bar"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tool_bar_height"
+                android:background="@color/white">
+
+    <RelativeLayout
+        android:id="@+id/back_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/back_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@mipmap/back_btn"/>
+    </RelativeLayout>
+
+    <com.yldbkd.www.library.android.viewCustomer.ImgTxtButton
+        android:id="@+id/right_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:paddingLeft="@dimen/tool_bar_padding"
+        android:paddingRight="@dimen/tool_bar_padding"/>
+
+    <TextView
+        android:id="@+id/title_view"
+        style="@style/TextAppearance.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <ImageView
+        android:id="@+id/divider_line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_1_px"
+        android:layout_alignParentBottom="true"
+        android:background="@color/dividerColor"
+        />
+</RelativeLayout>

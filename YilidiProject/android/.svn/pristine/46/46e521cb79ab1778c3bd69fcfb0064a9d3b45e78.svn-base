@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/evalution_image_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <include layout="@layout/image_tool_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/content_heught_large"
+        android:layout_alignParentBottom="true"
+        android:background="@color/black_trans_bg"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/margin_lager"
+        android:paddingRight="@dimen/margin_lager">
+
+        <TextView
+            style="@style/TextAppearance.Large.White"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_big"
+            android:text="@string/evaluation_title"/>
+
+        <TextView
+            android:id="@+id/evalution_content"
+            style="@style/TextAppearance.Bigger.White"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/margin_lager"
+            android:maxLines="4"
+            android:scrollbars="none"/>
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <include layout="@layout/action_bar_main" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/allot_cart_success_margin_top"
+        android:layout_marginTop="@dimen/allot_cart_success_margin_top"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@mipmap/pay_success" />
+
+        <TextView
+            style="@style/TextAppearance.Bigger.Green"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/normal_text_gap"
+            android:layout_marginRight="@dimen/normal_text_gap"
+            android:text="@string/allot_success_content1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/allot_cart_success_info_height"
+        android:background="@color/cart_address_bg"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:text="@string/allot_order_no" />
+
+            <TextView
+                android:id="@+id/tv_allot_order_no"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/small_text_gap"
+                android:layout_marginRight="@dimen/small_text_gap"
+                android:layout_weight="3" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_bigger"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:text="@string/allot_form_warehouse" />
+
+            <TextView
+                android:id="@+id/tv_allot_warehouse"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/small_text_gap"
+                android:layout_marginRight="@dimen/small_text_gap"
+                android:layout_weight="3" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_bigger"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:text="@string/allot_total_count" />
+
+            <TextView
+                android:id="@+id/tv_allot_total_count"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/small_text_gap"
+                android:layout_marginRight="@dimen/small_text_gap"
+                android:layout_weight="3" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_bigger"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:text="@string/allot_create_time" />
+
+            <TextView
+                android:id="@+id/tv_allot_create_time"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/small_text_gap"
+                android:layout_marginRight="@dimen/small_text_gap"
+                android:layout_weight="3" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        style="@style/TextAppearance.Normal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/normal_margin_lr"
+        android:autoLink="phone"
+        android:textColorLink="@color/colorPrimary"
+        android:text="@string/allot_notification" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/allot_cart_success_margin_top"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btn_allot_order"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="@dimen/button_normal_width"
+                android:layout_height="@dimen/button_normal_height"
+                android:layout_centerInParent="true"
+                android:background="@drawable/button_white_selector"
+                android:text="@string/allot_load_order" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btn_allot_home"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="@dimen/button_normal_width"
+                android:layout_height="@dimen/button_normal_height"
+                android:layout_centerInParent="true"
+                android:background="@drawable/button_white_selector"
+                android:text="@string/allot_shopping" />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/white"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <ImageView
+            android:id="@+id/evalution_product_image"
+            android:layout_width="@dimen/item_small_height"
+            android:layout_height="@dimen/item_small_height"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/buyer_logo"/>
+
+        <TextView
+            android:id="@+id/evalution_product_describe"
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_big"
+            android:layout_toRightOf="@id/evalution_product_image"
+            android:text="@string/evaluation_desc"/>
+
+        <RatingBar
+            android:id="@+id/rating_view"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/margin_lager"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_big"
+            android:layout_toRightOf="@id/evalution_product_describe"
+            android:isIndicator="false"
+            android:numStars="5"
+            android:progressDrawable="@drawable/rating_bar_evalution"
+            android:rating="0"
+            android:stepSize="1"/>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <EditText
+        android:id="@+id/evalution_content"
+        style="@style/TextAppearance.Normal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="start|top"
+        android:hint="@string/evaluation_text_hint"
+        android:lineSpacingMultiplier="1.4"
+        android:maxLength="300"
+        android:minHeight="@dimen/edittext_height_min"
+        android:paddingBottom="@dimen/margin_big"
+        android:paddingLeft="@dimen/margin_lager"
+        android:paddingRight="@dimen/margin_lager"
+        android:paddingTop="@dimen/margin_big"
+        android:textColorHint="@color/lightText"/>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/image_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_big"
+        android:layout_marginLeft="@dimen/margin_big"
+        android:scrollbars="none"/>
+
+</LinearLayout>

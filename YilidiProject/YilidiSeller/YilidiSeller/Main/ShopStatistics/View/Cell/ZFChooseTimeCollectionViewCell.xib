@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ChooseTimeCell" id="gTV-IL-0wX" customClass="ZFChooseTimeCollectionViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="6" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kkF-hu-lHW">
+                        <color key="backgroundColor" red="0.23341387510299683" green="0.480223149061203" blue="0.91857433319091797" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="30" id="kLV-pN-Gvl"/>
+                            <constraint firstAttribute="height" constant="30" id="uqn-pe-LcX"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="15"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                        </userDefinedRuntimeAttributes>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="开始" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bsJ-Wt-eoH">
+                        <constraints>
+                            <constraint firstAttribute="height" constant="12" id="BsV-Sk-2kc"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                        <color key="textColor" red="0.23747867345809937" green="0.50185936689376831" blue="0.63660550117492676" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="BsV-Sk-2kc"/>
+                            </mask>
+                        </variation>
+                    </label>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="bsJ-Wt-eoH" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="gTV-IL-0wX" secondAttribute="leading" id="DYr-FX-lcD"/>
+                <constraint firstItem="kkF-hu-lHW" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" constant="-5" id="JMT-D0-lGW"/>
+                <constraint firstItem="bsJ-Wt-eoH" firstAttribute="top" secondItem="kkF-hu-lHW" secondAttribute="bottom" constant="2" id="gRQ-8e-nuC"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bsJ-Wt-eoH" secondAttribute="trailing" id="gfb-VH-507"/>
+                <constraint firstItem="bsJ-Wt-eoH" firstAttribute="centerX" secondItem="kkF-hu-lHW" secondAttribute="centerX" id="jb8-nd-SEb"/>
+                <constraint firstItem="kkF-hu-lHW" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="ues-nX-hpn"/>
+            </constraints>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="DYr-FX-lcD"/>
+                    <exclude reference="gfb-VH-507"/>
+                </mask>
+            </variation>
+            <connections>
+                <outlet property="number" destination="kkF-hu-lHW" id="VWY-mp-6Wa"/>
+                <outlet property="stateLabel" destination="bsJ-Wt-eoH" id="RrX-7C-OZP"/>
+            </connections>
+        </collectionViewCell>
+    </objects>
+</document>

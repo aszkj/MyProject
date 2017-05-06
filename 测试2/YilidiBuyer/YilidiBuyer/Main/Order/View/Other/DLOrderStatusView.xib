@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="DLOrderStatusView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="58"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sPR-al-3tK">
+                    <color key="backgroundColor" red="0.95294117647058818" green="0.95294117647058818" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="0.5" id="bVz-DI-OFR"/>
+                        <constraint firstAttribute="width" constant="375" id="gJc-hF-BAb"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dG2-NY-LrF">
+                    <color key="backgroundColor" red="0.12941176469999999" green="0.69411764710000001" blue="0.1176470588" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="116" id="4vr-fe-Ly2"/>
+                        <constraint firstAttribute="height" constant="30" id="uch-Sq-CXu"/>
+                    </constraints>
+                    <state key="normal" title="取消订单">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="2"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="cancelButtonClick:" destination="iN0-l3-epB" eventType="touchUpInside" id="gvI-m5-ZQ7"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="dG2-NY-LrF" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="15l-RE-2kV"/>
+                <constraint firstItem="dG2-NY-LrF" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="3n7-uA-7GT"/>
+                <constraint firstAttribute="trailing" secondItem="sPR-al-3tK" secondAttribute="trailing" id="LR6-CI-33a"/>
+                <constraint firstItem="sPR-al-3tK" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="RdY-wW-2Fr"/>
+                <constraint firstItem="dG2-NY-LrF" firstAttribute="top" secondItem="sPR-al-3tK" secondAttribute="bottom" constant="13.5" id="WEb-8d-4U1"/>
+                <constraint firstItem="sPR-al-3tK" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="jGJ-nY-Gvz"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="calcelButton" destination="dG2-NY-LrF" id="CkO-cU-ipf"/>
+            </connections>
+            <point key="canvasLocation" x="-29.5" y="118"/>
+        </view>
+    </objects>
+</document>

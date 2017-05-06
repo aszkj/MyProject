@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/layout_coupon"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/margin_small">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_toLeftOf="@+id/tv_coupon_rule"
+                android:layout_toStartOf="@id/tv_coupon_rule"
+                android:src="@mipmap/profile_question_mark"/>
+
+        <TextView
+                android:id="@+id/tv_coupon_rule"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/normal_text_gap"
+                android:layout_marginRight="@dimen/normal_text_gap"/>
+
+    </RelativeLayout>
+</LinearLayout>

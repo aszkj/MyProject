@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background">
+
+    <include
+        android:id="@+id/cart_tool_bar_layout"
+        layout="@layout/main_tool_bar"/>
+
+    <LinearLayout
+        android:id="@+id/cart_empty_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/cart_tool_bar_layout"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/cart_empty_bg"/>
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cart_empty_text_margin_top"
+            android:text="@string/cart_address_empty_text3"/>
+
+        <Button
+            android:id="@+id/cart_empty_btn"
+            style="@style/TextAppearance.Bigger.White"
+            android:layout_width="@dimen/button_normal_width"
+            android:layout_height="@dimen/button_normal_height"
+            android:layout_marginTop="@dimen/margin_big"
+            android:background="@drawable/cart_nodata"
+            android:text="@string/cart_empty_button"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/cart_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_total_price_height"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+
+        <include layout="@layout/divider_layout"/>
+
+        <LinearLayout
+            android:id="@+id/cart_all_check_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="@dimen/margin_normal"
+            android:layout_marginStart="0dp"
+            android:paddingLeft="@dimen/normal_margin_lr"
+            android:paddingStart="@dimen/normal_margin_lr">
+
+            <ImageView
+                android:id="@+id/cart_all_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@mipmap/checkbox_checked"/>
+
+            <TextView
+                style="@style/TextAppearance.Normal.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/normal_text_gap"
+                android:layout_marginRight="@dimen/normal_text_gap"
+                android:text="@string/cart_all_select"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/cart_confirm_btn"
+            android:layout_width="@dimen/cart_total_button_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@color/cart_total_price"/>
+
+        <Button
+            android:id="@+id/delete_product_btn"
+            style="@style/TextAppearance.Bigger.White"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@color/colorPrimary"
+            android:text="@string/button_remove"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/move_product_collect_btn"
+            style="@style/TextAppearance.Bigger.White"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/delete_product_btn"
+            android:layout_toStartOf="@id/delete_product_btn"
+            android:background="@color/cart_total_price"
+            android:text="@string/button_move_to_collect"
+            android:visibility="gone"/>
+
+        <RelativeLayout
+            android:id="@+id/layout_price"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/cart_confirm_btn"
+            android:layout_toStartOf="@id/cart_confirm_btn">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="@dimen/normal_text_gap"
+                android:layout_marginRight="@dimen/normal_text_gap"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/cart_total_amount_view"
+                    style="@style/TextAppearance.Normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"/>
+
+                <TextView
+                    android:id="@+id/cart_total_amount_flag_view"
+                    style="@style/TextAppearance.Normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/cart_total_amount_view"
+                    android:layout_toStartOf="@id/cart_total_amount_view"
+                    android:text="@string/cart_total_amount"/>
+
+                <TextView
+                    android:id="@+id/cart_transfer_view"
+                    style="@style/TextAppearance.Small.Light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/cart_total_amount_flag_view"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/cart_list_view"
+        style="@style/Widget.ListView.Cart.Product"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/cart_bottom_layout"
+        android:layout_below="@id/cart_tool_bar_layout"
+        android:background="@color/background"
+        android:scrollbars="none"/>
+
+</RelativeLayout>

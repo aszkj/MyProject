@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WSJMeEvaluateViewController">
+            <connections>
+                <outlet property="imageV" destination="JUY-RG-7cM" id="W7G-o0-Bkc"/>
+                <outlet property="labelK" destination="7jI-kP-o75" id="Tdn-nm-88e"/>
+                <outlet property="tableView" destination="Z38-uk-ZlP" id="ZFu-VN-ocB"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nodate-5s.png" translatesAutoresizingMaskIntoConstraints="NO" id="JUY-RG-7cM">
+                    <rect key="frame" x="130" y="262" width="60" height="43"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="60" id="Yjw-3w-EVF"/>
+                        <constraint firstAttribute="height" constant="43" id="zlL-J9-Byq"/>
+                    </constraints>
+                </imageView>
+                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="数据为空" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7jI-kP-o75">
+                    <rect key="frame" x="121" y="311" width="79" height="21"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="DRe-Yv-flp"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Z38-uk-ZlP">
+                    <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                    <animations/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="jEg-w1-RNt"/>
+                        <outlet property="delegate" destination="-1" id="OXQ-G8-s8v"/>
+                    </connections>
+                </tableView>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="Z38-uk-ZlP" secondAttribute="trailing" id="6RC-gy-t4I"/>
+                <constraint firstAttribute="trailing" secondItem="7jI-kP-o75" secondAttribute="trailing" constant="120" id="82b-cy-UtD"/>
+                <constraint firstItem="Z38-uk-ZlP" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="BEZ-df-0Dx"/>
+                <constraint firstItem="7jI-kP-o75" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="121" id="GrA-LF-KgV"/>
+                <constraint firstAttribute="bottom" secondItem="Z38-uk-ZlP" secondAttribute="bottom" id="OmU-OR-ttW"/>
+                <constraint firstAttribute="centerY" secondItem="JUY-RG-7cM" secondAttribute="centerY" id="UfE-fX-ytq"/>
+                <constraint firstItem="7jI-kP-o75" firstAttribute="top" secondItem="JUY-RG-7cM" secondAttribute="bottom" constant="6" id="wDl-JL-TqK"/>
+                <constraint firstItem="Z38-uk-ZlP" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="64" id="z8M-pU-xe8"/>
+                <constraint firstAttribute="centerX" secondItem="JUY-RG-7cM" secondAttribute="centerX" id="zkh-T7-vwQ"/>
+            </constraints>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="nodate-5s.png" width="122" height="90"/>
+    </resources>
+</document>

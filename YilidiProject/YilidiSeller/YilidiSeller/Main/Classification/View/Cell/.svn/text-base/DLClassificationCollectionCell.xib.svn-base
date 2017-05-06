@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="DLClassificationCollectionCell">
+            <rect key="frame" x="0.0" y="0.0" width="96" height="118"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="96" height="118"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ojD-Oj-v49">
+                        <frame key="frameInset" minX="10" minY="9" width="77" height="77"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="77" id="DPh-A9-b5M"/>
+                            <constraint firstAttribute="width" constant="77" id="JaQ-MK-vcP"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="洗发水" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C0V-NH-auK">
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="AG0-cp-2vl"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="C0V-NH-auK" firstAttribute="leading" secondItem="ojD-Oj-v49" secondAttribute="leading" id="40K-nG-H5h"/>
+                <constraint firstItem="ojD-Oj-v49" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="JDb-zh-hFo"/>
+                <constraint firstItem="ojD-Oj-v49" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="PWC-TC-lM9"/>
+                <constraint firstItem="C0V-NH-auK" firstAttribute="top" secondItem="ojD-Oj-v49" secondAttribute="bottom" constant="5" id="eq8-gR-WR6"/>
+                <constraint firstItem="C0V-NH-auK" firstAttribute="trailing" secondItem="ojD-Oj-v49" secondAttribute="trailing" id="utR-5c-PC1"/>
+            </constraints>
+            <size key="customSize" width="96" height="120"/>
+            <connections>
+                <outlet property="goodsImgView" destination="ojD-Oj-v49" id="Z8d-eO-VZb"/>
+                <outlet property="goodsImgViewHeightConstraint" destination="DPh-A9-b5M" id="KJB-Tt-oTc"/>
+                <outlet property="goodsImgViewWidthConstraint" destination="JaQ-MK-vcP" id="gw3-Ce-pzL"/>
+                <outlet property="goodsTitleLabel" destination="C0V-NH-auK" id="ot2-en-9JR"/>
+            </connections>
+            <point key="canvasLocation" x="123" y="129"/>
+        </collectionViewCell>
+    </objects>
+</document>

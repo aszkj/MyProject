@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <include layout="@layout/action_bar_main" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/invite_list_top_height"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_invite_list_statistics"
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="@style/TextAppearance.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/invite_total_title" />
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout" />
+
+    <com.yldbkd.www.library.android.pullRefresh.RefreshLayout
+        android:id="@+id/srl_invite"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_invite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.yldbkd.www.library.android.pullRefresh.RefreshLayout>
+
+    <include layout="@layout/divider_layout" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/invite_list_bottom_height"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr">
+
+        <TextView
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/invite_list_guide_title" />
+
+        <TextView
+            style="@style/TextAppearance.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/invite_list_guide_content1" />
+
+        <TextView
+            style="@style/TextAppearance.Smaller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginStart="@dimen/normal_margin_lr"
+            android:text="@string/invite_list_guide_content11" />
+
+        <TextView
+            style="@style/TextAppearance.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/invite_list_guide_content2" />
+
+        <TextView
+            style="@style/TextAppearance.Smaller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginStart="@dimen/normal_margin_lr"
+            android:text="@string/invite_list_guide_content21" />
+
+        <TextView
+            style="@style/TextAppearance.Smaller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginStart="@dimen/normal_margin_lr"
+            android:text="@string/invite_list_guide_content22" />
+
+        <TextView
+            style="@style/TextAppearance.Smaller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginStart="@dimen/normal_margin_lr"
+            android:text="@string/invite_list_guide_content23" />
+    </LinearLayout>
+</LinearLayout>

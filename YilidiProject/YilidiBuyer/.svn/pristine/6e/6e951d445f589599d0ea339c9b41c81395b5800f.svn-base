@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DLBrandGoodsVC">
+            <connections>
+                <outlet property="brandGoodsCollectionView" destination="rT9-VN-Xkw" id="BfY-Xu-Byw"/>
+                <outlet property="shopCartView" destination="wy7-E8-BKx" id="NeN-a8-ACg"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="rT9-VN-Xkw" customClass="MyCommonCollectionView">
+                    <color key="backgroundColor" red="0.93333333333333335" green="0.93333333333333335" blue="0.93333333333333335" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="eHo-us-6Ng">
+                        <size key="itemSize" width="50" height="50"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wy7-E8-BKx" customClass="ShopCartView">
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="SzK-ft-6Lr"/>
+                        <constraint firstAttribute="width" constant="50" id="eP5-Zj-gXM"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="0.93333333333333335" green="0.93333333333333335" blue="0.93333333333333335" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="wy7-E8-BKx" secondAttribute="trailing" constant="34" id="2QW-mU-uSM"/>
+                <constraint firstAttribute="trailing" secondItem="rT9-VN-Xkw" secondAttribute="trailing" id="Rkb-Sr-aaW"/>
+                <constraint firstItem="rT9-VN-Xkw" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Xdp-CM-vfo"/>
+                <constraint firstAttribute="bottom" secondItem="wy7-E8-BKx" secondAttribute="bottom" constant="58" id="cDi-zb-Op5"/>
+                <constraint firstItem="rT9-VN-Xkw" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="gYd-aJ-Wcf"/>
+                <constraint firstAttribute="bottom" secondItem="rT9-VN-Xkw" secondAttribute="bottom" id="kra-zI-wYX"/>
+            </constraints>
+        </view>
+    </objects>
+</document>

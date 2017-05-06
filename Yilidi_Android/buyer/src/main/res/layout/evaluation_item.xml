@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="@dimen/normal_margin_lr"
+              android:paddingRight="@dimen/normal_margin_lr"
+              android:background="@color/white">
+
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="@dimen/item_small_height">
+
+        <ImageView
+                android:id="@+id/evaluation_flag_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/evaluation_user_flag"
+                android:layout_marginTop="@dimen/margin_normal"/>
+
+        <TextView
+                android:id="@+id/evaluation_user_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.Normal"
+                android:layout_marginLeft="@dimen/normal_text_gap"
+                android:layout_marginRight="@dimen/normal_text_gap"
+                android:layout_toEndOf="@id/evaluation_flag_view"
+                android:layout_toRightOf="@id/evaluation_flag_view"
+                android:layout_marginTop="@dimen/margin_normal"/>
+
+        <RatingBar
+                android:id="@+id/evaluation_star_view"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/star_height"
+                style="@style/RatingBar"
+                android:rating="1.0"
+                android:layout_toEndOf="@id/evaluation_user_view"
+                android:layout_toRightOf="@id/evaluation_user_view"
+                android:isIndicator="true"
+                android:layout_marginTop="@dimen/margin_normal"/>
+
+        <TextView
+                android:id="@+id/evaluation_time_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                style="@style/TextAppearance.Smaller.Secondary"
+                android:layout_marginTop="@dimen/margin_normal"/>
+    </RelativeLayout>
+
+    <TextView
+            android:id="@+id/evaluation_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Small"
+            android:layout_marginBottom="@dimen/margin_normal"/>
+</LinearLayout>

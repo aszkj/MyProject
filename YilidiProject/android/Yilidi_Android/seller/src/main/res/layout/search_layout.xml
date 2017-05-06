@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/ll_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/margin_big"
+        android:layout_marginRight="@dimen/margin_big"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/margin_normal"
+        android:paddingRight="@dimen/margin_normal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/search_flag"
+            android:gravity="center"/>
+
+        <com.yldbkd.www.library.android.viewCustomer.ClearableEditText
+            android:id="@+id/search_text_view"
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/normal_text_gap"
+            android:layout_marginRight="@dimen/normal_text_gap"
+            android:background="@null"
+            android:gravity="center"
+            android:hint="@string/search_text_hint"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+            android:textColorHint="@color/lightText"/>
+    </LinearLayout>
+</RelativeLayout>

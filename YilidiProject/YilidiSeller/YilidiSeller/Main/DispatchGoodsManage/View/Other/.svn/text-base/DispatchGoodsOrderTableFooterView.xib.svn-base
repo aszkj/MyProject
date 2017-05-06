@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XPC-BD-n9r" userLabel="addressView">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QrE-Lc-6wL">
+                            <rect key="frame" x="55" y="2" width="305" height="36"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <real key="value" value="3"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="1"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="备注：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jww-lY-ih3">
+                            <rect key="frame" x="12" y="10" width="45" height="21"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="45" id="2Zb-Zn-e03"/>
+                                <constraint firstAttribute="height" constant="21" id="4pN-Ls-tvm"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textField opaque="NO" clipsSubviews="YES" tag="17" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="想对老板说点啥.." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bsk-vf-BS5">
+                            <rect key="frame" x="60" y="6" width="290" height="28"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="28" id="8tj-Dj-RcZ"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <real key="value" value="0.0"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="0.0"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </textField>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="92z-U9-6Ra">
+                            <rect key="frame" x="0.0" y="39" width="375" height="1"/>
+                            <color key="backgroundColor" red="0.85490196078431369" green="0.85882352941176465" blue="0.86274509803921573" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="HW7-bT-ctT"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" red="0.90196078431372551" green="0.90588235294117647" blue="0.90980392156862744" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstItem="92z-U9-6Ra" firstAttribute="leading" secondItem="XPC-BD-n9r" secondAttribute="leading" id="1XM-d2-whj"/>
+                        <constraint firstAttribute="height" constant="44" id="3TR-wr-WZV"/>
+                        <constraint firstItem="QrE-Lc-6wL" firstAttribute="bottom" secondItem="bsk-vf-BS5" secondAttribute="bottom" constant="4" id="5Ns-zm-5a7"/>
+                        <constraint firstItem="QrE-Lc-6wL" firstAttribute="trailing" secondItem="bsk-vf-BS5" secondAttribute="trailing" constant="10" id="7KS-6c-Qjc"/>
+                        <constraint firstItem="bsk-vf-BS5" firstAttribute="centerY" secondItem="jww-lY-ih3" secondAttribute="centerY" id="Ecn-kK-r74"/>
+                        <constraint firstItem="QrE-Lc-6wL" firstAttribute="top" secondItem="bsk-vf-BS5" secondAttribute="top" constant="-4" id="Epc-0u-PVx"/>
+                        <constraint firstAttribute="trailing" secondItem="92z-U9-6Ra" secondAttribute="trailing" id="Ft6-8h-04b"/>
+                        <constraint firstItem="jww-lY-ih3" firstAttribute="centerY" secondItem="XPC-BD-n9r" secondAttribute="centerY" id="JrY-yp-AVQ"/>
+                        <constraint firstAttribute="trailing" secondItem="bsk-vf-BS5" secondAttribute="trailing" constant="25" id="XH8-k1-98e"/>
+                        <constraint firstItem="QrE-Lc-6wL" firstAttribute="leading" secondItem="bsk-vf-BS5" secondAttribute="leading" constant="-5" id="c1D-2s-TVD"/>
+                        <constraint firstItem="bsk-vf-BS5" firstAttribute="leading" secondItem="jww-lY-ih3" secondAttribute="trailing" constant="3" id="f58-lm-D6h"/>
+                        <constraint firstItem="jww-lY-ih3" firstAttribute="leading" secondItem="XPC-BD-n9r" secondAttribute="leading" constant="12" id="opa-I8-F5U"/>
+                        <constraint firstAttribute="bottom" secondItem="92z-U9-6Ra" secondAttribute="bottom" id="s7m-aA-cV6"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="3TR-wr-WZV"/>
+                        </mask>
+                    </variation>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="0.79607843137254897" green="0.80392156862745101" blue="0.80392156862745101" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="XPC-BD-n9r" secondAttribute="bottom" id="6by-YA-LYB"/>
+                <constraint firstAttribute="trailing" secondItem="XPC-BD-n9r" secondAttribute="trailing" id="SKf-5X-27N"/>
+                <constraint firstItem="XPC-BD-n9r" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="eXo-it-pSJ"/>
+                <constraint firstItem="XPC-BD-n9r" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="rr8-jE-WR6"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="324.5" y="-21"/>
+        </view>
+    </objects>
+</document>

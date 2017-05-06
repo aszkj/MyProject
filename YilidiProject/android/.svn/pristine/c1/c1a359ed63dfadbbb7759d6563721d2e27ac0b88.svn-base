@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <RelativeLayout
+            android:id="@+id/rl_update_password"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_bigger_height"
+            android:layout_marginRight="@dimen/margin_small">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/login_update_pwd"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_update_bind_phone"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_bigger_height"
+            android:layout_marginRight="@dimen/margin_small">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/update_bind_phone"/>
+
+            <ImageView
+                android:id="@+id/more_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tv_phone"
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margin_big"
+                android:layout_toLeftOf="@id/more_phone"/>
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_update_bind_wchat"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_bigger_height"
+            android:layout_marginRight="@dimen/margin_small">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/update_bind_wchat"/>
+
+            <ImageView
+                android:id="@+id/more_wx_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+
+            <TextView
+                android:id="@+id/tv_wx_nickname"
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margin_big"
+                android:layout_toLeftOf="@id/more_wx_nickname"/>
+
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_update_bind_qq"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_bigger_height"
+            android:layout_marginRight="@dimen/margin_small">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/update_bind_qq"/>
+
+            <ImageView
+                android:id="@+id/more_qq_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+
+            <TextView
+                android:id="@+id/tv_qq_nickname"
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margin_big"
+                android:layout_toLeftOf="@id/more_qq_nickname"/>
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

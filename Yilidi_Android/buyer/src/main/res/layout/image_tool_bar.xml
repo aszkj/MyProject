@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/main_toor_bar"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tool_bar_height"
+                android:background="@color/black_trans_bg">
+
+    <RelativeLayout
+        android:id="@+id/back_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/back_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@mipmap/button_back_white_pressed"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/left_title_view"
+        style="@style/TextAppearance.Large.White"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/back_view"/>
+
+    <com.yldbkd.www.library.android.viewCustomer.ImgTxtButton
+        android:id="@+id/right_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/margin_lager"
+        android:layout_marginRight="@dimen/margin_lager"/>
+
+    <TextView
+        android:id="@+id/title_view"
+        style="@style/TextAppearance.Large.White"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

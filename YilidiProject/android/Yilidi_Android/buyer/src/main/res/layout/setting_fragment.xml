@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <RelativeLayout
+            android:id="@+id/rl_setting_userinfo"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/item_bottom_height">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/setting_userinfo"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_setting_safe"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/item_bottom_height">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/setting_safe"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_address_manager"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/item_bottom_height">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/setting_address"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <RelativeLayout
+            android:id="@+id/rl_setting_feedback"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/item_bottom_height">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/setting_feedback"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_setting_question"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/item_bottom_height">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/setting_question"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_setting_about_us"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/item_bottom_height">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/setting_about_we"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/profile_more"/>
+        </RelativeLayout>
+
+        <include layout="@layout/divider_layout"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_call"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/item_bottom_height">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/setting_kefu"/>
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margin_small"
+                android:text="@string/call_phone_number"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/setting_login_out"
+        style="@style/TextAppearance.Bigger.Light"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_big_height"
+        android:layout_marginLeft="@dimen/margin_lager"
+        android:layout_marginRight="@dimen/margin_lager"
+        android:layout_marginTop="@dimen/button_big_height"
+        android:background="@drawable/button_white_gray"
+        android:text="@string/setting_login_out"/>
+</LinearLayout>

@@ -1,0 +1,81 @@
+//
+//  jingGang.pch
+//  jingGang
+//
+//  Created by thinker_des on 15/6/28.
+//  Copyright (c) 2015年 yi jiehuang. All rights reserved.
+//
+
+#ifndef jingGang_jingGang_pch
+#define jingGang_jingGang_pch
+
+#pragma mark ---------------- 头文件 ------------------
+#import "JGHeader.h"
+
+#ifdef DEBUG // 处于开发阶段
+#define JGLog(...) NSLog(__VA_ARGS__)
+#else // 处于发布阶段
+#define JGLog(...)
+#endif
+
+#define kGCDBackground(block) dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block)
+#define kGCDMain(block)       dispatch_async(dispatch_get_main_queue(),block)
+
+#pragma mark ---------------- 内存释放 ----------------
+#if __has_feature(objc_arc)
+#define RELEASE(obj)
+#define AUTO_RELEASE(obj)           obj
+#define WEAK_SELF                   __weak typeof(self) weak_self = self;
+#define WEAK_OBJECT(weak_obj, obj)  __weak typeof(obj) weak_obj = obj;
+#else
+#define RELEASE(obj)            {if(obj) {[obj release]; obj = nil;}}//安全释放对象
+#define AUTO_RELEASE(obj)       [obj autorelease]
+#define WEAK_SELF                   __block typeof(self) weak_self = self;
+#define WEAK_OBJECT(weak_obj, obj)  __block typeof(obj) weak_obj = obj;
+#endif
+
+#define ScreenWidth      [[UIScreen mainScreen] bounds].size.width
+#define ScreenHeight     [[UIScreen mainScreen] bounds].size.height
+
+#define COMMONTOPICCOLOR  [UIColor colorWithRed:74.0/255 green:182.0/255 blue:236.0/255 alpha:1]
+
+// RGB颜色
+#define JGColor(r, g, b,a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:a]
+
+// 随机色
+#define JGRandomColor JGColor(arc4random_uniform(256), arc4random_uniform(256), arc4random_uniform(256),1)
+// 白色
+#define JGWhiteColor [UIColor whiteColor]
+
+// 无色
+#define JGClearColor [UIColor clearColor]
+
+// 黑色
+#define JGBlackColor [UIColor blackColor]
+
+// 界面底色
+#define JGBaseColor JGColor(242, 242, 242, 1)
+
+#define TNSString(obj)  [NSString stringWithFormat:@"%@",obj]
+
+// 弱引用
+#define WeakSelf        __weak typeof(self) bself = self
+// 强引用
+#define StrongSelf      __strong __typeof(bself) strongSelf = bself
+
+#define IS_IOS_7 ([[[UIDevice currentDevice] systemVersion] doubleValue]>=7.0)?YES:NO
+
+// 读取图片
+#define LOADIMAGE(file,ext) [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:file ofType:ext]]
+
+
+#define StateBarHeight ((IS_IOS_7)?20:0)
+
+#define NavBarHeight ((IS_IOS_7)?64:44)
+
+#define JGFont(x)     [UIFont fontWithName:@"Avenir-Light" size:(x)]
+
+// 检测block是否可用
+#define BLOCK_EXEC(block, ...) if (block) { block(__VA_ARGS__); };
+
+#endif

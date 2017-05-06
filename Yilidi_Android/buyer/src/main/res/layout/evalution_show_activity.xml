@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:myAndroid="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <include layout="@layout/divider_layout"/>
+
+    <com.yldbkd.www.library.android.viewCustomer.PagerSlidingTabStrip
+        android:id="@+id/evalution_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:background="@color/white"
+        android:fillViewport="false"
+        myAndroid:pstsDividerColor="@color/white"
+        myAndroid:pstsIndicatorBeforeColor="@color/secondaryText"
+        myAndroid:pstsIndicatorColor="@color/trans_bg"
+        myAndroid:pstsIndicatorHeight="0dip"
+        myAndroid:pstsIndicatorTxtColor="@color/colorPrimary"
+        myAndroid:pstsSingleLine="false"
+        myAndroid:pstsTabPaddingLeftRight="0dip"
+        myAndroid:pstsUnderlineHeight="0dip"/>
+
+    <include layout="@layout/divider_layout"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

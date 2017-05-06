@@ -1,0 +1,103 @@
+//
+//  GoodsModel.h
+//  YilidiBuyer
+//
+//  Created by yld on 16/5/23.
+//  Copyright © 2016年 yld. All rights reserved.
+//
+
+#import "GoodsBaseModel.h"
+#import "ProjectRelativEmerator.h"
+
+#define KDennyGoodsLimitCount 1
+
+@interface GoodsModel : GoodsBaseModel
+
+@property (nonatomic,strong)NSString *barCode;//商品条形码（唯一标识）
+
+@property (nonatomic,strong)NSNumber *goodsVipPrice;
+
+@property (nonatomic,strong)NSNumber *goodsOrderPrice;
+
+@property (nonatomic,copy)NSString *productDetail;
+
+@property (nonatomic,strong)NSNumber *goodsNumber;
+
+@property (nonatomic,strong)NSNumber *limitBuyNumber;
+
+@property (nonatomic,copy)NSArray *saleProductImageList;
+
+
+@property (nonatomic,assign)GoodsType goodsType;
+/**
+ *  秒杀价
+ */
+@property (nonatomic,strong)NSNumber *seckillPrice;
+
+/**
+ *  秒杀价
+ */
+@property (nonatomic,copy)NSString *seckillActivityId;
+
+/**
+ *  当前场次可以秒杀的总数量
+ */
+@property (nonatomic,strong)NSNumber *seckillTotalCount;
+/**
+ *  当前场次可以秒杀的显示总数量
+ */
+@property (nonatomic,strong)NSNumber *seckillShowTotalCount;
+/**
+ *  是否能进行秒杀
+ 1：能（该情况根据库存总数量和当前库存数量进行判断能够进行购买）
+ 2：不能（该情况为后台时间限制后出现的，不论多少库存都显示抢光了）
+ */
+@property (nonatomic,strong)NSNumber *isAbleToSeckill;
+
+@property (nonatomic,assign)BOOL userHasFavorite;
+
+@property (nonatomic,assign)BOOL hasRegisteredGoodsChangeNofication;
+
+-(NSDictionary *)goodsModelDic;
+
+- (GoodsStatus)goodsStatus;
+
+@end
+
+@interface GoodsModel (objectGoodsModel)
+
++ (NSArray *)objectGoodsModelWithGoodsArr:(NSArray *)goodsArr;
+
+@end
+
+@interface GoodsModel (objectOrderGoodsModel)
+
++ (NSArray *)objectOrderGoodsModelWithGoodsArr:(NSArray *)goodsArr;
+
+@end
+
+@interface GoodsModel (objectSecKillGoodsModel)
+
++ (NSArray *)objectSecKillGoodsModelWithGoodsArr:(NSArray *)goodsArr;
+
+@end
+
+
+@interface GoodsModel (dealGoodsType)
+
+- (void)registerVipPennyGoodsGotNotification;
+
+- (GoodsType)dealGoodsType;
+
+@end
+
+@interface GoodsModel (dealShopCartGoods)
+
+-(ShopCartGoodsStatus)shopCartGoodsStatus;
+
+@property (nonatomic,assign) BOOL isShopCartGoodsEditing;
+
+@end
+
+
+

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DLManageAdressVC">
+            <connections>
+                <outlet property="addAdressButton" destination="MSO-yS-xYo" id="Z0E-bj-LIg"/>
+                <outlet property="addreeListTableView" destination="9Ow-zj-8aD" id="W70-Lv-QjO"/>
+                <outlet property="bottomViewHeightConstraint" destination="wpo-7H-9yr" id="pp3-we-wki"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="9Ow-zj-8aD" customClass="MycommonTableView">
+                    <rect key="frame" x="0.0" y="10" width="375" height="553"/>
+                    <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                </tableView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MSO-yS-xYo">
+                    <rect key="frame" x="0.0" y="563" width="375" height="40"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="wpo-7H-9yr"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="2" maxX="0.0" maxY="2"/>
+                    <state key="normal" title="添加收货地址" image="icon_add">
+                        <color key="titleColor" red="0.45882352941176469" green="0.45882352941176469" blue="0.45882352941176469" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="addAdressAction:" destination="-1" eventType="touchUpInside" id="pdm-mw-cP5"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="0.95686274509803915" green="0.95686274509803915" blue="0.95686274509803915" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="9Ow-zj-8aD" secondAttribute="bottom" id="0pT-1f-PGb"/>
+                <constraint firstItem="MSO-yS-xYo" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="92c-Cl-BA3"/>
+                <constraint firstItem="MSO-yS-xYo" firstAttribute="top" secondItem="9Ow-zj-8aD" secondAttribute="bottom" id="OSx-4T-ni9"/>
+                <constraint firstItem="9Ow-zj-8aD" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="YPp-a7-HN2"/>
+                <constraint firstItem="9Ow-zj-8aD" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="10" id="ZJN-39-e9h"/>
+                <constraint firstAttribute="bottom" secondItem="MSO-yS-xYo" secondAttribute="bottom" id="nuu-9f-bf8"/>
+                <constraint firstAttribute="trailing" secondItem="MSO-yS-xYo" secondAttribute="trailing" id="vi1-R1-r71"/>
+                <constraint firstAttribute="trailing" secondItem="9Ow-zj-8aD" secondAttribute="trailing" id="xec-41-C7z"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="0pT-1f-PGb"/>
+                </mask>
+            </variation>
+            <point key="canvasLocation" x="88.5" y="214.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="icon_add" width="16" height="16"/>
+    </resources>
+</document>

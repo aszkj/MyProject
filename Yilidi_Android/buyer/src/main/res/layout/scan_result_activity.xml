@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:myAndroid="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background"
+                android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/scan_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/main_tool_bar"/>
+
+        <include layout="@layout/divider_layout"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_scan_no_product"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/scan_tool_bar"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/scan_result_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:id="@+id/scan_result_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_bigger"/>
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/scan_list_layout"
+        style="@style/Widget.ListView.ClassProduct"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/scan_tool_bar"
+        android:divider="@color/dividerColor"
+        android:dividerHeight="@dimen/divider_height_small"
+        android:scrollbars="none">
+
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/ll_cart_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:visibility="gone">
+
+        <include
+            android:id="@+id/cart_bottom"
+            layout="@layout/search_cart_bottom_layout"
+            android:layout_width="@dimen/cart_width"
+            android:layout_height="@dimen/cart_height"
+            android:layout_marginBottom="@dimen/product_type_cart_margin"
+            android:layout_marginRight="@dimen/margin_normal"
+            />
+    </LinearLayout>
+</RelativeLayout>

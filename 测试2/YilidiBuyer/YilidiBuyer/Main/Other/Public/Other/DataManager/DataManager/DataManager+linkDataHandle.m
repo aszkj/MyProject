@@ -1,0 +1,109 @@
+//
+//  DataManager+linkDataHandle.m
+//  YilidiBuyer
+//
+//  Created by yld on 16/8/9.
+//  Copyright © 2016年 yld. All rights reserved.
+//
+
+#import "DataManager+linkDataHandle.h"
+#import "GlobleConst.h"
+#import "ProjectRelativeDefineNotification.h"
+#import "ProjectRelativeKey.h"
+
+@implementation DataManager (linkDataHandle)
+
+- (NSString *)transferTolinkNotificationNameWithlinkTypeNumber:(NSNumber *)linkTypeNumber
+                                                   linkDataDic:(NSDictionary *)linkDataDic {
+
+    NSString *linkNotificationName = nil;
+    switch (linkTypeNumber.integerValue) {
+        case kLinkDataNoLink://无链接
+            linkNotificationName = nil;
+            break;
+        case kLinkDataToGoodsClass://商品分类
+            linkNotificationName = KNotificationLookGoodsClassPage;
+            break;
+        case kLinkDataToH5Page://H5页面，暂时是一分钱vip专区商品页
+            linkNotificationName = KNotificationToH5Page;
+            break;
+        case kLinkDataToSubjectPage://专题页，是之前的分类专区
+            linkNotificationName = KNotificationLookSpecialSubjectGoods;
+            break;
+        case kLinkDataToActivityPage://活动页
+        {
+            NSString *activityType = linkDataDic[kActivityType];
+            if ([activityType isEqualToString:ACTIVITYTYPE_SECKILL]) {//秒杀
+                linkNotificationName = KNotificationComeToSeckillActivityPage;
+            }else if ([activityType isEqualToString:ACTIVITYTYPE_REDENVELOPE]){//抢红包
+                linkNotificationName = KNotificationLookRedPacketPage;
+            }
+        }
+            break;
+        case kLinkDataToGoodsDetailPage://商品详情页
+            linkNotificationName = KNotificationLookGoodsDetail;
+            break;
+        case kLinkDataToInformationPage://网站资讯、公告
+            linkNotificationName = KNotificationInfomationOrPosterPage;
+            break;
+        default:
+            break;
+    }
+    return linkNotificationName;
+}
+
+- (NSString *)transferTolinkNotificationNameWithFloorlinkTypeNumber:(NSNumber *)linkTypeNumber {
+    NSString *linkNotificationName = nil;
+    switch (linkTypeNumber.integerValue) {
+        case kLinkDataNoLink://无链接
+            linkNotificationName = nil;
+            break;
+        case kLinkDataToGoodsClass://商品分类
+            linkNotificationName = KNotificationLookGoodsClassPage;
+            break;
+        case kLinkDataToH5Page://H5页面，暂时是一分钱vip专区商品页
+            linkNotificationName = KNotificationToH5Page;
+            break;
+        case kLinkDataToFloorGoodsPage://楼层商品页
+            linkNotificationName = KNotificationLookFloorGoods;
+            break;
+        default:
+            break;
+    }
+    return linkNotificationName;
+}
+
+- (NSDictionary *)transferToDicWithLinkCodeStr:(NSString *)linkCodeStr
+                                linkTypeNumber:(NSNumber *)linkTypeNumber
+{
+
+    NSArray *linkCodeStrs = [linkCodeStr componentsSeparatedByString:@"&"];
+    NSMutableDictionary *mutableCodeDic = [NSMutableDictionary dictionaryWithCapacity:linkCodeStrs.count];
+    
+    [linkCodeStrs enumerateObjectsUsingBlock:^(NSString * obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSArray *miniCodeStrs = [obj componentsSeparatedByString:@"="];
+        if (miniCodeStrs.count >= 2) {
+            [mutableCodeDic setObject:miniCodeStrs.lastObject forKey:miniCodeStrs.firstObject];
+        }
+    }];
+    return [mutableCodeDic copy];
+}
+
+
+- (NSString *)canLinkCodeStrJump:(NSString *)linkCodeStr
+                  linkTypeNumber:(NSNumber *)linkTypeNumber {
+
+    if (linkTypeNumber.integerValue == kLinkDataToSubjectPage) {
+        NSDictionary *dic = [self transferToDicWithLinkCodeStr:linkCodeStr linkTypeNumber:linkTypeNumber];
+        NSString *zoneCodeStr = dic[kLinkDataKeySpecialSubject];
+        if (!isEmpty(zoneCodeStr)) {
+            return zoneCodeStr;
+        }
+    }
+    
+    return nil;
+
+}
+
+
+@end

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="U6b-Vx-4bR" customClass="HappyShoppingSecondSectionHeaderView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="27"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zRX-11-dOd" userLabel="guessYourFavariteHeaderView">
+                    <rect key="frame" x="-1" y="0.0" width="376" height="27"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="KEAIDE" translatesAutoresizingMaskIntoConstraints="NO" id="Scb-nL-Cy3">
+                            <rect key="frame" x="11" y="5.5" width="17" height="17"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="17" id="Vcg-ri-rSx"/>
+                                <constraint firstAttribute="height" constant="17" id="WNt-9d-aRD"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="精品推荐" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="led-6D-h8v">
+                            <rect key="frame" x="34" y="3" width="76" height="21"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="76" id="Cvg-8f-6us"/>
+                                <constraint firstAttribute="height" constant="21" id="sRu-NN-gos"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                            <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="新发现---Assistor" translatesAutoresizingMaskIntoConstraints="NO" id="cVW-lB-ieB">
+                            <rect key="frame" x="98" y="6" width="53" height="15"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="15" id="4TB-uL-QJg"/>
+                                <constraint firstAttribute="width" constant="53" id="oEE-nd-lp9"/>
+                            </constraints>
+                        </imageView>
+                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="更多" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m6p-xi-xKc">
+                            <rect key="frame" x="315" y="5" width="42" height="18"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="42" id="fvE-HC-lsK"/>
+                                <constraint firstAttribute="height" constant="18" id="jnU-LZ-6g6"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="MORED.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZBZ-RX-gm9">
+                            <rect key="frame" x="356" y="4" width="8" height="16"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="8" id="5Mg-Xf-V4B"/>
+                                <constraint firstAttribute="height" constant="16" id="hka-nf-wZ1"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="led-6D-h8v" firstAttribute="centerY" secondItem="Scb-nL-Cy3" secondAttribute="centerY" id="8i0-SN-plY"/>
+                        <constraint firstItem="Scb-nL-Cy3" firstAttribute="centerY" secondItem="zRX-11-dOd" secondAttribute="centerY" id="9kV-Ui-1Cr"/>
+                        <constraint firstAttribute="centerY" secondItem="cVW-lB-ieB" secondAttribute="centerY" constant="5" id="Gwl-30-zD5"/>
+                        <constraint firstAttribute="centerY" secondItem="led-6D-h8v" secondAttribute="centerY" constant="5" id="I9d-jr-buB"/>
+                        <constraint firstAttribute="centerY" secondItem="ZBZ-RX-gm9" secondAttribute="centerY" id="NXR-A3-B1K"/>
+                        <constraint firstItem="led-6D-h8v" firstAttribute="leading" secondItem="Scb-nL-Cy3" secondAttribute="trailing" constant="6" id="PXT-CX-AsT"/>
+                        <constraint firstItem="cVW-lB-ieB" firstAttribute="leading" secondItem="led-6D-h8v" secondAttribute="trailing" constant="-12" id="Qrk-Gt-EBh"/>
+                        <constraint firstAttribute="centerY" secondItem="Scb-nL-Cy3" secondAttribute="centerY" constant="5" id="geI-UO-yg4"/>
+                        <constraint firstItem="cVW-lB-ieB" firstAttribute="centerY" secondItem="Scb-nL-Cy3" secondAttribute="centerY" id="h3q-ng-78t"/>
+                        <constraint firstAttribute="trailing" secondItem="ZBZ-RX-gm9" secondAttribute="trailing" constant="12" id="j8R-cf-C0v"/>
+                        <constraint firstItem="Scb-nL-Cy3" firstAttribute="leading" secondItem="zRX-11-dOd" secondAttribute="leading" constant="11" id="rVW-uL-I0W"/>
+                        <constraint firstAttribute="centerY" secondItem="m6p-xi-xKc" secondAttribute="centerY" constant="5" id="vGL-Bi-MeZ"/>
+                        <constraint firstItem="ZBZ-RX-gm9" firstAttribute="leading" secondItem="m6p-xi-xKc" secondAttribute="trailing" constant="-2" id="vqW-OE-0rU"/>
+                        <constraint firstAttribute="height" constant="37" id="yA9-lf-kEx"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="yA9-lf-kEx"/>
+                            <exclude reference="geI-UO-yg4"/>
+                            <exclude reference="I9d-jr-buB"/>
+                            <exclude reference="Gwl-30-zD5"/>
+                        </mask>
+                    </variation>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="0.0" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="zRX-11-dOd" firstAttribute="top" secondItem="U6b-Vx-4bR" secondAttribute="top" id="8bp-lO-8rc"/>
+                <constraint firstItem="zRX-11-dOd" firstAttribute="leading" secondItem="U6b-Vx-4bR" secondAttribute="leading" id="LrY-cQ-PYC"/>
+                <constraint firstAttribute="trailing" secondItem="zRX-11-dOd" secondAttribute="trailing" id="laE-Lp-cIy"/>
+                <constraint firstAttribute="bottom" secondItem="zRX-11-dOd" secondAttribute="bottom" id="sLp-8c-FF4"/>
+            </constraints>
+            <connections>
+                <outlet property="secionIconHeightConstraint" destination="WNt-9d-aRD" id="vJP-ot-3QB"/>
+                <outlet property="sectionIconImgView" destination="Scb-nL-Cy3" id="eMu-Eq-BPa"/>
+                <outlet property="sectionIconTwoImgView" destination="cVW-lB-ieB" id="NBe-yC-dTe"/>
+                <outlet property="sectionTitlLabel" destination="led-6D-h8v" id="sRM-MK-yiY"/>
+            </connections>
+        </collectionReusableView>
+    </objects>
+    <resources>
+        <image name="KEAIDE" width="13" height="13"/>
+        <image name="MORED.png" width="22" height="42"/>
+        <image name="新发现---Assistor" width="53" height="15"/>
+    </resources>
+</document>

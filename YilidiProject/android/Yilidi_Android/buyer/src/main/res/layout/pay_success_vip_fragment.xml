@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/pay_success_content_margin">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/pay_success_margin_top"
+            android:background="@mipmap/update_vip_success"/>
+
+        <TextView
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/pay_success_text_margin"
+            android:text="@string/pay_success_content3"/>
+
+        <TextView
+            android:id="@+id/vip_expire_date"
+            style="@style/TextAppearance.Smaller.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="@string/update_vip_expire"
+            />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/margin_bigger"
+        android:paddingRight="@dimen/margin_bigger"
+        android:paddingTop="@dimen/margin_bigger">
+
+        <TextView
+            android:id="@+id/content_title"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="@string/vip_content_introduction_title"
+            />
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@id/content_title"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="@string/vip_content_introduction_content"
+            />
+    </RelativeLayout>
+</LinearLayout>

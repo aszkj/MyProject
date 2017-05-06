@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_small_height"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big">
+
+        <TextView
+            android:id="@+id/refund_name"
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/refund_name"/>
+
+        <TextView
+            style="@style/TextAppearance.Bigger.Red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_big"
+            android:layout_toRightOf="@id/refund_name"
+            android:text="20"/>
+
+        <TextView
+            style="@style/TextAppearance.Bigger.Blue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="退款金额"/>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/margin_small"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big"
+        android:paddingTop="@dimen/margin_small">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/order_number"/>
+
+            <TextView
+                android:id="@+id/tv_order_number"
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_bigger"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/refund_reason"/>
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_bigger"
+                android:text="@string/order_number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pay_way"/>
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_bigger"
+                android:text="@string/order_number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/refund_time"/>
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_bigger"
+                android:text="@string/order_number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.Bigger.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/refund_way"/>
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_bigger"
+                android:text="@string/order_number"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

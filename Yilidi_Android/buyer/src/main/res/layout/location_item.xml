@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/address_nearby_item_height"
+              android:orientation="vertical"
+                android:background="@color/white"
+              android:gravity="center_vertical"
+                android:paddingLeft="@dimen/normal_margin_lr"
+                android:paddingRight="@dimen/normal_margin_lr"
+         >
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_gravity="center_vertical"
+            android:src="@mipmap/address_item_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="@dimen/margin_normal"
+            android:id="@+id/location_name"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/location_address_detail"
+        style="@style/TextAppearance.Normal.Secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_bigger"/>
+
+</LinearLayout>

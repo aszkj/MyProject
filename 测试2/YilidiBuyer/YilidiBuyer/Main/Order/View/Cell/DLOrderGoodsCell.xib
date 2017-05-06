@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="DLOrderGoodsCell">
+            <rect key="frame" x="0.0" y="0.0" width="74" height="74"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="74" height="74"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E9Y-zQ-jzT">
+                        <frame key="frameInset" minX="8" minY="9" width="58" height="58"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="58" id="IHh-Y2-R1P"/>
+                            <constraint firstAttribute="height" constant="58" id="jMz-yv-VnQ"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="3"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B5K-Ii-pVx">
+                        <frame key="frameInset" minX="59" width="14" height="14"/>
+                        <color key="backgroundColor" red="0.94117647059999998" green="0.1215686275" blue="0.1333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="14" id="d23-za-Dfx"/>
+                            <constraint firstAttribute="height" constant="14" id="iba-Nb-TTD"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                        <state key="normal">
+                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="7"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </button>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="B5K-Ii-pVx" firstAttribute="centerX" secondItem="E9Y-zQ-jzT" secondAttribute="trailing" id="Hmw-XP-orf"/>
+                <constraint firstItem="B5K-Ii-pVx" firstAttribute="centerY" secondItem="E9Y-zQ-jzT" secondAttribute="top" id="KBY-rW-MqG"/>
+                <constraint firstItem="E9Y-zQ-jzT" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="UVC-OJ-ftT"/>
+                <constraint firstItem="E9Y-zQ-jzT" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="nR8-lg-vqb"/>
+                <constraint firstItem="B5K-Ii-pVx" firstAttribute="centerY" secondItem="E9Y-zQ-jzT" secondAttribute="centerY" id="zTf-1l-GHM"/>
+            </constraints>
+            <size key="customSize" width="74" height="74"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="zTf-1l-GHM"/>
+                </mask>
+            </variation>
+            <connections>
+                <outlet property="goodsCountButton" destination="B5K-Ii-pVx" id="7qD-4t-n6H"/>
+                <outlet property="goodsImgView" destination="E9Y-zQ-jzT" id="6eN-SU-bp0"/>
+                <outlet property="imgHeightConstraint" destination="jMz-yv-VnQ" id="9DH-CY-Y9x"/>
+                <outlet property="imgWidthConstraint" destination="IHh-Y2-R1P" id="Yd8-dY-KLX"/>
+            </connections>
+            <point key="canvasLocation" x="313" y="213"/>
+        </collectionViewCell>
+    </objects>
+</document>

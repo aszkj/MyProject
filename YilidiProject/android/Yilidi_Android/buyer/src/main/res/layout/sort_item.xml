@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/pinyin_falg"
+        style="@style/TextAppearance.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height_smaller"
+        android:background="@color/background"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/margin_lager"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_small_height"
+        android:layout_below="@id/pinyin_falg"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/margin_big">
+
+        <ImageView
+            android:id="@+id/brand_classity_image"
+            android:layout_width="@dimen/image_width_small"
+            android:layout_height="@dimen/image_height_small"
+            android:scaleType="fitXY"
+            android:src="@mipmap/buyer_logo"/>
+
+        <TextView
+            android:id="@+id/brand_name"
+            style="@style/TextAppearance.Bigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_big"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_big">
+
+        <include layout="@layout/divider_layout"/>
+    </LinearLayout>
+</RelativeLayout>

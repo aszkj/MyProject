@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="YgS-YH-w66" customClass="XKJHShopEnterHeaderView">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nqd-ae-fq5">
+                    <rect key="frame" x="113" y="0.0" width="1" height="50"/>
+                    <color key="backgroundColor" red="0.84313725490000002" green="0.84313725490000002" blue="0.84313725490000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="1" id="6u4-o9-p5k"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S2b-Ye-aKO">
+                    <rect key="frame" x="284" y="14" width="26" height="22"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="26" id="KTv-l6-Bvt"/>
+                        <constraint firstAttribute="height" constant="22" id="ssG-dp-8KC"/>
+                    </constraints>
+                    <state key="normal" image="Camera">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="photoAction:" destination="YgS-YH-w66" eventType="touchUpInside" id="3oj-gX-KMo"/>
+                    </connections>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="csR-jr-kjr">
+                    <rect key="frame" x="-5" y="49" width="330" height="1"/>
+                    <color key="backgroundColor" red="0.84313725490000002" green="0.84313725490000002" blue="0.84313725490000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="7lW-id-wMG"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="商户名称" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CVq-lX-BU1">
+                    <rect key="frame" x="12" y="9" width="90" height="32"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="32" id="9yg-Aq-gve"/>
+                        <constraint firstAttribute="width" constant="90" id="Apj-D5-mrg"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <gestureRecognizers/>
+            <constraints>
+                <constraint firstItem="Nqd-ae-fq5" firstAttribute="leading" secondItem="CVq-lX-BU1" secondAttribute="trailing" constant="11" id="Du9-mP-DF0"/>
+                <constraint firstItem="CVq-lX-BU1" firstAttribute="top" secondItem="YgS-YH-w66" secondAttribute="top" constant="9" id="RDs-MN-POL"/>
+                <constraint firstAttribute="bottom" secondItem="csR-jr-kjr" secondAttribute="bottom" id="T0l-R0-Dwx"/>
+                <constraint firstItem="S2b-Ye-aKO" firstAttribute="top" secondItem="YgS-YH-w66" secondAttribute="top" constant="14" id="XON-4h-ZXR"/>
+                <constraint firstItem="CVq-lX-BU1" firstAttribute="leading" secondItem="YgS-YH-w66" secondAttribute="leading" constant="12" id="byb-aJ-VC0"/>
+                <constraint firstItem="csR-jr-kjr" firstAttribute="leading" secondItem="YgS-YH-w66" secondAttribute="leading" constant="-5" id="d3O-5o-sLV"/>
+                <constraint firstAttribute="bottom" secondItem="Nqd-ae-fq5" secondAttribute="bottom" id="fy5-nq-D9n"/>
+                <constraint firstItem="Nqd-ae-fq5" firstAttribute="top" secondItem="YgS-YH-w66" secondAttribute="top" id="nrQ-o0-A7Z"/>
+                <constraint firstAttribute="trailing" secondItem="S2b-Ye-aKO" secondAttribute="trailing" constant="10" id="utQ-tr-ooQ"/>
+                <constraint firstAttribute="trailing" secondItem="csR-jr-kjr" secondAttribute="trailing" constant="-5" id="zso-Ge-9PF"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="rightBtn" destination="S2b-Ye-aKO" id="gVp-uq-RSK"/>
+                <outlet property="titleLabel" destination="CVq-lX-BU1" id="AXv-Lo-SQT"/>
+                <outlet property="titleWidth" destination="Apj-D5-mrg" id="R9q-yQ-dHy"/>
+                <outlet property="xianHeight" destination="7lW-id-wMG" id="NHZ-bw-Kwg"/>
+                <outlet property="xianWidth" destination="6u4-o9-p5k" id="jpT-N8-6WD"/>
+                <outletCollection property="gestureRecognizers" destination="Spq-Yd-9yP" appends="YES" id="nsb-Tj-dwI"/>
+            </connections>
+            <point key="canvasLocation" x="390" y="186"/>
+        </view>
+        <tapGestureRecognizer id="Spq-Yd-9yP">
+            <connections>
+                <action selector="tapActon:" destination="YgS-YH-w66" id="ozt-P5-JwB"/>
+            </connections>
+        </tapGestureRecognizer>
+    </objects>
+    <resources>
+        <image name="Camera" width="26" height="20"/>
+    </resources>
+</document>

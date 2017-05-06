@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/ll_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.yldbkd.www.library.android.viewCustomer.ListInScrollView
+                    android:id="@+id/status_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/normal_margin_lr"
+                    style="@style/Widget.ListView.OrderDetailStatus"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginBottom="@dimen/order_margin_top"
+                android:layout_marginTop="@dimen/order_status_margin_top"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tel_connect_us"
+                    android:textColorLink="@color/primaryText"
+                    android:drawableLeft="@mipmap/phone_image"
+                    android:drawablePadding="@dimen/margin_small"
+                    style="@style/TextAppearance.Normal.Blue"
+                    android:layout_gravity="center"
+                    android:text="@string/call_phone_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    style="@style/TextAppearance.Normal.Light"
+                    android:layout_gravity="center"
+                    android:text="@string/connect_us_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

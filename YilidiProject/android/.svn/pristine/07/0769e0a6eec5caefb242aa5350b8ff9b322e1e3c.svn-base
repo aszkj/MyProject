@@ -1,0 +1,119 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/action_bar_main"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:layout_marginTop="@dimen/margin_big"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr">
+
+        <TextView
+            android:id="@+id/tv_password_origin"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="@dimen/password_left_label_width"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:gravity="center_vertical|end"
+            android:text="@string/password_origin"/>
+
+        <com.yldbkd.www.library.android.viewCustomer.ClearableEditText
+            android:id="@+id/cet_password_origin"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/tv_password_origin"
+            android:layout_toRightOf="@id/tv_password_origin"
+            android:background="@mipmap/transparent"
+            android:gravity="center_vertical"
+            android:hint="@string/password_origin_hint"
+            android:inputType="textPassword"
+            android:maxLength="16"
+            android:textColorHint="@color/lightText"/>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout_2"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr">
+
+        <TextView
+            android:id="@+id/tv_password_new"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="@dimen/password_left_label_width"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:gravity="center_vertical|end"
+            android:text="@string/password_new"/>
+
+        <com.yldbkd.www.library.android.viewCustomer.ClearableEditText
+            android:id="@+id/cet_password_new"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/tv_password_new"
+            android:layout_toRightOf="@id/tv_password_new"
+            android:background="@mipmap/transparent"
+            android:gravity="center_vertical"
+            android:hint="@string/password_new_hint"
+            android:inputType="textPassword"
+            android:maxLength="16"
+            android:textColorHint="@color/lightText"/>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout_2"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="@dimen/normal_margin_lr">
+
+        <TextView
+            android:id="@+id/tv_password_confirm"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="@dimen/password_left_label_width"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/normal_margin_lr"
+            android:layout_marginRight="@dimen/normal_margin_lr"
+            android:gravity="center_vertical|end"
+            android:text="@string/password_confirm"/>
+
+        <com.yldbkd.www.library.android.viewCustomer.ClearableEditText
+            android:id="@+id/cet_password_confirm"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/tv_password_confirm"
+            android:layout_toRightOf="@id/tv_password_confirm"
+            android:background="@mipmap/transparent"
+            android:gravity="center_vertical"
+            android:hint="@string/password_confirm_hint"
+            android:inputType="textPassword"
+            android:maxLength="16"
+            android:textColorHint="@color/lightText"/>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_submit"
+        style="@style/TextAppearance.Normal.White"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_big_height"
+        android:layout_margin="@dimen/normal_margin_lr"
+        android:background="@drawable/button_blue_selector"
+        android:text="@string/password_submit_btn"/>
+</LinearLayout>

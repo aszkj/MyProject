@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="80" id="KGk-i7-Jjw" customClass="DLStoreCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="80"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <frame key="frameInset" width="320" height="79"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="大新花园店" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K7i-Lh-FfZ">
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="CFg-iV-aXZ"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="21" id="PGA-mx-Gh5"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="PGA-mx-Gh5"/>
+                            </mask>
+                        </variation>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="深圳市南山区沙河街" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ET5-Tb-9Iv">
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="JcN-C0-5ca"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="21" id="pKF-q2-o5s"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="pKF-q2-o5s"/>
+                            </mask>
+                        </variation>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tn0-9G-TLk">
+                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="5" id="HzX-fg-ftK"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="营业时间：08:00--22:30" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F1b-ec-Hmv">
+                        <frame key="frameInset" minX="12" minY="28" width="139" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="Jj4-LO-kih"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="21" id="bBB-yb-axy"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="bBB-yb-axy"/>
+                            </mask>
+                        </variation>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="K7i-Lh-FfZ" secondAttribute="trailing" constant="8" id="Edk-P8-6R9"/>
+                    <constraint firstItem="ET5-Tb-9Iv" firstAttribute="top" secondItem="F1b-ec-Hmv" secondAttribute="bottom" constant="-1" id="Gb7-iU-531"/>
+                    <constraint firstItem="F1b-ec-Hmv" firstAttribute="leading" secondItem="K7i-Lh-FfZ" secondAttribute="leading" id="JyT-I4-M9O"/>
+                    <constraint firstItem="K7i-Lh-FfZ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="12" id="M8e-0a-Sm6"/>
+                    <constraint firstAttribute="trailing" secondItem="Tn0-9G-TLk" secondAttribute="trailing" id="Pak-K3-amR"/>
+                    <constraint firstItem="ET5-Tb-9Iv" firstAttribute="leading" secondItem="F1b-ec-Hmv" secondAttribute="leading" id="T8y-YK-MV0"/>
+                    <constraint firstItem="Tn0-9G-TLk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="WTf-iX-kvV"/>
+                    <constraint firstItem="F1b-ec-Hmv" firstAttribute="top" secondItem="K7i-Lh-FfZ" secondAttribute="bottom" id="gq0-yZ-xDb"/>
+                    <constraint firstAttribute="bottom" secondItem="Tn0-9G-TLk" secondAttribute="bottom" id="kwy-ci-ubf"/>
+                    <constraint firstAttribute="trailing" secondItem="ET5-Tb-9Iv" secondAttribute="trailing" constant="8" id="mAc-13-8fJ"/>
+                    <constraint firstItem="K7i-Lh-FfZ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="7" id="r68-SN-q54"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="storeAdressLabel" destination="ET5-Tb-9Iv" id="M9T-Yn-UMA"/>
+                <outlet property="storeBusinessTimeLabel" destination="F1b-ec-Hmv" id="iAV-0b-5Ym"/>
+                <outlet property="storeNameLabel" destination="K7i-Lh-FfZ" id="VNI-BF-DZU"/>
+            </connections>
+            <point key="canvasLocation" x="256" y="155"/>
+        </tableViewCell>
+    </objects>
+</document>

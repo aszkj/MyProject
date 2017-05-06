@@ -1,0 +1,185 @@
+//    DLCouponModel *couponModel1 = [[DLCouponModel alloc] init];
+//    couponModel1.ticketTypeName = @"优惠券1";
+//    couponModel1.ticketAmount = 5.0f;
+//    couponModel1.wouldUse = 1;
+//    couponModel1.ticketId = @"121";
+//    couponModel1.endTime = @"2016-11-30 00:00:00";
+//
+//
+//    DLCouponModel *couponModel2 = [[DLCouponModel alloc] init];
+//    couponModel2.ticketTypeName = @"优惠券2";
+//    couponModel2.ticketAmount = 6.0f;
+//    couponModel2.wouldUse = 1;
+//    couponModel2.ticketId = @"122";
+//    couponModel2.endTime = @"2016-11-30 00:00:00";
+//
+//    DLCouponModel *couponModel22 = [[DLCouponModel alloc] init];
+//    couponModel22.ticketTypeName = @"优惠券2";
+//    couponModel22.ticketAmount = 6.0f;
+//    couponModel22.wouldUse = 1;
+//    couponModel22.ticketId = @"122";
+//    couponModel22.endTime = @"2016-11-29 00:00:00";
+//
+//    DLCouponModel *couponModel23 = [[DLCouponModel alloc] init];
+//    couponModel23.ticketTypeName = @"优惠券2";
+//    couponModel23.ticketAmount = 7.0f;
+//    couponModel23.wouldUse = 1;
+//    couponModel23.ticketId = @"122";
+//    couponModel23.endTime = @"2016-11-31 00:00:00";
+//
+//
+//
+//    DLCouponModel *couponModel3 = [[DLCouponModel alloc] init];
+//    couponModel3.ticketTypeName = @"抵用券3";
+//    couponModel3.ticketAmount = 5.0f;
+//    couponModel3.wouldUse = 1;
+//    couponModel3.ticketId = @"123";
+//    couponModel3.endTime = @"2016-11-28";
+//
+//
+//    DLCouponModel *couponModel4 = [[DLCouponModel alloc] init];
+//    couponModel4.ticketTypeName = @"抵用券4";
+//    couponModel4.ticketAmount = 6.0f;
+//    couponModel4.wouldUse = 1;
+//    couponModel4.ticketId = @"124";
+//    couponModel4.endTime = @"2016-11-29";
+//
+//
+//    self.totalCouponList = @[couponModel1,couponModel2,couponModel22,couponModel23];
+//    self.totalPledgeTicketsList = @[couponModel3,couponModel4];
+//    self.avaliableCouponCount = 2;
+//    self.avaliablePledgeCount = 2;
+
+- (void)_removeNotification {
+NSArray *needTogetherRemoveNotificationNames = @[KNotificationShopCartGoodsChange,KNotificationSelecteNearbyShops,KNotificationLookDifferentGoodsTypeData,KNotificationLookGoodsDetail,KNotificationComeToSearchPage,KNotificationSwitchCommunity,KNotificationSwitchStoreSelfTake,KNotificationLookPerfectGoods,KNotificationLookGoodsClassPage,KNotificationLookSpecialSubjectGoods,KNotificationComeToSeckillActivityPage,KNotificationLookRedPacketPage,KNotificationComeToInfoMationPage,KNotificationComeToInfoMationPage,KNotificationSelectShopCartHomePage,KNotificationCometoLoginPageFromPerhomePage];
+for (NSString *notificationName in needTogetherRemoveNotificationNames) {
+[kNotification removeObserver:self name:notificationName object:nil];
+}
+}
+
+//typedef void(^ConfigureCollectionSectionCellBlock)(UICollectionView *collectionView,id groupModel,UICollectionViewCell *collectionCell,NSIndexPath *indexPath);
+//typedef void(^ConfigureCollectionSectionHeaderBlock)(UICollectionView *collectionView,id groupModel,UICollectionReusableView *sectionHeaderView,NSIndexPath *indexPath);
+//typedef void(^ConfigureCollectionSectionCellClickBlock)(UICollectionView *collectionView,id groupModel,UICollectionViewCell *collectionCell,NSIndexPath *indexPath);
+
+//@property (nonatomic,copy)ConfigureCollectionSectionCellBlock configureCollectionSectionCellBlock;
+//@property (nonatomic,copy)ConfigureCollectionSectionHeaderBlock configureCollectionSectionHeaderBlock;
+
+-(void)_initTitle {
+
+NSString *pageTitle = nil;
+if ([self.h5typeCode isEqualToString:H5PAGETYPE_UPGRADE_VIP]) {
+pageTitle = @"升级VIP";
+}else if ([self.h5typeCode isEqualToString:H5PAGETYPE_REGISTER_GIFT]){
+pageTitle = @"新人专享";
+}else if ([self.h5typeCode isEqualToString:H5PAGETYPE_PARTNER_JOIN]){
+pageTitle = @"全面招募";
+}else if ([self.h5typeCode isEqualToString:H5PAGETYPE_ABOUT_US]){
+pageTitle = @"关于我们";
+}else if ([self.h5typeCode isEqualToString:H5PAGETYPE_MILK_PROMOTION]){
+pageTitle = @"牛奶促销";
+}else if ([self.h5typeCode isEqualToString:H5PAGETYPE_COMMON_QUESTION]){
+pageTitle = @"常见问题";
+}else if ([self.h5typeCode isEqualToString:H5PAGETYPE_SHARE_PAGE]){
+pageTitle = @"分享有礼";
+}
+
+}
+
+
+- (NSArray *)_getTestData {
+GoodsClassModel *goodsClassParentModel = [[GoodsClassModel alloc] init];
+goodsClassParentModel.className = @"苹果";
+
+GoodsClassModel *goodsClassChildModel1 = [[GoodsClassModel alloc] init];
+goodsClassChildModel1.className = @"苹果1";
+goodsClassChildModel1.classCode = @"PC20160703165329579QLC";
+
+GoodsClassModel *goodsClassChildModel2 = [[GoodsClassModel alloc] init];
+goodsClassChildModel2.className = @"苹果2";
+goodsClassChildModel2.classCode = @"PC20160722173445762PX6";
+
+GoodsClassModel *goodsClassChildModel3 = [[GoodsClassModel alloc] init];
+goodsClassChildModel3.className = @"苹果3";
+goodsClassChildModel3.classCode = @"PC20160704155725936289";
+
+GoodsClassModel *goodsClassChildModel4 = [[GoodsClassModel alloc] init];
+goodsClassChildModel4.className = @"苹果4";
+goodsClassChildModel4.classCode = @"";
+
+GoodsClassModel *goodsClassChildModel5 = [[GoodsClassModel alloc] init];
+goodsClassChildModel5.className = @"苹果5";
+goodsClassChildModel5.classCode = @"PC201607031646370883H1";
+
+GoodsClassModel *goodsClassChildModel6 = [[GoodsClassModel alloc] init];
+goodsClassChildModel6.className = @"苹果6";
+goodsClassChildModel6.classCode = @"PC201607041558195813Y2";
+
+goodsClassParentModel.subClassList = @[goodsClassChildModel1,goodsClassChildModel2,goodsClassChildModel3,goodsClassChildModel4,goodsClassChildModel5,goodsClassChildModel6];
+return @[goodsClassParentModel];
+
+}
+
+- (NSArray *)_getTestData {
+GoodsClassModel *goodsClassParentModel = [[GoodsClassModel alloc] init];
+goodsClassParentModel.className = @"苹果";
+
+GoodsClassModel *goodsClassChildModel1 = [[GoodsClassModel alloc] init];
+goodsClassChildModel1.className = @"苹果1";
+goodsClassChildModel1.classCode = @"PC20160703165329579QLC";
+
+GoodsClassModel *goodsClassChildModel2 = [[GoodsClassModel alloc] init];
+goodsClassChildModel2.className = @"苹果2";
+goodsClassChildModel2.classCode = @"PC20160722173445762PX6";
+
+GoodsClassModel *goodsClassChildModel3 = [[GoodsClassModel alloc] init];
+goodsClassChildModel3.className = @"苹果3";
+goodsClassChildModel3.classCode = @"PC20160704155725936289";
+
+GoodsClassModel *goodsClassChildModel4 = [[GoodsClassModel alloc] init];
+goodsClassChildModel4.className = @"苹果4";
+goodsClassChildModel4.classCode = @"";
+
+GoodsClassModel *goodsClassChildModel5 = [[GoodsClassModel alloc] init];
+goodsClassChildModel5.className = @"苹果5";
+goodsClassChildModel5.classCode = @"PC201607031646370883H1";
+
+GoodsClassModel *goodsClassChildModel6 = [[GoodsClassModel alloc] init];
+goodsClassChildModel6.className = @"苹果6";
+goodsClassChildModel6.classCode = @"PC201607041558195813Y2";
+
+goodsClassParentModel.subClassList = @[goodsClassChildModel1,goodsClassChildModel2,goodsClassChildModel3,goodsClassChildModel4,goodsClassChildModel5,goodsClassChildModel6];
+return @[goodsClassParentModel];
+
+}
+
+- (void)_setFirstCategaryData {
+GoodsClassModel *goodsClassParentModel = [[GoodsClassModel alloc] init];
+goodsClassParentModel.className = @"苹果";
+
+GoodsClassModel *goodsClassChildModel1 = [[GoodsClassModel alloc] init];
+goodsClassChildModel1.className = @"苹果1";
+goodsClassChildModel1.classCode = @"PC20160703165329579QLC";
+
+GoodsClassModel *goodsClassChildModel2 = [[GoodsClassModel alloc] init];
+goodsClassChildModel2.className = @"苹果2";
+goodsClassChildModel2.classCode = @"PC20160722173445762PX6";
+
+GoodsClassModel *goodsClassChildModel3 = [[GoodsClassModel alloc] init];
+goodsClassChildModel3.className = @"苹果3";
+goodsClassChildModel3.classCode = @"PC20160704155725936289";
+
+GoodsClassModel *goodsClassChildModel4 = [[GoodsClassModel alloc] init];
+goodsClassChildModel4.className = @"苹果4";
+goodsClassChildModel4.classCode = @"";
+
+GoodsClassModel *goodsClassChildModel5 = [[GoodsClassModel alloc] init];
+goodsClassChildModel5.className = @"苹果5";
+goodsClassChildModel5.classCode = @"PC201607031646370883H1";
+[self _configureTheFirstLevelCategaryTableWithDatas:@[goodsClassChildModel1,goodsClassChildModel2,goodsClassChildModel3,goodsClassChildModel4]];
+
+}
+
+
+
+
+

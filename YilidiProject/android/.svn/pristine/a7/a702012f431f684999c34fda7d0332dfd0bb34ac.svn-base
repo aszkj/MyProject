@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background"
+              android:orientation="vertical">
+
+    <include layout="@layout/main_tool_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/pay_success_height"
+        android:background="@color/white"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@mipmap/update_vip_success"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/normal_text_gap"
+            android:layout_marginRight="@dimen/normal_text_gap"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/pay_success_content1"/>
+
+            <TextView
+                android:id="@+id/paysuccess_note"
+                style="@style/TextAppearance.Normal.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/pay_success_content4"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/pay_success_height_small"
+        android:layout_marginBottom="@dimen/margin_normal"
+        android:background="@color/pay_success"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/paysuccess_order_note"
+            style="@style/TextAppearance.Normal.Red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:id="@+id/ll_store_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/content_text_margin_top"
+        android:paddingLeft="@dimen/margin_bigger"
+        android:visibility="gone"
+        >
+
+        <TextView
+            android:id="@+id/store_name"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/small_text_gap"
+            android:layout_marginTop="@dimen/content_text_margin_top"/>
+
+        <TextView
+            android:id="@+id/store_hot_line"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/small_text_gap"
+            android:layout_marginTop="@dimen/margin_smaller"
+            android:autoLink="phone"
+            android:textColorLink="@color/colorBlue"/>
+
+        <TextView
+            android:id="@+id/store_time"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/small_text_gap"
+            android:layout_marginTop="@dimen/margin_smaller"/>
+
+        <TextView
+            android:id="@+id/store_address"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/small_text_gap"
+            android:layout_marginTop="@dimen/margin_smaller"/>
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/content_text_margin_top"
+        android:paddingLeft="@dimen/margin_bigger">
+
+        <TextView
+            android:id="@+id/pay_order_no_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/small_text_gap"
+            android:layout_marginTop="@dimen/content_text_margin_top"
+            />
+
+        <TextView
+            android:id="@+id/pay_type_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/small_text_gap"
+            android:layout_marginTop="@dimen/margin_smaller"/>
+
+        <TextView
+            android:id="@+id/pay_delivery_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/small_text_gap"
+            android:layout_marginTop="@dimen/margin_smaller"/>
+
+        <TextView
+            android:id="@+id/pay_send_time_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/small_text_gap"
+            android:layout_marginTop="@dimen/margin_smaller"/>
+
+        <TextView
+            android:id="@+id/pay_coupon_money_view"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/small_text_gap"
+            android:layout_marginTop="@dimen/margin_smaller"/>
+    </LinearLayout>
+
+    <include layout="@layout/divider_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/pay_success_height_big"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/text_margin_top"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/margin_bigger">
+
+            <TextView
+                style="@style/TextAppearance.Normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@string/pay_order_success_amount"/>
+
+            <TextView
+                style="@style/TextAppearance.Normal.Red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/money_falg"/>
+
+            <TextView
+                android:id="@+id/pay_amount_view"
+                style="@style/TextAppearance.Bigger.Red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/small_text_gap"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/pay_success_text_margin"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/pay_button_order"
+                    style="@style/TextAppearance.Normal"
+                    android:layout_width="@dimen/button_big_width"
+                    android:layout_height="@dimen/button_big_height"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/button_white_gray_selector"
+                    android:text="@string/pay_load_order"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/pay_button_shopping"
+                    style="@style/TextAppearance.Normal"
+                    android:layout_width="@dimen/button_big_width"
+                    android:layout_height="@dimen/button_big_height"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/button_white_gray_selector"
+                    android:text="@string/pay_shopping"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:layout_marginTop="@dimen/button_margin_top"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pay_tel_content"/>
+
+        <TextView
+            android:id="@+id/pay_telephone_view"
+            style="@style/TextAppearance.Normal.Blue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/customer_service_line"/>
+    </LinearLayout>
+
+</LinearLayout>

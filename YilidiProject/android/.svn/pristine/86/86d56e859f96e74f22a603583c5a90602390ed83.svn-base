@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:id="@+id/ll_back_radio_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingLeft="@dimen/action_bar_padding"
+            android:paddingRight="@dimen/action_bar_padding">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@mipmap/back_btn"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_class_product_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/normal_margin_lr"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@mipmap/search_flag"/>
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/rg_class_product"
+            android:layout_width="@dimen/action_radio_width"
+            android:layout_height="@dimen/action_radio_height"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_class_online"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/radio_yellow_left_selector"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="@string/class_online_now"/>
+
+            <RadioButton
+                android:id="@+id/rb_class_offline"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/radio_yellow_right_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="@string/class_offline_now"/>
+        </RadioGroup>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout"/>
+</LinearLayout>

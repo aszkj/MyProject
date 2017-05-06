@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/mtb_collect"
+        layout="@layout/main_tool_bar"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_collect_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_total_price_height"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:paddingEnd="0dp"
+        android:paddingLeft="@dimen/normal_margin_lr"
+        android:paddingRight="0dp"
+        android:paddingStart="@dimen/normal_margin_lr"
+        android:visibility="gone">
+
+        <include layout="@layout/divider_layout"/>
+
+        <LinearLayout
+            android:id="@+id/ll_collect_all_check_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="@dimen/margin_normal"
+            android:layout_marginStart="0dp">
+
+            <ImageView
+                android:id="@+id/iv_collect_all_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@mipmap/checkbox_unchecked"/>
+
+            <TextView
+                style="@style/TextAppearance.Normal.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/normal_text_gap"
+                android:layout_marginRight="@dimen/normal_text_gap"
+                android:text="@string/cart_all_select"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_collect_delete"
+            style="@style/TextAppearance.Bigger.White"
+            android:layout_width="@dimen/cart_total_button_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@color/colorPrimary"
+            android:text="@string/collect_delete"/>
+    </RelativeLayout>
+
+    <com.yldbkd.www.library.android.pullRefresh.RefreshLayout
+        android:id="@+id/rl_collect"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/rl_collect_bottom"
+        android:layout_below="@id/mtb_collect"
+        android:visibility="invisible">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_collect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </com.yldbkd.www.library.android.pullRefresh.RefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_collect_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/mtb_collect"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/collection_empty"/>
+
+        <TextView
+            style="@style/TextAppearance.Normal.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_text_gap"
+            android:text="@string/collect_empty"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/cart_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true">
+
+        <include
+            layout="@layout/search_cart_bottom_layout"
+            android:layout_width="@dimen/cart_width"
+            android:layout_height="@dimen/cart_height"
+            android:layout_marginBottom="@dimen/collect_cart_bottom_margin"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginRight="@dimen/margin_normal"
+            android:background="@color/background"/>
+    </LinearLayout>
+</RelativeLayout>

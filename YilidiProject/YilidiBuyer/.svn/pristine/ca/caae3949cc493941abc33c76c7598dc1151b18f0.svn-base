@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="U6b-Vx-4bR" customClass="DLClassificationHeaderView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="32"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7nl-fW-b2E">
+                    <color key="backgroundColor" red="1" green="0.77647058823529413" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="6" id="2GK-xk-m1M"/>
+                        <constraint firstAttribute="height" constant="6" id="Nvf-lY-B4j"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="3"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhU-Cg-1b6">
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="3Ya-mW-vTx"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="美发护发">
+                        <color key="titleColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wy0-Vz-zZN">
+                    <constraints>
+                        <constraint firstAttribute="width" constant="7" id="38J-K8-GJt"/>
+                        <constraint firstAttribute="height" constant="22" id="Lfa-yn-DF1"/>
+                    </constraints>
+                    <state key="normal" image="icon_06"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b8F-oi-6bO">
+                    <frame key="frameInset" width="375" height="30"/>
+                    <connections>
+                        <action selector="clickSecondLevelClassAction:" destination="U6b-Vx-4bR" eventType="touchUpInside" id="6GX-1m-AEB"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="b8F-oi-6bO" secondAttribute="bottom" id="2zb-B2-lJH"/>
+                <constraint firstAttribute="trailing" secondItem="b8F-oi-6bO" secondAttribute="trailing" id="3O0-HO-n0v"/>
+                <constraint firstItem="wy0-Vz-zZN" firstAttribute="centerY" secondItem="yhU-Cg-1b6" secondAttribute="centerY" id="Hve-gE-90u"/>
+                <constraint firstItem="yhU-Cg-1b6" firstAttribute="leading" secondItem="7nl-fW-b2E" secondAttribute="trailing" constant="5" id="M0l-90-Fh8"/>
+                <constraint firstItem="b8F-oi-6bO" firstAttribute="leading" secondItem="U6b-Vx-4bR" secondAttribute="leading" id="PGN-0Q-aSq"/>
+                <constraint firstItem="yhU-Cg-1b6" firstAttribute="centerY" secondItem="7nl-fW-b2E" secondAttribute="centerY" id="TnN-X2-Kt3"/>
+                <constraint firstItem="7nl-fW-b2E" firstAttribute="leading" secondItem="U6b-Vx-4bR" secondAttribute="leading" constant="8" id="bBx-dN-emT"/>
+                <constraint firstItem="wy0-Vz-zZN" firstAttribute="leading" secondItem="yhU-Cg-1b6" secondAttribute="trailing" constant="4" id="j8s-BM-EN7"/>
+                <constraint firstItem="7nl-fW-b2E" firstAttribute="centerY" secondItem="U6b-Vx-4bR" secondAttribute="centerY" id="kEm-yr-vbj"/>
+                <constraint firstItem="b8F-oi-6bO" firstAttribute="top" secondItem="U6b-Vx-4bR" secondAttribute="top" id="wHz-GR-JsX"/>
+            </constraints>
+            <connections>
+                <outlet property="secondLevelClassTitleButton" destination="yhU-Cg-1b6" id="ET4-Ds-wka"/>
+            </connections>
+            <point key="canvasLocation" x="-134.5" y="58"/>
+        </collectionReusableView>
+    </objects>
+    <resources>
+        <image name="icon_06" width="7" height="12"/>
+    </resources>
+</document>

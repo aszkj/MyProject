@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:layout_marginLeft="@dimen/normal_margin_lr"
+        android:layout_marginRight="@dimen/normal_margin_lr"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_allot_cart_remark"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/allot_cart_remark" />
+
+        <com.yldbkd.www.library.android.viewCustomer.ClearableEditText
+            android:id="@+id/cet_allot_cart_remark"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/normal_margin_top"
+            android:layout_marginTop="@dimen/normal_margin_top"
+            android:layout_toEndOf="@id/tv_allot_cart_remark"
+            android:layout_toRightOf="@id/tv_allot_cart_remark"
+            android:background="@drawable/button_white_gray"
+            android:gravity="center_vertical"
+            android:hint="@string/allot_cart_remark_hint"
+            android:inputType="text"
+            android:paddingLeft="@dimen/normal_margin_lr"
+            android:paddingRight="@dimen/normal_margin_lr"
+            android:singleLine="true"
+            android:textColorHint="@color/lightText" />
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_text_gap"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="@dimen/allot_cart_total_label_width"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|end"
+            android:text="@string/allot_cart_total_count" />
+
+        <TextView
+            android:id="@+id/tv_allot_cart_total_count"
+            style="@style/TextAppearance.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/allot_cart_total_label_margin"
+            android:layout_marginRight="@dimen/allot_cart_total_label_margin"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/tiny_text_gap"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/TextAppearance.Normal"
+            android:layout_width="@dimen/allot_cart_total_label_width"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|end"
+            android:text="@string/allot_cart_total_amount" />
+
+        <TextView
+            android:id="@+id/tv_allot_cart_total_amount"
+            style="@style/TextAppearance.Normal.Red"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/allot_cart_total_label_margin"
+            android:layout_marginRight="@dimen/allot_cart_total_label_margin"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/scroll_bottom_height" />
+</LinearLayout>

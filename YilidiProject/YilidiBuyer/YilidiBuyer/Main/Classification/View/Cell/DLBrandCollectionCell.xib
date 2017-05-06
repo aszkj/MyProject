@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="DLBrandCollectionCell">
+            <rect key="frame" x="0.0" y="0.0" width="82" height="82"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="82" height="82"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dT9-IY-WRz">
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="dT9-IY-WRz" secondAttribute="height" multiplier="1.76:1" id="a3t-O0-FlT"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="怡宝" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eib-f3-r0e">
+                        <constraints>
+                            <constraint firstAttribute="width" constant="82" id="Cgh-RY-aSw"/>
+                            <constraint firstAttribute="height" constant="31" id="z1z-cw-bXt"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="dT9-IY-WRz" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="AEC-Lt-9dl"/>
+                <constraint firstAttribute="trailing" secondItem="eib-f3-r0e" secondAttribute="trailing" id="Gb8-Ry-KIW"/>
+                <constraint firstItem="eib-f3-r0e" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Hnb-Hl-Myt"/>
+                <constraint firstItem="eib-f3-r0e" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="Je3-WQ-JKR"/>
+                <constraint firstItem="dT9-IY-WRz" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="M7R-Ts-SDL"/>
+                <constraint firstItem="dT9-IY-WRz" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="11" id="SZE-bD-kUg"/>
+                <constraint firstAttribute="trailing" secondItem="dT9-IY-WRz" secondAttribute="trailing" constant="11" id="bSv-yr-aqW"/>
+                <constraint firstItem="eib-f3-r0e" firstAttribute="top" secondItem="dT9-IY-WRz" secondAttribute="bottom" constant="3" id="n3Q-bK-gMl"/>
+                <constraint firstAttribute="bottom" secondItem="eib-f3-r0e" secondAttribute="bottom" constant="4" id="zdP-SQ-DH8"/>
+            </constraints>
+            <size key="customSize" width="78" height="82"/>
+            <userDefinedRuntimeAttributes>
+                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                    <color key="value" red="0.86274509803921573" green="0.86274509803921573" blue="0.86274509803921573" alpha="1" colorSpace="calibratedRGB"/>
+                </userDefinedRuntimeAttribute>
+                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                    <real key="value" value="1"/>
+                </userDefinedRuntimeAttribute>
+            </userDefinedRuntimeAttributes>
+            <connections>
+                <outlet property="brandImage" destination="dT9-IY-WRz" id="5nW-ZQ-dut"/>
+                <outlet property="brandTitle" destination="eib-f3-r0e" id="Fiv-mi-btG"/>
+            </connections>
+            <point key="canvasLocation" x="45" y="51"/>
+        </collectionViewCell>
+    </objects>
+</document>

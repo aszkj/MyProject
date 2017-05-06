@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:paddingBottom="@dimen/margin_big"
+        android:paddingTop="@dimen/margin_small"
+              android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/search_location_layout"
+            android:background="@drawable/shape_bg_search_location"
+            android:layout_marginRight="@dimen/search_margin_big"
+            android:layout_marginLeft="@dimen/search_margin_big"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_marginLeft="@dimen/margin_small"
+                       android:layout_gravity="center_vertical"
+                       android:background="@mipmap/search_title_flag"/>
+
+            <com.yldbkd.www.library.android.viewCustomer.ClearableEditText
+                android:padding="@dimen/margin_big"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/search_location_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:singleLine="true"
+                android:imeOptions="actionSearch"
+                style="@style/TextAppearance.Bigger"
+                android:hint="@string/search_location_hint_text"
+                android:textColorHint="@color/lightText"/>
+        </LinearLayout>
+    </LinearLayout>

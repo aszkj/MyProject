@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_content_margin"
+        android:background="@color/white">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/main_background"/>
+
+        <LinearLayout
+            android:id="@+id/main_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/main_image_margin"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_store"
+                android:layout_width="@dimen/main_image_width"
+                android:layout_height="@dimen/main_image_height"
+                android:layout_gravity="center_horizontal"
+                android:background="@mipmap/logo_bg"
+                android:src="@mipmap/default_image"/>
+
+            <TextView
+                android:id="@+id/tv_user_name"
+                style="@style/TextAppearance.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/normal_margin_little"/>
+
+            <TextView
+                android:id="@+id/tv_main_store_name"
+                style="@style/TextAppearance.Small.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/normal_margin_lr"
+                android:paddingRight="@dimen/normal_margin_lr"
+                android:singleLine="true"/>
+
+            <RatingBar
+                style="@style/RatingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/star_height"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_small"
+                android:isIndicator="true"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_features"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_normal_height"
+        android:layout_marginTop="@dimen/main_content_margin"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/choose_featrues"
+                style="@style/TextAppearance.Bigger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@null"
+                android:text="@string/main_features_navigation"/>
+
+            <ImageView
+                android:id="@+id/choose_featrues_bg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:src="@mipmap/choose_bg"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/default_1_px"
+                android:layout_alignParentBottom="true"
+                android:background="@color/dividerColor"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="@dimen/main_middle_image_width"
+            android:layout_height="match_parent">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/main_middle_image_height"
+                android:layout_gravity="center_vertical"
+                android:background="@mipmap/middle_bg"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/default_1_px"
+                android:layout_alignParentBottom="true"
+                android:background="@color/dividerColor"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/choose_bill"
+                style="@style/TextAppearance.Bigger.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@null"
+                android:text="@string/main_bill_settlement"/>
+
+            <ImageView
+                android:id="@+id/choose_bill_bg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:src="@mipmap/choose_bg"
+                android:visibility="gone"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/default_1_px"
+                android:layout_alignParentBottom="true"
+                android:background="@color/dividerColor"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_catalog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ll_features"
+        android:layout_marginTop="@dimen/little_margin"/>
+
+    <include
+        android:id="@+id/bill_settlement_content"
+        layout="@layout/bill_settlement_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ll_features"
+        android:layout_marginTop="@dimen/little_margin"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_store_business"
+        style="@style/TextAppearance.Small.White"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginRight="@dimen/margin_big"
+        android:layout_marginTop="@dimen/margin_big"/>
+</RelativeLayout>

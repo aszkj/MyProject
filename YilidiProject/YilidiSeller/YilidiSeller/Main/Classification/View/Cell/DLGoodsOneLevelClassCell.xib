@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="DLGoodsOneLevelClassCell">
+            <rect key="frame" x="0.0" y="0.0" width="84" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <frame key="frameInset" width="84" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m41-3C-qsD">
+                        <frame key="frameInset" minX="15" minY="41" width="58" height="2"/>
+                        <color key="backgroundColor" red="0.84313725490196079" green="0.84313725490196079" blue="0.84313725490196079" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="ztI-u5-4Hd"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VXP-AT-QLg">
+                        <color key="backgroundColor" red="0.16078431369999999" green="0.54901960780000003" blue="0.81176470590000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="2" id="gEu-SM-Y1M"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="水果葡萄" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Vf-Yl-h8C">
+                        <constraints>
+                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="58" id="QPz-CN-KXx"/>
+                            <constraint firstAttribute="height" constant="21" id="SKl-Ad-U6E"/>
+                            <constraint firstAttribute="width" constant="87" id="p0q-u6-pAP"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="p0q-u6-pAP"/>
+                            </mask>
+                        </variation>
+                    </label>
+                </subviews>
+                <color key="backgroundColor" red="0.93333333333333335" green="0.93333333333333335" blue="0.93333333333333335" alpha="1" colorSpace="calibratedRGB"/>
+                <constraints>
+                    <constraint firstItem="VXP-AT-QLg" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="13" id="CYC-dj-8u3"/>
+                    <constraint firstItem="6Vf-Yl-h8C" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="N5R-Q8-szx"/>
+                    <constraint firstAttribute="trailing" secondItem="VXP-AT-QLg" secondAttribute="trailing" constant="13" id="RQD-6Q-pL5"/>
+                    <constraint firstItem="m41-3C-qsD" firstAttribute="trailing" secondItem="VXP-AT-QLg" secondAttribute="trailing" id="Vud-hR-XGF"/>
+                    <constraint firstItem="m41-3C-qsD" firstAttribute="leading" secondItem="VXP-AT-QLg" secondAttribute="leading" id="gVL-Gl-TWQ"/>
+                    <constraint firstAttribute="bottom" secondItem="VXP-AT-QLg" secondAttribute="bottom" id="jhD-We-m1b"/>
+                    <constraint firstItem="6Vf-Yl-h8C" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="nRb-tm-bS9"/>
+                    <constraint firstItem="m41-3C-qsD" firstAttribute="centerY" secondItem="VXP-AT-QLg" secondAttribute="centerY" id="zXL-mC-VvF"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="levelLabelMaxWidthConstraint" destination="QPz-CN-KXx" id="t1N-9S-fF7"/>
+                <outlet property="lineView" destination="VXP-AT-QLg" id="F1j-IU-yVv"/>
+                <outlet property="titleLabel" destination="6Vf-Yl-h8C" id="n8x-U8-sEg"/>
+            </connections>
+            <point key="canvasLocation" x="-52.5" y="102"/>
+        </tableViewCell>
+    </objects>
+</document>

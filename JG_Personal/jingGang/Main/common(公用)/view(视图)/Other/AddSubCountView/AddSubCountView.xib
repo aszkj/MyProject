@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="AddSubCountView">
+            <rect key="frame" x="0.0" y="0.0" width="108" height="30"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Prj-AB-k0G">
+                    <rect key="frame" x="-1" y="0.0" width="108" height="30"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AbQ-4i-wk0">
+                            <rect key="frame" x="72" y="0.0" width="36" height="30"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="36" id="lfI-NI-qmE"/>
+                            </constraints>
+                            <state key="normal" backgroundImage="jiajian-part01.png">
+                                <color key="titleColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="addCountAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="CB6-Nk-ICJ"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Meg-sa-26R">
+                            <rect key="frame" x="37" y="0.0" width="36" height="30"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="36" id="m2H-gq-MQw"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="8"/>
+                            <state key="normal" title="1" backgroundImage="jiajian-part02.png">
+                                <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tWP-Fh-9ok">
+                            <rect key="frame" x="0.0" y="0.0" width="36" height="30"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="36" id="lOH-m6-e3Z"/>
+                            </constraints>
+                            <state key="normal" title="TIAOZHENGDDDD-6+-part-03add" backgroundImage="TIAOZHENGDDDD-6+-part-03add.png">
+                                <color key="titleColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <state key="selected" backgroundImage="TIAOZHENGDDDD-6+-part-03add.png"/>
+                            <connections>
+                                <action selector="subCountAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="VGR-0f-xmA"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="1GT-lq-Nr1"/>
+                        <constraint firstAttribute="bottom" secondItem="tWP-Fh-9ok" secondAttribute="bottom" id="4dd-vd-BlJ"/>
+                        <constraint firstItem="tWP-Fh-9ok" firstAttribute="leading" secondItem="Prj-AB-k0G" secondAttribute="leading" id="5R3-Ht-OOj"/>
+                        <constraint firstAttribute="bottom" secondItem="Meg-sa-26R" secondAttribute="bottom" id="9Mc-q9-Spz"/>
+                        <constraint firstAttribute="bottom" secondItem="AbQ-4i-wk0" secondAttribute="bottom" id="PKU-Ir-hZA"/>
+                        <constraint firstItem="tWP-Fh-9ok" firstAttribute="top" secondItem="Prj-AB-k0G" secondAttribute="top" id="T0V-uE-PnH"/>
+                        <constraint firstItem="AbQ-4i-wk0" firstAttribute="leading" secondItem="Meg-sa-26R" secondAttribute="trailing" constant="-1" id="aCf-lv-tR5"/>
+                        <constraint firstAttribute="trailing" secondItem="AbQ-4i-wk0" secondAttribute="trailing" id="ecw-a8-WB9"/>
+                        <constraint firstAttribute="width" constant="108" id="ja6-eu-Zs6"/>
+                        <constraint firstItem="AbQ-4i-wk0" firstAttribute="top" secondItem="Prj-AB-k0G" secondAttribute="top" id="px2-MV-1Gd"/>
+                        <constraint firstItem="Meg-sa-26R" firstAttribute="top" secondItem="Prj-AB-k0G" secondAttribute="top" id="wej-xs-huw"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="1GT-lq-Nr1"/>
+                            <exclude reference="ja6-eu-Zs6"/>
+                        </mask>
+                    </variation>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="Prj-AB-k0G" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="6jG-7e-h27"/>
+                <constraint firstAttribute="trailing" secondItem="Prj-AB-k0G" secondAttribute="trailing" id="JUm-Iy-RTA"/>
+                <constraint firstItem="Prj-AB-k0G" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="L6o-oa-JVI"/>
+                <constraint firstAttribute="bottom" secondItem="Prj-AB-k0G" secondAttribute="bottom" id="xB3-fW-BRo"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="addButton" destination="AbQ-4i-wk0" id="crF-gw-b9t"/>
+                <outlet property="countButton" destination="Meg-sa-26R" id="hX5-oZ-076"/>
+                <outlet property="subCountButton" destination="tWP-Fh-9ok" id="jh6-xp-nca"/>
+            </connections>
+            <point key="canvasLocation" x="155.5" y="-46"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="TIAOZHENGDDDD-6+-part-03add.png" width="140" height="123"/>
+        <image name="jiajian-part01.png" width="83" height="69"/>
+        <image name="jiajian-part02.png" width="77" height="69"/>
+    </resources>
+</document>

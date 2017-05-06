@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/ll_search_layout"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/white"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height">
+
+        <LinearLayout
+            android:id="@+id/ll_back_search_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/button_back_black_selector"/>
+        </LinearLayout>
+
+        <com.yldbkd.www.library.android.viewCustomer.ImgTxtButton
+            android:id="@+id/itb_right_search_bar"
+            style="@style/TextAppearance.Big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingLeft="@dimen/normal_margin_lr"
+            android:paddingRight="@dimen/normal_margin_lr"/>
+
+        <LinearLayout
+            android:id="@+id/rl_search"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_height_smaller"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_big"
+            android:layout_toEndOf="@id/ll_back_search_bar"
+            android:layout_toLeftOf="@id/itb_right_search_bar"
+            android:layout_toRightOf="@id/ll_back_search_bar"
+            android:layout_toStartOf="@id/itb_right_search_bar"
+            android:background="@drawable/search_title_bar_bg"
+            android:paddingRight="@dimen/margin_normal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/margin_bigger"
+                android:background="@mipmap/search_flag"/>
+
+            <com.yldbkd.www.library.android.viewCustomer.ClearableEditText
+                android:id="@+id/cet_search_bar"
+                style="@style/TextAppearance.Normal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/margin_small"
+                android:layout_marginStart="@dimen/margin_small"
+                android:background="@null"
+                android:hint="@string/search_text_hint"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLength="32"
+                android:textColorHint="@color/lightText"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/divider_layout"/>
+</LinearLayout>
